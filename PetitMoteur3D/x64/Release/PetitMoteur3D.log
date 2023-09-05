@@ -1,0 +1,9 @@
+﻿  stdafx.cpp
+  Moteur.cpp
+  MoteurWindows.cpp
+  PetitMoteur3D.cpp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 24 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  PetitMoteur3D.vcxproj -> C:\Users\cmeli\iCloudDrive\INF707\INF707_2023\Sources des ateliers\Chapitre 2 - Depart\x64\Release\PetitMoteur3D.exe
