@@ -1,4 +1,4 @@
-// PetitMoteur3D.cpp : définit le point d'entrée pour l'application.
+// PetitMoteur3D.cpp : définit le point d'entrée pour l'application.
 //
 
 #include "stdafx.h"
@@ -10,8 +10,8 @@ using namespace PM3D;
 int APIENTRY _tWinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
-	LPTSTR    lpCmdLine,
-	int       nCmdShow)
+	LPTSTR lpCmdLine,
+	int nCmdShow)
 {
 	// Pour ne pas avoir d'avertissement
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -32,7 +32,7 @@ int APIENTRY _tWinMain(
 		// Boucle d'application
 		rMoteur.Run();
 
-		return 1;
+		return (int)1;
 	}
 
 	catch (const std::exception& E)
@@ -42,10 +42,19 @@ int APIENTRY _tWinMain(
 
 		size_t numCharacterConverted;
 		mbstowcs_s(&numCharacterConverted, message, E.what(), BufferSize - 1);
+		::MessageBox(nullptr, message, L"Erreur", MB_ICONWARNING);
 
-		MessageBox(NULL, message, L"Erreur", MB_ICONWARNING);
+		return (int)99;
+	}
 
-		return 99;
+	catch (int codeErreur)
+	{
+		wchar_t szErrMsg[MAX_LOADSTRING]; // Un message d'erreur selon le code
+
+		::LoadString(hInstance, codeErreur, szErrMsg, MAX_LOADSTRING);
+		::MessageBox(nullptr, szErrMsg, L"Erreur", MB_ICONWARNING);
+
+		return (int)99; // POURQUOI 99???
 	}
 
 }

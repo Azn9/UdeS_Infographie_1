@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "Horloge.h"
 
 namespace PM3D
@@ -23,4 +23,4 @@ double Horloge::GetTimeBetweenCounts(int64_t start, int64_t stop) const
 	return static_cast<double>(stop - start) * m_SecPerCount;
 }
 
-}
+} // namespace PM3D

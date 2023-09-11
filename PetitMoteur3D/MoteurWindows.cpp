@@ -1,64 +1,32 @@
 #include "StdAfx.h"
 #include "resource.h"
+
 #include "MoteurWindows.h"
 
-#include "Horloge.h"
 
 namespace PM3D
 {
+HINSTANCE CMoteurWindows::hAppInstance; // handle Windows de l'instance actuelle de l'application
 
-HINSTANCE CMoteurWindows::hAppInstance;	// handle Windows de l'instance actuelle de l'application
-
-//   FONCTION : SetWindowsAppInstance(HANDLE, int)
+//   FONCTION : SetWindowsAppInstance(HANDLE, int)
 //
-//   BUT : Prend en note le handle de l'instance
+//   BUT : Prend en note le handle de l'instance
 //
 void CMoteurWindows::SetWindowsAppInstance(HINSTANCE hInstance)
 {
 	hAppInstance = hInstance; // Stocke le handle d'instance de l'application, plusieurs fonctions spécifiques en auront besoin
 }
 
-//   FONCTION : InitAppInstance()
 //
-//   BUT :  Effectue des opérations d'initialisation de l'application
+//  FONCTION : MyRegisterClass()
 //
-//   COMMENTAIRES :
+//  BUT : inscrit la classe de fenêtre.
 //
-//        Dans cette fonction, nous enregistrons le handle de l'instance dans une variable globale, puis
-//        créons et affichons la fenêtre principale du programme.
-//
-bool CMoteurWindows::InitAppInstance()
-{
-	TCHAR szTitle[MAX_LOADSTRING];					// Le texte de la barre de titre
-
-	// Initialise les chaînes globales
-	LoadString(hAppInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadString(hAppInstance, IDC_PETITMOTEUR3D, szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(hAppInstance);
-
-	hMainWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hAppInstance, NULL);
-
-	if (!hMainWnd)
-	{
-		return false;
-	}
-
-	hAccelTable = LoadAccelerators(hAppInstance, MAKEINTRESOURCE(IDC_PETITMOTEUR3D));
-
-	return true;
-}
-
-//
-//  FONCTION : MyRegisterClass()
-//
-//  BUT : inscrit la classe de fenêtre.
-//
-//  COMMENTAIRES :
+//  COMMENTAIRES :
 //
 //    Cette fonction et son utilisation sont nécessaires uniquement si vous souhaitez que ce code
 //    soit compatible avec les systèmes Win32 avant la fonction 'RegisterClassEx'
-//    qui a été ajoutée à Windows 95. Il est important d'appeler cette fonction
+//    qui a été ajoutée à Windows 95. Il est important d'appeler cette fonction
 //    afin que l'application dispose des petites icônes correctes qui lui sont
 //    associées.
 //
@@ -76,13 +44,44 @@ ATOM CMoteurWindows::MyRegisterClass(HINSTANCE hInstance)
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
 	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_PETITMOTEUR3D));
-	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName = MAKEINTRESOURCE(IDC_PETITMOTEUR3D);
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassEx(&wcex);
+}
+
+//   FONCTION : InitAppInstance()
+//
+//   BUT :  Effectue des opérations d'initialisation de l'application
+//
+//   COMMENTAIRES :
+//
+//        Dans cette fonction, nous enregistrons le handle de l'instance dans une variable globale, puis
+//        créons et affichons la fenêtre principale du programme.
+//
+bool CMoteurWindows::InitAppInstance()
+{
+	TCHAR szTitle[MAX_LOADSTRING]; // Le texte de la barre de titre
+
+	// Initialise les chaînes globales
+	LoadString(hAppInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	LoadString(hAppInstance, IDC_PETITMOTEUR3D, szWindowClass, MAX_LOADSTRING);
+	MyRegisterClass(hAppInstance);
+
+	hMainWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hAppInstance, nullptr);
+
+	if (!hMainWnd)
+	{
+		return false;
+	}
+
+	hAccelTable = LoadAccelerators(hAppInstance, MAKEINTRESOURCE(IDC_PETITMOTEUR3D));
+
+	return true;
 }
 
 int CMoteurWindows::Show()
@@ -93,14 +92,23 @@ int CMoteurWindows::Show()
 	return 0;
 }
 
+int CMoteurWindows::InitialisationsSpecific()
+{
+	// Initialisations  de l'application;
+	InitAppInstance();
+	Show();
+
+	return 0;
+}
+
 //
-//	FONCTION : RunSpecific
+//   FONCTION : RunSpecific 
 //
-//	BUT :	Éléments internes de la boucle de l'application (Boucle message)
+//   BUT :	Éléments internes de la boucle de l'application (Boucle message)
 //
-//	NOTES:
-//		Il s'agit d'une version modifiée spécifiquement pour nos besoins des
-//		éléments de la boucle message de Windows
+//   NOTES:
+//      Il s'agit d'une version modifiée spécifiquement pour nos besoins des
+//      éléments de la boucle message de Windows
 //
 bool CMoteurWindows::RunSpecific()
 {
@@ -108,13 +116,10 @@ bool CMoteurWindows::RunSpecific()
 	bool bBoucle = true;
 
 	// Y-a-t'il un message Windows à traiter?
-	if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	if (::PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 	{
 		// Est-ce un message de fermeture ?
-		if (msg.message == WM_QUIT)
-		{
-			bBoucle = false;
-		}
+		if (msg.message == WM_QUIT) bBoucle = false;
 
 		// distribuer le message
 		if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -127,20 +132,69 @@ bool CMoteurWindows::RunSpecific()
 	return bBoucle;
 }
 
-int CMoteurWindows::InitialisationsSpecific()
+//
+//  FONCTION : GetTimeSpecific 
+//
+//  BUT :	Fonction responsable d'obtenir un temps.
+//
+//
+int64_t CMoteurWindows::GetTimeSpecific() const
 {
-	// Initialisations de l'application;
-	InitAppInstance();
-	Show();
-
-	m_Horloge = Horloge();
-
-	return 0;
+	return m_Horloge.GetTimeCount();
 }
 
-//  FONCTION : WndProc(HWND, unsigned, WORD, LONG)
+double CMoteurWindows::GetTimeIntervalsInSec(int64_t start, int64_t stop) const
+{
+	return m_Horloge.GetTimeBetweenCounts(start, stop);
+}
+
+
+//  FONCTION : CreationDispositifSpecific 
 //
-//  BUT :  traite les messages pour la fenêtre principale.
+//  BUT :	Fonction responsable de créer le 
+//			dispositif selon certains paramètres
+//  NOTES:		
+//		 CDS_MODE: 	CDS_FENETRE 		application fenêtrée
+//					CDS_PLEIN_ECRAN 	application plein écran
+//
+CDispositifD3D11* CMoteurWindows::CreationDispositifSpecific(const CDS_MODE cdsMode)
+{
+	return new CDispositifD3D11(cdsMode, hMainWnd);
+}
+
+void CMoteurWindows::BeginRenderSceneSpecific()
+{
+	ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+	ID3D11RenderTargetView* pRenderTargetView = pDispositif->GetRenderTargetView();
+
+	hue--;
+	if (hue <= 0.0f) hue = 360.0f;
+
+	const double r = 0.5f + 0.5f * sin(hue * 3.14159f / 180.0f);
+	const double g = 0.5f + 0.5f * sin((hue + 120.0f) * 3.14159f / 180.0f);
+	const double b = 0.5f + 0.5f * sin((hue + 240.0f) * 3.14159f / 180.0f);
+
+	const auto rf = static_cast<float>(r);
+	const auto gf = static_cast<float>(g);
+	const auto bf = static_cast<float>(b);
+
+	// On efface la surface de rendu
+	const float Couleur[4] = {rf, gf, bf, 1.0f}; //  RGBA - Vert pour le moment
+
+	pImmediateContext->ClearRenderTargetView(pRenderTargetView, Couleur);
+
+	// On ré-initialise le tampon de profondeur
+	ID3D11DepthStencilView* pDepthStencilView = pDispositif->GetDepthStencilView();
+	pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
+void CMoteurWindows::EndRenderSceneSpecific()
+{
+}
+
+//  FONCTION : WndProc(HWND, unsigned, WORD, LONG)
+//
+//  BUT :  traite les messages pour la fenêtre principale.
 //
 //  WM_COMMAND	- traite le menu de l'application
 //  WM_PAINT	- dessine la fenêtre principale
@@ -158,7 +212,7 @@ LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 	case WM_COMMAND:
 		wmId = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
-		// Analyse les sélections de menu :
+	// Analyse les sélections de menu :
 		switch (wmId)
 		{
 		case IDM_ABOUT:
@@ -173,7 +227,7 @@ LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		// Évitez d'ajouter du code ici...
+	// Évitez d'ajouter du code ici...
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
@@ -203,23 +257,6 @@ INT_PTR CALLBACK CMoteurWindows::About(HWND hDlg, UINT message, WPARAM wParam, L
 		break;
 	}
 	return (INT_PTR)FALSE;
-}
-
-//
-// FONCTION : GetTimeSpecific
-//
-// BUT : Fonction responsable d’obtenir l’heure système en
-// millièmes de seconde
-//
-//
-int64_t CMoteurWindows::GetTimeSpecific()
-{
-	return m_Horloge.GetTimeCount();
-}
-
-double CMoteurWindows::GetTimeIntervalsInSec(int64_t start,int64_t stop)
-{
-	return m_Horloge.GetTimeBetweenCounts(start, stop);
 }
 
 } // namespace PM3D

@@ -7,10 +7,22 @@
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
 #define IDM_ABOUT                       104
+#define DXE_ERREURCREATIONDEVICE        104
 #define IDM_EXIT                        105
+#define DXE_ERREUROBTENTIONBUFFER       105
+#define DXE_ERREURCREATIONRENDERTARGET  106
 #define IDI_PETITMOTEUR3D               107
+#define DXE_CREATION_VS                 107
 #define IDI_SMALL                       108
+#define DXE_FICHIER_VS                  108
 #define IDC_PETITMOTEUR3D               109
+#define DXE_CREATION_PS                 110
+#define DXE_FICHIER_PS                  111
+#define DXE_CREATIONVERTEXBUFFER        112
+#define DXE_CREATIONINDEXBUFFER         113
+#define DXE_CREATIONLAYOUT              114
+#define DXE_ERREURCREATIONTEXTURE       115
+#define DXE_ERREURCREATIONDEPTHSTENCILTARGET 116
 #define IDR_MAINFRAME                   128
 #define IDC_STATIC                      -1
 
