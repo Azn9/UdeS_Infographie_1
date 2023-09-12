@@ -6,6 +6,7 @@
 #include "Objet3D.h"
 #include "Bloc.h"
 #include "CBlocEffet1.h"
+#include "GestionnaireDeTextures.h"
 
 namespace PM3D
 {
@@ -95,6 +96,8 @@ public:
 	const XMMATRIX& GetMatProj() const { return m_MatProj; }
 	const XMMATRIX& GetMatViewProj() const { return m_MatViewProj; }
 
+	CGestionnaireDeTextures& GetTextureManager() { return TexturesManager; }
+
 protected:
 	virtual ~CMoteur()
 	{
@@ -130,7 +133,7 @@ protected:
 		BeginRenderSceneSpecific();
 
 		// Appeler les fonctions de dessin de chaque objet de la scène
-		for (auto& object3D : ListeScene)
+		for (const auto& object3D : ListeScene)
 		{
 			object3D->Draw();
 		}
@@ -186,8 +189,17 @@ protected:
 
 	bool InitObjets()
 	{
+		CBlocEffet1* pBloc;
+
+		// Création d’un cube de 2 X 2 X 2 unités
+		// Le bloc est créé dans notre programme et sur le dispositif
+		pBloc = new CBlocEffet1(2, 2, 2, pDispositif);
+
+		// Lui assigner une texture
+		pBloc->SetTexture(TexturesManager.GetNewTexture(L"UneTexture.dds", pDispositif));
+
 		// Puis, il est ajouté à la scène
-		ListeScene.emplace_back(std::make_unique<CBlocEffet1>(2.0f, 2.0f, 2.0f, pDispositif));
+		ListeScene.emplace_back(static_cast<CObjet3D*>(pBloc));
 
 		return true;
 	}
@@ -217,6 +229,10 @@ protected:
 	XMMATRIX m_MatView;
 	XMMATRIX m_MatProj;
 	XMMATRIX m_MatViewProj;
+
+	// Le gestionnaire de texture
+	CGestionnaireDeTextures TexturesManager;
+
 };
 
 } // namespace PM3D

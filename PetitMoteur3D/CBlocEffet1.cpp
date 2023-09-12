@@ -45,6 +45,8 @@ CBlocEffet1::CBlocEffet1(const float dx,
 	  , pPixelShader(nullptr)
 	  , pVertexLayout(nullptr)
 	  , pConstantBuffer(nullptr)
+	  , pTextureD3D(0)
+	  , pSampleState(0)
 {
 	// Les points
 	XMFLOAT3 point[8] =
@@ -70,40 +72,35 @@ CBlocEffet1::CBlocEffet1(const float dx,
 	CSommetBloc sommets[24] =
 	{
 		// Le devant du bloc
-		CSommetBloc(point[0], n0),
-		CSommetBloc(point[1], n0),
-		CSommetBloc(point[2], n0),
-		CSommetBloc(point[3], n0),
-
-		// L'arrière du bloc
-		CSommetBloc(point[4], n1),
-		CSommetBloc(point[5], n1),
-		CSommetBloc(point[6], n1),
-		CSommetBloc(point[7], n1),
-
+		CSommetBloc(point[0], n0, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[1], n0, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[2], n0, XMFLOAT2(1.0f, 1.0f)),
+		CSommetBloc(point[3], n0, XMFLOAT2(0.0f, 1.0f)),
+		// L’arrière du bloc
+		CSommetBloc(point[4], n1, XMFLOAT2(0.0f, 1.0f)),
+		CSommetBloc(point[5], n1, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[6], n1, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[7], n1, XMFLOAT2(1.0f, 1.0f)),
 		// Le dessous du bloc
-		CSommetBloc(point[3], n2),
-		CSommetBloc(point[2], n2),
-		CSommetBloc(point[6], n2),
-		CSommetBloc(point[5], n2),
-
+		CSommetBloc(point[3], n2, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[2], n2, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[6], n2, XMFLOAT2(1.0f, 1.0f)),
+		CSommetBloc(point[5], n2, XMFLOAT2(0.0f, 1.0f)),
 		// Le dessus du bloc
-		CSommetBloc(point[0], n3),
-		CSommetBloc(point[4], n3),
-		CSommetBloc(point[7], n3),
-		CSommetBloc(point[1], n3),
-
+		CSommetBloc(point[0], n3, XMFLOAT2(0.0f, 1.0f)),
+		CSommetBloc(point[4], n3, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[7], n3, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[1], n3, XMFLOAT2(1.0f, 1.0f)),
 		// La face gauche
-		CSommetBloc(point[0], n4),
-		CSommetBloc(point[3], n4),
-		CSommetBloc(point[5], n4),
-		CSommetBloc(point[4], n4),
-
+		CSommetBloc(point[0], n4, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[3], n4, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[5], n4, XMFLOAT2(1.0f, 1.0f)),
+		CSommetBloc(point[4], n4, XMFLOAT2(0.0f, 1.0f)),
 		// La face droite
-		CSommetBloc(point[1], n5),
-		CSommetBloc(point[7], n5),
-		CSommetBloc(point[6], n5),
-		CSommetBloc(point[2], n5)
+		CSommetBloc(point[1], n5, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[7], n5, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[6], n5, XMFLOAT2(1.0f, 1.0f)),
+		CSommetBloc(point[2], n5, XMFLOAT2(0.0f, 1.0f))
 	};
 
 	// Création du vertex buffer et copie des sommets
@@ -187,16 +184,26 @@ void CBlocEffet1::Draw()
 	sp.vAEcl = XMVectorSet(0.2f, 0.2f, 0.2f, 1.0f);
 	sp.vAMat = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
 	sp.vDEcl = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
-	sp.vDMat = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
+	sp.vDMat = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 	pImmediateContext->UpdateSubresource(pConstantBuffer, 0, nullptr, &sp, 0,
 		0);
 
 	// Nous n’avons qu’un seul CBuffer
-    ID3DX11EffectConstantBuffer* pCB = pEffet->GetConstantBufferByName("param");
-    pCB->SetConstantBuffer(pConstantBuffer);
-    // **** Rendu de l’objet
-    pPasse->Apply(0, pImmediateContext);
+	ID3DX11EffectConstantBuffer* pCB = pEffet->GetConstantBufferByName("param");
+	pCB->SetConstantBuffer(pConstantBuffer);
 
+	// Activation de la texture
+	ID3DX11EffectShaderResourceVariable* variableTexture;
+	variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
+	variableTexture->SetResource(pTextureD3D);
+	
+	// Le sampler state
+	ID3DX11EffectSamplerVariable* variableSampler;
+	variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
+	variableSampler->SetSampler(0, pSampleState);
+
+	// **** Rendu de l’objet
+	pPasse->Apply(0, pImmediateContext);
 
 	// **** Rendu de l'objet
 	pImmediateContext->DrawIndexed(ARRAYSIZE(index_bloc), 0, 0);
@@ -269,6 +276,31 @@ void CBlocEffet1::InitEffet()
 			vsCodeLen,
 			&pVertexLayout),
 		DXE_CREATIONLAYOUT);
+
+	// Initialisation des paramètres de sampling de la texture
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	// Création de l’état de sampling
+	pD3DDevice->CreateSamplerState(&samplerDesc, &pSampleState);
+} // InitEffet
+
+void CBlocEffet1::SetTexture(CTexture* pTexture)
+{
+	pTextureD3D = pTexture->GetD3DTexture();
 }
+
 
 } // namespace PM3D

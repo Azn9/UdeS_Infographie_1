@@ -190,8 +190,10 @@
   <ItemGroup>
     <ClCompile Include="Bloc.cpp" />
     <ClCompile Include="CBlocEffet1.cpp" />
+    <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="dispositif.cpp" />
     <ClCompile Include="dispositifD3D11.cpp" />
+    <ClCompile Include="GestionnaireDeTextures.cpp" />
     <ClCompile Include="Horloge.cpp" />
     <ClCompile Include="InfoDispositif.cpp" />
     <ClCompile Include="Moteur.cpp" />
@@ -204,14 +206,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloc.h" />
     <ClInclude Include="CBlocEffet1.h" />
     <ClInclude Include="d3dx11effect.h" />
     <ClInclude Include="d3dxGlobal.h" />
+    <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="dispositif.h" />
     <ClInclude Include="dispositifD3D11.h" />
+    <ClInclude Include="GestionnaireDeTextures.h" />
     <ClInclude Include="Horloge.h" />
     <ClInclude Include="InfoDispositif.h" />
     <ClInclude Include="Moteur.h" />
@@ -221,6 +226,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="sommetbloc.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>

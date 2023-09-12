@@ -125,6 +125,8 @@ BEGIN
     DXE_CREATION_PS         "Erreur de création du PS"
     DXE_FICHIER_PS          "Erreur chargement ou compilation du PS"
     DXE_ERREURCREATION_FX   "Erreur de création du fichier FX"
+    DXE_FICHIERTEXTUREINTROUVABLE
+                            "Fichier de texture introuvable"
 END
 
 STRINGTABLE

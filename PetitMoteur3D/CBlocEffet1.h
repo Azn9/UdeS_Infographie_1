@@ -2,6 +2,7 @@
 #include "Objet3D.h"
 #include "bloc.h"
 #include "d3dx11effect.h"
+#include "Texture.h"
 
 namespace PM3D
 {
@@ -27,6 +28,8 @@ public:
 	virtual void Anime(float tempsEcoule) override;
 	virtual void Draw() override;
 
+	void SetTexture(CTexture* pTexture);
+
 private:
 	CDispositifD3D11* pDispositif;
 	void InitEffet();
@@ -48,6 +51,10 @@ private:
 	ID3DX11Effect* pEffet;
 	ID3DX11EffectTechnique* pTechnique;
 	ID3DX11EffectPass* pPasse;
+
+	// Textures
+	ID3D11ShaderResourceView* pTextureD3D;
+	ID3D11SamplerState* pSampleState;
 };
 
 } // namespace PM3D

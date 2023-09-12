@@ -66,40 +66,35 @@ CBloc::CBloc(const float dx,
 	CSommetBloc sommets[24] =
 	{
 		// Le devant du bloc
-		CSommetBloc(point[0], n0),
-		CSommetBloc(point[1], n0),
-		CSommetBloc(point[2], n0),
-		CSommetBloc(point[3], n0),
-
-		// L'arrière du bloc
-		CSommetBloc(point[4], n1),
-		CSommetBloc(point[5], n1),
-		CSommetBloc(point[6], n1),
-		CSommetBloc(point[7], n1),
-
+		CSommetBloc(point[0], n0, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[1], n0, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[2], n0, XMFLOAT2(1.0f, 1.0f)),
+		CSommetBloc(point[3], n0, XMFLOAT2(0.0f, 1.0f)),
+		// L’arrière du bloc
+		CSommetBloc(point[4], n1, XMFLOAT2(0.0f, 1.0f)),
+		CSommetBloc(point[5], n1, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[6], n1, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[7], n1, XMFLOAT2(1.0f, 1.0f)),
 		// Le dessous du bloc
-		CSommetBloc(point[3], n2),
-		CSommetBloc(point[2], n2),
-		CSommetBloc(point[6], n2),
-		CSommetBloc(point[5], n2),
-
+		CSommetBloc(point[3], n2, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[2], n2, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[6], n2, XMFLOAT2(1.0f, 1.0f)),
+		CSommetBloc(point[5], n2, XMFLOAT2(0.0f, 1.0f)),
 		// Le dessus du bloc
-		CSommetBloc(point[0], n3),
-		CSommetBloc(point[4], n3),
-		CSommetBloc(point[7], n3),
-		CSommetBloc(point[1], n3),
-
+		CSommetBloc(point[0], n3, XMFLOAT2(0.0f, 1.0f)),
+		CSommetBloc(point[4], n3, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[7], n3, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[1], n3, XMFLOAT2(1.0f, 1.0f)),
 		// La face gauche
-		CSommetBloc(point[0], n4),
-		CSommetBloc(point[3], n4),
-		CSommetBloc(point[5], n4),
-		CSommetBloc(point[4], n4),
-
+		CSommetBloc(point[0], n4, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[3], n4, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[5], n4, XMFLOAT2(1.0f, 1.0f)),
+		CSommetBloc(point[4], n4, XMFLOAT2(0.0f, 1.0f)),
 		// La face droite
-		CSommetBloc(point[1], n5),
-		CSommetBloc(point[7], n5),
-		CSommetBloc(point[6], n5),
-		CSommetBloc(point[2], n5)
+		CSommetBloc(point[1], n5, XMFLOAT2(0.0f, 0.0f)),
+		CSommetBloc(point[7], n5, XMFLOAT2(1.0f, 0.0f)),
+		CSommetBloc(point[6], n5, XMFLOAT2(1.0f, 1.0f)),
+		CSommetBloc(point[2], n5, XMFLOAT2(0.0f, 1.0f))
 	};
 
 	// Création du vertex buffer et copie des sommets
@@ -181,7 +176,7 @@ void CBloc::Draw()
 	sp.vLumiere = XMVectorSet(-10.0f, 10.0f, -10.0f, 1.0f);
 	sp.vCamera = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
 	sp.vAEcl = XMVectorSet(0.2f, 0.2f, 0.2f, 1.0f);
-	sp.vAMat = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
+	sp.vAMat = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 	sp.vDEcl = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 	sp.vDMat = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
 	pImmediateContext->UpdateSubresource(pConstantBuffer, 0, nullptr, &sp, 0,
