@@ -9,6 +9,19 @@
 
 namespace PM3D
 {
+
+struct ShadersParams
+{
+	XMMATRIX matWorldViewProj; // la matrice totale
+	XMMATRIX matWorld; // matrice de transformation dans le monde
+	XMVECTOR vLumiere; // la position de la source d’éclairage (Point)
+	XMVECTOR vCamera; // la position de la caméra
+	XMVECTOR vAEcl; // la valeur ambiante de l’éclairage
+	XMVECTOR vAMat; // la valeur ambiante du matériau
+	XMVECTOR vDEcl; // la valeur diffuse de l’éclairage
+	XMVECTOR vDMat; // la valeur diffuse du matériau
+};
+
 //  FONCTION : CBloc, constructeur paramètré 
 //  BUT :	Constructeur d'une classe de bloc
 //  PARAMÈTRES:
@@ -21,6 +34,7 @@ CBloc::CBloc(const float dx,
 	: pDispositif(pDispositif_) // Prendre en note le dispositif
 	  , matWorld(XMMatrixIdentity())
 	  , rotation(0.0f)
+	  , position(0.0f)
 	  , pVertexBuffer(nullptr)
 	  , pIndexBuffer(nullptr)
 	  , pVertexShader(nullptr)
@@ -128,7 +142,13 @@ void CBloc::Anime(float tempsEcoule)
 	rotation = rotation + ((XM_PI * 2.0f) / 3.0f * tempsEcoule);
 
 	// modifier la matrice de l'objet bloc
-	matWorld = XMMatrixRotationX(rotation);
+	matWorld = XMMatrixRotationY(rotation);
+
+	position++;
+	if (position > 360.0f) position = 0.0f;
+	const float finalPos = sinf(position * XM_PI / 180.0f) * 2.0f;
+
+	matWorld = matWorld * XMMatrixTranslation(0.0f, finalPos, 0.0f);
 }
 
 void CBloc::Draw()
@@ -153,12 +173,25 @@ void CBloc::Draw()
 	// Activer le VS
 	pImmediateContext->VSSetShader(pVertexShader, nullptr, 0);
 
-	// Initialiser et sélectionner les «constantes» du VS
-	const XMMATRIX viewProj = CMoteurWindows::GetInstance().GetMatViewProj();
-	const XMMATRIX matWorldViewProj = XMMatrixTranspose(matWorld * viewProj);
-	pImmediateContext->UpdateSubresource(pConstantBuffer, 0, nullptr, &matWorldViewProj, 0, 0);
-
+	// Initialiser et sélectionner les « constantes » du VS
+	ShadersParams sp;
+	XMMATRIX viewProj = CMoteurWindows::GetInstance().GetMatViewProj();
+	sp.matWorldViewProj = XMMatrixTranspose(matWorld * viewProj);
+	sp.matWorld = XMMatrixTranspose(matWorld);
+	sp.vLumiere = XMVectorSet(-10.0f, 10.0f, -10.0f, 1.0f);
+	sp.vCamera = XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f);
+	sp.vAEcl = XMVectorSet(0.2f, 0.2f, 0.2f, 1.0f);
+	sp.vAMat = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
+	sp.vDEcl = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
+	sp.vDMat = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
+	pImmediateContext->UpdateSubresource(pConstantBuffer, 0, nullptr, &sp, 0,
+		0);
 	pImmediateContext->VSSetConstantBuffers(0, 1, &pConstantBuffer);
+	// Pas de Geometry Shader
+	pImmediateContext->GSSetShader(nullptr, nullptr, 0);
+	// Activer le PS
+	pImmediateContext->PSSetShader(pPixelShader, nullptr, 0);
+	pImmediateContext->PSSetConstantBuffers(0, 1, &pConstantBuffer);
 
 	// Activer le PS
 	pImmediateContext->PSSetShader(pPixelShader, nullptr, 0);
@@ -183,9 +216,9 @@ void CBloc::InitShaders()
 	ID3D11Device* pD3DDevice = pDispositif->GetD3DDevice();
 
 	ID3DBlob* pVSBlob = nullptr;
-	DXEssayer(D3DCompileFromFile(L"vs1.vhl",
+	DXEssayer(D3DCompileFromFile(L"MiniPhong.phl",
 		nullptr, nullptr,
-		"VS1",
+		"MiniPhongVS",
 		"vs_5_0",
 		D3DCOMPILE_ENABLE_STRICTNESS,
 		0,
@@ -213,16 +246,16 @@ void CBloc::InitShaders()
 	ZeroMemory(&bd, sizeof(bd));
 
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(matWorld);
+	bd.ByteWidth = sizeof(ShadersParams);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	pD3DDevice->CreateBuffer(&bd, nullptr, &pConstantBuffer);
 
 	// Compilation et chargement du pixel shader
 	ID3DBlob* pPSBlob = nullptr;
-	DXEssayer(D3DCompileFromFile(L"ps1.phl",
+	DXEssayer(D3DCompileFromFile(L"MiniPhong.phl",
 		nullptr, nullptr,
-		"PS1",
+		"MiniPhongPS",
 		"ps_5_0",
 		D3DCOMPILE_ENABLE_STRICTNESS,
 		0,

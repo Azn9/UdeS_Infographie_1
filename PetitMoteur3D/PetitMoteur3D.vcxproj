@@ -140,7 +140,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalDependencies>dxguid.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>effects11d.lib;dxguid.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
@@ -189,6 +189,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bloc.cpp" />
+    <ClCompile Include="CBlocEffet1.cpp" />
     <ClCompile Include="dispositif.cpp" />
     <ClCompile Include="dispositifD3D11.cpp" />
     <ClCompile Include="Horloge.cpp" />
@@ -206,6 +207,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bloc.h" />
+    <ClInclude Include="CBlocEffet1.h" />
+    <ClInclude Include="d3dx11effect.h" />
+    <ClInclude Include="d3dxGlobal.h" />
     <ClInclude Include="dispositif.h" />
     <ClInclude Include="dispositifD3D11.h" />
     <ClInclude Include="Horloge.h" />
@@ -256,6 +260,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PetitMoteur3D.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Effects11d.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -54,6 +54,7 @@ private:
 	ID3D11Buffer* pConstantBuffer;
 	XMMATRIX matWorld;
 	float rotation;
+	float position;
 };
 
 } // namespace PM3D
