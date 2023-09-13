@@ -64,9 +64,9 @@ void CChargeurOBJ::Chargement(const CParametresChargement& param)
 	// On suppose que tout est au même endroit 
 	cheminModele = param.NomChemin;
 
-	LireFichier(cheminModele + param.NomFichier);
-
 	std::cout << "Lecture du fichier " << cheminModele + param.NomFichier << std::endl;
+
+	LireFichier(cheminModele + param.NomFichier);
 
 	if (OBJMaterialLib.length() > 0)
 	{
@@ -282,7 +282,8 @@ void CChargeurOBJ::TraiterLigneOBJ(const std::string& Instr)
 
 		if (nbrSlash > 6)
 		{
-			throw 25; // Pas un triangle
+			std::cerr << "Erreur: Polygone avec plus de 3 sommets" << std::endl;
+			throw std::exception("Erreur: Polygone avec plus de 3 sommets"); // Pas un triangle
 		}
 
 	// Identifier les 3 sommets

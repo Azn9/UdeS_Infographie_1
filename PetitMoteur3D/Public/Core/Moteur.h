@@ -160,30 +160,27 @@ protected:
 	virtual int InitScene()
 	{
 		// Initialisation des objets 3D - création et/ou chargement
-		if (!InitObjets())
-		{
-			return 1;
-		}
+		if (!InitObjets()) return 1;
 
 		// Initialisation des matrices View et Proj
 		// Dans notre cas, ces matrices sont fixes
-		m_MatView = XMMatrixLookAtLH(XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f),
+		m_MatView = XMMatrixLookAtRH(XMVectorSet(0.0f, -150.0f, 50.0f, 1.0f),
 			XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 			XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
 
 		const float champDeVision = XM_PI / 4; // 45 degrés
-		const float ratioDAspect = static_cast<float>(pDispositif->GetLargeur()) / static_cast<float>(pDispositif->
-			GetHauteur());
-		const float planRapproche = 2.0f;
-		const float planEloigne = 20.0f;
+		const float planRapproche = 0.05f;
+		const float planEloigne = 400.0f;
+		const float ratioDAspect = static_cast<float>(pDispositif->GetLargeur()) / static_cast<float>(pDispositif->GetHauteur());
 
-		m_MatProj = XMMatrixPerspectiveFovLH(
+		m_MatProj = XMMatrixPerspectiveFovRH(
 			champDeVision,
 			ratioDAspect,
 			planRapproche,
-			planEloigne);
+			planEloigne
+			);
 
-		// Calcul de VP à l'avance
+		// Calcul de VP à l’avance
 		m_MatViewProj = m_MatView * m_MatProj;
 
 		return 0;
@@ -210,14 +207,14 @@ protected:
 		CChargeurOBJ chargeur;
 		CParametresChargement parametresChargement;
 		parametresChargement.NomChemin = "";
-		parametresChargement.NomFichier = "test3.obj";
+		parametresChargement.NomFichier = "test6.obj";
 
 		chargeur.Chargement(parametresChargement);
 
 		std::unique_ptr<CObjetMesh> pMesh = std::make_unique<CObjetMesh>(chargeur, pDispositif);
 
 		// Puis, il est ajouté à la scène
-        ListeScene.emplace_back(std::move(pMesh)); 
+		ListeScene.emplace_back(std::move(pMesh));
 
 		return true;
 	}
