@@ -1,15 +1,18 @@
 #pragma once
+#include <locale>
+
 #include "Util/Singleton.h"
 #include "dispositif.h"
 
 #include <vector>
+
 #include "Object/Objet3D.h"
-#include "Object/CBlocEffet1.h"
 #include "Texture/GestionnaireDeTextures.h"
 #include "Mesh/ObjectMesh.h"
 #include "Util/ChargeurOBJ.h"
 #include "Mesh/chargeur.h"
-
+#include "Sprite/SpriteTemp.h"
+ 
 namespace PM3D
 {
 
@@ -171,14 +174,15 @@ protected:
 		const float champDeVision = XM_PI / 4; // 45 degrés
 		const float planRapproche = 0.05f;
 		const float planEloigne = 400.0f;
-		const float ratioDAspect = static_cast<float>(pDispositif->GetLargeur()) / static_cast<float>(pDispositif->GetHauteur());
+		const float ratioDAspect = static_cast<float>(pDispositif->GetLargeur()) / static_cast<float>(pDispositif->
+			GetHauteur());
 
 		m_MatProj = XMMatrixPerspectiveFovRH(
 			champDeVision,
 			ratioDAspect,
 			planRapproche,
 			planEloigne
-			);
+		);
 
 		// Calcul de VP à l’avance
 		m_MatViewProj = m_MatView * m_MatProj;
@@ -212,6 +216,13 @@ protected:
 		chargeur.Chargement(parametresChargement);
 
 		std::unique_ptr<CObjetMesh> pMesh = std::make_unique<CObjetMesh>(chargeur, pDispositif);
+
+		// Création d’un objet sprite
+		auto pSprite = std::make_unique<CSpriteTemp>("tree02s.dds", pDispositif);
+
+		// Puis, il est ajouté à la scène
+		ListeScene.emplace_back(std::move(pSprite));
+
 
 		// Puis, il est ajouté à la scène
 		ListeScene.emplace_back(std::move(pMesh));

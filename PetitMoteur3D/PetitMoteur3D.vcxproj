@@ -1003,6 +1003,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Private\Sprite\SpriteTemp.cpp" />
     <ClCompile Include="Private\Texture\DDSTextureLoader.cpp">
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
@@ -1226,6 +1227,7 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Private\Util\ChargeurOBJ.cpp" />
+    <ClCompile Include="Private\Util\Util.cpp" />
     <ClCompile Include="stdafx.cpp">
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
@@ -1318,6 +1320,7 @@
     <ClInclude Include="Public\Object\objet3d.h" />
     <ClInclude Include="Public\Shader\d3dx11effect.h" />
     <ClInclude Include="Public\Shader\d3dxGlobal.h" />
+    <ClInclude Include="Public\Sprite\SpriteTemp.h" />
     <ClInclude Include="Public\Texture\DDSTextureLoader.h" />
     <ClInclude Include="Public\Texture\GestionnaireDeTextures.h" />
     <ClInclude Include="Public\Texture\Texture.h" />
@@ -1367,6 +1370,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Effects11d.lib" />
+    <Content Include="tree02S.dds" />
     <Content Include="x64\Debug\jin.OMB" />
   </ItemGroup>
   <ItemGroup>
