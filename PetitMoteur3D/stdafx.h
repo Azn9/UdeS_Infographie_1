@@ -12,11 +12,18 @@
 // Fichiers d'en-tête C RunTime
 #include <cassert>
 #include <cstdint>
+#include <cstring>
 #include <tchar.h>
 
 // Fichiers d'en-tête C++ RunTime
+#include <algorithm>
 #include <exception>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <memory>
+#include <string>
+#include <vector>
 
 // TODO : faites référence ici aux en-têtes supplémentaires nécessaires au programme
 #define _XM_NO_INTRINSICS_

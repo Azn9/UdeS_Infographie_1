@@ -8,6 +8,11 @@ cbuffer param
     float4 vAMat; // la valeur ambiante du matériau
     float4 vDEcl; // la valeur diffuse de l’éclairage
     float4 vDMat; // la valeur diffuse du matériau
+    float4 vSEcl; // la valeur spéculaire de l’éclairage
+    float4 vSMat; // la valeur spéculaire du matériau
+    float puissance; // la puissance de spécularité
+    int bTex; // Booléen pour la présence de texture
+    float2 remplissage;
 }
 
 struct VS_Sortie
@@ -55,15 +60,27 @@ float4 MiniPhongPS(VS_Sortie vs) : SV_Target
 	// R = 2 * (N.L) * N � L
 	float3 R = normalize(2 * diff * N - L);
 
-	// Puissance de 4 - pour l'exemple
-	float S = pow(saturate(dot(R, V)), 4.0f);
+    // Calcul de la spécularité
+    float3 S = pow(saturate(dot(R, V)), puissance);
 
 	// Échantillonner la couleur du pixel à partir de la texture
 	float3 couleurTexture = textureEntree.Sample(SampleState, vs.coordTex).rgb;
 
-	// I = A + D * N.L + (R.V)n
-	couleur = couleurTexture * vAEcl.rgb * vAMat.rgb + couleurTexture * vDEcl.rgb * vDMat.rgb * diff;
-	couleur += S;
+	if (bTex > 0)
+    {
+        // Échantillonner la couleur du pixel à partir de la texture
+        couleurTexture = textureEntree.Sample(SampleState, vs.coordTex).rgb;
+        
+        // I = A + D * N.L + (R.V)n
+        couleur = couleurTexture * vAEcl.rgb +
+        couleurTexture * vDEcl.rgb * diff +
+        vSEcl.rgb * vSMat.rgb * S;
+    }
+    else
+    {
+        couleur = vAEcl.rgb * vAMat.rgb + vDEcl.rgb * vDMat.rgb * diff +
+        vSEcl.rgb * vSMat.rgb * S;
+    }
 
 	return float4(couleur, 1.0f);
 }

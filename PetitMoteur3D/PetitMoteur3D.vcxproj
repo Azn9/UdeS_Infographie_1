@@ -133,7 +133,6 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PetitMoteur3D\Public</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -1226,6 +1225,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="Private\Util\ChargeurOBJ.cpp" />
     <ClCompile Include="stdafx.cpp">
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
@@ -1310,6 +1310,7 @@
     <ClInclude Include="Public\Core\Moteur.h" />
     <ClInclude Include="Public\Core\MoteurWindows.h" />
     <ClInclude Include="Public\Core\PetitMoteur3D.h" />
+    <ClInclude Include="Public\Mesh\chargeur.h" />
     <ClInclude Include="Public\Mesh\ObjectMesh.h" />
     <ClInclude Include="Public\Mesh\sommetbloc.h" />
     <ClInclude Include="Public\Object\Bloc.h" />
@@ -1320,6 +1321,7 @@
     <ClInclude Include="Public\Texture\DDSTextureLoader.h" />
     <ClInclude Include="Public\Texture\GestionnaireDeTextures.h" />
     <ClInclude Include="Public\Texture\Texture.h" />
+    <ClInclude Include="Public\Util\ChargeurOBJ.h" />
     <ClInclude Include="Public\Util\Resource.h" />
     <ClInclude Include="Public\Util\Singleton.h" />
     <ClInclude Include="Public\Util\util.h" />
@@ -1365,10 +1367,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Effects11d.lib" />
+    <Content Include="x64\Debug\jin.OMB" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Private\Shader\" />
-    <Folder Include="Private\Util\" />
+    <Folder Include="x64\Debug\" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

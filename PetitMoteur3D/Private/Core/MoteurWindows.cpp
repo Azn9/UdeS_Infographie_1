@@ -170,6 +170,7 @@ void CMoteurWindows::BeginRenderSceneSpecific()
 	hue--;
 	if (hue <= 0.0f) hue = 360.0f;
 
+	/*
 	const double r = 0.5f + 0.5f * sin(hue * 3.14159f / 180.0f);
 	const double g = 0.5f + 0.5f * sin((hue + 120.0f) * 3.14159f / 180.0f);
 	const double b = 0.5f + 0.5f * sin((hue + 240.0f) * 3.14159f / 180.0f);
@@ -177,9 +178,10 @@ void CMoteurWindows::BeginRenderSceneSpecific()
 	const auto rf = static_cast<float>(r);
 	const auto gf = static_cast<float>(g);
 	const auto bf = static_cast<float>(b);
-
+*/
+	
 	// On efface la surface de rendu
-	const float Couleur[4] = {rf, gf, bf, 1.0f}; //  RGBA - Vert pour le moment
+	const float Couleur[4] = {0.0f, 0.0f, 0.2f, 1.0f}; //  RGBA - Vert pour le moment
 
 	pImmediateContext->ClearRenderTargetView(pRenderTargetView, Couleur);
 

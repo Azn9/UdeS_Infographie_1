@@ -6,6 +6,9 @@
 #include "Object/Objet3D.h"
 #include "Object/CBlocEffet1.h"
 #include "Texture/GestionnaireDeTextures.h"
+#include "Mesh/ObjectMesh.h"
+#include "Util/ChargeurOBJ.h"
+#include "Mesh/chargeur.h"
 
 namespace PM3D
 {
@@ -188,7 +191,7 @@ protected:
 
 	bool InitObjets()
 	{
-		CBlocEffet1* pBloc;
+		/*CBlocEffet1* pBloc;
 
 		// Création d’un cube de 2 X 2 X 2 unités
 		// Le bloc est créé dans notre programme et sur le dispositif
@@ -198,7 +201,23 @@ protected:
 		pBloc->SetTexture(TexturesManager.GetNewTexture(L"UneTexture.dds", pDispositif));
 
 		// Puis, il est ajouté à la scène
-		ListeScene.emplace_back(static_cast<CObjet3D*>(pBloc));
+		ListeScene.emplace_back(static_cast<CObjet3D*>(pBloc));*/
+
+		//CObjetMesh* pMesh;
+
+
+		// Constructeur avec format binaire
+		CChargeurOBJ chargeur;
+		CParametresChargement parametresChargement;
+		parametresChargement.NomChemin = "";
+		parametresChargement.NomFichier = "test3.obj";
+
+		chargeur.Chargement(parametresChargement);
+
+		std::unique_ptr<CObjetMesh> pMesh = std::make_unique<CObjetMesh>(chargeur, pDispositif);
+
+		// Puis, il est ajouté à la scène
+        ListeScene.emplace_back(std::move(pMesh)); 
 
 		return true;
 	}
