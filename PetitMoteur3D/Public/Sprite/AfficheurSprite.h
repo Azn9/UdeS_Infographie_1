@@ -1,10 +1,8 @@
 ﻿#pragma once
 
-/*
-#include <string>
+#include "SpriteTemp.h"
 #include "Shader/d3dx11effect.h"
 #include "Core/DispositifD3D11.h"
-#include "Texture/Texture.h"
 #include "Object/objet3d.h"
 
 namespace PM3D
@@ -27,17 +25,30 @@ public:
 	XMFLOAT2 m_CoordTex;
 };
 
-
-class CSpriteTemp : public CObjet3D
+class CAfficheurSprite : public CObjet3D
 {
 public:
-	CSpriteTemp(
-		const std::string& NomTexture,
+	CAfficheurSprite(
 		CDispositifD3D11* pDispositif
 	);
-	virtual ~CSpriteTemp();
+	virtual ~CAfficheurSprite();
 
-	void SetPosDim( int _x, int _y, int _dx=0, int _dy=0 );
+	void AjouterSprite(std::string NomTexture, int _x, int _y, int _dx=0, int _dy=0);
+
+private:
+	class CSprite
+	{
+		public :
+			ID3D11ShaderResourceView* pTextureD3D;
+		XMMATRIX matPosDim;
+		bool bPanneau;
+
+		CSprite()
+			: bPanneau(false)
+			  , pTextureD3D(nullptr)
+		{
+		}
+	};
 
 private:
 	static CSommetSprite sommets[6];
@@ -49,13 +60,10 @@ private:
 	ID3DX11EffectTechnique* pTechnique;
 	ID3DX11EffectPass* pPasse;
 	ID3D11InputLayout* pVertexLayout;
-	ID3D11ShaderResourceView* pTextureD3D;
 	ID3D11SamplerState* pSampleState;
 
-	//Dimensions de la texture
-	float dimX;
-	float dimY;
-	XMMATRIX matPosDim;
+	// Tous nos sprites
+	std::vector<std::unique_ptr<CSprite>> tabSprites;
 
 	virtual void InitEffet();
 
@@ -63,7 +71,5 @@ private:
 	{
 	};
 	virtual void Draw();
-
 };
 } // namespace PM3D
-*/

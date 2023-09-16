@@ -11,6 +11,7 @@
 #include "Mesh/ObjectMesh.h"
 #include "Util/ChargeurOBJ.h"
 #include "Mesh/chargeur.h"
+#include "Sprite/AfficheurSprite.h"
 #include "Sprite/SpriteTemp.h"
  
 namespace PM3D
@@ -206,11 +207,19 @@ protected:
 
 		
 		// Création d’un objet sprite
-		auto pSprite = std::make_unique<CSpriteTemp>("tree02s.dds", pDispositif);
-		pSprite->SetPosDim(200, 400);
+		// auto pSprite = std::make_unique<CSpriteTemp>("tree02s.dds", pDispositif);
+		// pSprite->SetPosDim(200, 400);
+
+		// Création de l’afficheur de sprites et ajout des sprites
+		std ::unique_ptr<CAfficheurSprite> pAfficheurSprite =
+		std ::make_unique<CAfficheurSprite>(pDispositif);
+
+		pAfficheurSprite->AjouterSprite("tree02s.dds", 200,400);
+		pAfficheurSprite->AjouterSprite("tree02s.dds", 500,500, 100, 100);
+		pAfficheurSprite->AjouterSprite("tree02s.dds", 800,200, 100, 100);
 
 		// Puis, il est ajouté à la scène
-		ListeScene.emplace_back(std::move(pSprite));
+		ListeScene.emplace_back(std::move(pAfficheurSprite));
 
 		return true;
 	}

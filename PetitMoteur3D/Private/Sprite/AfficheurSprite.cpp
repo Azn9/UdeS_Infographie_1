@@ -1,7 +1,5 @@
 ﻿#include "stdafx.h"
-
-/*
-#include "Sprite/SpriteTemp.h"
+#include "Sprite/AfficheurSprite.h"
 
 #include "Util/resource.h"
 #include "Core/MoteurWindows.h"
@@ -28,7 +26,7 @@ D3D11_INPUT_ELEMENT_DESC CSommetSprite::layout[] =
 };
 UINT CSommetSprite::numElements = ARRAYSIZE(layout);
 
-CSommetSprite CSpriteTemp::sommets[6] = {
+CSommetSprite CAfficheurSprite::sommets[6] = {
 	CSommetSprite(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f)),
 	CSommetSprite(XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f)),
 	CSommetSprite(XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f)),
@@ -37,8 +35,7 @@ CSommetSprite CSpriteTemp::sommets[6] = {
 	CSommetSprite(XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f))
 };
 
-CSpriteTemp::CSpriteTemp(
-	const std::string& NomTexture,
+CAfficheurSprite::CAfficheurSprite(
 	CDispositifD3D11* _pDispositif
 )
 	: pDispositif(_pDispositif)
@@ -68,33 +65,10 @@ CSpriteTemp::CSpriteTemp(
 		DXE_CREATIONVERTEXBUFFER);
 
 	// Initialisation de l’effet
-	CSpriteTemp::InitEffet();
-
-	// Initialisation de la texture
-	CGestionnaireDeTextures& TexturesManager = CMoteurWindows::GetInstance().GetTextureManager();
-	std::wstring ws(NomTexture.begin(), NomTexture.end());
-
-	pTextureD3D = TexturesManager.GetNewTexture(ws.c_str(), pDispositif)->GetD3DTexture();
-
-	// Obtenir la dimension de la texture
-	ID3D11Resource* pResource;
-	ID3D11Texture2D* pTextureInterface = 0;
-	pTextureD3D->GetResource(&pResource);
-	pResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
-
-	D3D11_TEXTURE2D_DESC desc;
-	pTextureInterface->GetDesc(&desc);
-
-	DXRelacher(pResource);
-	DXRelacher(pTextureInterface);
-
-	dimX = static_cast<float>(desc.Width);
-	dimY = static_cast<float>(desc.Height);
-
-	matPosDim = XMMatrixIdentity();
+	CAfficheurSprite::InitEffet();
 }
 
-CSpriteTemp::~CSpriteTemp()
+CAfficheurSprite::~CAfficheurSprite()
 {
 	DXRelacher(pConstantBuffer);
 	DXRelacher(pSampleState);
@@ -103,16 +77,33 @@ CSpriteTemp::~CSpriteTemp()
 	DXRelacher(pVertexBuffer);
 }
 
-void CSpriteTemp::SetPosDim(int _x, int _y, int _dx, int _dy)
+void CAfficheurSprite::AjouterSprite(std::string NomTexture, int _x, int _y, int _dx, int _dy)
 {
 	float dx, dy;
 
-	// Dimensions en pixel
+	// Initialisation de la texture
+	CGestionnaireDeTextures& TexturesManager = CMoteurWindows::GetInstance().GetTextureManager();
+	const std::wstring ws(NomTexture.begin(), NomTexture.end());
+	auto pSprite = std::make_unique<CSprite>();
+	pSprite->pTextureD3D = TexturesManager.GetNewTexture(ws.c_str(), pDispositif)->GetD3DTexture();
+
+	// Obtenir les dimensions de la texture si _dx et _dy sont à 0;
 	if (_dx == 0 && _dy == 0)
 	{
-		// Dimensions par défaut
-		dx = dimX;
-		dy = dimY;
+		ID3D11Resource* pResource;
+		ID3D11Texture2D* pTextureInterface = 0;
+		
+		pSprite->pTextureD3D->GetResource(&pResource);
+		pResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
+		
+		D3D11_TEXTURE2D_DESC desc;
+		pTextureInterface->GetDesc(&desc);
+		
+		DXRelacher(pResource);
+		DXRelacher(pTextureInterface);
+		
+		dx = static_cast<float>(desc.Width);
+		dy = static_cast<float>(desc.Height);
 	}
 	else
 	{
@@ -120,21 +111,24 @@ void CSpriteTemp::SetPosDim(int _x, int _y, int _dx, int _dy)
 		dy = static_cast<float>(_dy);
 	}
 
-	// Dimensions en facteur
+	// Dimension en facteur
 	const float facteurX = dx * 2.0f / pDispositif->GetLargeur();
 	const float facteurY = dy * 2.0f / pDispositif->GetHauteur();
-	
+
 	// Position en coordonnées logiques
 	// 0,0 pixel = -1,1
-	const float x = static_cast<float>(_x);
-	const float y = static_cast<float>(_y);
+	const auto x = static_cast<float>(_x);
+	const auto y = static_cast<float>(_y);
 	const float posX = x * 2.0f / pDispositif->GetLargeur() - 1.0f;
 	const float posY = 1.0f - y * 2.0f / pDispositif->GetHauteur();
+	
+	pSprite->matPosDim = XMMatrixScaling(facteurX, facteurY, 1.0f) * XMMatrixTranslation(posX, posY, 0.0f);
 
-	matPosDim = XMMatrixScaling(facteurX, facteurY, 1.0f) * XMMatrixTranslation(posX, posY, 0.0f);
+	// On l’ajoute à notre vecteur
+	tabSprites.push_back(std::move(pSprite));
 }
 
-void CSpriteTemp::InitEffet()
+void CAfficheurSprite::InitEffet()
 {
 	// Compilation et chargement du vertex shader
 	ID3D11Device* pD3DDevice = pDispositif->GetD3DDevice();
@@ -202,7 +196,7 @@ void CSpriteTemp::InitEffet()
 	pD3DDevice->CreateSamplerState(&samplerDesc, &pSampleState);
 }
 
-void CSpriteTemp::Draw()
+void CAfficheurSprite::Draw()
 {
 	// Obtenir le contexte
 	ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
@@ -218,33 +212,40 @@ void CSpriteTemp::Draw()
 	// input layout des sommets
 	pImmediateContext->IASetInputLayout(pVertexLayout);
 
-	// Initialiser et sélectionner les « constantes » de l’effet
-	ShadersParams sp;
-	//sp.matWVP = XMMatrixIdentity();
-	sp.matWVP = XMMatrixTranspose(matPosDim);
-	pImmediateContext->UpdateSubresource(pConstantBuffer, 0, nullptr, &sp, 0, 0);
-
-	// Nous n’avons qu’un seul CBuffer
-	ID3DX11EffectConstantBuffer* pCB = pEffet->GetConstantBufferByName("param");
-	pCB->SetConstantBuffer(pConstantBuffer);
-
-	// Activation de la texture
-	ID3DX11EffectShaderResourceVariable* variableTexture;
-	variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
-	variableTexture->SetResource(pTextureD3D);
-
 	// Le sampler state
 	ID3DX11EffectSamplerVariable* variableSampler;
 	variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
 	variableSampler->SetSampler(0, pSampleState);
 	pPasse->Apply(0, pImmediateContext);
 
+	ID3DX11EffectConstantBuffer* pCB = pEffet->GetConstantBufferByName("param");
+	
+    ID3DX11EffectShaderResourceVariable* variableTexture;
+    variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
+
 	// **** Rendu de l’objet
 	pDispositif->ActiverMelangeAlpha();
-	pImmediateContext->Draw(6, 0);
+
+	// Faire le rendu de tous nos sprites
+	for (int i=0;i<tabSprites.size();++i)
+	{
+		// Initialiser et sélectionner les « constantes » de l’effet
+		ShadersParams sp;
+		sp.matWVP = XMMatrixTranspose(tabSprites[i]->matPosDim);
+		pImmediateContext->UpdateSubresource( pConstantBuffer, 0, nullptr, &sp, 0, 0 );
+		
+		pCB->SetConstantBuffer(pConstantBuffer);
+		
+		// Activation de la texture
+		variableTexture->SetResource(tabSprites[i]->pTextureD3D);
+
+		pPasse->Apply(0, pImmediateContext);
+
+		// **** Rendu de l’objet
+		pImmediateContext->Draw( 6, 0 );
+	}
+	
 	pDispositif->DesactiverMelangeAlpha();
 }
 
 }
-
-*/
