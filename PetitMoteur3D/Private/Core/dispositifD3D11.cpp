@@ -140,6 +140,8 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 
 	InitDepthBuffer();
 
+	InitBlendStates();
+
 	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
 
 	D3D11_VIEWPORT vp;
@@ -165,6 +167,18 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 void CDispositifD3D11::PresentSpecific()
 {
 	pSwapChain->Present(0, 0);
+}
+
+void CDispositifD3D11::ActiverMelangeAlpha() const
+{
+	// Activer le mélange - alpha blending.
+    pImmediateContext->OMSetBlendState(alphaBlendEnable, nullptr, 0xffffffff);
+}
+
+void CDispositifD3D11::DesactiverMelangeAlpha() const
+{
+	// Activer le mélange - alpha blending.
+	pImmediateContext->OMSetBlendState(alphaBlendDisable, nullptr, 0xffffffff);
 }
 
 void CDispositifD3D11::InitDepthBuffer()
@@ -193,6 +207,33 @@ void CDispositifD3D11::InitDepthBuffer()
 	descDSView.Texture2D.MipSlice = 0;
 	DXEssayer(pD3DDevice->CreateDepthStencilView(pDepthTexture, &descDSView, &pDepthStencilView),
 		DXE_ERREURCREATIONDEPTHSTENCILTARGET);
+}
+
+void CDispositifD3D11::InitBlendStates()
+{
+	D3D11_BLEND_DESC blendDesc;
+	
+	// Effacer la description
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+	
+	// On initialise la description pour un mélange alpha classique
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	
+	// On créé l’état alphaBlendEnable
+	DXEssayer(pD3DDevice->CreateBlendState(&blendDesc, &alphaBlendEnable), DXE_ERREURCREATION_BLENDSTATE);
+
+	// Seul le booleen BlendEnable nécessite d’être modifié
+	blendDesc.RenderTarget[0].BlendEnable = FALSE;
+	
+	// On créé l’état alphaBlendDisable
+	DXEssayer( pD3DDevice->CreateBlendState(&blendDesc,&alphaBlendDisable), DXE_ERREURCREATION_BLENDSTATE);
 }
 
 } // namespace PM3D

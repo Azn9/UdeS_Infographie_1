@@ -34,7 +34,9 @@ public:
 		CDispositifD3D11* pDispositif
 	);
 	virtual ~CSpriteTemp();
-	
+
+	void SetPosDim( int _x, int _y, int _dx=0, int _dy=0 );
+
 private:
 	static CSommetSprite sommets[6];
 	ID3D11Buffer* pVertexBuffer;
@@ -48,9 +50,17 @@ private:
 	ID3D11ShaderResourceView* pTextureD3D;
 	ID3D11SamplerState* pSampleState;
 
+	//Dimensions de la texture
+	float dimX;
+	float dimY;
+	XMMATRIX matPosDim;
+
 	virtual void InitEffet();
-	virtual void Anime(float) override {};
-    virtual void Draw();
+
+	virtual void Anime(float) override
+	{
+	};
+	virtual void Draw();
 
 };
 } // namespace PM3D

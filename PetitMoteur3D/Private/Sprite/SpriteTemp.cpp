@@ -73,6 +73,23 @@ CSpriteTemp::CSpriteTemp(
 	std::wstring ws(NomTexture.begin(), NomTexture.end());
 
 	pTextureD3D = TexturesManager.GetNewTexture(ws.c_str(), pDispositif)->GetD3DTexture();
+
+	// Obtenir la dimension de la texture
+	ID3D11Resource* pResource;
+	ID3D11Texture2D* pTextureInterface = 0;
+	pTextureD3D->GetResource(&pResource);
+	pResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
+
+	D3D11_TEXTURE2D_DESC desc;
+	pTextureInterface->GetDesc(&desc);
+
+	DXRelacher(pResource);
+	DXRelacher(pTextureInterface);
+
+	dimX = static_cast<float>(desc.Width);
+	dimY = static_cast<float>(desc.Height);
+
+	matPosDim = XMMatrixIdentity();
 }
 
 CSpriteTemp::~CSpriteTemp()
@@ -82,6 +99,37 @@ CSpriteTemp::~CSpriteTemp()
 	DXRelacher(pEffet);
 	DXRelacher(pVertexLayout);
 	DXRelacher(pVertexBuffer);
+}
+
+void CSpriteTemp::SetPosDim(int _x, int _y, int _dx, int _dy)
+{
+	float dx, dy;
+
+	// Dimensions en pixel
+	if (_dx == 0 && _dy == 0)
+	{
+		// Dimensions par défaut
+		dx = dimX;
+		dy = dimY;
+	}
+	else
+	{
+		dx = static_cast<float>(_dx);
+		dy = static_cast<float>(_dy);
+	}
+
+	// Dimensions en facteur
+	const float facteurX = dx * 2.0f / pDispositif->GetLargeur();
+	const float facteurY = dy * 2.0f / pDispositif->GetHauteur();
+	
+	// Position en coordonnées logiques
+	// 0,0 pixel = -1,1
+	const float x = static_cast<float>(_x);
+	const float y = static_cast<float>(_y);
+	const float posX = x * 2.0f / pDispositif->GetLargeur() - 1.0f;
+	const float posY = 1.0f - y * 2.0f / pDispositif->GetHauteur();
+
+	matPosDim = XMMatrixScaling(facteurX, facteurY, 1.0f) * XMMatrixTranslation(posX, posY, 0.0f);
 }
 
 void CSpriteTemp::InitEffet()
@@ -170,7 +218,8 @@ void CSpriteTemp::Draw()
 
 	// Initialiser et sélectionner les « constantes » de l’effet
 	ShadersParams sp;
-	sp.matWVP = XMMatrixIdentity();
+	//sp.matWVP = XMMatrixIdentity();
+	sp.matWVP = XMMatrixTranspose(matPosDim);
 	pImmediateContext->UpdateSubresource(pConstantBuffer, 0, nullptr, &sp, 0, 0);
 
 	// Nous n’avons qu’un seul CBuffer
@@ -189,7 +238,9 @@ void CSpriteTemp::Draw()
 	pPasse->Apply(0, pImmediateContext);
 
 	// **** Rendu de l’objet
+	pDispositif->ActiverMelangeAlpha();
 	pImmediateContext->Draw(6, 0);
+	pDispositif->DesactiverMelangeAlpha();
 }
 
 }

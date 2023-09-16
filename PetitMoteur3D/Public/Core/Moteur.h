@@ -204,28 +204,13 @@ protected:
 		// Puis, il est ajouté à la scène
 		ListeScene.emplace_back(static_cast<CObjet3D*>(pBloc));*/
 
-		//CObjetMesh* pMesh;
-
-
-		// Constructeur avec format binaire
-		CChargeurOBJ chargeur;
-		CParametresChargement parametresChargement;
-		parametresChargement.NomChemin = "";
-		parametresChargement.NomFichier = "test6.obj";
-
-		chargeur.Chargement(parametresChargement);
-
-		std::unique_ptr<CObjetMesh> pMesh = std::make_unique<CObjetMesh>(chargeur, pDispositif);
-
+		
 		// Création d’un objet sprite
 		auto pSprite = std::make_unique<CSpriteTemp>("tree02s.dds", pDispositif);
+		pSprite->SetPosDim(200, 400);
 
 		// Puis, il est ajouté à la scène
 		ListeScene.emplace_back(std::move(pSprite));
-
-
-		// Puis, il est ajouté à la scène
-		ListeScene.emplace_back(std::move(pMesh));
 
 		return true;
 	}

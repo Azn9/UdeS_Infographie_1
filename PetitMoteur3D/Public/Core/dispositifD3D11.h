@@ -19,6 +19,9 @@ public:
 
 	virtual void PresentSpecific() override;
 
+	void ActiverMelangeAlpha() const;
+    void DesactiverMelangeAlpha() const;
+
 	// Fonction d'accès aux membres protégés
 	ID3D11Device* GetD3DDevice() { return pD3DDevice; }
 	ID3D11DeviceContext* GetImmediateContext() { return pImmediateContext; }
@@ -28,6 +31,7 @@ public:
 
 private:
 	void InitDepthBuffer();
+	void InitBlendStates();
 
 	ID3D11Device* pD3DDevice;
 	ID3D11DeviceContext* pImmediateContext;
@@ -40,6 +44,11 @@ private:
 
 	// Variables d'état
 	ID3D11RasterizerState* mSolidCullBackRS;
+
+	// Pour le mélange alpha (transparence)
+    ID3D11BlendState* alphaBlendEnable;
+    ID3D11BlendState* alphaBlendDisable;
+
 };
 
 } // namespace PM3D
