@@ -1,4 +1,4 @@
 #pragma once
 
-#include "Util/resource.h"
+#include "Core/Public/Util/resource.h"
 #include "moteur.h"

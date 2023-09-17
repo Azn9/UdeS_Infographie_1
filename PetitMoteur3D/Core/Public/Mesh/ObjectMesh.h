@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "Object/objet3d.h"
-#include "Core/dispositifD3D11.h"
-#include "Shader/d3dx11effect.h"
+#include "Core/Public/Object/objet3d.h"
+#include "Core/Public/Core/dispositifD3D11.h"
+#include "Core/Public/Shader/d3dx11effect.h"
 #include "chargeur.h"
 #include <vector>
 using namespace std;

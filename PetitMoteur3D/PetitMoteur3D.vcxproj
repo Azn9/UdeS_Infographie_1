@@ -133,7 +133,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)Core\Public;$(ProjectDir)Api\Public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -354,8 +354,6 @@
     <Content Include="x64\Debug\jin.OMB" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Api\Private\" />
-    <Folder Include="Api\Public\" />
     <Folder Include="Core\" />
     <Folder Include="x64\Debug\" />
   </ItemGroup>

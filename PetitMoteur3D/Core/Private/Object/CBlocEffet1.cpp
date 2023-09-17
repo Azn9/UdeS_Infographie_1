@@ -1,15 +1,15 @@
 ﻿#include "StdAfx.h"
-#include "Object/CBlocEffet1.h"
+#include "Core/Public/Object/CBlocEffet1.h"
 
 #include <ostream>
 
-#include "Object/Bloc.h"
-#include "Mesh/sommetbloc.h"
-#include "Util/util.h"
-#include "Core/DispositifD3D11.h"
+#include "Core/Public/Object/Bloc.h"
+#include "Core/Public/Mesh/sommetbloc.h"
+#include "Core/Public/Util/util.h"
+#include "Core/Public/Core/DispositifD3D11.h"
 
-#include "Util/resource.h"
-#include "Core/MoteurWindows.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Core/MoteurWindows.h"
 
 namespace PM3D
 {

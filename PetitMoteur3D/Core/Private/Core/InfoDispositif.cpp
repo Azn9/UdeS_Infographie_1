@@ -1,14 +1,14 @@
 #include "StdAfx.h"
-#include "Core/InfoDispositif.h"
+#include "Core/Public/Core/InfoDispositif.h"
 
-#include "Util/util.h"
+#include "Core/Public/Util/util.h"
 #include <vector>
 
 namespace PM3D
 {
 
-// Pour obtenir les informations à partir d'un numéro d'adaptateur
-// 0 = défaut = ADAPTATEUR_DE_DEFAUT
+// Pour obtenir les informations ï¿½ partir d'un numï¿½ro d'adaptateur
+// 0 = dï¿½faut = ADAPTATEUR_DE_DEFAUT
 CInfoDispositif::CInfoDispositif(int NoAdaptateur)
 {
 	IDXGIFactory* pFactory = nullptr;
@@ -17,16 +17,16 @@ CInfoDispositif::CInfoDispositif(int NoAdaptateur)
 
 	valide = false;
 
-	// Créer un IDXGIFactory.
+	// Crï¿½er un IDXGIFactory.
 	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&pFactory);
 
 	if (FAILED(pFactory->EnumAdapters(NoAdaptateur, &pAdapter))) return;
 
-	// Obtenir les informations de la première sortie de l'adaptateur 
+	// Obtenir les informations de la premiï¿½re sortie de l'adaptateur 
 	// (Le moniteur)
 	if (FAILED(pAdapter->EnumOutputs(0, &pOutput))) return;
 
-	// Obtenir la description de l'état courant
+	// Obtenir la description de l'ï¿½tat courant
 	DXGI_OUTPUT_DESC outDesc;
 	pOutput->GetDesc(&outDesc);
 
@@ -37,13 +37,13 @@ CInfoDispositif::CInfoDispositif(int NoAdaptateur)
 	DXGI_ADAPTER_DESC Desc;
 	pAdapter->GetDesc(&Desc);
 
-	// Mémoire dédiée (en megabytes).
+	// Mï¿½moire dï¿½diï¿½e (en megabytes).
 	memoire = (int)(Desc.DedicatedVideoMemory / 1024 / 1024);
 
 	// Nom de la carte video.
 	wcscpy_s(nomcarte, 100, Desc.Description);
 
-	// Faire le ménage pour éviter les «memory leaks»
+	// Faire le mï¿½nage pour ï¿½viter les ï¿½memory leaksï¿½
 	DXRelacher(pOutput);
 	DXRelacher(pAdapter);
 	DXRelacher(pFactory);
@@ -51,7 +51,7 @@ CInfoDispositif::CInfoDispositif(int NoAdaptateur)
 
 CInfoDispositif::CInfoDispositif(DXGI_MODE_DESC modeDesc)
 {
-	// Énumération des adaptateurs
+	// ï¿½numï¿½ration des adaptateurs
 	IDXGIFactory* pFactory = nullptr;
 
 	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&pFactory);
@@ -66,17 +66,17 @@ CInfoDispositif::CInfoDispositif(DXGI_MODE_DESC modeDesc)
 	}
 
 	// On travaille presque toujours avec vAdapters[0] 
-	// à moins d'avoir plusieurs cartes non-collaboratives
+	// ï¿½ moins d'avoir plusieurs cartes non-collaboratives
 	*this = CInfoDispositif(0);
 
 	// Obtenir la sortie 0 - le moniteur principal
 	IDXGIOutput* pOutput = nullptr;
 	vAdapters[0]->EnumOutputs(0, &pOutput);
 
-	// Obtenir le mode le plus intéressant
+	// Obtenir le mode le plus intï¿½ressant
 	pOutput->FindClosestMatchingMode(&modeDesc, &mode, nullptr);
 
-	// Faire le ménage pour éviter les «memory leaks»
+	// Faire le mï¿½nage pour ï¿½viter les ï¿½memory leaksï¿½
 	DXRelacher(pOutput);
 
 	for (int i = 0; i < vAdapters.size(); ++i)

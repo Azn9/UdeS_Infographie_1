@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include "Objet3D.h"
 #include "bloc.h"
-#include "Shader/d3dx11effect.h"
-#include "Texture/Texture.h"
+#include "Core/Public/Shader/d3dx11effect.h"
+#include "Core/Public/Texture/Texture.h"
 
 namespace PM3D
 {

@@ -1,15 +1,15 @@
 #include "StdAfx.h"
-#include "Util/resource.h"
-#include "Core/DispositifD3D11.h"
-#include "Util/Util.h"
-#include "Core/InfoDispositif.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Core/DispositifD3D11.h"
+#include "Core/Public/Util/Util.h"
+#include "Core/Public/Core/InfoDispositif.h"
 
 namespace PM3D
 {
 
 CDispositifD3D11::~CDispositifD3D11()
 {
-	pSwapChain->SetFullscreenState(FALSE, nullptr); // passer en mode fenêtré
+	pSwapChain->SetFullscreenState(FALSE, nullptr); // passer en mode fenï¿½trï¿½
 
 	DXRelacher(mSolidCullBackRS);
 	DXRelacher(pDepthTexture);
@@ -25,14 +25,14 @@ CDispositifD3D11::~CDispositifD3D11()
 	DXRelacher(pD3DDevice);
 }
 
-//  FONCTION : CDispositifD3D11, constructeur paramètré 
-//  BUT :	Constructeur de notre classe spécifique de dispositif 
-//  PARAMÈTRES:		
-//		cdsMode:	CDS_FENETRE application fenêtrée
-//					CDS_PLEIN_ECRAN application plein écran
+//  FONCTION : CDispositifD3D11, constructeur paramï¿½trï¿½ 
+//  BUT :	Constructeur de notre classe spï¿½cifique de dispositif 
+//  PARAMï¿½TRES:		
+//		cdsMode:	CDS_FENETRE application fenï¿½trï¿½e
+//					CDS_PLEIN_ECRAN application plein ï¿½cran
 //
-//		hWnd:	Handle sur la fenêtre Windows de l'application,
-//    			nécessaire pour la fonction de création du 
+//		hWnd:	Handle sur la fenï¿½tre Windows de l'application,
+//    			nï¿½cessaire pour la fonction de crï¿½ation du 
 //				dispositif
 CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
                                    const HWND hWnd)
@@ -60,7 +60,7 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
 
-	// Obtenir les informations de l'adaptateur de défaut
+	// Obtenir les informations de l'adaptateur de dï¿½faut
 	CInfoDispositif Dispo0(ADAPTATEUR_COURANT);
 
 	largeur = 1024;
@@ -107,9 +107,9 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 
-	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // Permettre l'échange plein écran
+	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // Permettre l'ï¿½change plein ï¿½cran
 
-	// régler le problème no 1 du passage en mode fenêtré
+	// rï¿½gler le problï¿½me no 1 du passage en mode fenï¿½trï¿½
 	RECT rcClient, rcWindow;
 	POINT ptDiff;
 	GetClientRect(hWnd, &rcClient);
@@ -131,7 +131,7 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 			&pImmediateContext),
 		DXE_ERREURCREATIONDEVICE);
 
-	// Création d'un «render target view»
+	// Crï¿½ation d'un ï¿½render target viewï¿½
 	ID3D11Texture2D* pBackBuffer;
 	DXEssayer(pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer), DXE_ERREUROBTENTIONBUFFER);
 
@@ -153,7 +153,7 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 	vp.TopLeftY = 0;
 	pImmediateContext->RSSetViewports(1, &vp);
 
-	// Création et initialisation des états
+	// Crï¿½ation et initialisation des ï¿½tats
 	D3D11_RASTERIZER_DESC rsDesc;
 	ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rsDesc.FillMode = D3D11_FILL_SOLID;
@@ -171,13 +171,13 @@ void CDispositifD3D11::PresentSpecific()
 
 void CDispositifD3D11::ActiverMelangeAlpha() const
 {
-	// Activer le mélange - alpha blending.
+	// Activer le mï¿½lange - alpha blending.
     pImmediateContext->OMSetBlendState(alphaBlendEnable, nullptr, 0xffffffff);
 }
 
 void CDispositifD3D11::DesactiverMelangeAlpha() const
 {
-	// Activer le mélange - alpha blending.
+	// Activer le mï¿½lange - alpha blending.
 	pImmediateContext->OMSetBlendState(alphaBlendDisable, nullptr, 0xffffffff);
 }
 
@@ -199,7 +199,7 @@ void CDispositifD3D11::InitDepthBuffer()
 
 	DXEssayer(pD3DDevice->CreateTexture2D(&depthTextureDesc, nullptr, &pDepthTexture), DXE_ERREURCREATIONTEXTURE);
 
-	// Création de la vue du tampon de profondeur (ou de stencil)
+	// Crï¿½ation de la vue du tampon de profondeur (ou de stencil)
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSView;
 	ZeroMemory(&descDSView, sizeof(descDSView));
 	descDSView.Format = depthTextureDesc.Format;
@@ -216,7 +216,7 @@ void CDispositifD3D11::InitBlendStates()
 	// Effacer la description
 	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
 	
-	// On initialise la description pour un mélange alpha classique
+	// On initialise la description pour un mï¿½lange alpha classique
 	blendDesc.RenderTarget[0].BlendEnable = TRUE;
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
@@ -226,13 +226,13 @@ void CDispositifD3D11::InitBlendStates()
 	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	
-	// On créé l’état alphaBlendEnable
+	// On crï¿½ï¿½ lï¿½ï¿½tat alphaBlendEnable
 	DXEssayer(pD3DDevice->CreateBlendState(&blendDesc, &alphaBlendEnable), DXE_ERREURCREATION_BLENDSTATE);
 
-	// Seul le booleen BlendEnable nécessite d’être modifié
+	// Seul le booleen BlendEnable nï¿½cessite dï¿½ï¿½tre modifiï¿½
 	blendDesc.RenderTarget[0].BlendEnable = FALSE;
 	
-	// On créé l’état alphaBlendDisable
+	// On crï¿½ï¿½ lï¿½ï¿½tat alphaBlendDisable
 	DXEssayer( pD3DDevice->CreateBlendState(&blendDesc,&alphaBlendDisable), DXE_ERREURCREATION_BLENDSTATE);
 }
 

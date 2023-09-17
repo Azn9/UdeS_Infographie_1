@@ -1,9 +1,9 @@
 ﻿#include "StdAfx.h"
-#include "Core/dispositifd3d11.h"
-#include "Texture/Texture.h"
-#include "Util/resource.h"
-#include "Util/util.h"
-#include "Texture/DDSTextureLoader.h"
+#include "Core/Public/Core/dispositifd3d11.h"
+#include "Core/Public/Texture/Texture.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Util/util.h"
+#include "Core/Public/Texture/DDSTextureLoader.h"
 
 using namespace DirectX;
 

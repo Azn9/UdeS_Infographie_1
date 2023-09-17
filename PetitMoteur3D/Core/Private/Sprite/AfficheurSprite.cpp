@@ -1,9 +1,9 @@
 ﻿#include "stdafx.h"
-#include "Sprite/AfficheurSprite.h"
+#include "Core/Public/Sprite/AfficheurSprite.h"
 
-#include "Util/resource.h"
-#include "Core/MoteurWindows.h"
-#include "Util/util.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Core/MoteurWindows.h"
+#include "Core/Public/Util/util.h"
 
 namespace PM3D
 {

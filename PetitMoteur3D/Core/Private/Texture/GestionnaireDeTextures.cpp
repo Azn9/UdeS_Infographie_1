@@ -1,6 +1,6 @@
 ﻿#include "StdAfx.h"
-#include "Core/dispositifD3D11.h"
-#include "Texture/GestionnaireDeTextures.h"
+#include "Core/Public/Core/dispositifD3D11.h"
+#include "Core/Public/Texture/GestionnaireDeTextures.h"
 
 namespace PM3D
 {

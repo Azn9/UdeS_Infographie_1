@@ -1,7 +1,7 @@
 #include "StdAfx.h"
-#include "Util/resource.h"
+#include "Core/Public/Util/resource.h"
 
-#include "Core/MoteurWindows.h"
+#include "Core/Public/Core/MoteurWindows.h"
 
 
 namespace PM3D

@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "Texture/DDSTextureLoader.h"
+#include "Core/Public/Texture/DDSTextureLoader.h"
 
 #ifndef _WIN32_WINNT_WIN8
 #define _WIN32_WINNT_WIN8 0x0602

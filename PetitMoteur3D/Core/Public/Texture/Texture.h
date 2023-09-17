@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <string>
-#include "Core/dispositifD3D11.h"
+#include "Core/Public/Core/dispositifD3D11.h"
 
 namespace PM3D
 {

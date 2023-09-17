@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Mesh/chargeur.h"
+#include "Core/Public/Mesh/chargeur.h"
 
 using namespace DirectX;
 
@@ -85,7 +85,7 @@ private:
 
 	// *** Les sommets 
 	std::vector<XMFLOAT3> Position;				// Tableau des positions ( v )
-	std::vector<XMFLOAT2> CoordTex;				// Tableau des coordonnées de texture ( vt )
+	std::vector<XMFLOAT2> CoordTex;				// Tableau des coordonnï¿½es de texture ( vt )
 	std::vector<XMFLOAT3> Normale;				// Tableau des normales ( vn )
 
 	std::vector<OBJVertexInfo> tabVertexInfo;	// Sommets par index  no/no/no
@@ -96,7 +96,7 @@ private:
 	int NombreSubset;					// nombre de sous objets
 
 	// *** Indicateurs
-	bool bCoordTex;   // Il y a des coordonnées de texture
+	bool bCoordTex;   // Il y a des coordonnï¿½es de texture
 	bool bNormales;	  // Il y a des normales
 	bool bInverserCulling;
 	bool bMainGauche;

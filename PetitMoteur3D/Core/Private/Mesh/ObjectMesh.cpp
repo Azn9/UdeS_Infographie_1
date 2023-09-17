@@ -1,10 +1,10 @@
 ﻿#include "stdafx.h"
 #include <string>
-#include "Mesh/ObjectMesh.h"
-#include "Core/moteurWindows.h"
-#include "Util/util.h"
-#include "Util/resource.h"
-#include "Core/dispositifD3D11.h"
+#include "Core/Public/Mesh/ObjectMesh.h"
+#include "Core/Public/Core/moteurWindows.h"
+#include "Core/Public/Util/util.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Core/dispositifD3D11.h"
 
 namespace PM3D
 {

@@ -1,18 +1,18 @@
 #pragma once
 #include <locale>
 
-#include "Util/Singleton.h"
+#include "Core/Public/Util/Singleton.h"
 #include "dispositif.h"
 
 #include <vector>
 
-#include "Object/Objet3D.h"
-#include "Texture/GestionnaireDeTextures.h"
-#include "Mesh/ObjectMesh.h"
-#include "Util/ChargeurOBJ.h"
-#include "Mesh/chargeur.h"
-#include "Sprite/AfficheurSprite.h"
-#include "Sprite/SpriteTemp.h"
+#include "Core/Public/Object/Objet3D.h"
+#include "Core/Public/Texture/GestionnaireDeTextures.h"
+#include "Core/Public/Mesh/ObjectMesh.h"
+#include "Core/Public/Util/ChargeurOBJ.h"
+#include "Core/Public/Mesh/chargeur.h"
+#include "Core/Public/Sprite/AfficheurSprite.h"
+#include "Core/Public/Sprite/SpriteTemp.h"
  
 namespace PM3D
 {
@@ -21,15 +21,15 @@ const int IMAGESPARSECONDE = 60;
 const double EcartTemps = 1.0 / static_cast<double>(IMAGESPARSECONDE);
 
 //
-//   TEMPLATE : CMoteur
+//   TEMPLATEï¿½: CMoteur
 //
-//   BUT : Template servant à construire un objet Moteur qui implantera les
-//         aspects "génériques" du moteur de jeu
+//   BUTï¿½: Template servant ï¿½ construire un objet Moteur qui implantera les
+//         aspects "gï¿½nï¿½riques" du moteur de jeu
 //
-//   COMMENTAIRES :
+//   COMMENTAIRESï¿½:
 //
-//        Comme plusieurs de nos objets représenteront des éléments uniques 
-//        du système (ex: le moteur lui-même, le lien vers 
+//        Comme plusieurs de nos objets reprï¿½senteront des ï¿½lï¿½ments uniques 
+//        du systï¿½me (ex: le moteur lui-mï¿½me, le lien vers 
 //        le dispositif Direct3D), l'utilisation d'un singleton 
 //        nous simplifiera plusieurs aspects.
 //
@@ -42,7 +42,7 @@ public:
 
 		while (bBoucle)
 		{
-			// Propre à la plateforme - (Conditions d'arrêt, interface, messages)
+			// Propre ï¿½ la plateforme - (Conditions d'arrï¿½t, interface, messages)
 			bBoucle = RunSpecific();
 
 			// appeler la fonction d'animation
@@ -55,17 +55,17 @@ public:
 
 	virtual int Initialisations()
 	{
-		// Propre à la plateforme
+		// Propre ï¿½ la plateforme
 		InitialisationsSpecific();
 
 		// * Initialisation du dispositif de rendu
 		pDispositif = CreationDispositifSpecific(CDS_FENETRE);
 
-		// * Initialisation de la scène
+		// * Initialisation de la scï¿½ne
 		InitScene();
 
-		// * Initialisation des paramètres de l'animation et 
-		//   préparation de la première image
+		// * Initialisation des paramï¿½tres de l'animation et 
+		//   prï¿½paration de la premiï¿½re image
 		InitAnimation();
 
 		return 0;
@@ -73,22 +73,22 @@ public:
 
 	virtual bool Animation()
 	{
-		// méthode pour lire l'heure et calculer le 
-		// temps écoulé
+		// mï¿½thode pour lire l'heure et calculer le 
+		// temps ï¿½coulï¿½
 		const int64_t TempsCompteurCourant = GetTimeSpecific();
 		const double TempsEcoule = GetTimeIntervalsInSec(TempsCompteurPrecedent, TempsCompteurCourant);
 
 		// Est-il temps de rendre l'image?
 		if (TempsEcoule > EcartTemps)
 		{
-			// Affichage optimisé
-			pDispositif->Present(); // On enlevera «//» plus tard
+			// Affichage optimisï¿½
+			pDispositif->Present(); // On enlevera ï¿½//ï¿½ plus tard
 
-			// On prépare la prochaine image
+			// On prï¿½pare la prochaine image
 			AnimeScene(static_cast<float>(TempsEcoule));
 
 			// On rend l'image sur la surface de travail
-			// (tampon d'arrière plan)
+			// (tampon d'arriï¿½re plan)
 			RenderScene();
 
 			// Calcul du temps du prochain affichage
@@ -110,7 +110,7 @@ protected:
 		Cleanup();
 	}
 
-	// Spécifiques - Doivent être implantés
+	// Spï¿½cifiques - Doivent ï¿½tre implantï¿½s
 	virtual bool RunSpecific() = 0;
 	virtual int InitialisationsSpecific() = 0;
 
@@ -127,18 +127,18 @@ protected:
 		TempsSuivant = GetTimeSpecific();
 		TempsCompteurPrecedent = TempsSuivant;
 
-		// première Image
+		// premiï¿½re Image
 		RenderScene();
 
 		return true;
 	}
 
-	// Fonctions de rendu et de présentation de la scène
+	// Fonctions de rendu et de prï¿½sentation de la scï¿½ne
 	virtual bool RenderScene()
 	{
 		BeginRenderSceneSpecific();
 
-		// Appeler les fonctions de dessin de chaque objet de la scène
+		// Appeler les fonctions de dessin de chaque objet de la scï¿½ne
 		for (const auto& object3D : ListeScene)
 		{
 			object3D->Draw();
@@ -150,10 +150,10 @@ protected:
 
 	virtual void Cleanup()
 	{
-		// détruire les objets
+		// dï¿½truire les objets
 		ListeScene.clear();
 
-		// Détruire le dispositif
+		// Dï¿½truire le dispositif
 		if (pDispositif)
 		{
 			delete pDispositif;
@@ -163,7 +163,7 @@ protected:
 
 	virtual int InitScene()
 	{
-		// Initialisation des objets 3D - création et/ou chargement
+		// Initialisation des objets 3D - crï¿½ation et/ou chargement
 		if (!InitObjets()) return 1;
 
 		// Initialisation des matrices View et Proj
@@ -172,7 +172,7 @@ protected:
 			XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 			XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
 
-		const float champDeVision = XM_PI / 4; // 45 degrés
+		const float champDeVision = XM_PI / 4; // 45 degrï¿½s
 		const float planRapproche = 0.05f;
 		const float planEloigne = 400.0f;
 		const float ratioDAspect = static_cast<float>(pDispositif->GetLargeur()) / static_cast<float>(pDispositif->
@@ -185,7 +185,7 @@ protected:
 			planEloigne
 		);
 
-		// Calcul de VP à l’avance
+		// Calcul de VP ï¿½ lï¿½avance
 		m_MatViewProj = m_MatView * m_MatProj;
 
 		return 0;
@@ -195,22 +195,22 @@ protected:
 	{
 		/*CBlocEffet1* pBloc;
 
-		// Création d’un cube de 2 X 2 X 2 unités
-		// Le bloc est créé dans notre programme et sur le dispositif
+		// Crï¿½ation dï¿½un cube de 2 X 2 X 2 unitï¿½s
+		// Le bloc est crï¿½ï¿½ dans notre programme et sur le dispositif
 		pBloc = new CBlocEffet1(2, 2, 2, pDispositif);
 
 		// Lui assigner une texture
 		pBloc->SetTexture(TexturesManager.GetNewTexture(L"UneTexture.dds", pDispositif));
 
-		// Puis, il est ajouté à la scène
+		// Puis, il est ajoutï¿½ ï¿½ la scï¿½ne
 		ListeScene.emplace_back(static_cast<CObjet3D*>(pBloc));*/
 
 		
-		// Création d’un objet sprite
+		// Crï¿½ation dï¿½un objet sprite
 		// auto pSprite = std::make_unique<CSpriteTemp>("tree02s.dds", pDispositif);
 		// pSprite->SetPosDim(200, 400);
 
-		// Création de l’afficheur de sprites et ajout des sprites
+		// Crï¿½ation de lï¿½afficheur de sprites et ajout des sprites
 		std ::unique_ptr<CAfficheurSprite> pAfficheurSprite =
 		std ::make_unique<CAfficheurSprite>(pDispositif);
 
@@ -218,7 +218,7 @@ protected:
 		pAfficheurSprite->AjouterSprite("tree02s.dds", 500,500, 100, 100);
 		pAfficheurSprite->AjouterSprite("tree02s.dds", 800,200, 100, 100);
 
-		// Puis, il est ajouté à la scène
+		// Puis, il est ajoutï¿½ ï¿½ la scï¿½ne
 		ListeScene.emplace_back(std::move(pAfficheurSprite));
 
 		return true;
@@ -242,7 +242,7 @@ protected:
 	// Le dispositif de rendu
 	TClasseDispositif* pDispositif;
 
-	// La seule scène
+	// La seule scï¿½ne
 	std::vector<std::unique_ptr<CObjet3D>> ListeScene;
 
 	// Les matrices
