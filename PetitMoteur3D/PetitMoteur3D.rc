@@ -1,6 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "Public/Util/resource.h"
+#include "Core/Public/Util/resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Français (Canada) resources
+// Franï¿½ais (Canada) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_CANADIAN
@@ -44,7 +44,7 @@ BEGIN
     END
     POPUP "&?"
     BEGIN
-        MENUITEM "&À propos de ...",            IDM_ABOUT
+        MENUITEM "&ï¿½ propos de ...",            IDM_ABOUT
     END
 END
 
@@ -68,11 +68,11 @@ END
 
 IDD_ABOUTBOX DIALOG 22, 17, 230, 75
 STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
-CAPTION "À propos de"
+CAPTION "ï¿½ propos de"
 FONT 8, "System"
 BEGIN
     ICON            IDI_PETITMOTEUR3D,IDC_MYICON,14,9,16,16
-    LTEXT           "PetitMoteur3D version 1.0",IDC_STATIC,49,10,119,8,SS_NOPREFIX
+    LTEXT           "PetitMoteur3D versionï¿½1.0",IDC_STATIC,49,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2007",IDC_STATIC,49,20,119,8
     DEFPUSHBUTTON   "OK",IDOK,195,6,30,11,WS_GROUP
 END
@@ -114,33 +114,33 @@ END
 STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "PetitMoteur3D"
-    DXE_ERREURCREATIONDEVICE "Erreur dans la création du dispositif"
+    DXE_ERREURCREATIONDEVICE "Erreur dans la crï¿½ation du dispositif"
     DXE_ERREUROBTENTIONBUFFER 
-                            "Erreur dans l'obtention du tampon d'arrière plan"
+                            "Erreur dans l'obtention du tampon d'arriï¿½re plan"
     DXE_ERREURCREATIONRENDERTARGET 
-                            "Erreur dans la création du render target view"
-    DXE_CREATION_VS         "Erreur de création du vertex shader"
+                            "Erreur dans la crï¿½ation du render target view"
+    DXE_CREATION_VS         "Erreur de crï¿½ation du vertex shader"
     DXE_FICHIER_VS          "Erreur chargement ou compilation du VS"
     IDC_PETITMOTEUR3D       "PETITMOTEUR3D"
-    DXE_CREATION_PS         "Erreur de création du PS"
+    DXE_CREATION_PS         "Erreur de crï¿½ation du PS"
     DXE_FICHIER_PS          "Erreur chargement ou compilation du PS"
-    DXE_ERREURCREATION_FX   "Erreur de création du fichier FX"
+    DXE_ERREURCREATION_FX   "Erreur de crï¿½ation du fichier FX"
     DXE_FICHIERTEXTUREINTROUVABLE
                             "Fichier de texture introuvable"
 END
 
 STRINGTABLE
 BEGIN
-    DXE_CREATIONVERTEXBUFFER "Erreur de création du vertex buffer"
-    DXE_CREATIONINDEXBUFFER "Erreur de création de l'index buffer"
-    DXE_CREATIONLAYOUT      "Erreur de création du layout"
-    DXE_ERREURCREATIONTEXTURE "Erreur de création de texture"
+    DXE_CREATIONVERTEXBUFFER "Erreur de crï¿½ation du vertex buffer"
+    DXE_CREATIONINDEXBUFFER "Erreur de crï¿½ation de l'index buffer"
+    DXE_CREATIONLAYOUT      "Erreur de crï¿½ation du layout"
+    DXE_ERREURCREATIONTEXTURE "Erreur de crï¿½ation de texture"
     DXE_ERREURCREATIONDEPTHSTENCILTARGET 
-                            "Erreur de création du depth stencil view"
-    DXE_ERREURCREATION_BLENDSTATE "Erreur de création du blend state"
+                            "Erreur de crï¿½ation du depth stencil view"
+    DXE_ERREURCREATION_BLENDSTATE "Erreur de crï¿½ation du blend state"
 END
 
-#endif    // Français (Canada) resources
+#endif    // Franï¿½ais (Canada) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
