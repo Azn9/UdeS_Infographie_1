@@ -360,6 +360,12 @@
     <Folder Include="Core\" />
     <Folder Include="x64\Debug\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PM3DApi\PM3DApi.vcxproj">
+      <Project>{27b3b443-02ae-47af-b399-4e6a0d91f060}</Project>
+      <Name>PM3DApi</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

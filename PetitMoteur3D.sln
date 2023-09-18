@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PetitMoteur3D", "PetitMoteur3D\PetitMoteur3D.vcxproj", "{B1AC268F-1A62-419D-B42D-E4A2796160CF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PM3DApi", "PM3DApi\PM3DApi.vcxproj", "{27B3B443-02AE-47AF-B399-4E6A0D91F060}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +21,14 @@ Global
 		{B1AC268F-1A62-419D-B42D-E4A2796160CF}.Release|Win32.ActiveCfg = Release|x64
 		{B1AC268F-1A62-419D-B42D-E4A2796160CF}.Release|x64.ActiveCfg = Release|x64
 		{B1AC268F-1A62-419D-B42D-E4A2796160CF}.Release|x64.Build.0 = Release|x64
+		{27B3B443-02AE-47AF-B399-4E6A0D91F060}.Debug|Win32.ActiveCfg = Debug|Win32
+		{27B3B443-02AE-47AF-B399-4E6A0D91F060}.Debug|Win32.Build.0 = Debug|Win32
+		{27B3B443-02AE-47AF-B399-4E6A0D91F060}.Debug|x64.ActiveCfg = Debug|x64
+		{27B3B443-02AE-47AF-B399-4E6A0D91F060}.Debug|x64.Build.0 = Debug|x64
+		{27B3B443-02AE-47AF-B399-4E6A0D91F060}.Release|Win32.ActiveCfg = Release|Win32
+		{27B3B443-02AE-47AF-B399-4E6A0D91F060}.Release|Win32.Build.0 = Release|Win32
+		{27B3B443-02AE-47AF-B399-4E6A0D91F060}.Release|x64.ActiveCfg = Release|x64
+		{27B3B443-02AE-47AF-B399-4E6A0D91F060}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

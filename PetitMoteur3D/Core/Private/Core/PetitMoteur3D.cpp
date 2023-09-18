@@ -5,7 +5,11 @@
 #include "Core/Public/Core/PetitMoteur3D.h"
 #include "Core/Public/Core/MoteurWindows.h"
 
+
+#include "../../../../PM3DApi/Api/Public/GameHost.h"
+
 using namespace PM3D;
+using namespace PM3D_API;
 
 int APIENTRY _tWinMain(
 	HINSTANCE hInstance,
@@ -17,6 +21,9 @@ int APIENTRY _tWinMain(
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	UNREFERENCED_PARAMETER(nCmdShow);
+
+	const auto gameHost = GameHost::GetInstance();
+	gameHost->Initialize();
 
 	try
 	{
