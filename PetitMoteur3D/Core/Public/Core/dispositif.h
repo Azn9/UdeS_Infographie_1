@@ -24,12 +24,12 @@ public:
 	virtual void Present();
 	virtual void PresentSpecific() = 0;
 
-	uint32_t GetLargeur() const { return largeurEcran; }
-	uint32_t GetHauteur() const { return hauteurEcran; }
+	int GetLargeur() const { return largeurEcran; }
+	int GetHauteur() const { return hauteurEcran; }
 
 protected:
-	uint32_t largeurEcran;
-	uint32_t hauteurEcran;
+	int largeurEcran;
+	int hauteurEcran;
 };
 
 } // namespace PM3D

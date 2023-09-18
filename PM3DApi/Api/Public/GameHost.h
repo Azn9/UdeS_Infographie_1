@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include "Component/ContainerComponent.h"
+#include "../../../PetitMoteur3D/Core/Public/Core/dispositif.h"
+#include "Scene/Scene.h"
 
 namespace PM3D_API
 {
@@ -11,6 +12,13 @@ namespace PM3D_API
 
         GameHost() = default;
         virtual ~GameHost();
+        
+        void Update(double deltaTime) const;
+        void FixedUpdate(double fixedDeltaTime) const;
+        void InitializeScene() const;
+
+        void SetDispositif(PM3D::CDispositif* dispositif);
+        float GetAspectRatio() const;
 
         GameHost(GameHost&) = delete;
         void operator =(GameHost&) = delete;
@@ -22,12 +30,14 @@ namespace PM3D_API
         // === Interface ===
 
         virtual void Initialize() = 0;
-        virtual void Draw();
+        virtual void Draw() const;
 
     protected:
-        virtual void SetBaseComponent(ContainerComponent* component);
+        virtual void SetScene(Scene* newScene);
 
     private:
-        ContainerComponent* baseComponent;
+        Scene* scene;
+        PM3D::CDispositif* dispositif;
+
     };
 }

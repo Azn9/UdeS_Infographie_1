@@ -10,6 +10,10 @@ namespace PM3D
         {
             return Instance;
         }
+        static T* GetInstancePtr()
+        {
+            return &Instance;
+        }
 
     protected :
         CSingleton() = default;

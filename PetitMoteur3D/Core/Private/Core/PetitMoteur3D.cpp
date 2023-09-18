@@ -29,6 +29,7 @@ int APIENTRY _tWinMain(
 	{
 		// Cr�ation de l'objet Moteur
 		CMoteurWindows& rMoteur = CMoteurWindows::GetInstance();
+		rMoteur.SetGameHost(gameHost);
 
 		// Sp�cifiques � une application Windows
 		rMoteur.SetWindowsAppInstance(hInstance);

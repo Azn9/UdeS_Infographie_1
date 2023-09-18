@@ -361,6 +361,14 @@
     <Folder Include="x64\Debug\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GameTest\GameTest.vcxproj">
+      <Project>{b763b2ab-8efa-45b8-9eaa-20f183f9dff4}</Project>
+      <Name>GameTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PM3DApiDefaultImpl\PM3DApiDefaultImpl.vcxproj">
+      <Project>{bd916b66-ab81-410f-bc91-8a256577d1c4}</Project>
+      <Name>PM3DApiDefaultImpl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PM3DApi\PM3DApi.vcxproj">
       <Project>{27b3b443-02ae-47af-b399-4e6a0d91f060}</Project>
       <Name>PM3DApi</Name>
