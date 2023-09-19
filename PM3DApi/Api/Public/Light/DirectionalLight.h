@@ -1,0 +1,15 @@
+﻿#pragma once
+#include "Light.h"
+
+class DirectionalLight final : public Light
+{
+public:
+	DirectionalLight(DirectX::XMFLOAT3 rotation);
+	DirectionalLight(DirectX::XMFLOAT3 rotation, float intensity);
+	DirectionalLight(DirectX::XMFLOAT3 rotation, float intensity, DirectX::XMFLOAT3 color);
+
+protected:
+
+private:
+
+};
