@@ -1,19 +1,20 @@
 ﻿#pragma once
-#include "../Component/Component.h"
 
-class Camera final : public PM3D_API::Component
+#include "../GameObject/GameObject.h"
+
+class Camera final : public PM3D_API::GameObject
 {
 public:
 	Camera(
 		const DirectX::XMFLOAT3 position,
 		const DirectX::XMFLOAT3 rotation
-	) : Component(position, rotation, {0, 0, 0})
+	) : GameObject(position, rotation, {0, 0, 0})
 	{
 		UpdateInternalMatrices();
 	}
 
 	Camera(
-	) : Component(
+	) : GameObject(
 		{0, 0, 0},
 		{0, 0, 0},
 		{0, 0, 0}

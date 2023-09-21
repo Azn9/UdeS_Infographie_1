@@ -5,19 +5,13 @@
 namespace PM3D
 {
 
-//
-//  Classe CDispositifD3D11
-//
-//  BUT : 	Classe permettant d'implanter un dispositif de rendu 
-// 			Direct3D
-//
 class CDispositifD3D11 final : public CDispositif
 {
 public:
 	CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd);
 	virtual ~CDispositifD3D11();
 
-	virtual void PresentSpecific() override;
+	void PresentSpecific() override;
 
 	void ActiverMelangeAlpha() const;
     void DesactiverMelangeAlpha() const;

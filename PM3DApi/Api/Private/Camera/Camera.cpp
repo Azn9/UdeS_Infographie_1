@@ -9,14 +9,14 @@
 
 void Camera::SetPosition(const DirectX::XMFLOAT3 newPosition)
 {
-	Component::SetPosition(newPosition);
+	GameObject::SetPosition(newPosition);
 
 	UpdateInternalMatrices();
 }
 
 void Camera::SetRotation(const DirectX::XMFLOAT3 newRotation)
 {
-	Component::SetRotation(newRotation);
+	GameObject::SetRotation(newRotation);
 
 	UpdateInternalMatrices();
 }

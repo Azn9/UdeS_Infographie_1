@@ -3,16 +3,29 @@
 #include <iostream>
 
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
-#include "../../../PM3DApi/Api/Public/Component/Component.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/MeshRenderer.h"
+#include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
 
 void MainScene::Initialize()
 {
 	std::cout << "MainScene::Initialize()" << std::endl;
-	
+
 	// Add main camera
 	const auto mainCamera = new Camera();
-	children.emplace_back(mainCamera);
+	SetMainCamera(mainCamera);
 
 	// Add a directional light
+	const auto directionalLight = new DirectionalLight({0.0f, 0.0f, 0.0f});
+	SetDirectionalLight(directionalLight);
+
+	// Add a cube
+	const auto cube = new GameObject(
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 0.0f, 0.0f},
+		{1.0f, 1.0f, 1.0f}
+	);
+	const auto meshRenderer = new PM3D_API::MeshRenderer("cube");
+	cube->AddComponent(meshRenderer);
 	
+	AddChild(cube);
 }

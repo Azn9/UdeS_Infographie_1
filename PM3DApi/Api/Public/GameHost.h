@@ -1,6 +1,9 @@
 ﻿#pragma once
 
-#include "../../../PetitMoteur3D/Core/Public/Core/dispositif.h"
+// ReSharper disable once CppUnusedIncludeDirective
+#include "../../../PetitMoteur3D/stdafx.h" // NECESSAIRE POUR COMPILER DispositifD3D11.h
+
+#include "../../../PetitMoteur3D/Core/Public/Core/DispositifD3D11.h"
 #include "Scene/Scene.h"
 
 namespace PM3D_API
@@ -17,7 +20,9 @@ namespace PM3D_API
         void FixedUpdate(double fixedDeltaTime) const;
         void InitializeScene() const;
 
-        void SetDispositif(PM3D::CDispositif* dispositif);
+        PM3D::CDispositifD3D11* GetDispositif() const { return dispositif; }
+        void SetDispositif(PM3D::CDispositifD3D11* dispositif);
+        
         float GetAspectRatio() const;
 
         GameHost(GameHost&) = delete;
@@ -37,7 +42,7 @@ namespace PM3D_API
 
     private:
         Scene* scene;
-        PM3D::CDispositif* dispositif;
+        PM3D::CDispositifD3D11* dispositif;
 
     };
 }
