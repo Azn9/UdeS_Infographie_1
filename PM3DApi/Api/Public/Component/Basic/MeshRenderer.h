@@ -2,9 +2,12 @@
 
 #include "../../Component/Component.h"
 
-#define FAST_OBJ_IMPLEMENTATION
 #include <string>
 
+#define FAST_OBJ_IMPLEMENTATION
+#include <d3d11.h>
+
+#include "../../../../../PetitMoteur3D/Core/Public/Shader/d3dx11effect.h"
 #include "../../Util/fast_obj.h"
 
 namespace PM3D_API
@@ -16,10 +19,21 @@ public:
 	MeshRenderer(fastObjMesh* mesh);
 
 	~MeshRenderer() override;
+
+	void Initialize() override;
 	void DrawSelf() const override;
 
 private:
 	fastObjMesh* mesh;
+
+	ID3D11Buffer* pVertexBuffer;
+	ID3D11Buffer* pIndexBuffer;
+	ID3D11SamplerState* pSampleState;
+	ID3D11Buffer* pConstantBuffer;
+	ID3DX11Effect* pEffet;
+	ID3DX11EffectTechnique* pTechnique;
+	ID3DX11EffectPass* pPasse;
+	ID3D11InputLayout* pVertexLayout;
 
 };
 }
