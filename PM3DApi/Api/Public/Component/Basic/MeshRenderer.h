@@ -5,10 +5,11 @@
 #include <string>
 
 #define FAST_OBJ_IMPLEMENTATION
+#include "../../Util/fast_obj.h"
+
 #include <d3d11.h>
 
 #include "../../../../../PetitMoteur3D/Core/Public/Shader/d3dx11effect.h"
-#include "../../Util/fast_obj.h"
 
 namespace PM3D_API
 {
