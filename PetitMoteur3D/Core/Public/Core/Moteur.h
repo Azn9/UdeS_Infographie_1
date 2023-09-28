@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <locale>
 
 #include "Core/Public/Util/Singleton.h"
@@ -9,11 +10,12 @@
 #include "Core/Public/Object/Objet3D.h"
 #include "Core/Public/Texture/GestionnaireDeTextures.h"
 #include "Core/Public/Mesh/ObjectMesh.h"
-#include "Core/Public/Util/ChargeurOBJ.h"
 #include "Core/Public/Mesh/chargeur.h"
+#include "Core/Public/Mesh/FastobjChargeur.h"
 #include "Core/Public/Sprite/AfficheurSprite.h"
 #include "Core/Public/Sprite/SpriteTemp.h"
- 
+#include "Core/Public/Util/ChargeurOBJ.h"
+
 namespace PM3D
 {
 
@@ -168,7 +170,7 @@ protected:
 
 		// Initialisation des matrices View et Proj
 		// Dans notre cas, ces matrices sont fixes
-		m_MatView = XMMatrixLookAtRH(XMVectorSet(0.0f, -150.0f, 50.0f, 1.0f),
+		m_MatView = XMMatrixLookAtRH(XMVectorSet(0.0f, -15.0f, 5.0f, 1.0f),
 			XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 			XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
 
@@ -211,7 +213,7 @@ protected:
 		// pSprite->SetPosDim(200, 400);
 
 		// Cr�ation de l�afficheur de sprites et ajout des sprites
-		std ::unique_ptr<CAfficheurSprite> pAfficheurSprite =
+		/*std ::unique_ptr<CAfficheurSprite> pAfficheurSprite =
 		std ::make_unique<CAfficheurSprite>(pDispositif);
 
 		pAfficheurSprite->AjouterSprite("tree02s.dds", 200,400);
@@ -219,7 +221,36 @@ protected:
 		pAfficheurSprite->AjouterSprite("tree02s.dds", 800,200, 100, 100);
 
 		// Puis, il est ajout� � la sc�ne
-		ListeScene.emplace_back(std::move(pAfficheurSprite));
+		ListeScene.emplace_back(std::move(pAfficheurSprite));*/
+
+		CParametresChargement param;
+		param.NomChemin = "E:\\";
+		param.NomFichier = "police.obj";
+
+		cout << "=== OBJ ===" << endl;
+		const auto startChargeurObj = std::chrono::high_resolution_clock::now();
+
+		CChargeurOBJ chargeur2;
+		chargeur2.Chargement(param);
+		std::unique_ptr<CObjetMesh> pMesh2 = std::make_unique<CObjetMesh>(chargeur2, pDispositif);
+		pMesh2->SetPosition({-2.0f, 0.0f, 0.0f});
+		ListeScene.emplace_back(std::move(pMesh2));
+
+		const auto endChargeurObj = std::chrono::high_resolution_clock::now();
+
+		cout << "Temps de chargement OBJ : " << std::chrono::duration_cast<std::chrono::milliseconds>(endChargeurObj - startChargeurObj).count() << "ms" << endl;
+
+		cout << "=== Fastobj ===" << endl;
+		const auto startChargeurFastObj = std::chrono::high_resolution_clock::now();
+
+		FastobjChargeur chargeur;
+		chargeur.Chargement(param);
+		std::unique_ptr<CObjetMesh> pMesh = std::make_unique<CObjetMesh>(chargeur, pDispositif);
+		pMesh->SetPosition({2.0f, 0.0f, 0.0f});
+		ListeScene.emplace_back(std::move(pMesh));
+
+		const auto endChargeurFastObj = std::chrono::high_resolution_clock::now();
+		cout << "Temps de chargement Fastobj : " << std::chrono::duration_cast<std::chrono::milliseconds>(endChargeurFastObj - startChargeurFastObj).count() << "ms" << endl;
 
 		return true;
 	}

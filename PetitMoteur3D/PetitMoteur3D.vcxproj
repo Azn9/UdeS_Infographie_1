@@ -207,6 +207,7 @@
     <ClCompile Include="Core\Private\Texture\Texture.cpp" />
     <ClCompile Include="Core\Private\Util\ChargeurOBJ.cpp" />
     <ClCompile Include="Core\Private\Util\Util.cpp" />
+    <ClCompile Include="Core\Public\Mesh\FastobjChargeur.cpp" />
     <ClCompile Include="stdafx.cpp">
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AssemblerListingLocation>x64\Debug\</AssemblerListingLocation>
@@ -292,6 +293,8 @@
     <ClInclude Include="Core\Public\Core\MoteurWindows.h" />
     <ClInclude Include="Core\Public\Core\PetitMoteur3D.h" />
     <ClInclude Include="Core\Public\Mesh\chargeur.h" />
+    <ClInclude Include="Core\Public\Mesh\FastobjChargeur.h" />
+    <ClInclude Include="Core\Public\Mesh\fast_obj.h" />
     <ClInclude Include="Core\Public\Mesh\ObjectMesh.h" />
     <ClInclude Include="Core\Public\Mesh\sommetbloc.h" />
     <ClInclude Include="Core\Public\Object\Bloc.h" />

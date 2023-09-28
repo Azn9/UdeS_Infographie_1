@@ -54,13 +54,20 @@ private:
 		}
 	};
 
+
 public:
 	CObjetMesh(const IChargeur& chargeur, CDispositifD3D11* _pDispositif);
 	virtual ~CObjetMesh();
 
+	void SetPosition(const XMFLOAT3& _position)
+	{
+		matTranslation = XMMatrixTranslation(_position.x, _position.y, _position.z);
+	}
+
 private:
 	// **** Données membres
 	XMMATRIX matWorld; // Matrice de transformation dans le monde
+	XMMATRIX matTranslation; // Matrice de transformation dans le monde
 	float rotation;
 
 	// Pour le dessin

@@ -46,6 +46,7 @@ void CObjetMesh::TransfertObjet(const IChargeur& chargeur)
 	// 1. SOMMETS a) Créations des sommets dans un tableau temporaire
 	{
 		const size_t nombreSommets = chargeur.GetNombreSommets();
+		
 		std::unique_ptr<CSommetMesh[]> ts(new CSommetMesh[nombreSommets]);
 		for (uint32_t i = 0; i < nombreSommets; ++i)
 		{
@@ -81,6 +82,7 @@ void CObjetMesh::TransfertObjet(const IChargeur& chargeur)
 		bd.Usage = D3D11_USAGE_IMMUTABLE;
 		bd.ByteWidth = static_cast<uint32_t>(sizeof(uint32_t) *
 			chargeur.GetNombreIndex());
+		
 		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		bd.CPUAccessFlags = 0;
 		D3D11_SUBRESOURCE_DATA InitData;
@@ -98,7 +100,6 @@ void CObjetMesh::TransfertObjet(const IChargeur& chargeur)
 	// Début de chaque sous-objet et un pour la fin
 	SubmeshIndex.reserve(NombreSubmesh);
 	chargeur.CopieSubsetIndex(SubmeshIndex);
-
 
 	// 4. MATERIAUX
 
@@ -300,7 +301,8 @@ void CObjetMesh::Anime(float tempsEcoule)
 {
 	rotation = rotation + ( (XM_PI * 2.0f) / 10.0f * tempsEcoule );
 	// modifier la matrice de l’objet bloc
-	matWorld = XMMatrixRotationZ( rotation );
+	// matWorld * XMMatrixRotationZ( rotation )
+	matWorld = XMMatrixRotationZ( rotation ) * matTranslation;
 }
 
 CObjetMesh::~CObjetMesh()
