@@ -34,8 +34,9 @@ public:
 	virtual ~CAfficheurSprite();
 
 	void AjouterSprite(std::string NomTexture, int _x, int _y, int _dx=0, int _dy=0);
+	void AjouterPanneau(const std ::string& NomTexture, const XMFLOAT3& _position, float _dx=0.0f, float _dy=0.0f);
+	void AjouterSpriteTexte(ID3D11ShaderResourceView* pTexture, int _x, int _y);
 
-private:
 	class CSprite
 	{
 		public :

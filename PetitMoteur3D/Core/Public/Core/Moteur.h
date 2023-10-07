@@ -208,7 +208,29 @@ protected:
 
 	bool InitObjets()
 	{
+/*
+		FastobjChargeur chargeur;
+		chargeur.Chargement(param);
+		std::unique_ptr<CObjetMesh> pMesh = std::make_unique<CObjetMesh>(chargeur, pDispositif);
+		pMesh->SetPosition({0.0f, 0.0f, 0.0f});
+		ListeScene.emplace_back(std::move(pMesh));
 
+		std ::unique_ptr<CAfficheurSprite> pAfficheurSprite = std ::make_unique<CAfficheurSprite>(pDispositif);
+
+		pAfficheurSprite->AjouterSprite("DebugTexture.dds", 200, 400, 10, 10);
+		pAfficheurSprite->AjouterPanneau("DebugTexture.dds", XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0f, 100.0f);
+
+		CAfficheurTexte::Init();
+        const Gdiplus::FontFamily oFamily(L"Arial", nullptr);
+        auto pPolice = std::make_unique<Gdiplus::Font>(&oFamily, 16.0f,
+        Gdiplus::FontStyleBold, Gdiplus::UnitPixel);
+        auto pTexte1 = std::make_unique<CAfficheurTexte>(pDispositif, 256, 256, pPolice.get());
+        pAfficheurSprite->AjouterSpriteTexte(pTexte1->GetTextureView(), 0, 257);
+
+		pTexte1->Ecrire(L"Test de texte");
+
+		ListeScene.emplace_back(std::move(pAfficheurSprite));
+		*/
 		return true;
 	}
 

@@ -200,7 +200,9 @@
     <ClCompile Include="Core\Private\Mesh\sommetbloc.cpp" />
     <ClCompile Include="Core\Private\Object\Bloc.cpp" />
     <ClCompile Include="Core\Private\Object\CBlocEffet1.cpp" />
+    <ClCompile Include="Core\Private\Object\Panneau.cpp" />
     <ClCompile Include="Core\Private\Sprite\AfficheurSprite.cpp" />
+    <ClCompile Include="Core\Private\Sprite\AfficheurTexte.cpp" />
     <ClCompile Include="Core\Private\Sprite\SpriteTemp.cpp" />
     <ClCompile Include="Core\Private\Texture\DDSTextureLoader.cpp" />
     <ClCompile Include="Core\Private\Texture\GestionnaireDeTextures.cpp" />
@@ -301,9 +303,11 @@
     <ClInclude Include="Core\Public\Object\Bloc.h" />
     <ClInclude Include="Core\Public\Object\CBlocEffet1.h" />
     <ClInclude Include="Core\Public\Object\objet3d.h" />
+    <ClInclude Include="Core\Public\Object\Panneau.h" />
     <ClInclude Include="Core\Public\Shader\d3dx11effect.h" />
     <ClInclude Include="Core\Public\Shader\d3dxGlobal.h" />
     <ClInclude Include="Core\Public\Sprite\AfficheurSprite.h" />
+    <ClInclude Include="Core\Public\Sprite\AfficheurTexte.h" />
     <ClInclude Include="Core\Public\Sprite\SpriteTemp.h" />
     <ClInclude Include="Core\Public\Texture\CMaterial.h" />
     <ClInclude Include="Core\Public\Texture\DDSTextureLoader.h" />
