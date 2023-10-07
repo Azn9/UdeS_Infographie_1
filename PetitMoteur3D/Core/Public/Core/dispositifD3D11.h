@@ -16,6 +16,9 @@ public:
 	void ActiverMelangeAlpha() const;
     void DesactiverMelangeAlpha() const;
 
+	void ActiverDepth() const;
+	void DesactiverDepth() const;
+
 	// Fonction d'accès aux membres protégés
 	ID3D11Device* GetD3DDevice() { return pD3DDevice; }
 	ID3D11DeviceContext* GetImmediateContext() { return pImmediateContext; }
@@ -25,6 +28,7 @@ public:
 
 private:
 	void InitDepthBuffer();
+	void InitDepthState();
 	void InitBlendStates();
 
 	ID3D11Device* pD3DDevice;
@@ -35,6 +39,9 @@ private:
 	// Pour le tampon de profondeur
 	ID3D11Texture2D* pDepthTexture;
 	ID3D11DepthStencilView* pDepthStencilView;
+	
+	ID3D11DepthStencilState* pDepthStencilState;
+	ID3D11DepthStencilState* pNoDepthStencilState;
 
 	// Variables d'état
 	ID3D11RasterizerState* mSolidCullBackRS;

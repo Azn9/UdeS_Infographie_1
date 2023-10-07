@@ -14,6 +14,8 @@ CDispositifD3D11::~CDispositifD3D11()
 	DXRelacher(mSolidCullBackRS);
 	DXRelacher(pDepthTexture);
 	DXRelacher(pDepthStencilView);
+	DXRelacher(pDepthStencilState);
+	DXRelacher(pNoDepthStencilState);
 
 	if (pImmediateContext)
 	{
@@ -140,6 +142,9 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 
 	InitDepthBuffer();
 
+	InitDepthState();
+	ActiverDepth();
+
 	InitBlendStates();
 
 	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
@@ -181,6 +186,16 @@ void CDispositifD3D11::DesactiverMelangeAlpha() const
 	pImmediateContext->OMSetBlendState(alphaBlendDisable, nullptr, 0xffffffff);
 }
 
+void CDispositifD3D11::ActiverDepth() const
+{
+	pImmediateContext->OMSetDepthStencilState(pDepthStencilState, 1);
+}
+
+void CDispositifD3D11::DesactiverDepth() const
+{
+	pImmediateContext->OMSetDepthStencilState(pNoDepthStencilState, 1);
+}
+
 void CDispositifD3D11::InitDepthBuffer()
 {
 	D3D11_TEXTURE2D_DESC depthTextureDesc;
@@ -207,6 +222,33 @@ void CDispositifD3D11::InitDepthBuffer()
 	descDSView.Texture2D.MipSlice = 0;
 	DXEssayer(pD3DDevice->CreateDepthStencilView(pDepthTexture, &descDSView, &pDepthStencilView),
 		DXE_ERREURCREATIONDEPTHSTENCILTARGET);
+}
+
+void CDispositifD3D11::InitDepthState()
+{
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	dsDesc.StencilEnable = true;
+	dsDesc.StencilReadMask = 0xFF;
+	dsDesc.StencilWriteMask = 0xFF;
+	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Create depth stencil state
+	pD3DDevice->CreateDepthStencilState(&dsDesc, &pDepthStencilState);
+
+	D3D11_DEPTH_STENCIL_DESC dsDescCopy = dsDesc;
+	dsDescCopy.DepthEnable = false;
+
+	pD3DDevice->CreateDepthStencilState(&dsDescCopy, &pNoDepthStencilState);
 }
 
 void CDispositifD3D11::InitBlendStates()
