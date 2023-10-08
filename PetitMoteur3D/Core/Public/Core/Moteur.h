@@ -143,6 +143,7 @@ public:
 	const XMMATRIX& GetMatViewProj() const { return m_MatViewProj; }
 
 	CGestionnaireDeTextures& GetTextureManager() { return TexturesManager; }
+	CDIManipulateur& GetGestionnaireDeSaisie() {return GestionnaireDeSaisie;}
 
 protected:
 	virtual ~CMoteur()
@@ -236,6 +237,11 @@ protected:
 
 	bool AnimeScene(float tempsEcoule)
 	{
+		// Prendre en note le statut du clavier
+		GestionnaireDeSaisie.StatutClavier();
+
+		// Prendre en note l’état de la souris
+		GestionnaireDeSaisie.SaisirEtatSouris();
 		
 		return true;
 	}
@@ -263,6 +269,8 @@ protected:
 
 	// Le gestionnaire de texture
 	CGestionnaireDeTextures TexturesManager;
+
+	CDIManipulateur GestionnaireDeSaisie;
 
 };
 

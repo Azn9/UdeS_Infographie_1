@@ -98,6 +98,9 @@ int CMoteurWindows::InitialisationsSpecific()
 	InitAppInstance();
 	Show();
 
+	// Initialisation de DirectInput
+	GestionnaireDeSaisie.Init(hAppInstance, hMainWnd);
+
 	return 0;
 }
 
