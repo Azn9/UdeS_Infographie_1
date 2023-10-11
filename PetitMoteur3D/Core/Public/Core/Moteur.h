@@ -3,20 +3,16 @@
 #include <locale>
 #include <thread>
 
-#include "Core/Public/Util/Singleton.h"
+#include "../../Public/Util/Singleton.h"
 #include "dispositif.h"
 
 #include <vector>
 
 #include "../../../../PM3DApi/Api/Public/GameHost.h"
-#include "Core/Public/Object/Objet3D.h"
-#include "Core/Public/Texture/GestionnaireDeTextures.h"
-#include "Core/Public/Mesh/ObjectMesh.h"
-#include "Core/Public/Mesh/chargeur.h"
-#include "Core/Public/Mesh/FastobjChargeur.h"
-#include "Core/Public/Sprite/AfficheurSprite.h"
-#include "Core/Public/Sprite/SpriteTemp.h"
-#include "Core/Public/Util/ChargeurOBJ.h"
+#include "../../Public/Object/Objet3D.h"
+#include "../../Public/Texture/GestionnaireDeTextures.h"
+#include "../../Public/Sprite/AfficheurSprite.h"
+#include "../../Public/Sprite/SpriteTemp.h"
 namespace PM3D
 {
 

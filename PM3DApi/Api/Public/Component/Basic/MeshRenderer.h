@@ -4,12 +4,13 @@
 
 #include <string>
 
-#define FAST_OBJ_IMPLEMENTATION
 #include "../../Util/fast_obj.h"
-
 #include <d3d11.h>
+#include <DirectXMath.h>
 
+#include "../../../../../PetitMoteur3D/Core/Public/Mesh/chargeur.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Shader/d3dx11effect.h"
+#include "../../../../../PetitMoteur3D/Core/Public/Texture/CMaterial.h"
 
 namespace PM3D_API
 {
@@ -17,7 +18,7 @@ class MeshRenderer final : public Component
 {
 public:
 	MeshRenderer(std::string meshName);
-	MeshRenderer(fastObjMesh* mesh);
+	MeshRenderer(PM3D::IChargeur* chargeur);
 
 	~MeshRenderer() override;
 
@@ -25,7 +26,12 @@ public:
 	void DrawSelf() const override;
 
 private:
+	void LoadMesh();
+	void InitEffect();
+
+	PM3D::IChargeur* chargeur;
 	fastObjMesh* mesh;
+	bool meshLoaded;
 
 	ID3D11Buffer* pVertexBuffer;
 	ID3D11Buffer* pIndexBuffer;
@@ -35,6 +41,12 @@ private:
 	ID3DX11EffectTechnique* pTechnique;
 	ID3DX11EffectPass* pPasse;
 	ID3D11InputLayout* pVertexLayout;
+
+	// Les sous-objets
+	int NombreSubmesh; // Nombre de sous-objets dans le mesh
+	std::vector<int> SubmeshMaterialIndex; // Index des matériaux
+	std::vector<int> SubmeshIndex; // Index des sous-objets
+	std::vector<CMaterial> Material; // Vecteur des matériaux
 
 };
 }

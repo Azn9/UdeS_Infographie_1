@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 #include "SpriteTemp.h"
-#include "Core/Public/Shader/d3dx11effect.h"
-#include "Core/Public/Core/DispositifD3D11.h"
-#include "Core/Public/Object/objet3d.h"
+#include "../../Public/Shader/d3dx11effect.h"
+#include "../../Public/Core/DispositifD3D11.h"
+#include "../../Public/Object/objet3d.h"
 
 namespace PM3D
 {

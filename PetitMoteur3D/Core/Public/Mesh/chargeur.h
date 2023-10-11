@@ -49,6 +49,10 @@ public:
 	virtual const XMFLOAT2& GetCoordTex(int NoSommet) const = 0;
 	virtual const XMFLOAT3& GetNormale(int NoSommet) const = 0;
 
+	virtual void* GetMesh()
+	{
+		return nullptr;
+	}
 };
 
 } // namespace PM3D

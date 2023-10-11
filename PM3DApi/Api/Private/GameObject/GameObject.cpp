@@ -22,6 +22,14 @@ PM3D_API::GameObject::~GameObject()
 	}
 }
 
+void PM3D_API::GameObject::Initialize()
+{
+	for (const auto component : components)
+	{
+		component->Initialize();
+	}
+}
+
 void PM3D_API::GameObject::Update(const double elapsed)
 {
 	for (const auto component : components)

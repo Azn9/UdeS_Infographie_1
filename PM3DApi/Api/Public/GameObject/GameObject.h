@@ -19,6 +19,8 @@ public:
 	GameObject(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale);
 	virtual ~GameObject();
 
+	virtual void Initialize();
+
 	virtual void Update(double elapsed);
 	virtual void FixedUpdate(double elapsed);
 	virtual void Draw() const;
@@ -40,10 +42,14 @@ public:
 
 	virtual Scene* GetScene() const { return scene; }
 
+	virtual DirectX::XMMATRIX GetMatWorld() const { return matWorld; }
+
 protected:
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 rotation;
 	DirectX::XMFLOAT3 scale;
+
+	DirectX::XMMATRIX matWorld;
 
 	Scene* scene;
 

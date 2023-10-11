@@ -29,6 +29,8 @@ public:
 	size_t GetNombreIndex() const override { return tabIndex.size(); }
 	const void* GetIndexData() const override { return tabIndex.data(); }
 
+	void* GetMesh() override { return mesh; }
+
 private:
 	fastObjMesh* mesh;
 
