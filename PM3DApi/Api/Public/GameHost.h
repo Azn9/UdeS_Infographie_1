@@ -24,6 +24,8 @@ namespace PM3D_API
         void SetDispositif(PM3D::CDispositifD3D11* dispositif);
         
         float GetAspectRatio() const;
+        float GetScreenWidth() const;
+        float GetScreenHeight() const;
 
         GameHost(GameHost&) = delete;
         void operator =(GameHost&) = delete;

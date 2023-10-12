@@ -38,6 +38,16 @@ float PM3D_API::GameHost::GetAspectRatio() const
 	return static_cast<float>(dispositif->GetLargeur()) / static_cast<float>(dispositif->GetHauteur());
 }
 
+float PM3D_API::GameHost::GetScreenWidth() const
+{
+	return static_cast<float>(dispositif->GetLargeur());
+}
+
+float PM3D_API::GameHost::GetScreenHeight() const
+{
+	return static_cast<float>(dispositif->GetHauteur());
+}
+
 void PM3D_API::GameHost::SetScene(Scene* newScene)
 {
 	scene = newScene;

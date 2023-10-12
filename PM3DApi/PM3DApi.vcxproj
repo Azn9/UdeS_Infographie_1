@@ -749,6 +749,7 @@
       <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
+    <ClCompile Include="Api\Public\Util\Quaternion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Api\Public\Camera\Camera.h" />
@@ -763,6 +764,8 @@
     <ClInclude Include="Api\Public\Scene\Scene.h" />
     <ClInclude Include="Api\Public\Util\BasicMesh.h" />
     <ClInclude Include="Api\Public\Util\fast_obj.h" />
+    <ClInclude Include="Api\Public\Util\Instanceof.h" />
+    <ClInclude Include="Api\Public\Util\Quaternion.h" />
     <ClInclude Include="Api\Public\Util\Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

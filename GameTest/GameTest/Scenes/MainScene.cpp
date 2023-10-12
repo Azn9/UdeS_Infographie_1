@@ -12,8 +12,10 @@ void MainScene::Initialize()
 
 	// Add main camera
 	const auto mainCamera = new Camera(
+		Camera::PERSECTIVE,
 		{0.0f, 0.0f, 10.0f},
-		{0.0f, 0.0f, 0.0f}
+		{0.0f, 0.0f, 0.0f},
+		{0.0f, 1.0f, 0.0f, 1.0f}
 	);
 	mainCamera->Initialize();
 	SetMainCamera(mainCamera);

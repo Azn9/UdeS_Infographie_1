@@ -5,47 +5,61 @@
 class Camera final : public PM3D_API::GameObject
 {
 public:
-	Camera(
-		const DirectX::XMFLOAT3 position,
-		const DirectX::XMFLOAT3 rotation
-	) : GameObject(position, rotation, {0, 0, 0})
+	enum CameraType
 	{
-		UpdateInternalMatrices();
-	}
+		PERSECTIVE,
+		ORTHOGRAPHIC
+	};
 
 	Camera(
+		const CameraType cameraType,
+		const DirectX::XMFLOAT3 worldPosition,
+		const DirectX::XMVECTOR focusPoint,
+		const DirectX::XMVECTOR upVector
 	) : GameObject(
-		{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}
-	)
+		    worldPosition,
+		    {0, 0, 0},
+		    {0, 0, 0}
+	    ), cameraType(cameraType), focusPoint(focusPoint), upVector(upVector)
 	{
-		UpdateInternalMatrices();
+		SetFocusPoint(focusPoint); // Recalculate rotation
 	}
 
-	void SetPosition(DirectX::XMFLOAT3 newPosition) override;
-	void SetRotation(DirectX::XMFLOAT3 newRotation) override;
+	void SetLocalPosition(DirectX::XMFLOAT3 newPosition) override;
+	void SetWorldPosition(DirectX::XMFLOAT3 newPosition) override;
+	void SetWorldRotation(DirectX::XMFLOAT3 newRotation) override;
+	void SetWorldRotation(Quaternion newRotation) override;
+	void SetLocalRotation(DirectX::XMFLOAT3 newRotation) override;
+	void SetLocalRotation(Quaternion newRotation) override;
 
-	void LerpPosition(DirectX::XMFLOAT3 newPosition, float t);
-	void LerpRotation(DirectX::XMFLOAT3 newRotation, float t);
 	void SetFocusPoint(DirectX::XMFLOAT3 newFocusPoint);
+	void SetFocusPoint(DirectX::XMVECTOR newFocusPoint);
+	void SetUpVector(DirectX::XMFLOAT3 newUpVector);
 
 	void SetFieldOfView(float newFieldOfView);
 	void SetNearPlane(float newNearPlane);
 	void SetFarPlane(float newFarPlane);
 
-	const DirectX::XMMATRIX& GetMatView() const { return MatView; }
-	const DirectX::XMMATRIX& GetMatProj() const { return MatProj; }
-	const DirectX::XMMATRIX& GetMatViewProj() const { return MatViewProj; }
+	const DirectX::XMMATRIX& GetMatView() const { return matView; }
+	const DirectX::XMMATRIX& GetMatProj() const { return matProj; }
+	const DirectX::XMMATRIX& GetMatViewProj() const { return matViewProj; }
+
+	const DirectX::XMVECTOR& GetFocusPoint() const { return focusPoint; }
+	const DirectX::XMVECTOR& GetUpVector() const { return upVector; }
 
 protected:
-	DirectX::XMMATRIX MatView;
-	DirectX::XMMATRIX MatProj;
-	DirectX::XMMATRIX MatViewProj;
+	CameraType cameraType;
 
-	float FieldOfView = 45.0f;
-	float NearPlane = 0.05f;
-	float FarPlane = 400.0f;
+	DirectX::XMMATRIX matView;
+	DirectX::XMMATRIX matProj;
+	DirectX::XMMATRIX matViewProj;
+
+	float fieldOfView = 45.0f;
+	float nearPlane = 0.05f;
+	float farPlane = 400.0f;
+
+	DirectX::XMVECTOR focusPoint;
+	DirectX::XMVECTOR upVector;
 
 private:
 	void UpdateInternalMatrices();

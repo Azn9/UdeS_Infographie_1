@@ -104,7 +104,7 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
 	if (directionnalLight)
 	{
-		auto rotation = directionnalLight->GetRotation();
+		auto rotation = directionnalLight->GetLocalRotationEuler();
 		sp.vLumiere = XMVectorSet(rotation.x, rotation.y, rotation.z, 1.0f);
 	}
 	else
@@ -112,7 +112,7 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		sp.vLumiere = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	auto cameraPosition = camera->GetPosition();
+	auto cameraPosition = camera->GetLocalPosition();
 	sp.vCamera = XMVectorSet(cameraPosition.x, cameraPosition.y, cameraPosition.z, 1.0f);
 	
 	sp.vAEcl = XMVectorSet(0.2f, 0.2f, 0.2f, 1.0f);
