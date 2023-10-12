@@ -120,14 +120,14 @@ void PM3D_API::GameObject::SetParent(const std::shared_ptr<GameObject>& newParen
 	parent = newParent;
 }
 
-void PM3D_API::GameObject::AddChild(const std::shared_ptr<GameObject> child)
+void PM3D_API::GameObject::AddChild(const std::shared_ptr<GameObject>& child)
 {
 	std::cout << "GameObject::AddChild(GameObject*) on " << name << std::endl;
 	child->parent = shared_from_this();
 	children.push_back(child);
 }
 
-void PM3D_API::GameObject::AddComponent(const std::shared_ptr<Component> component)
+void PM3D_API::GameObject::AddComponent(const std::shared_ptr<Component>& component)
 {
 	std::cout << "GameObject::AddComponent(Component*) on " << name << std::endl;
 	component->SetGameObject(shared_from_this());

@@ -85,8 +85,8 @@ public:
 	virtual void FixedUpdate(double elapsed);
 	virtual void Draw() const;
 
-	virtual void AddChild(std::shared_ptr<GameObject> child);
-	virtual void AddComponent(std::shared_ptr<Component> component);
+	virtual void AddChild(const std::shared_ptr<GameObject>& child);
+	virtual void AddComponent(const std::shared_ptr<Component>& component);
 
 	std::string GetName() const { return name; }
 
@@ -121,7 +121,7 @@ public:
 	virtual DirectX::XMMATRIX GetMatWorld() const { return matWorld; }
 
 protected:
-	std::string name;
+	std::string name = "Unnamed GameObject";
 	
 	DirectX::XMFLOAT3 localPosition;
 	DirectX::XMFLOAT3 localScale;
@@ -135,10 +135,10 @@ protected:
 
 	DirectX::XMMATRIX matWorld;
 
-	std::vector<std::weak_ptr<GameObject>> children;
-	std::vector<std::weak_ptr<Component>> components;
-	std::shared_ptr<Scene> scene;
-	std::shared_ptr<GameObject> parent;
+	std::vector<std::weak_ptr<GameObject>> children{};
+	std::vector<std::weak_ptr<Component>> components{};
+	std::shared_ptr<Scene> scene = nullptr;
+	std::shared_ptr<GameObject> parent = nullptr;
 
 	virtual void UpdateMatrix();
 	virtual void DrawSelf() const;

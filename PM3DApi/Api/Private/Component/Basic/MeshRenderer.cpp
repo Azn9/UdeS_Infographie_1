@@ -51,7 +51,7 @@ PM3D_API::MeshRenderer::~MeshRenderer()
 {
 	delete chargeur;
 	
-	if (mesh)
+	if (mesh != nullptr)
 		fast_obj_destroy(mesh);
 
 	PM3D::DXRelacher(pConstantBuffer);

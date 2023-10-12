@@ -8,7 +8,7 @@
 
 PM3D::FastobjChargeur::~FastobjChargeur()
 {
-	if (mesh)
+	if (mesh != nullptr)
 		fast_obj_destroy(mesh);
 }
 

@@ -5,7 +5,7 @@ namespace PM3D_API
 {
 class GameObject;
 
-class Component : public std::enable_shared_from_this<Component>
+class Component
 {
 public:
 	virtual ~Component() = default;
@@ -16,11 +16,11 @@ public:
 	virtual void DrawSelf() const;
 
 protected:
-	std::shared_ptr<GameObject> parentObject;
+	std::shared_ptr<GameObject> parentObject = nullptr;
 
 private:
 	friend class GameObject;
-	void SetGameObject(std::shared_ptr<GameObject> gameObject);
+	void SetGameObject(const std::shared_ptr<GameObject>& gameObject);
 
 };
 }

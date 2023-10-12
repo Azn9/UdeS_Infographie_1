@@ -14,7 +14,7 @@ public:
 	~Scene() override;
 	void Initialize() override;
 
-	void AddChild(std::shared_ptr<GameObject> child) override;
+	void AddChild(const std::shared_ptr<GameObject>& child) override;
 
 	std::shared_ptr<Camera> GetMainCamera() const { return mainCamera; }
 	std::shared_ptr<DirectionalLight> GetDirectionalLight() const { return directionalLight; }

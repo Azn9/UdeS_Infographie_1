@@ -8,13 +8,13 @@ PM3D_API::GameHost::~GameHost()
 	
 }
 
-void PM3D_API::GameHost::Update(const double deltaTime) const
+void PM3D_API::GameHost::Update(double deltaTime) const
 {
 	if (scene)
 		scene->Update(deltaTime);
 }
 
-void PM3D_API::GameHost::FixedUpdate(const double fixedDeltaTime) const
+void PM3D_API::GameHost::FixedUpdate(double fixedDeltaTime) const
 {
 	if (scene)
 		scene->FixedUpdate(fixedDeltaTime);
@@ -48,7 +48,7 @@ float PM3D_API::GameHost::GetScreenHeight() const
 	return static_cast<float>(dispositif->GetHauteur());
 }
 
-void PM3D_API::GameHost::SetScene(const std::shared_ptr<Scene>& newScene)
+void PM3D_API::GameHost::SetScene(Scene* newScene)
 {
 	scene = newScene;
 }
