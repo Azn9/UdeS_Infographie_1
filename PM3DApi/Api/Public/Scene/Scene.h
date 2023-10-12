@@ -9,9 +9,10 @@ namespace PM3D_API
 class Scene : public GameObject
 {
 public:
-	Scene() : GameObject({0, 0, 0}, {0, 0, 0}, {0, 0, 0}) {}
+	Scene() : GameObject("Scene", {0, 0, 0}, {0, 0, 0}, {1, 1, 1}) {}
+	Scene(const std::string& name) : GameObject(name, {0, 0, 0}, {0, 0, 0}, {1, 1, 1}) {}
 	~Scene() override;
-	virtual void Initialize();
+	void Initialize() override;
 
 	void AddChild(GameObject* child) override;
 

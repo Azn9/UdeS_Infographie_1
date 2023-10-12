@@ -12,11 +12,28 @@ public:
 	};
 
 	Camera(
+		const std::string& name,
 		const CameraType cameraType,
 		const DirectX::XMFLOAT3 worldPosition,
 		const DirectX::XMVECTOR focusPoint,
 		const DirectX::XMVECTOR upVector
 	) : GameObject(
+			name,
+			worldPosition,
+			{0, 0, 0},
+			{0, 0, 0}
+		), cameraType(cameraType), focusPoint(focusPoint), upVector(upVector)
+	{
+		SetFocusPoint(focusPoint); // Recalculate rotation
+	}
+
+	Camera(
+		const CameraType cameraType,
+		const DirectX::XMFLOAT3 worldPosition,
+		const DirectX::XMVECTOR focusPoint,
+		const DirectX::XMVECTOR upVector
+	) : GameObject(
+			"Main camera",
 		    worldPosition,
 		    {0, 0, 0},
 		    {0, 0, 0}

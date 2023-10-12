@@ -1,12 +1,15 @@
 ﻿#include "Api/Public/GameObject/GameObject.h"
 
+#include <iostream>
 #include <stdexcept>
 
 PM3D_API::GameObject::GameObject(
+	const std::string& name,
 	const DirectX::XMFLOAT3 worldPosition,
 	const DirectX::XMFLOAT3 worldRotation,
 	const DirectX::XMFLOAT3 worldScale
-) : worldPosition(worldPosition),
+) : name(name),
+	worldPosition(worldPosition),
     worldScale(worldScale),
     worldRotationEuler(worldRotation),
     worldRotationQuaternion(Quaternion::FromEulerAngles(worldRotation))
@@ -17,10 +20,12 @@ PM3D_API::GameObject::GameObject(
 }
 
 PM3D_API::GameObject::GameObject(
+	const std::string& name,
 	const DirectX::XMFLOAT3 worldPosition,
 	const Quaternion worldRotation,
 	const DirectX::XMFLOAT3 worldScale
-) : worldPosition(worldPosition),
+) : name(name),
+	worldPosition(worldPosition),
 	worldScale(worldScale),
 	worldRotationEuler(worldRotation.ToEulerAngles()),
 	worldRotationQuaternion(worldRotation)
@@ -32,6 +37,7 @@ PM3D_API::GameObject::GameObject(
 
 void PM3D_API::GameObject::Initialize()
 {
+	std::cout << "GameObject::Initialize() on " << name << std::endl;
 	for (const auto component : components)
 	{
 		component->Initialize();
@@ -52,6 +58,13 @@ void PM3D_API::GameObject::FixedUpdate(const double elapsed)
 	{
 		component->FixedUpdate(elapsed);
 	}
+}
+
+void PM3D_API::GameObject::UpdateMatrix()
+{
+	matWorld = DirectX::XMMatrixScaling(worldScale.x, worldScale.y, worldScale.z) *
+		DirectX::XMMatrixRotationQuaternion(worldRotationQuaternion.ToXMVector()) *
+		DirectX::XMMatrixTranslation(worldPosition.x, worldPosition.y, worldPosition.z);
 }
 
 void PM3D_API::GameObject::Draw() const
@@ -93,12 +106,14 @@ void PM3D_API::GameObject::SetParent(GameObject* newParent)
 
 void PM3D_API::GameObject::AddChild(GameObject* child)
 {
+	std::cout << "GameObject::AddChild(GameObject*) on " << name << std::endl;
 	child->parent = this;
 	children.emplace_back(child);
 }
 
 void PM3D_API::GameObject::AddComponent(Component* component)
 {
+	std::cout << "GameObject::AddComponent(Component*) on " << name << std::endl;
 	component->SetGameObject(this);
 	components.emplace_back(component);
 }
@@ -131,6 +146,8 @@ void PM3D_API::GameObject::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 
 		parentGameObject = parentGameObject->parent;
 	}
+
+	UpdateMatrix();
 }
 
 void PM3D_API::GameObject::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
@@ -151,6 +168,8 @@ void PM3D_API::GameObject::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
 
 	localRotationQuaternion = Quaternion::FromEulerAngles(localRotationEuler);
 	worldRotationQuaternion = Quaternion::FromEulerAngles(worldRotationEuler);
+
+	UpdateMatrix();
 }
 
 void PM3D_API::GameObject::SetLocalRotation(const Quaternion newRotation)
@@ -169,6 +188,8 @@ void PM3D_API::GameObject::SetLocalRotation(const Quaternion newRotation)
 
 	localRotationEuler = localRotationQuaternion.ToEulerAngles();
 	worldRotationEuler = worldRotationQuaternion.ToEulerAngles();
+
+	UpdateMatrix();
 }
 
 void PM3D_API::GameObject::SetLocalScale(const DirectX::XMFLOAT3 newScale)
@@ -186,6 +207,8 @@ void PM3D_API::GameObject::SetLocalScale(const DirectX::XMFLOAT3 newScale)
 
 		parentGameObject = parentGameObject->parent;
 	}
+
+	UpdateMatrix();
 }
 
 void PM3D_API::GameObject::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
@@ -203,6 +226,8 @@ void PM3D_API::GameObject::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 
 		parentGameObject = parentGameObject->parent;
 	}
+
+	UpdateMatrix();
 }
 
 void PM3D_API::GameObject::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
@@ -223,6 +248,8 @@ void PM3D_API::GameObject::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
 
 	worldRotationQuaternion = Quaternion::FromEulerAngles(worldRotationEuler);
 	localRotationQuaternion = Quaternion::FromEulerAngles(localRotationEuler);
+
+	UpdateMatrix();
 }
 
 void PM3D_API::GameObject::SetWorldRotation(const Quaternion newRotation)
@@ -241,6 +268,8 @@ void PM3D_API::GameObject::SetWorldRotation(const Quaternion newRotation)
 
 	worldRotationEuler = worldRotationQuaternion.ToEulerAngles();
 	localRotationEuler = localRotationQuaternion.ToEulerAngles();
+
+	UpdateMatrix();
 }
 
 void PM3D_API::GameObject::SetWorldScale(const DirectX::XMFLOAT3 newScale)
@@ -258,4 +287,6 @@ void PM3D_API::GameObject::SetWorldScale(const DirectX::XMFLOAT3 newScale)
 
 		parentGameObject = parentGameObject->parent;
 	}
+
+	UpdateMatrix();
 }

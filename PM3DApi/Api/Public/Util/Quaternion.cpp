@@ -40,6 +40,11 @@ Quaternion&& Quaternion::operator*(const Quaternion& quaternion) const
 	return Quaternion(resultVector);
 }
 
+DirectX::XMVECTOR Quaternion::ToXMVector() const
+{
+	return XMLoadFloat4(this);
+}
+
 DirectX::XMFLOAT4 Quaternion::EulerToQuaternion(const DirectX::XMFLOAT3 euler)
 {
 	XMFLOAT4 quaternion;

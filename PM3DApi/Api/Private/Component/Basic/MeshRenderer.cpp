@@ -16,6 +16,8 @@
 
 PM3D_API::MeshRenderer::MeshRenderer(std::string meshName)
 {
+	std::cout << "MeshRenderer::MeshRenderer(" << meshName << ")" << std::endl;
+	
 	if (meshName.find_last_of(".obj") == std::string::npos)
 		meshName += ".obj";
 
@@ -26,11 +28,23 @@ PM3D_API::MeshRenderer::MeshRenderer(std::string meshName)
 	params.NomFichier = meshName;
 	
 	chargeur->Chargement(params);
+
+	// Init effect
+	InitEffect();
+	
+	// Load mesh
+	LoadMesh();
 }
 
 PM3D_API::MeshRenderer::MeshRenderer(PM3D::IChargeur* chargeur) : chargeur(chargeur)
 {
+	std::cout << "MeshRenderer::MeshRenderer(chargeur)" << std::endl;
 
+	// Init effect
+	InitEffect();
+	
+	// Load mesh
+	LoadMesh();
 }
 
 PM3D_API::MeshRenderer::~MeshRenderer()
@@ -39,15 +53,18 @@ PM3D_API::MeshRenderer::~MeshRenderer()
 	
 	if (mesh)
 		fast_obj_destroy(mesh);
+
+	PM3D::DXRelacher(pConstantBuffer);
+	PM3D::DXRelacher(pSampleState);
+	PM3D::DXRelacher(pEffet);
+	PM3D::DXRelacher(pVertexLayout);
+	PM3D::DXRelacher(pIndexBuffer);
+	PM3D::DXRelacher(pVertexBuffer);
 }
 
 void PM3D_API::MeshRenderer::Initialize()
 {
-	// Init effect
-	InitEffect();
-	
-	// Load mesh
-	LoadMesh();
+	std::cout << "MeshRenderer::Initialize()" << std::endl;
 }
 
 struct ShadersParams
@@ -69,6 +86,8 @@ struct ShadersParams
 
 void PM3D_API::MeshRenderer::DrawSelf() const
 {
+	std::cout << "MeshRenderer::DrawSelf()" << std::endl;
+	
 	if (!mesh)
 		throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
 
@@ -109,10 +128,10 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	}
 	else
 	{
-		sp.vLumiere = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		sp.vLumiere = XMVectorSet(0.0f, -1.0f, 0.0f, 1.0f);
 	}
 
-	auto cameraPosition = camera->GetLocalPosition();
+	auto cameraPosition = camera->GetWorldPosition();
 	sp.vCamera = XMVectorSet(cameraPosition.x, cameraPosition.y, cameraPosition.z, 1.0f);
 	
 	sp.vAEcl = XMVectorSet(0.2f, 0.2f, 0.2f, 1.0f);

@@ -4,9 +4,13 @@
 class DirectionalLight final : public Light
 {
 public:
-	DirectionalLight(DirectX::XMFLOAT3 rotation);
+	explicit DirectionalLight(DirectX::XMFLOAT3 rotation);
 	DirectionalLight(DirectX::XMFLOAT3 rotation, float intensity);
 	DirectionalLight(DirectX::XMFLOAT3 rotation, float intensity, DirectX::XMFLOAT3 color);
+
+	DirectionalLight(const std::string& name, DirectX::XMFLOAT3 rotation);
+	DirectionalLight(const std::string& name, DirectX::XMFLOAT3 rotation, float intensity);
+	DirectionalLight(const std::string& name, DirectX::XMFLOAT3 rotation, float intensity, DirectX::XMFLOAT3 color);
 
 protected:
 

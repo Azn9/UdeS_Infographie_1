@@ -12,6 +12,7 @@ public:
 	DirectX::XMFLOAT3 ToEulerAngles() const;
 
 	Quaternion&& operator*(const Quaternion& quaternion) const;
+	DirectX::XMVECTOR ToXMVector() const;
 
 	static Quaternion FromEulerAngles(const DirectX::XMFLOAT3& euler) { return Quaternion(EulerToQuaternion(euler)); }
 private:

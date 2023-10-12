@@ -16,6 +16,8 @@ void PM3D_API::Scene::Initialize()
 
 void PM3D_API::Scene::AddChild(GameObject* child)
 {
+	std::cout << "Scene::AddChild(GameObject*) added " << child->GetName() << std::endl;
+	
 	GameObject::AddChild(child);
 	child->SetScene(this);
 }

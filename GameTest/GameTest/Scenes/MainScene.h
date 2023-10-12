@@ -5,6 +5,8 @@
 class MainScene final : public PM3D_API::Scene, public PM3D::CSingleton<MainScene>
 {
 public:
+	MainScene() : Scene("MainScene") {}
+	
 	void Initialize() override;
 
 	

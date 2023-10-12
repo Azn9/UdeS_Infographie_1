@@ -16,7 +16,7 @@
 namespace PM3D
 {
 
-const int IMAGESPARSECONDE = 60;
+const int IMAGESPARSECONDE = 1; // TODO
 const double EcartTemps = 1.0 / static_cast<double>(IMAGESPARSECONDE);
 
 //

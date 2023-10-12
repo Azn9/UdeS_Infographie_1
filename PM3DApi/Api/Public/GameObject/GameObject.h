@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <DirectXMath.h>
+#include <string>
 #include <vector>
 
 #include "../Component/Component.h"
@@ -20,45 +21,54 @@ public:
 	// ============================
 	//  Constructors & Destructors
 	// ============================
-	GameObject() : GameObject(
+	explicit GameObject(const std::string& name) : GameObject(
+		name,
 		{0.0f, 0.0f, 0.0f},
 		{0.0f, 0.0f, 0.0f},
 		{1.0f, 1.0f, 1.0f}
 	) {}
 
-	explicit GameObject(
+	GameObject(
+		const std::string& name,
 		const DirectX::XMFLOAT3 worldPosition
 	) : GameObject(
+		name,
 		worldPosition,
 		{0.0f, 0.0f, 0.0f},
 		{1.0f, 1.0f, 1.0f}
 	) {}
 	
 	GameObject(
+		const std::string& name,
 		const DirectX::XMFLOAT3 worldPosition,
 		const DirectX::XMFLOAT3 worldRotation
 	) : GameObject(
+		name,
 		worldPosition,
 		worldRotation,
 		{1.0f, 1.0f, 1.0f}
 	) {}
 
 	GameObject(
+		const std::string& name,
 		const DirectX::XMFLOAT3 worldPosition,
 		const Quaternion worldRotation
 	) : GameObject(
+		name,
 		worldPosition,
 		worldRotation,
 		{1.0f, 1.0f, 1.0f}
 	) {}
 	
 	GameObject(
+		const std::string& name,
 		DirectX::XMFLOAT3 worldPosition,
 		DirectX::XMFLOAT3 worldRotation,
 		DirectX::XMFLOAT3 worldScale
 	);
 
 	GameObject(
+		const std::string& name,
 		DirectX::XMFLOAT3 worldPosition,
 		Quaternion worldRotation,
 		DirectX::XMFLOAT3 worldScale
@@ -78,6 +88,8 @@ public:
 	virtual void AddChild(GameObject* child);
 
 	virtual void AddComponent(Component* component);
+
+	std::string GetName() const { return name; }
 
 	template <typename T, template_extends<T, Component> = 0> T* GetComponent();
 
@@ -109,6 +121,8 @@ public:
 	virtual DirectX::XMMATRIX GetMatWorld() const { return matWorld; }
 
 protected:
+	std::string name;
+	
 	DirectX::XMFLOAT3 localPosition;
 	DirectX::XMFLOAT3 localScale;
 	DirectX::XMFLOAT3 localRotationEuler;
@@ -126,6 +140,7 @@ protected:
 	Scene* scene;
 	GameObject* parent;
 
+	virtual void UpdateMatrix();
 	virtual void DrawSelf() const;
 
 private:
