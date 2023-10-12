@@ -10,7 +10,7 @@ template <typename T, typename U>
 using template_extends = std::enable_if_t<IsDerivedFrom<T, U>::value, int>;
 
 /*
-Utilisé comme ça :
+UtilisÃ© comme Ã§a :
 
 // .h
 template <typename T, template_extends<T, Component> = 0> T* GetComponent();

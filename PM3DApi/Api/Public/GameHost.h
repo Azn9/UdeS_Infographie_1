@@ -40,10 +40,10 @@ namespace PM3D_API
         virtual void Draw() const;
 
     protected:
-        virtual void SetScene(Scene* newScene);
+        virtual void SetScene(const std::shared_ptr<Scene>& newScene);
 
     private:
-        Scene* scene;
+        std::shared_ptr<Scene> scene;
         PM3D::CDispositifD3D11* dispositif;
 
     };

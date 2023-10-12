@@ -40,7 +40,10 @@ void PM3D_API::GameObject::Initialize()
 	std::cout << "GameObject::Initialize() on " << name << std::endl;
 	for (const auto component : components)
 	{
-		component->Initialize();
+		const auto componentPtr = component.lock();
+
+		if (componentPtr)
+			componentPtr->Initialize();
 	}
 }
 
@@ -48,7 +51,10 @@ void PM3D_API::GameObject::Update(const double elapsed)
 {
 	for (const auto component : components)
 	{
-		component->Update(elapsed);
+		const auto componentPtr = component.lock();
+
+		if (componentPtr)
+			componentPtr->Update(elapsed);
 	}
 }
 
@@ -56,7 +62,10 @@ void PM3D_API::GameObject::FixedUpdate(const double elapsed)
 {
 	for (const auto component : components)
 	{
-		component->FixedUpdate(elapsed);
+		const auto componentPtr = component.lock();
+
+		if (componentPtr)
+			componentPtr->FixedUpdate(elapsed);
 	}
 }
 
@@ -70,9 +79,13 @@ void PM3D_API::GameObject::UpdateMatrix()
 void PM3D_API::GameObject::Draw() const
 {
 	DrawSelf();
+
 	for (const auto child : children)
 	{
-		child->Draw();
+		const auto childPtr = child.lock();
+
+		if (childPtr)
+			childPtr->Draw();
 	}
 }
 
@@ -80,21 +93,24 @@ void PM3D_API::GameObject::DrawSelf() const
 {
 	for (const auto component : components)
 	{
-		component->DrawSelf();
+		const auto componentPtr = component.lock();
+
+		if (componentPtr)
+			componentPtr->DrawSelf();
 	}
 }
 
-void PM3D_API::GameObject::SetParent(GameObject* newParent)
+void PM3D_API::GameObject::SetParent(const std::shared_ptr<GameObject>& newParent)
 {
-	if (parent == this)
+	if (parent.get() == this)
 	{
 		throw std::runtime_error("A GameObject cannot be its own parent!");
 	}
 
-	const GameObject* newParentParent = newParent->parent;
+	std::shared_ptr<GameObject>& newParentParent = newParent->parent;
 	while (newParentParent != nullptr)
 	{
-		if (newParentParent == this)
+		if (newParentParent.get() == this)
 		{
 			throw std::runtime_error("A GameObject cannot be its own child!");
 		}
@@ -104,25 +120,26 @@ void PM3D_API::GameObject::SetParent(GameObject* newParent)
 	parent = newParent;
 }
 
-void PM3D_API::GameObject::AddChild(GameObject* child)
+void PM3D_API::GameObject::AddChild(const std::shared_ptr<GameObject> child)
 {
 	std::cout << "GameObject::AddChild(GameObject*) on " << name << std::endl;
-	child->parent = this;
-	children.emplace_back(child);
+	child->parent = shared_from_this();
+	children.push_back(child);
 }
 
-void PM3D_API::GameObject::AddComponent(Component* component)
+void PM3D_API::GameObject::AddComponent(const std::shared_ptr<Component> component)
 {
 	std::cout << "GameObject::AddComponent(Component*) on " << name << std::endl;
-	component->SetGameObject(this);
-	components.emplace_back(component);
+	component->SetGameObject(shared_from_this());
+	components.push_back(component);
 }
 
-template <typename T, template_extends<T, PM3D_API::Component>> T* PM3D_API::GameObject::GetComponent()
+template <typename T, template_extends<T, PM3D_API::Component>>
+std::shared_ptr<T>& PM3D_API::GameObject::GetComponent()
 {
 	for (const auto component : components)
 	{
-		if (typeid(*component) == typeid(T))
+		if (typeid(*component.lock().get()) == typeid(T))
 		{
 			return static_cast<T*>(component);
 		}
@@ -136,7 +153,7 @@ void PM3D_API::GameObject::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 	localPosition = newPosition;
 	worldPosition = newPosition;
 
-	const GameObject* parentGameObject = parent;
+	std::shared_ptr<GameObject>& parentGameObject = parent;
 	while (parentGameObject != nullptr)
 	{
 		const auto parentLocalPosition = parentGameObject->GetLocalPosition();
@@ -155,7 +172,7 @@ void PM3D_API::GameObject::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
 	localRotationEuler = newRotation;
 	worldRotationEuler = newRotation;
 
-	const GameObject* parentGameObject = parent;
+	std::shared_ptr<GameObject>& parentGameObject = parent;
 	while (parentGameObject != nullptr)
 	{
 		const auto parentLocalRotation = parentGameObject->GetLocalRotationEuler();
@@ -177,7 +194,7 @@ void PM3D_API::GameObject::SetLocalRotation(const Quaternion newRotation)
 	localRotationQuaternion = newRotation;
 	worldRotationQuaternion = newRotation;
 
-	const GameObject* parentGameObject = parent;
+	std::shared_ptr<GameObject>& parentGameObject = parent;
 	while (parentGameObject != nullptr)
 	{
 		const auto parentLocalRotation = parentGameObject->GetLocalRotationQuaternion();
@@ -197,7 +214,7 @@ void PM3D_API::GameObject::SetLocalScale(const DirectX::XMFLOAT3 newScale)
 	localScale = newScale;
 	worldScale = newScale;
 
-	const GameObject* parentGameObject = parent;
+	std::shared_ptr<GameObject>& parentGameObject = parent;
 	while (parentGameObject != nullptr)
 	{
 		const auto parentLocalScale = parentGameObject->GetLocalScale();
@@ -216,7 +233,7 @@ void PM3D_API::GameObject::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 	worldPosition = newPosition;
 	localPosition = newPosition;
 
-	const GameObject* parentGameObject = parent;
+	std::shared_ptr<GameObject>& parentGameObject = parent;
 	while (parentGameObject != nullptr)
 	{
 		const auto parentWorldPosition = parentGameObject->GetWorldPosition();
@@ -235,7 +252,7 @@ void PM3D_API::GameObject::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
 	worldRotationEuler = newRotation;
 	localRotationEuler = newRotation;
 
-	const GameObject* parentGameObject = parent;
+	std::shared_ptr<GameObject>& parentGameObject = parent;
 	while (parentGameObject != nullptr)
 	{
 		const auto parentWorldRotation = parentGameObject->GetWorldRotationEuler();
@@ -257,7 +274,7 @@ void PM3D_API::GameObject::SetWorldRotation(const Quaternion newRotation)
 	worldRotationQuaternion = newRotation;
 	localRotationQuaternion = newRotation;
 
-	const GameObject* parentGameObject = parent;
+	std::shared_ptr<GameObject>& parentGameObject = parent;
 	while (parentGameObject != nullptr)
 	{
 		const auto parentWorldRotation = parentGameObject->GetWorldRotationQuaternion();
@@ -277,7 +294,7 @@ void PM3D_API::GameObject::SetWorldScale(const DirectX::XMFLOAT3 newScale)
 	worldScale = newScale;
 	localScale = newScale;
 
-	const GameObject* parentGameObject = parent;
+	std::shared_ptr<GameObject>& parentGameObject = parent;
 	while (parentGameObject != nullptr)
 	{
 		const auto parentWorldScale = parentGameObject->GetWorldScale();

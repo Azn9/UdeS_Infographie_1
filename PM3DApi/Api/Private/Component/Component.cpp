@@ -20,7 +20,7 @@ void PM3D_API::Component::DrawSelf() const
 	// Do nothing by default
 }
 
-void PM3D_API::Component::SetGameObject(GameObject* gameObject)
+void PM3D_API::Component::SetGameObject(const std::shared_ptr<GameObject> gameObject)
 {
 	parentObject = gameObject;
 }

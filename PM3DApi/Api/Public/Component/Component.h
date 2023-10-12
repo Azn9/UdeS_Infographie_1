@@ -1,10 +1,11 @@
 ﻿#pragma once
+#include <memory>
 
 namespace PM3D_API
 {
 class GameObject;
 
-class Component
+class Component : public std::enable_shared_from_this<Component>
 {
 public:
 	virtual ~Component() = default;
@@ -15,11 +16,11 @@ public:
 	virtual void DrawSelf() const;
 
 protected:
-	GameObject* parentObject;
+	std::shared_ptr<GameObject> parentObject;
 
 private:
 	friend class GameObject;
-	void SetGameObject(GameObject* gameObject);
+	void SetGameObject(std::shared_ptr<GameObject> gameObject);
 
 };
 }

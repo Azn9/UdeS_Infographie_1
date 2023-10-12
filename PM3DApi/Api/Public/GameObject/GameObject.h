@@ -15,7 +15,7 @@ class Scene;
 
 namespace PM3D_API
 {
-class GameObject
+class GameObject : public std::enable_shared_from_this<GameObject>
 {
 public:
 	// ============================
@@ -85,17 +85,17 @@ public:
 	virtual void FixedUpdate(double elapsed);
 	virtual void Draw() const;
 
-	virtual void AddChild(GameObject* child);
-
-	virtual void AddComponent(Component* component);
+	virtual void AddChild(std::shared_ptr<GameObject> child);
+	virtual void AddComponent(std::shared_ptr<Component> component);
 
 	std::string GetName() const { return name; }
 
-	template <typename T, template_extends<T, Component> = 0> T* GetComponent();
+	template <typename T, template_extends<T, Component> = 0>
+	std::shared_ptr<T>& GetComponent();
 
-	std::vector<GameObject*> GetChildren() const { return children; }
+	std::vector<std::weak_ptr<GameObject>> GetChildren() const { return children; }
 
-	Scene* GetScene() const { return scene; }
+	std::shared_ptr<Scene> GetScene() const { return scene; }
 
 	// ============================
 	// Position, rotation, scale
@@ -135,19 +135,19 @@ protected:
 
 	DirectX::XMMATRIX matWorld;
 
-	std::vector<GameObject*> children;
-	std::vector<Component*> components;
-	Scene* scene;
-	GameObject* parent;
+	std::vector<std::weak_ptr<GameObject>> children;
+	std::vector<std::weak_ptr<Component>> components;
+	std::shared_ptr<Scene> scene;
+	std::shared_ptr<GameObject> parent;
 
 	virtual void UpdateMatrix();
 	virtual void DrawSelf() const;
 
 private:
 	friend class Scene;
-	void SetScene(Scene* newScene) { scene = newScene; }
+	void SetScene(const std::shared_ptr<Scene>& newScene) { scene = newScene; }
 
-	void SetParent(GameObject* newParent);
+	void SetParent(const std::shared_ptr<GameObject>& newParent);
 };
 
 }

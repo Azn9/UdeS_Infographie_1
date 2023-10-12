@@ -6,7 +6,6 @@
 
 #include "../../Util/fast_obj.h"
 #include <d3d11.h>
-#include <DirectXMath.h>
 
 #include "../../../../../PetitMoteur3D/Core/Public/Mesh/chargeur.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Shader/d3dx11effect.h"
@@ -17,8 +16,8 @@ namespace PM3D_API
 class MeshRenderer final : public Component
 {
 public:
-	MeshRenderer(std::string meshName);
-	MeshRenderer(PM3D::IChargeur* chargeur);
+	explicit MeshRenderer(std::string meshName);
+	explicit MeshRenderer(PM3D::IChargeur* chargeur);
 
 	~MeshRenderer() override;
 

@@ -1,5 +1,6 @@
-﻿#include "Quaternion.h"
+﻿#include "../../Public/Util/Quaternion.h"
 
+#include <algorithm>
 #include <cmath>
 
 DirectX::XMFLOAT3 Quaternion::ToEulerAngles() const
@@ -37,7 +38,7 @@ Quaternion&& Quaternion::operator*(const Quaternion& quaternion) const
 	XMFLOAT4 resultVector;
 	XMStoreFloat4(&resultVector, result);
 	
-	return Quaternion(resultVector);
+	return std::move(Quaternion(resultVector));
 }
 
 DirectX::XMVECTOR Quaternion::ToXMVector() const

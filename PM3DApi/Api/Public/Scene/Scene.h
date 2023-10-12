@@ -6,7 +6,7 @@
 
 namespace PM3D_API
 {
-class Scene : public GameObject
+class Scene : public GameObject, public std::enable_shared_from_this<Scene>
 {
 public:
 	Scene() : GameObject("Scene", {0, 0, 0}, {0, 0, 0}, {1, 1, 1}) {}
@@ -14,18 +14,18 @@ public:
 	~Scene() override;
 	void Initialize() override;
 
-	void AddChild(GameObject* child) override;
+	void AddChild(std::shared_ptr<GameObject> child) override;
 
-	Camera* GetMainCamera() const { return mainCamera; }
-	DirectionalLight* GetDirectionalLight() const { return directionalLight; }
+	std::shared_ptr<Camera> GetMainCamera() const { return mainCamera; }
+	std::shared_ptr<DirectionalLight> GetDirectionalLight() const { return directionalLight; }
 	
 protected:
-	void SetMainCamera(Camera* newMainCamera) { mainCamera = newMainCamera; }
-	void SetDirectionalLight(DirectionalLight* newDirectionalLight) { directionalLight = newDirectionalLight; }
+	void SetMainCamera(const std::shared_ptr<Camera>& newMainCamera) { mainCamera = newMainCamera; }
+	void SetDirectionalLight(const std::shared_ptr<DirectionalLight>& newDirectionalLight) { directionalLight = newDirectionalLight; }
 	
 private:
-	Camera* mainCamera;
-	DirectionalLight* directionalLight;
+	std::shared_ptr<Camera> mainCamera;
+	std::shared_ptr<DirectionalLight> directionalLight;
 
 };
 }
