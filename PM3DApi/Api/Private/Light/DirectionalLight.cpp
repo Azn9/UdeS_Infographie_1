@@ -1,4 +1,4 @@
-﻿#include "Api/Public/Light/DirectionalLight.h"
+﻿#include "../../Public/Light/DirectionalLight.h"
 
 DirectionalLight::DirectionalLight(
 	const DirectX::XMFLOAT3 rotation

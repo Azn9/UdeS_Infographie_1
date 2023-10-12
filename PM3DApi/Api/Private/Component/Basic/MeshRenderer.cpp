@@ -1,4 +1,4 @@
-﻿#include "Api/Public/Component/Basic/MeshRenderer.h"
+﻿#include "../../../Public/Component/Basic/MeshRenderer.h"
 
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -10,9 +10,9 @@
 #include "../../../../../PetitMoteur3D/Core/Public/Texture/GestionnaireDeTextures.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Util/util.h"
-#include "Api/Public/GameHost.h"
-#include "Api/Public/GameObject/GameObject.h"
-#include "Api/Public/Scene/Scene.h"
+#include "../../../Public/GameHost.h"
+#include "../../../Public/GameObject/GameObject.h"
+#include "../../../Public/Scene/Scene.h"
 
 PM3D_API::MeshRenderer::MeshRenderer(std::string meshName)
 {

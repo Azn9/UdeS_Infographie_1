@@ -1,4 +1,4 @@
-﻿#include "Api/Public/GameHost.h"
+﻿#include "../Public/GameHost.h"
 
 #include <stdexcept>
 

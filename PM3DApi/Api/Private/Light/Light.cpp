@@ -1,4 +1,4 @@
-﻿#include "Api/Public/Light/Light.h"
+﻿#include "../../Public/Light/Light.h"
 
 Light::Light(
 	const DirectX::XMFLOAT3 position,

@@ -1,1 +1,1 @@
-﻿#include "Api/Public/Light/SpotLight.h"
+﻿#include "../../Public/Light/SpotLight.h"

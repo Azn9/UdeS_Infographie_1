@@ -1,9 +1,9 @@
-﻿#include "Api/Public/Camera/Camera.h"
+﻿#include "../../Public/Camera/Camera.h"
 
 #include <DirectXMath.h>
 #include <DirectXMathMatrix.inl>
 
-#include "Api/Public/GameHost.h"
+#include "../../Public/GameHost.h"
 
 void Camera::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 {

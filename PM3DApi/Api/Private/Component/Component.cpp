@@ -1,4 +1,4 @@
-﻿#include "Api/Public/Component/Component.h"
+﻿#include "../../Public/Component/Component.h"
 
 void PM3D_API::Component::Initialize()
 {

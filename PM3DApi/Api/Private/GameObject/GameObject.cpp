@@ -1,4 +1,4 @@
-﻿#include "Api/Public/GameObject/GameObject.h"
+﻿#include "../../Public/GameObject/GameObject.h"
 
 #include <iostream>
 #include <stdexcept>
