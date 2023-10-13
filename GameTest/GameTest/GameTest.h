@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../PM3DApi/Api/Public/GameHost.h"
+#include "../../../PM3DApi/Api/Public/GameHost.h"
 
 class GameTest : public PM3D_API::GameHost
 {
