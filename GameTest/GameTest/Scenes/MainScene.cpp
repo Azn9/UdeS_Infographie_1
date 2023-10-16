@@ -14,6 +14,7 @@ void MainScene::Initialize()
 
 	// Add main camera
 	auto mainCamera = std::make_unique<Camera>(
+		"Main camera",
 		Camera::PERSECTIVE,
 		XMFLOAT3(0.0f, 5.0f, -10.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),

@@ -65,8 +65,8 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 	// Obtenir les informations de l'adaptateur de d�faut
 	CInfoDispositif Dispo0(ADAPTATEUR_COURANT);
 
-	largeur = 1080;
-	hauteur = 720;
+	largeur = 1024;
+	hauteur = 768;
 
 	switch (cdsMode)
 	{

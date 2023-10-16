@@ -8,36 +8,42 @@
 void Camera::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 {
 	GameObject::SetLocalPosition(newPosition);
+	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
 void Camera::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
 {
 	GameObject::SetLocalRotation(newRotation);
+	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
 void Camera::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 {
 	GameObject::SetWorldPosition(newPosition);
+	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
 void Camera::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
 {
 	GameObject::SetWorldRotation(newRotation);
+	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
 void Camera::SetWorldRotation(const Quaternion newRotation)
 {
 	GameObject::SetWorldRotation(newRotation);
+	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
 void Camera::SetLocalRotation(const Quaternion newRotation)
 {
 	GameObject::SetLocalRotation(newRotation);
+	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
@@ -66,8 +72,7 @@ void Camera::SetFocusPoint(const DirectX::XMVECTOR newFocusPoint)
 	Quaternion rotation;
 	XMStoreFloat4(&rotation, newRotation);
 
-	SetWorldRotation(rotation);
-
+	GameObject::SetWorldRotation(rotation);
 	UpdateInternalMatrices();
 }
 
@@ -98,7 +103,6 @@ void Camera::SetFarPlane(const float newFarPlane)
 void Camera::UpdateInternalMatrices()
 {
 	const DirectX::XMFLOAT3 position = GetWorldPosition();
-	const DirectX::XMFLOAT3 rotation = GetWorldRotationEuler();
 
 	matView = DirectX::XMMatrixLookAtRH(
 		DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f),

@@ -14,6 +14,7 @@ PM3D_API::GameObject::GameObject(
     worldRotationEuler(worldRotation),
     worldRotationQuaternion(Quaternion::FromEulerAngles(worldRotation))
 {
+	// Force recalculation
 	GameObject::SetWorldPosition(worldPosition);
 	GameObject::SetWorldRotation(worldRotation);
 	GameObject::SetWorldScale(worldScale);
@@ -30,6 +31,7 @@ PM3D_API::GameObject::GameObject(
 	worldRotationEuler(worldRotation.ToEulerAngles()),
 	worldRotationQuaternion(worldRotation)
 {
+	// Force recalculation
 	GameObject::SetWorldPosition(worldPosition);
 	GameObject::SetWorldRotation(worldRotation.ToEulerAngles());
 	GameObject::SetWorldScale(worldScale);

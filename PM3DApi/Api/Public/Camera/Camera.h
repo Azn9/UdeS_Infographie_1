@@ -20,8 +20,8 @@ public:
 	) : GameObject(
 			name,
 			worldPosition,
-			{0, 0, 0},
-			{0, 0, 0}
+			{0.0f, 0.0f, 0.0f},
+			{1.0f, 1.0f, 1.0f}
 		), cameraType(cameraType), focusPoint(focusPoint), upVector(upVector)
 	{
 		SetFocusPoint(focusPoint); // Recalculate rotation
@@ -35,8 +35,8 @@ public:
 	) : GameObject(
 			"Main camera",
 		    worldPosition,
-		    {0, 0, 0},
-		    {0, 0, 0}
+		    {0.0f, 0.0f, 0.0f},
+		    {1.0f, 1.0f, 1.0f}
 	    ), cameraType(cameraType), focusPoint(focusPoint), upVector(upVector)
 	{
 		SetFocusPoint(focusPoint); // Recalculate rotation

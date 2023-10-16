@@ -192,6 +192,8 @@ void PM3D_API::MeshRenderer::LoadMesh()
 	// 1. SOMMETS a) Créations des sommets dans un tableau temporaire
 	{
 		const size_t nombreSommets = chargeur->GetNombreSommets();
+
+		std::cout << "MeshRenderer::LoadMesh: nombreSommets = " << nombreSommets << std::endl;
 		
 		std::unique_ptr<CSommetMesh[]> ts(new CSommetMesh[nombreSommets]);
 		for (uint32_t i = 0; i < nombreSommets; ++i)
