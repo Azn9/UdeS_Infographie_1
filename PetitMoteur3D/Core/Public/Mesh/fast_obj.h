@@ -1362,6 +1362,8 @@ void parse_buffer(fastObjData* data, const char* ptr, const char* end, const fas
 
 void fast_obj_destroy(fastObjMesh* m)
 {
+    std::cout << "fast_obj_destroy" << std::endl;
+    
     unsigned int ii;
 
 

@@ -15,7 +15,7 @@ class Scene;
 
 namespace PM3D_API
 {
-class GameObject : public std::enable_shared_from_this<GameObject>
+class GameObject
 {
 public:
 	// ============================
@@ -74,7 +74,7 @@ public:
 		DirectX::XMFLOAT3 worldScale
 	);
 
-	virtual ~GameObject() = default;
+	virtual ~GameObject();
 
 	// ============================
 	//  GameObject base methods
@@ -85,17 +85,28 @@ public:
 	virtual void FixedUpdate(double elapsed);
 	virtual void Draw() const;
 
-	virtual void AddChild(const std::shared_ptr<GameObject>& child);
-	virtual void AddComponent(const std::shared_ptr<Component>& component);
+	virtual void AddChild(std::unique_ptr<GameObject>&& child);
+	virtual void AddComponent(std::unique_ptr<Component>&& component);
 
 	std::string GetName() const { return name; }
 
 	template <typename T, template_extends<T, Component> = 0>
-	std::shared_ptr<T>& GetComponent();
+	std::unique_ptr<T>& GetComponent()
+	{
+		for (const auto component : components)
+		{
+			if (typeid(*component.get()) == typeid(T))
+			{
+				return static_cast<T*>(component);
+			}
+		}
 
-	std::vector<std::weak_ptr<GameObject>> GetChildren() const { return children; }
+		return nullptr;
+	}
 
-	std::shared_ptr<Scene> GetScene() const { return scene; }
+	const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return children; }
+
+	const Scene* GetScene() const { return scene; }
 
 	// ============================
 	// Position, rotation, scale
@@ -135,19 +146,19 @@ protected:
 
 	DirectX::XMMATRIX matWorld;
 
-	std::vector<std::weak_ptr<GameObject>> children{};
-	std::vector<std::weak_ptr<Component>> components{};
-	std::shared_ptr<Scene> scene = nullptr;
-	std::shared_ptr<GameObject> parent = nullptr;
+	std::vector<std::unique_ptr<GameObject>> children{};
+	std::vector<std::unique_ptr<Component>> components{};
+	const Scene* scene = nullptr;
+	const GameObject* parent = nullptr;
 
 	virtual void UpdateMatrix();
 	virtual void DrawSelf() const;
 
 private:
 	friend class Scene;
-	void SetScene(const std::shared_ptr<Scene>& newScene) { scene = newScene; }
+	void SetScene(const Scene* newScene) { scene = newScene; }
 
-	void SetParent(const std::shared_ptr<GameObject>& newParent);
+	void SetParent(const GameObject* newParent);
 };
 
 }

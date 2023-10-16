@@ -8,7 +8,7 @@ class GameObject;
 class Component
 {
 public:
-	virtual ~Component() = default;
+	virtual ~Component();
 
 	virtual void Initialize();
 	virtual void Update(double deltaTime);
@@ -16,11 +16,11 @@ public:
 	virtual void DrawSelf() const;
 
 protected:
-	std::shared_ptr<GameObject> parentObject = nullptr;
+	const GameObject* parentObject = nullptr;
 
 private:
 	friend class GameObject;
-	void SetGameObject(const std::shared_ptr<GameObject>& gameObject);
+	void SetGameObject(const GameObject* gameObject) { parentObject = gameObject; }
 
 };
 }

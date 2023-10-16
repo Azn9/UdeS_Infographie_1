@@ -13,7 +13,7 @@ void MainScene::Initialize()
 	std::cout << "MainScene::Initialize()" << std::endl;
 
 	// Add main camera
-	const auto mainCamera = std::make_shared<Camera>(
+	auto mainCamera = std::make_unique<Camera>(
 		Camera::PERSECTIVE,
 		XMFLOAT3(0.0f, 5.0f, -10.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
@@ -21,26 +21,26 @@ void MainScene::Initialize()
 	);
 	mainCamera->SetFieldOfView(90.0f);
 	mainCamera->SetFarPlane(1000.0f);
-	SetMainCamera(mainCamera);
+	SetMainCamera(std::move(mainCamera));
 
 	// Add a directional light
-	const auto directionalLight = std::make_shared<DirectionalLight>(
+	auto directionalLight = std::make_unique<DirectionalLight>(
 		"Main light",
 		XMFLOAT3(0.0f, -1.0f, 0.0f)
 	);
 	directionalLight->Initialize();
-	SetDirectionalLight(directionalLight);
+	SetDirectionalLight(std::move(directionalLight));
 
 	// Add a cube
-	const auto cube = std::make_shared<GameObject>(
+	auto cube = std::make_unique<GameObject>(
 		"A cube",
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(1.0f, 1.0f, 1.0f)
 	);
-	const auto meshRenderer = std::make_shared<PM3D_API::MeshRenderer>("cube.obj");
-	cube->AddComponent(meshRenderer);
+	auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>("cube.obj");
+	cube->AddComponent(std::move(meshRenderer));
 	cube->Initialize();
 
-	AddChild(cube);
+	AddChild(std::move(cube));
 }

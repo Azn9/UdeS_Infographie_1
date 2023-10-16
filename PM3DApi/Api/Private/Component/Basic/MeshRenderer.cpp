@@ -49,10 +49,9 @@ PM3D_API::MeshRenderer::MeshRenderer(PM3D::IChargeur* chargeur) : chargeur(charg
 
 PM3D_API::MeshRenderer::~MeshRenderer()
 {
-	delete chargeur;
+	std::cout << "MeshRenderer::~MeshRenderer()" << std::endl;
 	
-	if (mesh != nullptr)
-		fast_obj_destroy(mesh);
+	delete chargeur; // Will also delete mesh using fastObjDestroy
 
 	PM3D::DXRelacher(pConstantBuffer);
 	PM3D::DXRelacher(pSampleState);
