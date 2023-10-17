@@ -1,4 +1,6 @@
 #include "StdAfx.h"
+#include <thread>
+#include <string>
 #include "Core/Public/Util/resource.h"
 
 #include "Core/Public/Core/MoteurWindows.h"
@@ -264,4 +266,11 @@ INT_PTR CALLBACK CMoteurWindows::About(HWND hDlg, UINT message, WPARAM wParam, L
 	return (INT_PTR)FALSE;
 }
 
+void CMoteurWindows::SetThreadName(std::thread& thread, const std::string& name)
+{
+	const std::wstring wName(name.begin(), name.end());
+	if (thread.native_handle() != nullptr) {
+		SetThreadDescription(thread.native_handle(), wName.c_str());
+	}
+}
 } // namespace PM3D

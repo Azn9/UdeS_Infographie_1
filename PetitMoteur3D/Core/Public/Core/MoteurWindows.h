@@ -3,6 +3,8 @@
 #include "moteur.h"
 #include "dispositifD3D11.h"
 #include "Horloge.h"
+#include <thread>
+#include <string>
 
 namespace PM3D
 {
@@ -39,6 +41,8 @@ private:
 	Horloge m_Horloge;
 
 	float hue = 0.0f;
+
+	void SetThreadName(std::thread& thread, const std::string& name) override;
 };
 
 } // namespace PM3D

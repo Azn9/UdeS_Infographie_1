@@ -85,8 +85,6 @@ struct ShadersParams
 
 void PM3D_API::MeshRenderer::DrawSelf() const
 {
-	std::cout << "MeshRenderer::DrawSelf()" << std::endl;
-	
 	if (!mesh)
 		throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
 
@@ -122,8 +120,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
 	if (directionnalLight)
 	{
-		auto rotation = directionnalLight->GetLocalRotationEuler();
-		sp.vLumiere = XMVectorSet(rotation.x, rotation.y, rotation.z, 1.0f);
+		auto position = directionnalLight->GetWorldPosition();
+		sp.vLumiere = XMVectorSet(position.x, position.y, position.z, 1.0f);
 	}
 	else
 	{
@@ -276,7 +274,8 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		int32_t index;
 		for (index = 0; index < Material.size(); ++index)
 		{
-			if (Material[index].NomMateriau == chargeur->GetMaterialName(i))
+			const auto materialName = Material[index].NomMateriau;
+			if (materialName == "" || materialName == chargeur->GetMaterialName(i))
 				break;
 		}
 		if (index >= Material.size()) index = 0; // valeur de défaut

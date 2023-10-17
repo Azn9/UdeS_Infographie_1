@@ -18,7 +18,7 @@ void MainScene::Initialize()
 		Camera::PERSECTIVE,
 		XMFLOAT3(0.0f, 5.0f, -10.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-		XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
+		XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
 	);
 	mainCamera->SetFieldOfView(90.0f);
 	mainCamera->SetFarPlane(1000.0f);
@@ -29,6 +29,9 @@ void MainScene::Initialize()
 		"Main light",
 		XMFLOAT3(0.0f, -1.0f, 0.0f)
 	);
+	directionalLight->SetWorldPosition(XMFLOAT3(0.0f, 10.0f, 0.0f));
+	directionalLight->SetIntensity(100.0f);
+	directionalLight->SetColor(XMFLOAT3(1.0f, 1.0f, 1.0f));
 	directionalLight->Initialize();
 	SetDirectionalLight(std::move(directionalLight));
 

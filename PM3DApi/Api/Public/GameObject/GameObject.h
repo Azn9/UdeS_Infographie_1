@@ -111,25 +111,25 @@ public:
 	// ============================
 	// Position, rotation, scale
 	// ============================
-	virtual DirectX::XMFLOAT3 GetLocalPosition() const { return localPosition; }
-	virtual DirectX::XMFLOAT3 GetLocalScale() const { return localScale; }
-	virtual DirectX::XMFLOAT3 GetLocalRotationEuler() const { return localRotationEuler; }
-	virtual Quaternion GetLocalRotationQuaternion() const { return localRotationQuaternion; }
+	virtual const DirectX::XMFLOAT3& GetLocalPosition() const { return localPosition; }
+	virtual const DirectX::XMFLOAT3& GetLocalScale() const { return localScale; }
+	virtual const DirectX::XMFLOAT3& GetLocalRotationEuler() const { return localRotationEuler; }
+	virtual const Quaternion& GetLocalRotationQuaternion() const { return localRotationQuaternion; }
 	virtual void SetLocalPosition(DirectX::XMFLOAT3 newPosition);
 	virtual void SetLocalScale(DirectX::XMFLOAT3 newScale);
 	virtual void SetLocalRotation(DirectX::XMFLOAT3 newRotation);
 	virtual void SetLocalRotation(Quaternion newRotation);
 
-	virtual DirectX::XMFLOAT3 GetWorldPosition() const { return worldPosition; }
-	virtual DirectX::XMFLOAT3 GetWorldScale() const { return worldScale; }
-	virtual DirectX::XMFLOAT3 GetWorldRotationEuler() const { return worldRotationEuler; }
-	virtual Quaternion GetWorldRotationQuaternion() const { return worldRotationQuaternion; }
+	virtual const DirectX::XMFLOAT3& GetWorldPosition() const { return worldPosition; }
+	virtual const DirectX::XMFLOAT3& GetWorldScale() const { return worldScale; }
+	virtual const DirectX::XMFLOAT3& GetWorldRotationEuler() const { return worldRotationEuler; }
+	virtual const Quaternion& GetWorldRotationQuaternion() const { return worldRotationQuaternion; }
 	virtual void SetWorldPosition(DirectX::XMFLOAT3 newPosition);
 	virtual void SetWorldScale(DirectX::XMFLOAT3 newScale);
 	virtual void SetWorldRotation(DirectX::XMFLOAT3 newRotation);
 	virtual void SetWorldRotation(Quaternion newRotation);
 
-	virtual DirectX::XMMATRIX GetMatWorld() const { return matWorld; }
+	virtual const DirectX::XMMATRIX& GetMatWorld() const { return matWorld; }
 
 protected:
 	std::string name = "Unnamed GameObject";

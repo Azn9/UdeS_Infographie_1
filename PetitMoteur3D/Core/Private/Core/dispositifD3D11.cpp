@@ -143,7 +143,7 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 	InitDepthBuffer();
 
 	InitDepthState();
-	ActiverDepth();
+	DesactiverDepth();
 
 	InitBlendStates();
 

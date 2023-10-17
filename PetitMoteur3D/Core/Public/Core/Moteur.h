@@ -1,7 +1,6 @@
 #pragma once
-#include <chrono>
-#include <locale>
 #include <thread>
+#include <string>
 
 #include "../../Public/Util/Singleton.h"
 #include "dispositif.h"
@@ -17,8 +16,10 @@
 namespace PM3D
 {
 
-const int IMAGESPARSECONDE = 1; // TODO
+const int IMAGESPARSECONDE = 3;
+const int PHYSICS_PER_SECOND = 3;
 const double EcartTemps = 1.0 / static_cast<double>(IMAGESPARSECONDE);
+const double FixedEcartTemps = 1.0 / static_cast<double>(PHYSICS_PER_SECOND);
 
 //
 //   TEMPLATE�: CMoteur
@@ -49,6 +50,7 @@ public:
 				}
 			}
 		});
+		SetThreadName(drawThread, "DrawThread");
 		drawThread.detach();
 
 		// Update thread
@@ -59,11 +61,15 @@ public:
 				const int64_t currentTime = GetTimeSpecific();
 				const double timeElapsed = GetTimeIntervalsInSec(LastUpdateTime, currentTime);
 
-				gameHost->Update(timeElapsed);
+				if (timeElapsed > EcartTemps)
+				{
+					gameHost->Update(timeElapsed);
 				
-				LastUpdateTime = currentTime;
+					LastUpdateTime = currentTime;
+				}
 			}
 		});
+		SetThreadName(updateThread, "UpdateThread");
 		updateThread.detach();
 
 		// FixedUpdate thread
@@ -74,11 +80,15 @@ public:
 				const int64_t currentTime = GetTimeSpecific();
 				const double timeElapsed = GetTimeIntervalsInSec(LastFixedUpdateTime, currentTime);
 
-				gameHost->FixedUpdate(timeElapsed);
+				if (timeElapsed > FixedEcartTemps)
+				{
+					gameHost->FixedUpdate(timeElapsed);
 				
-				LastFixedUpdateTime = currentTime;
+					LastFixedUpdateTime = currentTime;
+				}
 			}
 		});
+		SetThreadName(fixedUpdateThread, "FixedUpdateThread");
 		fixedUpdateThread.detach();
 
 		while (this->running)
@@ -273,6 +283,7 @@ protected:
 
 	CDIManipulateur GestionnaireDeSaisie;
 
+	virtual void SetThreadName(std::thread&, const std::string&) {}
 };
 
 } // namespace PM3D
