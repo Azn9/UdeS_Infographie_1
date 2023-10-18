@@ -14,7 +14,7 @@
 #include "../../../Public/GameObject/GameObject.h"
 #include "../../../Public/Scene/Scene.h"
 
-PM3D_API::MeshRenderer::MeshRenderer(std::string meshName)
+PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName) : Renderer(std::move(shader))
 {
 	std::cout << "MeshRenderer::MeshRenderer(" << meshName << ")" << std::endl;
 	
@@ -29,19 +29,17 @@ PM3D_API::MeshRenderer::MeshRenderer(std::string meshName)
 	
 	chargeur->Chargement(params);
 
-	// Init effect
-	InitEffect();
+	shader->InitializeLayout(CSommetMesh::layout);
 	
 	// Load mesh
 	LoadMesh();
 }
 
-PM3D_API::MeshRenderer::MeshRenderer(PM3D::IChargeur* chargeur) : chargeur(chargeur)
+PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur) : Renderer(std::move(shader)), chargeur(chargeur)
 {
 	std::cout << "MeshRenderer::MeshRenderer(chargeur)" << std::endl;
 
-	// Init effect
-	InitEffect();
+	shader->InitializeLayout(CSommetMesh::layout);
 	
 	// Load mesh
 	LoadMesh();
@@ -52,36 +50,12 @@ PM3D_API::MeshRenderer::~MeshRenderer()
 	std::cout << "MeshRenderer::~MeshRenderer()" << std::endl;
 	
 	delete chargeur; // Will also delete mesh using fastObjDestroy
-
-	PM3D::DXRelacher(pConstantBuffer);
-	PM3D::DXRelacher(pSampleState);
-	PM3D::DXRelacher(pEffet);
-	PM3D::DXRelacher(pVertexLayout);
-	PM3D::DXRelacher(pIndexBuffer);
-	PM3D::DXRelacher(pVertexBuffer);
 }
 
 void PM3D_API::MeshRenderer::Initialize()
 {
 	std::cout << "MeshRenderer::Initialize()" << std::endl;
 }
-
-struct ShadersParams
-{
-	XMMATRIX matWorldViewProj; // la matrice totale
-	XMMATRIX matWorld; // matrice de transformation dans le monde
-	XMVECTOR vLumiere; // la position de la source d’éclairage (Point)
-	XMVECTOR vCamera; // la position de la caméra
-	XMVECTOR vAEcl; // la valeur ambiante de l’éclairage
-	XMVECTOR vAMat; // la valeur ambiante du matériau
-	XMVECTOR vDEcl; // la valeur diffuse de l’éclairage
-	XMVECTOR vDMat; // la valeur diffuse du matériau
-	XMVECTOR vSEcl; // la valeur spéculaire de l’éclairage
-	XMVECTOR vSMat; // la valeur spéculaire du matériau
-	float puissance; // la puissance de spécularité
-	int bTex; // Texture ou materiau
-	XMFLOAT2 remplissage;
-};
 
 void PM3D_API::MeshRenderer::DrawSelf() const
 {
@@ -90,9 +64,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
 	const auto scene = parentObject->GetScene();
 	const auto camera = scene->GetMainCamera();
-	const auto directionnalLight = scene->GetDirectionalLight();
 
-	if (!camera || !directionnalLight)
+	if (!camera)
 		throw std::runtime_error("MeshRenderer::DrawSelf: camera or directionnalLight is null");
 
 	// Obtenir le contexte
@@ -102,59 +75,38 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// input layout des sommets
-	pImmediateContext->IASetInputLayout(pVertexLayout);
+	pImmediateContext->IASetInputLayout(shader->GetVertexLayout());
 
 	// Index buffer
-	pImmediateContext->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	pImmediateContext->IASetIndexBuffer(shader->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	// Vertex buffer
 	UINT stride = sizeof(CSommetMesh);
 	UINT offset = 0;
-	pImmediateContext->IASetVertexBuffers(0, 1, &pVertexBuffer, &stride, &offset);
+	pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
-	// Initialiser et sélectionner les « constantes » de l’effet
-	ShadersParams sp;
-	XMMATRIX viewProj = camera->GetMatViewProj();
-	sp.matWorldViewProj = XMMatrixTranspose(parentObject->GetMatWorld() * viewProj);
-	sp.matWorld = XMMatrixTranspose(parentObject->GetMatWorld());
-
-	if (directionnalLight)
-	{
-		auto position = directionnalLight->GetWorldPosition();
-		sp.vLumiere = XMVectorSet(position.x, position.y, position.z, 1.0f);
-	}
-	else
-	{
-		sp.vLumiere = XMVectorSet(0.0f, -1.0f, 0.0f, 1.0f);
-	}
-
-	auto cameraPosition = camera->GetWorldPosition();
-	sp.vCamera = XMVectorSet(cameraPosition.x, cameraPosition.y, cameraPosition.z, 1.0f);
+	const XMMATRIX viewProj = camera->GetMatViewProj();
 	
-	sp.vAEcl = XMVectorSet(0.2f, 0.2f, 0.2f, 1.0f);
-	sp.vDEcl = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
-	sp.vSEcl = XMVectorSet(0.6f, 0.6f, 0.6f, 1.0f);
-
-	// Le sampler state
-	ID3DX11EffectSamplerVariable* variableSampler;
-	variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
-	variableSampler->SetSampler(0, pSampleState);
+	const auto shaderParameters = shader->PrepareParameters(
+		XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
+		XMMatrixTranspose(parentObject->GetMatWorld())
+	);
 
 	// Dessiner les sous-objets non-transparents
 	for (int i = 0; i < mesh->object_count; ++i)
 	{
-		auto objGroup = mesh->objects[i];
-		unsigned indexStart = objGroup.index_offset;
-		int indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+		const auto objGroup = mesh->objects[i];
+		const unsigned indexStart = objGroup.index_offset;
+		const unsigned int indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
 
 		if (!indexDrawAmount)
 		{
 			continue;
 		}
 
-		sp.vAMat = DirectX::XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient);
-		sp.vDMat = DirectX::XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse);
-		sp.vSMat = DirectX::XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular);
+		sp.vAMat = XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient);
+		sp.vDMat = XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse);
+		sp.vSMat = XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular);
 		sp.puissance = Material[SubmeshMaterialIndex[i]].Puissance;
 
 		// Activation de la texture ou non
@@ -172,13 +124,14 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		}
 
 		// IMPORTANT pour ajuster les param.
-		pPasse->Apply(0, pImmediateContext);
+		shader->GetPass()->Apply(0, pImmediateContext);
 
 		// Nous n’avons qu’un seul CBuffer
 		ID3DX11EffectConstantBuffer* pCB = pEffet->GetConstantBufferByName("param");
 		pCB->SetConstantBuffer(pConstantBuffer);
 
-		pImmediateContext->UpdateSubresource(pConstantBuffer, 0, nullptr, &sp, 0, 0);
+		pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, &sp, 0, 0);
+		
 		pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
 	}
 }
@@ -234,7 +187,7 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		D3D11_SUBRESOURCE_DATA InitData;
 		ZeroMemory(&InitData, sizeof(InitData));
 		InitData.pSysMem = chargeur->GetIndexData();
-		pIndexBuffer = nullptr;
+		indexBuffer = nullptr;
 		PM3D::DXEssayer(pD3DDevice->CreateBuffer(&bd, &InitData, &pIndexBuffer),
 			DXE_CREATIONINDEXBUFFER);
 	}
@@ -299,72 +252,3 @@ void PM3D_API::MeshRenderer::LoadMesh()
 	mesh = static_cast<fastObjMesh*>(chargeur->GetMesh());
 	meshLoaded = true;
 }
-
-void PM3D_API::MeshRenderer::InitEffect()
-{
-	// Compilation et chargement du vertex shader
-	ID3D11Device* pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
-
-	// Création d’un tampon pour les constantes du VS
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(ShadersParams);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-
-	PM3D::DXEssayer(pD3DDevice->CreateBuffer(&bd, nullptr, &pConstantBuffer));
-
-	// Pour l’effet
-	ID3DBlob* pFXBlob = nullptr;
-
-	PM3D::DXEssayer(D3DCompileFromFile(L"MiniPhong.fx", 0, 0, 0,
-			"fx_5_0", 0, 0, &pFXBlob, 0),
-		DXE_ERREURCREATION_FX);
-
-	D3DX11CreateEffectFromMemory(pFXBlob->GetBufferPointer(), pFXBlob->GetBufferSize(), 0, pD3DDevice, &pEffet);
-
-	pFXBlob->Release();
-
-	pTechnique = pEffet->GetTechniqueByIndex(0);
-	pPasse = pTechnique->GetPassByIndex(0);
-
-	// Créer l’organisation des sommets pour le VS de notre effet
-	D3DX11_PASS_SHADER_DESC effectVSDesc;
-	pPasse->GetVertexShaderDesc(&effectVSDesc);
-
-	D3DX11_EFFECT_SHADER_DESC effectVSDesc2;
-	effectVSDesc.pShaderVariable->GetShaderDesc(effectVSDesc.ShaderIndex, &effectVSDesc2);
-
-	const void* vsCodePtr = effectVSDesc2.pBytecode;
-	const uint32_t vsCodeLen = effectVSDesc2.BytecodeLength;
-	pVertexLayout = nullptr;
-
-	CSommetMesh::numElements = ARRAYSIZE(CSommetMesh::layout);
-
-	PM3D::DXEssayer(pD3DDevice->CreateInputLayout(CSommetMesh::layout,
-			CSommetMesh::numElements,
-			vsCodePtr,
-			vsCodeLen,
-			&pVertexLayout),
-		DXE_CREATIONLAYOUT);
-
-	// Initialisation des paramètres de sampling de la texture
-	D3D11_SAMPLER_DESC samplerDesc;
-	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 4;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	// Création de l’état de sampling
-	pD3DDevice->CreateSamplerState(&samplerDesc, &pSampleState);
-} // InitEffet

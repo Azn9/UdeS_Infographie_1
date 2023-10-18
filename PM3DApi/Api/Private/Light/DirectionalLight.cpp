@@ -50,3 +50,22 @@ DirectionalLight::DirectionalLight(
 {
 
 }
+
+ShaderLightDefaultParameters DirectionalLight::GetShaderLightDefaultParameters() const
+{
+	return {
+		1, // Directional
+		{0.0f, 0.0f, 0.0f, 1.0f}, // Position
+		DirectX::XMVectorSet(worldRotationEuler.x, worldRotationEuler.y, worldRotationEuler.z, 1.0f),
+
+		{0.2f, 0.2f, 0.2f}, // Ambient
+		{1.0f, 1.0f, 1.0f}, // Diffuse
+		{0.6f, 0.6f, 0.6f}, // Specular
+		
+		color, // Color
+
+		// Unused here
+		0.0f, // Inner angle
+		0.0f // Outer angle
+	};
+}

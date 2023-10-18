@@ -4,7 +4,7 @@
 class SpotLight final : public Light
 {
 public:
-
+	ShaderLightDefaultParameters GetShaderLightDefaultParameters() const override;
 protected:
 
 private:

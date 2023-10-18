@@ -12,6 +12,7 @@ public:
 	DirectionalLight(const std::string& name, DirectX::XMFLOAT3 rotation, float intensity);
 	DirectionalLight(const std::string& name, DirectX::XMFLOAT3 rotation, float intensity, DirectX::XMFLOAT3 color);
 
+	ShaderLightDefaultParameters GetShaderLightDefaultParameters() const override;
 protected:
 
 private:

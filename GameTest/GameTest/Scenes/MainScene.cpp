@@ -7,6 +7,8 @@
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
+#include "../../../PM3DApi/Api/Public/Shader/Shader.h"
+#include "../../../PM3DApi/Api/Public/Shader/Basic/DefaultShader.h"
 
 void MainScene::Initialize()
 {
@@ -35,6 +37,9 @@ void MainScene::Initialize()
 	directionalLight->Initialize();
 	SetDirectionalLight(std::move(directionalLight));
 
+	std::unique_ptr<Shader> shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
+	shader->Initialize();
+
 	// Add a cube
 	auto cube = std::make_unique<GameObject>(
 		"A cube",
@@ -42,7 +47,7 @@ void MainScene::Initialize()
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(1.0f, 1.0f, 1.0f)
 	);
-	auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>("cube.obj");
+	auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "cube.obj");
 	cube->AddComponent(std::move(meshRenderer));
 	cube->Initialize();
 

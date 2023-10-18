@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "ShaderLightDefaultParameters.h"
 #include "../GameObject/GameObject.h"
 
 class Light : public PM3D_API::GameObject
@@ -19,6 +20,7 @@ public:
 	DirectX::XMFLOAT3 GetColor() const { return color; }
 	void SetColor(const DirectX::XMFLOAT3 newColor) { color = newColor; }
 
+	virtual ShaderLightDefaultParameters GetShaderLightDefaultParameters() const = 0;
 protected:
 	float intensity;
 	DirectX::XMFLOAT3 color;

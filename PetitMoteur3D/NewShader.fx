@@ -1,16 +1,16 @@
-cbuffer light {
+cbuffer Light {
 	int lightType; // 0 = ambient, 1 = directional, 2 = point, 3 = spot
 	float4 position;
 	float4 direction;
 	
-	float ambiant;
-	float diffuse;
-	float specular;
+	float3 ambiant;
+	float3 diffuse;
+	float3 specular;
 	
 	float3 color;
 	// Only for spot
-	double innerAngle;
-	double outerAngle;
+	float innerAngle;
+	float outerAngle;
 };
 
 cbuffer param
@@ -27,18 +27,17 @@ cbuffer param
 };
 
 #define MAX_LIGHTS 10
-StructuredBuffer<light> lights : register(t0);
+StructuredBuffer<Light> lights : register(t0);
 
 struct VS_Sortie
 {
 	float4 Pos : SV_Position;
 	float3 Norm :    TEXCOORD0;
-	float3 vDirLum : TEXCOORD1;
-	float3 vDirCam : TEXCOORD2;
-	float2 coordTex : TEXCOORD3;
+	float3 vDirCam : TEXCOORD1;
+	float2 coordTex : TEXCOORD2;
 };
 
-VS_Sortie MiniPhongVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coordTex: TEXCOORD)
+VS_Sortie MainVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coordTex: TEXCOORD)
 {
 	VS_Sortie sortie = (VS_Sortie)0;
 
@@ -47,7 +46,6 @@ VS_Sortie MiniPhongVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coo
 
 	float3 PosWorld = mul(Pos, matWorld).xyz;
 
-	sortie.vDirLum = vLumiere.xyz - PosWorld;
 	sortie.vDirCam = vCamera.xyz - PosWorld;
 
 	// Coordonnées d’application de texture
@@ -59,23 +57,47 @@ VS_Sortie MiniPhongVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coo
 Texture2D textureEntree; // la texture
 SamplerState SampleState; // l’état de sampling
 
-float4 MiniPhongPS(VS_Sortie vs) : SV_Target
+float4 MainPS(VS_Sortie vs) : SV_Target
 {
-	float3 couleur = float3(0, 0, 0);
+	float3 totalLight = float3(0, 0, 0);
 
 	// Normaliser les param�tres
 	float3 N = normalize(vs.Norm);
-	float3 L = normalize(vs.vDirLum);
 	float3 V = normalize(vs.vDirCam);
 
-	// Valeur de la composante diffuse
-	float3 diff = saturate(dot(N, L));
 
-	// R = 2 * (N.L) * N � L
-	float3 R = normalize(2 * diff * N - L);
+	for (uint i = 0; i < MAX_LIGHTS; ++i) {
+		Light li = lights[i];
 
-    // Calcul de la spécularité
-    float3 S = pow(saturate(dot(R, V)), puissance);
+		totalLight += lights.color.rgb * lights.ambiant.x;
+		
+		if (light.lightType == 0) // ambiant
+		{
+			continue;
+		}
+		else if (lights.lightType == 1) // Directionnal
+		{
+			float3 L = normalize(-li.direction.xyz);
+            float3 diff = saturate(dot(N, L));
+            float3 H = normalize(L + V);
+            float3 spec = pow(saturate(dot(N, H)), li.specular.x);
+            totalLight += li.color.rgb * (diff * li.diffuse.x + spec);
+
+		}
+		else if (lights.lightType == 2) // Point
+		{
+			float3 L = normalize(li.position.xyz - vs.Pos.xyz);
+            float3 diff = saturate(dot(N, L));
+            float3 H = normalize(L + V);
+            float3 spec = pow(saturate(dot(N, H)), li.specular.x);
+            float attenuation = 1.0 / length(li.position.xyz - vs.Pos.xyz);
+            totalLight += li.color.rgb * (diff * li.diffuse.x + spec) * attenuation;
+		}
+		else if (lights.lightType == 3) // Spot
+		{
+			// TODO
+		}
+	}
 
 	// Échantillonner la couleur du pixel à partir de la texture
 	float3 couleurTexture = textureEntree.Sample(SampleState, vs.coordTex).rgb;
@@ -84,27 +106,23 @@ float4 MiniPhongPS(VS_Sortie vs) : SV_Target
     {
         // Échantillonner la couleur du pixel à partir de la texture
         couleurTexture = textureEntree.Sample(SampleState, vs.coordTex).rgb;
-        
-        // I = A + D * N.L + (R.V)n
-        couleur = couleurTexture * vAEcl.rgb +
-        couleurTexture * vDEcl.rgb * diff +
-        vSEcl.rgb * vSMat.rgb * S;
     }
     else
     {
-        couleur = vAEcl.rgb * vAMat.rgb + vDEcl.rgb * vDMat.rgb * diff +
-        vSEcl.rgb * vSMat.rgb * S;
+        couleurTexture = float3(1, 1, 1);
     }
 
-	return float4(couleur, 1.0f);
+	float3 finalColor = couleurTexture.rgb * totalLight;
+
+	return float4(finalColor, 1.0f);
 }
 
-technique11 MiniPhong
+technique11 FX
 {
 	pass pass0
 	{
-		SetVertexShader(CompileShader(vs_5_0, MiniPhongVS()));
-		SetPixelShader(CompileShader(ps_5_0, MiniPhongPS()));
+		SetVertexShader(CompileShader(vs_5_0, MainVS()));
+		SetPixelShader(CompileShader(ps_5_0, MainPS()));
 		SetGeometryShader(NULL);
 	}
 }
