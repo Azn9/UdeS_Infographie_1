@@ -28,8 +28,6 @@ PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::stri
 	params.NomFichier = meshName;
 	
 	chargeur->Chargement(params);
-
-	shader->InitializeLayout(CSommetMesh::layout);
 	
 	// Load mesh
 	LoadMesh();
@@ -39,8 +37,6 @@ PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::ICh
 {
 	std::cout << "MeshRenderer::MeshRenderer(chargeur)" << std::endl;
 
-	shader->InitializeLayout(CSommetMesh::layout);
-	
 	// Load mesh
 	LoadMesh();
 }
@@ -81,9 +77,11 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	pImmediateContext->IASetIndexBuffer(shader->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	// Vertex buffer
-	UINT stride = sizeof(CSommetMesh);
-	UINT offset = 0;
+	constexpr UINT stride = sizeof(CSommetMesh);
+	constexpr UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
+
+	shader->LoadLights(pImmediateContext);
 
 	const XMMATRIX viewProj = camera->GetMatViewProj();
 	
@@ -103,37 +101,27 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		{
 			continue;
 		}
-
-		sp.vAMat = XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient);
-		sp.vDMat = XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse);
-		sp.vSMat = XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular);
-		sp.puissance = Material[SubmeshMaterialIndex[i]].Puissance;
-
-		// Activation de la texture ou non
-		if (Material[SubmeshMaterialIndex[i]].pTextureD3D != nullptr)
-		{
-			ID3DX11EffectShaderResourceVariable* variableTexture;
-			variableTexture =
-			pEffet->GetVariableByName("textureEntree")->AsShaderResource();
-			variableTexture->SetResource(Material[SubmeshMaterialIndex[i]].pTextureD3D);
-			sp.bTex = 1;
-		}
-		else
-		{
-			sp.bTex = 0;
-		}
+		
+		shader->ApplyMaterialParameters(
+			shaderParameters,
+			XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient),
+			XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse),
+			XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular),
+			Material[SubmeshMaterialIndex[i]].Puissance,
+			Material[SubmeshMaterialIndex[i]].pTextureD3D
+		);
 
 		// IMPORTANT pour ajuster les param.
 		shader->GetPass()->Apply(0, pImmediateContext);
 
-		// Nous n’avons qu’un seul CBuffer
-		ID3DX11EffectConstantBuffer* pCB = pEffet->GetConstantBufferByName("param");
-		pCB->SetConstantBuffer(pConstantBuffer);
+		shader->ApplyShaderParams();
 
-		pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, &sp, 0, 0);
+		pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
 		
 		pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
 	}
+
+	shader->DeleteParameters(shaderParameters);
 }
 
 void PM3D_API::MeshRenderer::LoadMesh()
@@ -165,8 +153,7 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		D3D11_SUBRESOURCE_DATA InitData;
 		ZeroMemory(&InitData, sizeof(InitData));
 		InitData.pSysMem = ts.get();
-		pVertexBuffer = nullptr;
-		PM3D::DXEssayer(pD3DDevice->CreateBuffer(&bd, &InitData, &pVertexBuffer),
+		PM3D::DXEssayer(pD3DDevice->CreateBuffer(&bd, &InitData, shader->GetVertexBufferPtr()),
 			DXE_CREATIONVERTEXBUFFER);
 	}
 
@@ -187,8 +174,7 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		D3D11_SUBRESOURCE_DATA InitData;
 		ZeroMemory(&InitData, sizeof(InitData));
 		InitData.pSysMem = chargeur->GetIndexData();
-		indexBuffer = nullptr;
-		PM3D::DXEssayer(pD3DDevice->CreateBuffer(&bd, &InitData, &pIndexBuffer),
+		PM3D::DXEssayer(pD3DDevice->CreateBuffer(&bd, &InitData, shader->GetIndexBufferPtr()),
 			DXE_CREATIONINDEXBUFFER);
 	}
 

@@ -1,16 +1,16 @@
 ﻿#pragma once
 #include "Light.h"
 
-class PointLight final : public Light
+class AmbiantLight : public Light
 {
 public:
-	PointLight(
-		const DirectX::XMFLOAT3& position,
+	AmbiantLight(
+		float intensity,
 		const DirectX::XMFLOAT3& color
 	) : Light(
-		position,
 		DirectX::XMFLOAT3(0, 0, 0),
-		1.0f,
+		DirectX::XMFLOAT3(0, 0, 0),
+		intensity,
 		color
 	)
 	{
@@ -18,10 +18,6 @@ public:
 
 	ShaderLightDefaultParameters GetShaderLightDefaultParameters() const override;
 
-	LightType GetType() const override { return LightType::POINT; }
-
-protected:
-
-private:
+	LightType GetType() const override { return LightType::AMBIANT; }
 
 };

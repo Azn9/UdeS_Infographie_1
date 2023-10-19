@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "LightType.h"
 #include "ShaderLightDefaultParameters.h"
 #include "../GameObject/GameObject.h"
 
@@ -21,6 +22,8 @@ public:
 	void SetColor(const DirectX::XMFLOAT3 newColor) { color = newColor; }
 
 	virtual ShaderLightDefaultParameters GetShaderLightDefaultParameters() const = 0;
+
+	virtual LightType GetType() const = 0;
 protected:
 	float intensity;
 	DirectX::XMFLOAT3 color;

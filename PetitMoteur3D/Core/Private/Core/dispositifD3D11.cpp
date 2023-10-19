@@ -41,7 +41,7 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 {
 	UINT largeur;
 	UINT hauteur;
-	UINT createDeviceFlags = 0;
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
 
 #ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;

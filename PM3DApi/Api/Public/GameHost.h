@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 // ReSharper disable once CppUnusedIncludeDirective
+#include <DirectXMath.h>
+
 #include "../../../PetitMoteur3D/stdafx.h" // NECESSAIRE POUR COMPILER DispositifD3D11.h
 
 #include "../../../PetitMoteur3D/Core/Public/Core/DispositifD3D11.h"
@@ -39,6 +41,7 @@ namespace PM3D_API
         virtual void Initialize() = 0;
         virtual void Draw() const;
 
+        Scene* GetScene() const { return scene; }
     protected:
         virtual void SetScene(Scene* newScene);
 

@@ -1,13 +1,14 @@
-cbuffer Light {
+struct Light {
+	bool initialized;
 	int lightType; // 0 = ambient, 1 = directional, 2 = point, 3 = spot
 	float4 position;
 	float4 direction;
 	
-	float3 ambiant;
-	float3 diffuse;
-	float3 specular;
-	
-	float3 color;
+	float4 ambiant;
+	float4 diffuse;
+	float4 specular;
+	float specularPower;
+
 	// Only for spot
 	float innerAngle;
 	float outerAngle;
@@ -27,7 +28,7 @@ cbuffer param
 };
 
 #define MAX_LIGHTS 10
-StructuredBuffer<Light> lights : register(t0);
+StructuredBuffer<Light> lights; //  : register(t0)
 
 struct VS_Sortie
 {
@@ -59,7 +60,9 @@ SamplerState SampleState; // l’état de sampling
 
 float4 MainPS(VS_Sortie vs) : SV_Target
 {
-	float3 totalLight = float3(0, 0, 0);
+	float3 totalAmbiant = float3(0, 0, 0);
+	float3 totalDiffuse = float3(0, 0, 0);
+	float3 totalSpecular = float3(0, 0, 0);
 
 	// Normaliser les param�tres
 	float3 N = normalize(vs.Norm);
@@ -69,31 +72,36 @@ float4 MainPS(VS_Sortie vs) : SV_Target
 	for (uint i = 0; i < MAX_LIGHTS; ++i) {
 		Light li = lights[i];
 
-		totalLight += lights.color.rgb * lights.ambiant.x;
-		
-		if (light.lightType == 0) // ambiant
+		if (!li.initialized)
+			continue;
+
+		totalAmbiant += li.ambiant.rgb;
+
+		if (li.lightType == 0) // ambiant
 		{
 			continue;
 		}
-		else if (lights.lightType == 1) // Directionnal
+		else if (li.lightType == 1) // Directionnal
 		{
 			float3 L = normalize(-li.direction.xyz);
             float3 diff = saturate(dot(N, L));
-            float3 H = normalize(L + V);
-            float3 spec = pow(saturate(dot(N, H)), li.specular.x);
-            totalLight += li.color.rgb * (diff * li.diffuse.x + spec);
+            float3 R = normalize(2 * diff * N - L);
+			float3 S = pow(saturate(dot(R, V)), li.specularPower);
 
+			totalDiffuse += li.diffuse.rgb * diff;
+			totalSpecular += li.specular.rgb * S;
 		}
-		else if (lights.lightType == 2) // Point
+		else if (li.lightType == 2) // Point
 		{
 			float3 L = normalize(li.position.xyz - vs.Pos.xyz);
             float3 diff = saturate(dot(N, L));
-            float3 H = normalize(L + V);
-            float3 spec = pow(saturate(dot(N, H)), li.specular.x);
-            float attenuation = 1.0 / length(li.position.xyz - vs.Pos.xyz);
-            totalLight += li.color.rgb * (diff * li.diffuse.x + spec) * attenuation;
+            float3 R = normalize(2 * diff * N - L);
+			float3 S = pow(saturate(dot(R, V)), li.specularPower);
+            
+			totalDiffuse += li.diffuse.rgb * diff;
+			totalSpecular += li.specular.rgb * S;
 		}
-		else if (lights.lightType == 3) // Spot
+		else if (li.lightType == 3) // Spot
 		{
 			// TODO
 		}
@@ -112,12 +120,12 @@ float4 MainPS(VS_Sortie vs) : SV_Target
         couleurTexture = float3(1, 1, 1);
     }
 
-	float3 finalColor = couleurTexture.rgb * totalLight;
+	float3 finalColor = couleurTexture.rgb * (totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb);
 
 	return float4(finalColor, 1.0f);
 }
 
-technique11 FX
+technique11 NewShader
 {
 	pass pass0
 	{

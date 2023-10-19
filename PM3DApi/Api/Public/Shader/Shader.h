@@ -4,47 +4,46 @@
 #include <string>
 
 #include "../../../../PetitMoteur3D/Core/Public/Shader/d3dx11effect.h"
+#include "../../Public/GameHost.h"
 
+namespace PM3D_API
+{
 class Shader
 {
 public:
-	explicit Shader(std::wstring fileName) : fileName(std::move(fileName)) {}
-	virtual ~Shader();
-	
-	virtual void Initialize() = 0;
+	virtual ~Shader() = default;
 
-	template <typename T>
-	void InitializeLayout(T layout);
+	virtual const std::wstring& GetFileName() const = 0;
+	virtual ID3D11Buffer* GetShaderParametersBuffer() const = 0;
+	virtual ID3DX11Effect* GetEffect() const = 0;
+	virtual ID3DX11EffectTechnique* GetTechnique() const = 0;
+	virtual ID3DX11EffectPass* GetPass() const = 0;
+	virtual ID3D11InputLayout* GetVertexLayout() const = 0;
+	virtual ID3D11Buffer* GetVertexBuffer() const = 0;
+	virtual ID3D11Buffer* GetIndexBuffer() const = 0;
+	virtual ID3D11SamplerState* GetSampleState() const = 0;
 
-	const std::wstring& GetFileName() const { return fileName; }
-	ID3D11Buffer* GetShaderParametersBuffer() const { return shaderParametersBuffer; }
-	ID3DX11Effect* GetEffect() const { return effect; }
-	ID3DX11EffectTechnique* GetTechnique() const { return technique; }
-	ID3DX11EffectPass* GetPass() const { return passe; }
-	ID3D11InputLayout* GetVertexLayout() const { return vertexLayout; }
-	ID3D11Buffer* GetVertexBuffer() const { return vertexBuffer; }
-	ID3D11Buffer* GetIndexBuffer() const { return indexBuffer; }
-	ID3D11SamplerState* GetSampleState() const { return sampleState; }
-
-	ID3D11Buffer* const* GetVertexBufferPtr() const { return &vertexBuffer; }
+	virtual ID3D11Buffer** GetVertexBufferPtr() const = 0;
+	virtual ID3D11Buffer** GetIndexBufferPtr() const = 0;
 
 	virtual void* PrepareParameters(
 		DirectX::XMMATRIX matWorldViewProj,
 		DirectX::XMMATRIX matWorld
 	) = 0;
+	virtual void ApplyMaterialParameters(
+		void* shaderParameters,
+		DirectX::XMVECTOR materialAmbiant,
+		DirectX::XMVECTOR materialDiffuse,
+		DirectX::XMVECTOR materialSpecular,
+		float specularPower,
+		ID3D11ShaderResourceView* materialTexture
+	) = 0;
 
-protected:
-	std::wstring fileName;
+	virtual void DeleteParameters(void* shader_parameters) = 0;
+	
+	virtual void ApplyShaderParams() const = 0;
 
-	ID3D11Buffer* shaderParametersBuffer = nullptr;
-	ID3DX11Effect* effect = nullptr;
-	ID3DX11EffectTechnique* technique = nullptr;
-	ID3DX11EffectPass* passe = nullptr;
-	ID3D11InputLayout* vertexLayout = nullptr;
-	ID3D11Buffer* vertexBuffer = nullptr;
-	ID3D11Buffer* indexBuffer = nullptr;
-	ID3D11SamplerState* sampleState = nullptr;
-	
-private:
-	
+	virtual void LoadLights(ID3D11DeviceContext* context) = 0;
+
 };
+}

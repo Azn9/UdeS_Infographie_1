@@ -1,6 +1,6 @@
 #pragma once
-#include "Api/Public/Component/Component.h"
-#include "Api/Public/Shader/Shader.h"
+#include "../../../Public/Component/Component.h"
+#include "../../../Public/Shader/Shader.h"
 
 namespace PM3D_API
 {
