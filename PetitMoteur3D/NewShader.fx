@@ -36,6 +36,7 @@ struct VS_Sortie
 	float3 Norm :    TEXCOORD0;
 	float3 vDirCam : TEXCOORD1;
 	float2 coordTex : TEXCOORD2;
+	float3 posWorld : TEXCOORD3;
 };
 
 VS_Sortie MainVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coordTex: TEXCOORD)
@@ -46,6 +47,7 @@ VS_Sortie MainVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coordTex
 	sortie.Norm = mul(float4(Normale, 0.0f), matWorld).xyz;
 
 	float3 PosWorld = mul(Pos, matWorld).xyz;
+	sortie.posWorld = PosWorld;
 
 	sortie.vDirCam = vCamera.xyz - PosWorld;
 
@@ -64,18 +66,32 @@ float4 MainPS(VS_Sortie vs) : SV_Target
 	float3 totalDiffuse = float3(0, 0, 0);
 	float3 totalSpecular = float3(0, 0, 0);
 
-	// Normaliser les param�tres
 	float3 N = normalize(vs.Norm);
 	float3 V = normalize(vs.vDirCam);
-
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i) {
 		Light li = lights[i];
 
-		if (!li.initialized)
+		if (!li.initialized) {
 			continue;
+        }
 
-		totalAmbiant += li.ambiant.rgb;
+		float3 lightDirection = normalize(li.position.xyz - vs.posWorld.xyz);
+		float3 unnormalisedLightDirection = li.position.xyz - vs.posWorld.xyz;
+
+		float diffuseFalloff1 = 1 / dot(unnormalisedLightDirection, unnormalisedLightDirection);
+		float diffuseFalloff2 = 1 / (length(unnormalisedLightDirection) * length(unnormalisedLightDirection)) / dot(unnormalisedLightDirection, unnormalisedLightDirection);
+
+		totalAmbiant += li.ambiant.xyz * diffuseFalloff2;
+    
+        float3 diff = saturate(dot(N, lightDirection));
+        float3 R = normalize(2 * diff * N - lightDirection);
+		float3 S = pow(saturate(dot(R, V)), li.specularPower);
+
+		totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff2;
+		totalSpecular += li.specular.rgb * S;
+
+        continue;
 
 		if (li.lightType == 0) // ambiant
 		{
@@ -93,12 +109,15 @@ float4 MainPS(VS_Sortie vs) : SV_Target
 		}
 		else if (li.lightType == 2) // Point
 		{
-			float3 L = normalize(li.position.xyz - vs.Pos.xyz);
+			float3 L = normalize(li.position.xyz - vs.posWorld.xyz);
             float3 diff = saturate(dot(N, L));
             float3 R = normalize(2 * diff * N - L);
 			float3 S = pow(saturate(dot(R, V)), li.specularPower);
             
-			totalDiffuse += li.diffuse.rgb * diff;
+			float diffuseFalloff = ((length(L) * length(L)) / dot(li.position - vs.Pos, li.position - vs.Pos));
+			
+			totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff;
+
 			totalSpecular += li.specular.rgb * S;
 		}
 		else if (li.lightType == 3) // Spot
@@ -120,7 +139,7 @@ float4 MainPS(VS_Sortie vs) : SV_Target
         couleurTexture = float3(1, 1, 1);
     }
 
-	float3 finalColor = couleurTexture.rgb * (totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb);
+	float3 finalColor = couleurTexture.rgb * (totalAmbiant /** vAMat.rgb*/ + totalDiffuse /** vDMat.rgb*/ + totalSpecular /** vSMat.rgb*/);
 
 	return float4(finalColor, 1.0f);
 }

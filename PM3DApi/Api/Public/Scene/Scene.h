@@ -26,14 +26,14 @@ public:
 	void AddChild(std::unique_ptr<GameObject>&& child) override;
 
 	const Camera* GetMainCamera() const { return mainCamera.get(); }
-	const std::vector<std::unique_ptr<Light>>& GetLights() const { return lights; }
+	const std::vector<Light*>& GetLights() const { return lights; }
 
 protected:
 	void SetMainCamera(std::unique_ptr<Camera>&& newMainCamera) { mainCamera = std::move(newMainCamera); }
 
 private:
 	std::unique_ptr<Camera> mainCamera;
-	std::vector<std::unique_ptr<Light>> lights;
+	std::vector<Light*> lights;
 
 };
 
@@ -41,6 +41,7 @@ template <typename L, template_extends<Light, L>>
 void Scene::AddLight(std::unique_ptr<L>&& child)
 {
 	child->SetScene(this);
-	lights.push_back(std::move(child));
+	lights.push_back(child.get());
+	AddChild(std::move(child));
 }
 }

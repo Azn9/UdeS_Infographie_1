@@ -189,16 +189,16 @@ void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context)
 		{
 			if (light->GetType() == LightType::AMBIANT)
 			{
-				ambiantLights.push_back(light.get());
+				ambiantLights.push_back(light);
 			}
 			else if (light->GetType() == LightType::DIRECTIONAL)
 			{
-				directionalLights.push_back(light.get());
+				directionalLights.push_back(light);
 			}
 			else
 			{
 				// TODO: Sort by distance
-				otherLights.push_back(light.get());
+				otherLights.push_back(light);
 			}
 		}
 
@@ -225,8 +225,8 @@ void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context)
 	}
 	else
 	{
-		std::for_each(lights.begin(), lights.end(), [&finalLights](const std::unique_ptr<Light>& light) {
-			finalLights.push_back(light.get());
+		std::for_each(lights.begin(), lights.end(), [&finalLights](Light* light) {
+			finalLights.push_back(light);
 		});
 	}
 

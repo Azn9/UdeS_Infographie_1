@@ -65,6 +65,14 @@ void PM3D_API::GameObject::Update(const double elapsed)
 		if (componentPtr)
 			componentPtr->Update(elapsed);
 	}
+
+	for (auto& child : children)
+	{
+		const auto childPtr = child.get();
+
+		if (childPtr)
+			childPtr->Update(elapsed);
+	}
 }
 
 void PM3D_API::GameObject::FixedUpdate(const double elapsed)

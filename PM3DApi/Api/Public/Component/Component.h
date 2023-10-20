@@ -16,11 +16,11 @@ public:
 	virtual void DrawSelf() const;
 
 protected:
-	const GameObject* parentObject = nullptr;
+	GameObject* parentObject = nullptr;
 
 private:
 	friend class GameObject;
-	void SetGameObject(const GameObject* gameObject) { parentObject = gameObject; }
+	void SetGameObject(GameObject* gameObject) { parentObject = gameObject; }
 
 };
 }

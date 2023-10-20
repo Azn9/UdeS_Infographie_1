@@ -11,6 +11,7 @@
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
 #include "../../../PM3DApi/Api/Public/Shader/Shader.h"
 #include "../../../PM3DApi/Api/Public/Shader/Basic/DefaultShader.h"
+#include "GameTest/Components/LightMoverComponent.h"
 
 void MainScene::Initialize()
 {
@@ -20,7 +21,7 @@ void MainScene::Initialize()
 	auto mainCamera = std::make_unique<Camera>(
 		"Main camera",
 		Camera::PERSECTIVE,
-		XMFLOAT3(0.0f, 5.0f, -10.0f),
+		XMFLOAT3(0.0f, 5.0f, -1.0f),
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 		XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
 	);
@@ -48,13 +49,41 @@ void MainScene::Initialize()
 	AddLight(std::move(ambientLight));
 	*/
 
-	auto pointLight = std::make_unique<PointLight>(
-		XMFLOAT3(0.0f, 2.0f, 0.0f),
+	auto redLight = std::make_unique<PointLight>(
+		XMFLOAT3(-2.5f, 20.0f, -2.5f),
 		XMFLOAT3(1.0f, 0.0f, 0.0f)
 	);
-	pointLight->SetIntensity(1.0f);
-	pointLight->Initialize();
-	AddLight(std::move(pointLight));
+
+	auto redLightMover = std::make_unique<LightMoverComponent>(0);
+	redLight->AddComponent(std::move(redLightMover));
+	
+	redLight->SetIntensity(1.0f);
+	redLight->Initialize();
+	AddLight(std::move(redLight));
+
+	auto blueLight = std::make_unique<PointLight>(
+		XMFLOAT3(2.5f, 20.0f, -2.5f),
+		XMFLOAT3(0.0f, 1.0f, 0.0f)
+	);
+
+	auto blueLightMover = std::make_unique<LightMoverComponent>(120);
+	blueLight->AddComponent(std::move(blueLightMover));
+	
+	blueLight->SetIntensity(1.0f);
+	blueLight->Initialize();
+	AddLight(std::move(blueLight));
+
+	auto greenLight = std::make_unique<PointLight>(
+		XMFLOAT3(0.0f, 20.0f, 1.83f),
+		XMFLOAT3(0.0f, 0.0f, 1.0f)
+	);
+
+	auto greenLightMover = std::make_unique<LightMoverComponent>(240);
+	greenLight->AddComponent(std::move(greenLightMover));
+	
+	greenLight->SetIntensity(1.0f);
+	greenLight->Initialize();
+	AddLight(std::move(greenLight));
 
 	auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
 

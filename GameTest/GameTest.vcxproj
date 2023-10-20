@@ -239,6 +239,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameTest\Components\LightMoverComponent.h" />
     <ClInclude Include="GameTest\GameTest.h" />
     <ClInclude Include="GameTest\Scenes\MainScene.h" />
   </ItemGroup>
