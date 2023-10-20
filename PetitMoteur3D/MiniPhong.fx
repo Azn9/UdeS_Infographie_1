@@ -22,6 +22,7 @@ struct VS_Sortie
 	float3 vDirLum : TEXCOORD1;
 	float3 vDirCam : TEXCOORD2;
 	float2 coordTex : TEXCOORD3;
+	float3 posWorld : TEXCOORD4;
 };
 
 VS_Sortie MiniPhongVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coordTex: TEXCOORD)
@@ -35,6 +36,8 @@ VS_Sortie MiniPhongVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coo
 
 	sortie.vDirLum = vLumiere.xyz - PosWorld;
 	sortie.vDirCam = vCamera.xyz - PosWorld;
+
+	sortie.posWorld = PosWorld;
 
 	// Coordonnées d’application de texture
 	sortie.coordTex = coordTex;

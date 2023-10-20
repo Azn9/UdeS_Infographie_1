@@ -21,6 +21,7 @@ void Camera::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
 
 void Camera::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 {
+	std::cout << "Camera::SetWorldPosition()" << std::endl;
 	GameObject::SetWorldPosition(newPosition);
 	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();

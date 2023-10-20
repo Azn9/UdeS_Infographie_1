@@ -83,7 +83,7 @@ public:
 
 	virtual void Update(double elapsed);
 	virtual void FixedUpdate(double elapsed);
-	virtual void Draw() const;
+	virtual void Draw();
 
 	virtual void AddChild(std::unique_ptr<GameObject>&& child);
 	virtual void AddComponent(std::unique_ptr<Component>&& component);
@@ -148,17 +148,17 @@ protected:
 
 	std::vector<std::unique_ptr<GameObject>> children{};
 	std::vector<std::unique_ptr<Component>> components{};
-	const Scene* scene = nullptr;
-	const GameObject* parent = nullptr;
+	Scene* scene = nullptr;
+	GameObject* parent = nullptr;
 
 	virtual void UpdateMatrix();
 	virtual void DrawSelf() const;
 
 private:
 	friend class Scene;
-	void SetScene(const Scene* newScene) { scene = newScene; }
+	void SetScene(Scene* newScene) { scene = newScene; }
 
-	void SetParent(const GameObject* newParent);
+	void SetParent(GameObject* newParent);
 };
 
 }

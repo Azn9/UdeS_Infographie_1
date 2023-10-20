@@ -15,9 +15,9 @@ D3D11_INPUT_ELEMENT_DESC CSommetBloc::layout[] =
 UINT CSommetBloc::numElements = ARRAYSIZE(CSommetBloc::layout);
 
 CSommetBloc::CSommetBloc(
-	const XMFLOAT3& position,
-	const XMFLOAT3& normal,
-	const XMFLOAT2& coordTex /* = XMFLOAT2(0.0f, 0.0f) */
+	const DirectX::XMFLOAT3& position,
+	const DirectX::XMFLOAT3& normal,
+	const DirectX::XMFLOAT2& coordTex /* = XMFLOAT2(0.0f, 0.0f) */
 )
 	: m_Position(position)
 	  , m_Normal(normal)

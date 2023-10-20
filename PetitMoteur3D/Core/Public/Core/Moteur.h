@@ -16,7 +16,7 @@
 namespace PM3D
 {
 
-const int IMAGESPARSECONDE = 60;
+const int IMAGESPARSECONDE = 120;
 const int PHYSICS_PER_SECOND = 60;
 const double EcartTemps = 1.0 / static_cast<double>(IMAGESPARSECONDE);
 const double FixedEcartTemps = 1.0 / static_cast<double>(PHYSICS_PER_SECOND);
@@ -53,8 +53,6 @@ public:
 		SetThreadName(drawThread, "DrawThread");
 		drawThread.detach();
 
-		/*
-
 		// Update thread
 		std::thread updateThread([this]
 		{
@@ -90,11 +88,8 @@ public:
 				}
 			}
 		});
-		SetThreadName(fixedUpdateThread, "FixedUpdateThread");
+		SetThreadName(fixedUpdateThread, "PhysicsThread");
 		fixedUpdateThread.detach();
-		*/
-
-		// TODO Threads
 
 		while (this->running)
 		{
@@ -196,10 +191,6 @@ protected:
 	virtual bool RenderScene()
 	{
 		BeginRenderSceneSpecific();
-
-		// TODO : move
-		gameHost->Update(EcartTemps);
-		gameHost->FixedUpdate(EcartTemps);
 		
 		gameHost->Draw();
 

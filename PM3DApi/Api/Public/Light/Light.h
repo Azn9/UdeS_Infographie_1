@@ -15,6 +15,13 @@ public:
 	Light(const std::string& name, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, float intensity);
 	Light(const std::string& name, DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, float intensity, DirectX::XMFLOAT3 color);
 
+	void SetLocalPosition(DirectX::XMFLOAT3 newPosition) override;
+	void SetWorldPosition(DirectX::XMFLOAT3 newPosition) override;
+	void SetLocalRotation(Quaternion newRotation) override;
+	void SetWorldRotation(Quaternion newRotation) override;
+	void SetLocalRotation(DirectX::XMFLOAT3 newRotation) override;
+	void SetWorldRotation(DirectX::XMFLOAT3 newRotation) override;
+
 	float GetIntensity() const { return intensity; }
 	void SetIntensity(const float newIntensity) { intensity = newIntensity; }
 

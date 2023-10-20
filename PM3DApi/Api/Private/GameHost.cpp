@@ -53,7 +53,7 @@ void PM3D_API::GameHost::SetScene(Scene* newScene)
 	scene = newScene;
 }
 
-void PM3D_API::GameHost::Draw() const
+void PM3D_API::GameHost::Draw()
 {
 	if (scene)
 		scene->Draw();

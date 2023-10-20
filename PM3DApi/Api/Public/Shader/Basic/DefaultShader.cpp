@@ -172,6 +172,11 @@ void PM3D_API::DefaultShader::DeleteParameters(void* shader_parameters)
 
 void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context)
 {
+	if (!GameHost::GetInstance()->GetScene()->GetLightsNeedUpdate())
+	{
+		return;
+	}
+	
 	const auto& lights = GameHost::GetInstance()->GetScene()->GetLights();
 	const auto lightCount = lights.size();
 

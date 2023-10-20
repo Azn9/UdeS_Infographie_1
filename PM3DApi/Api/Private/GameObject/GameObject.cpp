@@ -68,10 +68,15 @@ void PM3D_API::GameObject::Update(const double elapsed)
 
 	for (auto& child : children)
 	{
+		if (!child)
+			continue;
+		
 		const auto childPtr = child.get();
 
-		if (childPtr)
-			childPtr->Update(elapsed);
+		if (!childPtr)
+			continue;
+
+		childPtr->Update(elapsed);
 	}
 }
 
@@ -93,9 +98,17 @@ void PM3D_API::GameObject::UpdateMatrix()
 		DirectX::XMMatrixTranslation(worldPosition.x, worldPosition.y, worldPosition.z);
 }
 
-void PM3D_API::GameObject::Draw() const
+void PM3D_API::GameObject::Draw()
 {
 	DrawSelf();
+
+	for (auto& component : components)
+	{
+		const auto componentPtr = component.get();
+
+		if (componentPtr)
+			componentPtr->DrawSelf();
+	}
 
 	for (auto& child: children)
 	{
@@ -108,16 +121,10 @@ void PM3D_API::GameObject::Draw() const
 
 void PM3D_API::GameObject::DrawSelf() const
 {
-	for (auto& component : components)
-	{
-		const auto componentPtr = component.get();
-
-		if (componentPtr)
-			componentPtr->DrawSelf();
-	}
+	// Do nothing by default
 }
 
-void PM3D_API::GameObject::SetParent(const GameObject* newParent)
+void PM3D_API::GameObject::SetParent(GameObject* newParent)
 {
 	if (parent == this)
 	{

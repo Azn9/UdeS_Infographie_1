@@ -7,10 +7,12 @@
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
+#include "../../../PM3DApi/Api/Public/GameObject/Basic/Plane.h"
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
 #include "../../../PM3DApi/Api/Public/Shader/Shader.h"
 #include "../../../PM3DApi/Api/Public/Shader/Basic/DefaultShader.h"
+#include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
 
 void MainScene::Initialize()
@@ -25,8 +27,12 @@ void MainScene::Initialize()
 		XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 		XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
 	);
-	mainCamera->SetFieldOfView(90.0f);
+	mainCamera->SetFieldOfView(45.0f);
 	mainCamera->SetFarPlane(1000.0f);
+
+	auto cameraMover = std::make_unique<CameraMoverComponent>();
+	mainCamera->AddComponent(std::move(cameraMover));
+	
 	SetMainCamera(std::move(mainCamera));
 
 	/*
@@ -54,8 +60,8 @@ void MainScene::Initialize()
 		XMFLOAT3(1.0f, 0.0f, 0.0f)
 	);
 
-	auto redLightMover = std::make_unique<LightMoverComponent>(0);
-	redLight->AddComponent(std::move(redLightMover));
+	//auto redLightMover = std::make_unique<LightMoverComponent>(0);
+	//redLight->AddComponent(std::move(redLightMover));
 	
 	redLight->SetIntensity(1.0f);
 	redLight->Initialize();
@@ -66,8 +72,8 @@ void MainScene::Initialize()
 		XMFLOAT3(0.0f, 1.0f, 0.0f)
 	);
 
-	auto blueLightMover = std::make_unique<LightMoverComponent>(120);
-	blueLight->AddComponent(std::move(blueLightMover));
+	//auto blueLightMover = std::make_unique<LightMoverComponent>(120);
+	//blueLight->AddComponent(std::move(blueLightMover));
 	
 	blueLight->SetIntensity(1.0f);
 	blueLight->Initialize();
@@ -78,8 +84,8 @@ void MainScene::Initialize()
 		XMFLOAT3(0.0f, 0.0f, 1.0f)
 	);
 
-	auto greenLightMover = std::make_unique<LightMoverComponent>(240);
-	greenLight->AddComponent(std::move(greenLightMover));
+	//auto greenLightMover = std::make_unique<LightMoverComponent>(240);
+	//greenLight->AddComponent(std::move(greenLightMover));
 	
 	greenLight->SetIntensity(1.0f);
 	greenLight->Initialize();
@@ -87,6 +93,7 @@ void MainScene::Initialize()
 
 	auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
 
+	/*
 	// Add a cube
 	auto cube = std::make_unique<GameObject>(
 		"A cube",
@@ -97,6 +104,15 @@ void MainScene::Initialize()
 	auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "cube.obj");
 	cube->AddComponent(std::move(meshRenderer));
 	cube->Initialize();
+	*/
 
-	AddChild(std::move(cube));
+	auto plane = std::make_unique<Plane>(
+		"Test plane",
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT3(10.0f, 0.1f, 10.0f)
+	);
+	plane->Initialize();
+
+	AddChild(std::move(plane));
 }

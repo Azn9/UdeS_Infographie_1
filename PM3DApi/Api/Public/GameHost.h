@@ -39,7 +39,7 @@ namespace PM3D_API
         // === Interface ===
 
         virtual void Initialize() = 0;
-        virtual void Draw() const;
+        virtual void Draw();
 
         Scene* GetScene() const { return scene; }
     protected:
