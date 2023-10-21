@@ -381,6 +381,7 @@
     <Content Include="x64\Debug\jin.OMB" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="DefaultObj\" />
     <Folder Include="x64\Debug\" />
   </ItemGroup>
   <ItemGroup>

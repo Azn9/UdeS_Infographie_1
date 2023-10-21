@@ -5,8 +5,8 @@
 class GameTest : public PM3D_API::GameHost
 {
 public:
-	GameTest();
-	~GameTest() = default;
+	GameTest() = default;
+	~GameTest() override = default;
 
 	// Inherited via GameHost
 	void Initialize() override;

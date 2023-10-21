@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <iostream>
+
 #include "../GameObject/GameObject.h"
 #include "../Camera/Camera.h"
 #include "../Light/DirectionalLight.h"
@@ -28,7 +30,8 @@ public:
 	template <typename L, template_extends<Light, L>  = 0>
 	void AddLight(std::unique_ptr<L>&& child);
 
-	void AddChild(std::unique_ptr<GameObject>&& child) override;
+	template <typename T, template_extends<GameObject, T> = 0, template_not_extends<Light, T> = 0, template_not_extends<Camera, T> = 0>
+	void AddChild(std::unique_ptr<T>&& child);
 
 	const Camera* GetMainCamera() const { return mainCamera; }
 	const std::vector<Light*>& GetLights() const { return lights; }
@@ -56,5 +59,14 @@ void Scene::AddLight(std::unique_ptr<L>&& child)
 	AddChild(std::move(child));
 
 	lightsNeedUpdate = true;
+}
+
+template <typename T, template_extends<GameObject, T>, template_not_extends<Light, T>, template_not_extends<Camera, T>>
+void Scene::AddChild(std::unique_ptr<T>&& child)
+{ 
+	std::cout << "Scene::AddChild(GameObject*) added " << child->GetName() << std::endl;
+
+	child->SetScene(this);
+	GameObject::AddChild(std::move(child));
 }
 }

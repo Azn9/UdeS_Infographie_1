@@ -9,6 +9,9 @@ struct IsDerivedFrom {
 template <typename T, typename U>
 using template_extends = std::enable_if_t<IsDerivedFrom<T, U>::value, int>;
 
+template <typename T, typename U>
+using template_not_extends = std::enable_if_t<!IsDerivedFrom<T, U>::value, int>;
+
 /*
 Utilisé comme ça :
 

@@ -91,17 +91,20 @@ public:
 	std::string GetName() const { return name; }
 
 	template <typename T, template_extends<T, Component> = 0>
-	std::unique_ptr<T>& GetComponent()
+	std::vector<T*> GetComponents()
 	{
+		std::vector<T*> components{};
 		for (const auto component : components)
 		{
+			if (!component) continue;
+			
 			if (typeid(*component.get()) == typeid(T))
 			{
-				return static_cast<T*>(component);
+				components.push_back(static_cast<T*>(component.get()));
 			}
 		}
 
-		return nullptr;
+		return components;
 	}
 
 	const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return children; }

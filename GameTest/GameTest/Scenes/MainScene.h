@@ -8,6 +8,4 @@ public:
 	MainScene() : Scene("MainScene") {}
 	
 	void Initialize() override;
-
-	
 };

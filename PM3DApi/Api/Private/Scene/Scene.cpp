@@ -15,19 +15,10 @@ void PM3D_API::Scene::Initialize()
 	// Do nothing by default
 }
 
-void PM3D_API::Scene::AddChild(std::unique_ptr<GameObject>&& child)
-{
-	std::cout << "Scene::AddChild(GameObject*) added " << child->GetName() << std::endl;
-
-	child->SetScene(this);
-	GameObject::AddChild(std::move(child));
-}
-
 void PM3D_API::Scene::SetMainCamera(std::unique_ptr<Camera>&& newMainCamera)
 {
 	newMainCamera->SetScene(this);
-	mainCamera = newMainCamera.get();
-	AddChild(std::move(newMainCamera));
+	GameObject::AddChild(std::move(newMainCamera));
 }
 
 void PM3D_API::Scene::Update(double elapsed)
