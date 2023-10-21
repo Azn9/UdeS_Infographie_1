@@ -8,6 +8,7 @@
 #include "../../../PM3DApi/Api/Public/Component/Basic/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicCube.h"
+#include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicPlane.h"
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
 #include "../../../PM3DApi/Api/Public/Shader/Basic/DefaultShader.h"
@@ -18,9 +19,9 @@ void MainScene::Initialize()
     std::cout << "MainScene::Initialize()" << std::endl;
 
     // Add main camera
-    auto mainCamera = std::make_unique<Camera>(
+    auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
-        Camera::PERSECTIVE,
+        PM3D_API::Camera::PERSECTIVE,
         XMFLOAT3(0.0f, 5.0f, -1.0f),
         XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
@@ -33,7 +34,7 @@ void MainScene::Initialize()
 
     SetMainCamera(std::move(mainCamera));
 
-    auto redLight = std::make_unique<PointLight>(
+    auto redLight = std::make_unique<PM3D_API::PointLight>(
         "Red light",
         XMFLOAT3(-2.5f, 20.0f, -2.5f),
         XMFLOAT3(1.0f, 0.0f, 0.0f)
@@ -43,7 +44,7 @@ void MainScene::Initialize()
     redLight->Initialize();
     AddLight(std::move(redLight));
 
-    auto blueLight = std::make_unique<PointLight>(
+    auto blueLight = std::make_unique<PM3D_API::PointLight>(
         "Blue light",
         XMFLOAT3(2.5f, 20.0f, -2.5f),
         XMFLOAT3(0.0f, 1.0f, 0.0f)
@@ -52,7 +53,7 @@ void MainScene::Initialize()
     blueLight->Initialize();
     AddLight(std::move(blueLight));
 
-    auto greenLight = std::make_unique<PointLight>(
+    auto greenLight = std::make_unique<PM3D_API::PointLight>(
         "Green light",
         XMFLOAT3(0.0f, 20.0f, 1.83f),
         XMFLOAT3(0.0f, 0.0f, 1.0f)
@@ -64,13 +65,13 @@ void MainScene::Initialize()
     auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
 
     // Add a cube
-    auto cube = std::make_unique<BasicCube>(
-        "A cube",
+    auto plane = std::make_unique<PM3D_API::BasicPlane>(
+        "A plane",
         std::move(shader),
         XMFLOAT3(0.0f, 0.0f, 0.0f),
         XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(10.0f, 0.1f, 10.0f)
+        XMFLOAT3(10.0f, 1.0f, 10.0f)
     );
-    cube->Initialize();
-    AddChild(std::move(cube));
+    plane->Initialize();
+    AddChild(std::move(plane));
 }

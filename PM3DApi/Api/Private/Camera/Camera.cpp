@@ -6,54 +6,54 @@
 #include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 #include "../../Public/GameHost.h"
 
-void Camera::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
+void PM3D_API::Camera::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 {
 	GameObject::SetLocalPosition(newPosition);
 	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
-void Camera::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
+void PM3D_API::Camera::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
 {
 	GameObject::SetLocalRotation(newRotation);
 	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
-void Camera::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
+void PM3D_API::Camera::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 {
 	GameObject::SetWorldPosition(newPosition);
 	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
-void Camera::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
+void PM3D_API::Camera::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
 {
 	GameObject::SetWorldRotation(newRotation);
 	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
-void Camera::SetWorldRotation(const Quaternion newRotation)
+void PM3D_API::Camera::SetWorldRotation(const PM3D_API::Quaternion newRotation)
 {
 	GameObject::SetWorldRotation(newRotation);
 	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
-void Camera::SetLocalRotation(const Quaternion newRotation)
+void PM3D_API::Camera::SetLocalRotation(const PM3D_API::Quaternion newRotation)
 {
 	GameObject::SetLocalRotation(newRotation);
 	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
 }
 
-void Camera::SetFocusPoint(const DirectX::XMFLOAT3 newFocusPoint)
+void PM3D_API::Camera::SetFocusPoint(const DirectX::XMFLOAT3 newFocusPoint)
 {
 	SetFocusPoint(DirectX::XMVectorSet(newFocusPoint.x, newFocusPoint.y, newFocusPoint.z, 1.0f));
 }
 
-void Camera::SetFocusPoint(const DirectX::XMVECTOR newFocusPoint)
+void PM3D_API::Camera::SetFocusPoint(const DirectX::XMVECTOR newFocusPoint)
 {
 	focusPoint = newFocusPoint;
 
@@ -70,38 +70,38 @@ void Camera::SetFocusPoint(const DirectX::XMVECTOR newFocusPoint)
 		)
 	);
 
-	Quaternion rotation;
+	PM3D_API::Quaternion rotation;
 	XMStoreFloat4(&rotation, newRotation);
 
-	GameObject::SetWorldRotation(rotation);
+	PM3D_API::GameObject::SetWorldRotation(rotation);
 	UpdateInternalMatrices();
 }
 
-void Camera::SetUpVector(const DirectX::XMFLOAT3 newUpVector)
+void PM3D_API::Camera::SetUpVector(const DirectX::XMFLOAT3 newUpVector)
 {
 	upVector = DirectX::XMVectorSet(newUpVector.x, newUpVector.y, newUpVector.z, 1.0f);
 	UpdateInternalMatrices();
 }
 
-void Camera::SetFieldOfView(const float newFieldOfView)
+void PM3D_API::Camera::SetFieldOfView(const float newFieldOfView)
 {
 	fieldOfView = newFieldOfView;
 	UpdateInternalMatrices();
 }
 
-void Camera::SetNearPlane(const float newNearPlane)
+void PM3D_API::Camera::SetNearPlane(const float newNearPlane)
 {
 	nearPlane = newNearPlane;
 	UpdateInternalMatrices();
 }
 
-void Camera::SetFarPlane(const float newFarPlane)
+void PM3D_API::Camera::SetFarPlane(const float newFarPlane)
 {
 	farPlane = newFarPlane;
 	UpdateInternalMatrices();
 }
 
-void Camera::DrawDebugInfo() const
+void PM3D_API::Camera::DrawDebugInfo() const
 {
 	const float focusPoint[3] = {
 		DirectX::XMVectorGetX(this->focusPoint),
@@ -140,7 +140,7 @@ void Camera::DrawDebugInfo() const
 	ImGui::SameLine(100); ImGui::Text(std::to_string(farPlane).c_str());
 }
 
-void Camera::UpdateInternalMatrices()
+void PM3D_API::Camera::UpdateInternalMatrices()
 {
 	const DirectX::XMFLOAT3 position = GetWorldPosition();
 

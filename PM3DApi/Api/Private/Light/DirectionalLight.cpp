@@ -1,13 +1,13 @@
 ﻿#include "../../Public/Light/DirectionalLight.h"
 
-DirectionalLight::DirectionalLight(
+PM3D_API::DirectionalLight::DirectionalLight(
 	const DirectX::XMFLOAT3 rotation
 ) : Light({0, 0, 0}, rotation)
 {
 
 }
 
-DirectionalLight::DirectionalLight(
+PM3D_API::DirectionalLight::DirectionalLight(
 	const DirectX::XMFLOAT3 rotation,
 	const float intensity
 ) : Light({0, 0, 0}, rotation, intensity)
@@ -15,7 +15,7 @@ DirectionalLight::DirectionalLight(
 
 }
 
-DirectionalLight::DirectionalLight(
+PM3D_API::DirectionalLight::DirectionalLight(
 	const DirectX::XMFLOAT3 rotation,
 	const float intensity,
 	const DirectX::XMFLOAT3 color
@@ -24,7 +24,7 @@ DirectionalLight::DirectionalLight(
 
 }
 
-DirectionalLight::DirectionalLight(
+PM3D_API::DirectionalLight::DirectionalLight(
 	const std::string& name,
 	const DirectX::XMFLOAT3 rotation
 ) : Light(name, {0, 0, 0}, rotation)
@@ -32,7 +32,7 @@ DirectionalLight::DirectionalLight(
 
 }
 
-DirectionalLight::DirectionalLight(
+PM3D_API::DirectionalLight::DirectionalLight(
 	const std::string& name,
 	const DirectX::XMFLOAT3 rotation,
 	const float intensity
@@ -41,7 +41,7 @@ DirectionalLight::DirectionalLight(
 
 }
 
-DirectionalLight::DirectionalLight(
+PM3D_API::DirectionalLight::DirectionalLight(
 	const std::string& name,
 	const DirectX::XMFLOAT3 rotation,
 	const float intensity,
@@ -51,7 +51,7 @@ DirectionalLight::DirectionalLight(
 
 }
 
-ShaderLightDefaultParameters DirectionalLight::GetShaderLightDefaultParameters() const
+PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters() const
 {
 	return std::move(ShaderLightDefaultParameters{
 		true,
@@ -59,11 +59,11 @@ ShaderLightDefaultParameters DirectionalLight::GetShaderLightDefaultParameters()
 		{0.0f, 0.0f, 0.0f, 1.0f}, // Position
 		DirectX::XMFLOAT4(worldRotationEuler.x, worldRotationEuler.y, worldRotationEuler.z, 0.0f),
 
-		{0.2f, 0.2f, 0.2f, 1.0f}, // Ambient
-		{1.0f, 1.0f, 1.0f, 1.0f}, // Diffuse
-		{0.6f, 0.6f, 0.6f, 1.0f}, // Specular
+		{0.2f * color.x, 0.2f * color.y, 0.2f * color.z, 1.0f}, // Ambient
+		{color.x, color.y, color.z, 1.0f}, // Diffuse
+		{0.6f * color.x, 0.6f * color.y, 0.6f * color.z, 1.0f}, // Specular
 		
-		1.0f, // Specular power
+		intensity, // Specular power
 
 		// Unused here
 		0.0f, // Inner angle

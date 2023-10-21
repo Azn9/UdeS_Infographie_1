@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include "../../Component/Component.h"
-
 #include <string>
 
 #include "../../Util/fast_obj.h"

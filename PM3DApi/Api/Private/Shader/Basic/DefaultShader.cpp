@@ -1,9 +1,8 @@
-﻿#include "DefaultShader.h"
-
+﻿#include "../../../Public/Shader/Basic/DefaultShader.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Util/util.h"
-#include "Api/Public/GameHost.h"
-#include "Api/Public/Light/AmbiantLight.h"
+#include "../../../Public/GameHost.h"
+#include "../../../Public/Light/AmbiantLight.h"
 
 // Definir l’organisation de notre sommet
 D3D11_INPUT_ELEMENT_DESC layout[] =

@@ -4,24 +4,26 @@
 #include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
 #include "Api/Public/GameHost.h"
 
-void SceneHierarchyDebugRenderer::DisplayChild(const PM3D_API::GameObject* gameObject)
+void PM3D_API::SceneHierarchyDebugRenderer::DisplayChild(const PM3D_API::GameObject* gameObject)
 {
     if (!gameObject) return;
 
     ImGui::TableNextRow();
     ImGui::TableNextColumn();
 
-    if (ImGui::TreeNodeEx(gameObject->GetName().c_str(), ImGuiTreeNodeFlags_SpanFullWidth))
+    if (ImGui::TreeNodeEx((gameObject->GetName() + " (" + typeid(*gameObject).name() + ")").c_str(),
+                          ImGuiTreeNodeFlags_SpanFullWidth))
     {
-        ImGui::TableNextColumn();
-        ImGui::Text(typeid(*gameObject).name());
         ImGui::TableNextColumn();
         ImGui::Button("...");
         if (ImGui::IsItemClicked())
         {
-            selectedObject = gameObject;
+            if (selectedObject == gameObject)
+                selectedObject = nullptr;
+            else
+                selectedObject = gameObject;
         }
-        
+
         for (const auto& child : gameObject->GetChildren())
         {
             if (child)
@@ -29,23 +31,25 @@ void SceneHierarchyDebugRenderer::DisplayChild(const PM3D_API::GameObject* gameO
                 DisplayChild(child.get());
             }
         }
-        
+
         ImGui::TreePop();
         ImGui::Spacing();
-    } else
+    }
+    else
     {
-        ImGui::TableNextColumn();
-        ImGui::Text(typeid(*gameObject).name());
         ImGui::TableNextColumn();
         ImGui::Button("...");
         if (ImGui::IsItemClicked())
         {
-            selectedObject = gameObject;
+            if (selectedObject == gameObject)
+                selectedObject = nullptr;
+            else
+                selectedObject = gameObject;
         }
     }
 }
 
-void SceneHierarchyDebugRenderer::Draw()
+void PM3D_API::SceneHierarchyDebugRenderer::Draw()
 {
     const auto scene = PM3D_API::GameHost::GetInstance()->GetScene();
 
@@ -54,12 +58,13 @@ void SceneHierarchyDebugRenderer::Draw()
         ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
         ImGui::Begin("Scene Hierarchy");
 
-        static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_RowBg
+        static ImGuiTableFlags flags = ImGuiTableFlags_BordersV
+            | ImGuiTableFlags_BordersOuterH
+            | ImGuiTableFlags_RowBg
             | ImGuiTableFlags_NoBordersInBody;
-        if (ImGui::BeginTable("scene_hierarchy", 3, flags))
+        if (ImGui::BeginTable("scene_hierarchy", 2, flags))
         {
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_WidthStretch);
-            ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 150.0f);
             ImGui::TableSetupColumn("  ", ImGuiTableColumnFlags_WidthFixed, 30.0f);
             ImGui::TableHeadersRow();
 
@@ -87,7 +92,9 @@ void SceneHierarchyDebugRenderer::Draw()
 
             ImGui::Text("Self");
             ImGui::SameLine(100);
-            ImGui::Text(std::to_string(PM3D::CMoteurWindows::GetInstance().GetTimeIntervalsInSec(selectedObject->GetBeginDrawSelf(), selectedObject->GetEndDrawSelf())).c_str());
+            ImGui::Text(std::to_string(
+                PM3D::CMoteurWindows::GetInstance().GetTimeIntervalsInSec(
+                    selectedObject->GetBeginDrawSelf(), selectedObject->GetEndDrawSelf())).c_str());
 
             ImGui::Text("Components");
             ImGui::SameLine(100);
@@ -97,7 +104,8 @@ void SceneHierarchyDebugRenderer::Draw()
             {
                 if (component)
                 {
-                    totalComponentsDrawTime += PM3D::CMoteurWindows::GetInstance().GetTimeIntervalsInSec(component->GetBeginDrawSelf(), component->GetEndDrawSelf());
+                    totalComponentsDrawTime += PM3D::CMoteurWindows::GetInstance().GetTimeIntervalsInSec(
+                        component->GetBeginDrawSelf(), component->GetEndDrawSelf());
                 }
             }
             ImGui::Text(std::to_string(totalComponentsDrawTime).c_str());

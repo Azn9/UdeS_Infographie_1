@@ -3,7 +3,7 @@
 #include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 #include "../../../../PetitMoteur3D/Core/Public/Core/moteurWindows.h"
 
-void FPSDebugRenderer::Draw()
+void PM3D_API::FPSDebugRenderer::Draw()
 {
     if (lastUpdate == 0)
     {

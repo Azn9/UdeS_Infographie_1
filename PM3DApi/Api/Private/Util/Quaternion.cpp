@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-DirectX::XMFLOAT3 Quaternion::ToEulerAngles() const
+DirectX::XMFLOAT3 PM3D_API::Quaternion::ToEulerAngles() const
 {
 	DirectX::XMVECTOR vec;
 	float angle;
@@ -31,22 +31,22 @@ DirectX::XMFLOAT3 Quaternion::ToEulerAngles() const
 	return euler;
 }
 
-Quaternion&& Quaternion::operator*(const Quaternion& quaternion) const
+PM3D_API::Quaternion&& PM3D_API::Quaternion::operator*(const PM3D_API::Quaternion& quaternion) const
 {
 	const auto result = DirectX::XMQuaternionMultiply(XMLoadFloat4(this), XMLoadFloat4(&quaternion));
 
 	XMFLOAT4 resultVector;
 	XMStoreFloat4(&resultVector, result);
 	
-	return std::move(Quaternion(resultVector));
+	return std::move(PM3D_API::Quaternion(resultVector));
 }
 
-DirectX::XMVECTOR Quaternion::ToXMVector() const
+DirectX::XMVECTOR PM3D_API::Quaternion::ToXMVector() const
 {
 	return XMLoadFloat4(this);
 }
 
-DirectX::XMFLOAT4 Quaternion::EulerToQuaternion(const DirectX::XMFLOAT3 euler)
+DirectX::XMFLOAT4 PM3D_API::Quaternion::EulerToQuaternion(const DirectX::XMFLOAT3 euler)
 {
 	XMFLOAT4 quaternion;
 	XMStoreFloat4(&quaternion, DirectX::XMQuaternionRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&euler)));

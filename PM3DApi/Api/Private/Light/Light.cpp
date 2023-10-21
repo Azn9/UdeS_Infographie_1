@@ -2,7 +2,7 @@
 
 #include "Api/Public/Scene/Scene.h"
 
-Light::Light(
+PM3D_API::Light::Light(
 	const DirectX::XMFLOAT3 position,
 	const DirectX::XMFLOAT3 rotation
 ) : GameObject(
@@ -17,7 +17,7 @@ Light::Light(
 
 }
 
-Light::Light(
+PM3D_API::Light::Light(
 	const std::string& name,
 	const DirectX::XMFLOAT3 position,
 	const DirectX::XMFLOAT3 rotation
@@ -33,7 +33,7 @@ Light::Light(
 
 }
 
-Light::Light(
+PM3D_API::Light::Light(
 	const DirectX::XMFLOAT3 position,
 	const DirectX::XMFLOAT3 rotation,
 	const float intensity
@@ -49,7 +49,7 @@ Light::Light(
 
 }
 
-Light::Light(
+PM3D_API::Light::Light(
 	const std::string& name,
 	const DirectX::XMFLOAT3 position,
 	const DirectX::XMFLOAT3 rotation,
@@ -66,7 +66,7 @@ Light::Light(
 
 }
 
-Light::Light(
+PM3D_API::Light::Light(
 	const DirectX::XMFLOAT3 position,
 	const DirectX::XMFLOAT3 rotation,
 	const float intensity,
@@ -83,7 +83,7 @@ Light::Light(
 
 }
 
-Light::Light(
+PM3D_API::Light::Light(
 	const std::string& name,
 	const DirectX::XMFLOAT3 position,
 	const DirectX::XMFLOAT3 rotation,
@@ -100,37 +100,37 @@ Light::Light(
 {
 }
 
-void Light::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
+void PM3D_API::Light::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 {
 	GameObject::SetLocalPosition(newPosition);
 	scene->SetLightsNeedUpdate(true);
 }
 
-void Light::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
+void PM3D_API::Light::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 {
 	GameObject::SetWorldPosition(newPosition);
 	scene->SetLightsNeedUpdate(true);
 }
 
-void Light::SetLocalRotation(const Quaternion newRotation)
+void PM3D_API::Light::SetLocalRotation(const Quaternion newRotation)
 {
 	GameObject::SetLocalRotation(newRotation);
 	scene->SetLightsNeedUpdate(true);
 }
 
-void Light::SetWorldRotation(const Quaternion newRotation)
+void PM3D_API::Light::SetWorldRotation(const Quaternion newRotation)
 {
 	GameObject::SetWorldRotation(newRotation);
 	scene->SetLightsNeedUpdate(true);
 }
 
-void Light::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
+void PM3D_API::Light::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
 {
 	GameObject::SetLocalRotation(newRotation);
 	scene->SetLightsNeedUpdate(true);
 }
 
-void Light::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
+void PM3D_API::Light::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
 {
 	GameObject::SetWorldRotation(newRotation);
 	scene->SetLightsNeedUpdate(true);

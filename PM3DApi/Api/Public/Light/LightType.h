@@ -1,9 +1,12 @@
 #pragma once
 
-enum class LightType
+namespace PM3D_API
 {
-	AMBIANT,
-	DIRECTIONAL,
-	POINT,
-	SPOT
-};
+	enum class LightType
+	{
+		AMBIANT,
+		DIRECTIONAL,
+		POINT,
+		SPOT
+	};
+}

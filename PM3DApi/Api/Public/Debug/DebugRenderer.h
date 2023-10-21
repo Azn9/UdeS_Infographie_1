@@ -1,8 +1,11 @@
 ﻿#pragma once
 
-class DebugRenderer
+namespace PM3D_API
 {
-public:
-    virtual ~DebugRenderer() = default;
-    virtual void Draw() = 0;
-};
+    class DebugRenderer
+    {
+    public:
+        virtual ~DebugRenderer() = default;
+        virtual void Draw() = 0;
+    };
+}

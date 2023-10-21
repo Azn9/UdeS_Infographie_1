@@ -1,6 +1,6 @@
 ﻿#include "../../Public/Light/AmbiantLight.h"
 
-ShaderLightDefaultParameters AmbiantLight::GetShaderLightDefaultParameters() const
+PM3D_API::ShaderLightDefaultParameters PM3D_API::AmbiantLight::GetShaderLightDefaultParameters() const
 {
 	return {
 		true,
