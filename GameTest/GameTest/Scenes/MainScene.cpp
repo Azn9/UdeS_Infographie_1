@@ -97,6 +97,7 @@ void MainScene::Initialize()
 
 	auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
 
+	/*
 	// Add a cube
 	auto cube = std::make_unique<GameObject>(
 		"A cube",
@@ -108,17 +109,29 @@ void MainScene::Initialize()
 	cube->AddComponent(std::move(meshRenderer));
 	cube->Initialize();
 	AddChild(std::move(cube));
-	
+	*/
 
+	/*
 	auto plane = std::make_unique<Plane>(
 		"Test plane",
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(0.0f, 0.0f, 0.0f),
 		XMFLOAT3(10.0f, 0.1f, 10.0f)
 	);
-	plane->Initialize();
-
+	plane->Initialize(); 
 	AddChild(std::move(plane));
+	*/
+
+	auto planeObj = std::make_unique<GameObject>(
+		"A plane obj",
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT3(0.0f, 0.0f, 0.0f),
+		XMFLOAT3(10.0f, 1.0f, 10.0f)
+	);
+	auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "plane.obj");
+	planeObj->AddComponent(std::move(meshRenderer));
+	planeObj->Initialize();
+	AddChild(std::move(planeObj));
 
 	auto testParent = std::make_unique<EmptyGameObject>("Test parent");
 	auto testParent2 = std::make_unique<EmptyGameObject>("Test parent 2");

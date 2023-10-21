@@ -34,7 +34,7 @@ private:
 	std::unique_ptr<PM3D_API::DefaultShader> shader;
 
 	uint16_t index_bloc[6] = {
-		0, 1, 2,
-		0, 2, 3
+		1, 2, 3,
+		1, 3, 0
 	};
 };

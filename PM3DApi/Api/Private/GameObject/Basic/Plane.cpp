@@ -75,7 +75,8 @@ void Plane::DrawSelf() const
 	pImmediateContext->IASetIndexBuffer(pIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	pImmediateContext->IASetInputLayout(shader->GetVertexLayout());
 
-	pImmediateContext->VSSetShader(nullptr, nullptr, 0);
+	static ID3D11VertexShader* pVertexShader = nullptr;
+	pImmediateContext->VSSetShader(pVertexShader, nullptr, 0);
 
 	shader->LoadLights(pImmediateContext);
 	
@@ -99,7 +100,10 @@ void Plane::DrawSelf() const
 	
 	shader->ApplyShaderParams();
 
+	pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
 	pImmediateContext->DrawIndexed(ARRAYSIZE(index_bloc), 0, 0);
+
+	shader->DeleteParameters(shaderParameters);
 
 	LogEndDrawSelf();
 }

@@ -105,7 +105,15 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	{
 		const auto objGroup = mesh->objects[i];
 		const unsigned indexStart = objGroup.index_offset;
-		const unsigned int indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+		
+		unsigned int indexDrawAmount;
+		if (mesh->object_count > 1)
+		{
+			indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+		} else
+		{
+			indexDrawAmount = mesh->index_count;
+		}
 
 		if (!indexDrawAmount)
 		{
