@@ -3,6 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
+
 PM3D_API::GameObject::GameObject(
 	const std::string& name,
 	const DirectX::XMFLOAT3 worldPosition,
@@ -316,4 +318,14 @@ void PM3D_API::GameObject::SetWorldScale(const DirectX::XMFLOAT3 newScale)
 	}
 
 	UpdateMatrix();
+}
+
+void PM3D_API::GameObject::LogBeginDrawSelf() const
+{
+	beginDrawSelf = PM3D::CMoteurWindows::GetInstance().GetTimeSpecific();
+}
+
+void PM3D_API::GameObject::LogEndDrawSelf() const
+{
+	endDrawSelf = PM3D::CMoteurWindows::GetInstance().GetTimeSpecific();
 }

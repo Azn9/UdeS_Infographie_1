@@ -62,6 +62,8 @@ void Plane::Initialize()
 
 void Plane::DrawSelf() const
 {
+	LogBeginDrawSelf();
+	
 	ID3D11DeviceContext* pImmediateContext = PM3D_API::GameHost::GetInstance()->GetDispositif()->GetImmediateContext();
 
 	pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -98,4 +100,6 @@ void Plane::DrawSelf() const
 	shader->ApplyShaderParams();
 
 	pImmediateContext->DrawIndexed(ARRAYSIZE(index_bloc), 0, 0);
+
+	LogEndDrawSelf();
 }

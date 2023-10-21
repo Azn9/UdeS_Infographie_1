@@ -2,6 +2,7 @@
 #include <DirectXMath.h>
 #include <iostream>
 
+#include "../../../PetitMoteur3D/Core/Imgui/imgui.h"
 #include "../../../PM3DApi/Api/Public/Component/Component.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
 
@@ -10,8 +11,6 @@ class CameraMoverComponent final : public PM3D_API::Component
 public:
 	void Update(double deltaTime) override
 	{
-		std::cout << "RotateCameraComponent::Update()" << std::endl;
-	
 		angle++;
 		if (angle >= 360)
 			angle = 0;
@@ -24,6 +23,15 @@ public:
 		);
 
 		parentObject->SetWorldPosition(newPosition);
+	}
+
+	void DrawDebugInfo() const override
+	{
+		ImGui::Text("Distance");
+		ImGui::SameLine(100); ImGui::Text(std::to_string(distance).c_str());
+
+		ImGui::Text("Angle");
+		ImGui::SameLine(100); ImGui::Text(std::to_string(angle).c_str());
 	}
 
 private:

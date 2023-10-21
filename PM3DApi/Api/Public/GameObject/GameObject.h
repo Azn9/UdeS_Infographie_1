@@ -105,6 +105,7 @@ public:
 	}
 
 	const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return children; }
+	const std::vector<std::unique_ptr<Component>>& GetComponents() const { return components; }
 
 	const Scene* GetScene() const { return scene; }
 
@@ -131,6 +132,9 @@ public:
 
 	virtual const DirectX::XMMATRIX& GetMatWorld() const { return matWorld; }
 
+	virtual void DrawDebugInfo() const {}
+	uint64_t GetBeginDrawSelf() const { return beginDrawSelf; }
+	uint64_t GetEndDrawSelf() const { return endDrawSelf; }
 protected:
 	std::string name = "Unnamed GameObject";
 	
@@ -154,11 +158,16 @@ protected:
 	virtual void UpdateMatrix();
 	virtual void DrawSelf() const;
 
+	void LogBeginDrawSelf() const;
+	void LogEndDrawSelf() const;
 private:
 	friend class Scene;
 	void SetScene(Scene* newScene) { scene = newScene; }
 
 	void SetParent(GameObject* newParent);
+
+	mutable uint64_t beginDrawSelf;
+	mutable uint64_t endDrawSelf;
 };
 
 }

@@ -15,6 +15,13 @@ class CMoteurWindows final : public CMoteur<CMoteurWindows, CDispositifD3D11>
 public:
 	void SetWindowsAppInstance(HINSTANCE hInstance);
 
+	virtual int64_t GetTimeSpecific() const override;
+	virtual double GetTimeIntervalsInSec(int64_t start, int64_t stop) const override;
+
+	//double GetLastFrameTime() const override
+	//{
+	//	return lastFrameTime;
+	//}
 private:
 	ATOM MyRegisterClass(HINSTANCE hInstance);
 	bool InitAppInstance();
@@ -23,9 +30,8 @@ private:
 	// Les fonctions spécifiques
 	virtual int InitialisationsSpecific() override;
 	virtual bool RunSpecific() override;
-	virtual int64_t GetTimeSpecific() const override;
-	virtual double GetTimeIntervalsInSec(int64_t start, int64_t stop) const override;
 	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) override;
+	virtual void InitSceneSpecific() override;
 	virtual void BeginRenderSceneSpecific() override;
 	virtual void EndRenderSceneSpecific() override;
 

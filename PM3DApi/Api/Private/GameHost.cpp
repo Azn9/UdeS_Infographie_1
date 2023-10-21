@@ -2,10 +2,13 @@
 
 #include <stdexcept>
 
+#include "Api/Public/Debug/FPSDebugRenderer.h"
+#include "Api/Public/Debug/SceneHierarchyDebugRenderer.h"
+
 PM3D_API::GameHost::~GameHost()
 {
 	// delete scene; // Exception 0x80000003 "A breakpoint has been reached." - wtf ???
-	
+	debugRenderers.clear();
 }
 
 void PM3D_API::GameHost::Update(double deltaTime) const
@@ -20,12 +23,19 @@ void PM3D_API::GameHost::FixedUpdate(double fixedDeltaTime) const
 		scene->FixedUpdate(fixedDeltaTime);
 }
 
-void PM3D_API::GameHost::InitializeScene() const
+void PM3D_API::GameHost::InitializeScene()
 {
 	if (scene)
 		scene->Initialize();
 	else
 		throw std::runtime_error("Scene is not set!");
+
+	// Initialize default debugRenderers
+	auto fpsDebugRenderer = std::make_unique<FPSDebugRenderer>();
+	AddDebugRenderer(std::move(fpsDebugRenderer));
+
+	auto sceneHierarchyRenderer = std::make_unique<SceneHierarchyDebugRenderer>();
+	AddDebugRenderer(std::move(sceneHierarchyRenderer));
 }
 
 void PM3D_API::GameHost::SetDispositif(PM3D::CDispositifD3D11* newDispositif)
@@ -57,4 +67,11 @@ void PM3D_API::GameHost::Draw()
 {
 	if (scene)
 		scene->Draw();
+
+	// TODO : add debug switch
+	for (const auto& renderer : debugRenderers)
+	{
+		if (renderer)
+			renderer->Draw();
+	}
 }

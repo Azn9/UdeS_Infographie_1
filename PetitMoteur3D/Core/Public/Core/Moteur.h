@@ -13,10 +13,11 @@
 #include "../../Public/Texture/GestionnaireDeTextures.h"
 #include "../../Public/Sprite/AfficheurSprite.h"
 #include "../../Public/Sprite/SpriteTemp.h"
+
 namespace PM3D
 {
 
-const int IMAGESPARSECONDE = 120;
+const int IMAGESPARSECONDE = 60;
 const int PHYSICS_PER_SECOND = 60;
 const double EcartTemps = 1.0 / static_cast<double>(IMAGESPARSECONDE);
 const double FixedEcartTemps = 1.0 / static_cast<double>(PHYSICS_PER_SECOND);
@@ -130,8 +131,13 @@ public:
 		// Est-il temps de rendre l'image?
 		if (TempsEcoule > EcartTemps)
 		{
+			uint64_t start = GetTimeSpecific();
+			
 			// Affichage optimis�
 			pDispositif->Present(); // On enlevera �//� plus tard
+
+			uint64_t end = GetTimeSpecific();
+			presentTime = GetTimeIntervalsInSec(start, end) * 1000.0;
 
 			// On rend l'image sur la surface de travail
 			// (tampon d'arri�re plan)
@@ -156,6 +162,18 @@ public:
 	CGestionnaireDeTextures& GetTextureManager() { return TexturesManager; }
 	CDIManipulateur& GetGestionnaireDeSaisie() {return GestionnaireDeSaisie;}
 
+	virtual int64_t GetTimeSpecific() const = 0;
+	virtual double GetTimeIntervalsInSec(int64_t start, int64_t stop) const = 0;
+
+	virtual double GetLastFrameTime() const
+	{
+		return lastFrameTime;
+	}
+
+	virtual double GetPresentTime() const
+	{
+		return presentTime;
+	}
 protected:
 	virtual ~CMoteur()
 	{
@@ -163,15 +181,15 @@ protected:
 	}
 
 	bool running = true;
+	double lastFrameTime = 0.0;
+	double presentTime = 0.0;
 
 	// Sp�cifiques - Doivent �tre implant�s
 	virtual bool RunSpecific() = 0;
 	virtual int InitialisationsSpecific() = 0;
 
-	virtual int64_t GetTimeSpecific() const = 0;
-	virtual double GetTimeIntervalsInSec(int64_t start, int64_t stop) const = 0;
-
 	virtual TClasseDispositif* CreationDispositifSpecific(const CDS_MODE cdsMode) = 0;
+	virtual void InitSceneSpecific() = 0;
 	virtual void BeginRenderSceneSpecific() = 0;
 	virtual void EndRenderSceneSpecific() = 0;
 
@@ -186,15 +204,22 @@ protected:
 
 		return true;
 	}
-
+	
 	// Fonctions de rendu et de pr�sentation de la sc�ne
 	virtual bool RenderScene()
 	{
+		const uint64_t start = GetTimeSpecific();
+		
 		BeginRenderSceneSpecific();
 		
 		gameHost->Draw();
 
 		EndRenderSceneSpecific();
+
+		const uint64_t end = GetTimeSpecific();
+
+		lastFrameTime = GetTimeIntervalsInSec(start, end) * 1000.0;
+		
 		return true;
 	}
 
@@ -213,6 +238,8 @@ protected:
 
 	virtual int InitScene()
 	{
+		InitSceneSpecific();
+		
 		gameHost->InitializeScene();
 
 		return 0;

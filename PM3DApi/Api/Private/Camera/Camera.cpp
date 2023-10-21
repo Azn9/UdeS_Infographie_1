@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include <DirectXMathMatrix.inl>
 
+#include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 #include "../../Public/GameHost.h"
 
 void Camera::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
@@ -21,7 +22,6 @@ void Camera::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
 
 void Camera::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 {
-	std::cout << "Camera::SetWorldPosition()" << std::endl;
 	GameObject::SetWorldPosition(newPosition);
 	SetFocusPoint(focusPoint); // Recalculate rotation
 	UpdateInternalMatrices();
@@ -99,6 +99,45 @@ void Camera::SetFarPlane(const float newFarPlane)
 {
 	farPlane = newFarPlane;
 	UpdateInternalMatrices();
+}
+
+void Camera::DrawDebugInfo() const
+{
+	const float focusPoint[3] = {
+		DirectX::XMVectorGetX(this->focusPoint),
+		DirectX::XMVectorGetY(this->focusPoint),
+		DirectX::XMVectorGetZ(this->focusPoint)
+	};
+	const float upVector[3] = {
+		DirectX::XMVectorGetX(this->upVector),
+		DirectX::XMVectorGetY(this->upVector),
+		DirectX::XMVectorGetZ(this->upVector)
+	};
+	
+	ImGui::Text("Focus point");
+	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(focusPoint[0])).c_str());
+	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(focusPoint[1])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(focusPoint[2])).c_str());
+
+	ImGui::Text("Up vector");
+	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(upVector[0])).c_str());
+	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(upVector[1])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(upVector[2])).c_str());
+
+	ImGui::Text("Type");
+	ImGui::SameLine(100); ImGui::Text(cameraType == PERSECTIVE ? "Perspective" : "Orthographic");
+
+	if (cameraType == PERSECTIVE)
+	{
+		ImGui::Text("Field of view");
+		ImGui::SameLine(100); ImGui::Text(std::to_string(fieldOfView).c_str());
+	}
+
+	ImGui::Text("Near plane");
+	ImGui::SameLine(100); ImGui::Text(std::to_string(nearPlane).c_str());
+
+	ImGui::Text("Far plane");
+	ImGui::SameLine(100); ImGui::Text(std::to_string(farPlane).c_str());
 }
 
 void Camera::UpdateInternalMatrices()

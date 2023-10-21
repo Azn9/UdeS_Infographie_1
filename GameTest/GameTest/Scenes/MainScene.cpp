@@ -7,6 +7,7 @@
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
+#include "../../../PM3DApi/Api/Public/GameObject/Basic/EmptyGameObject.h"
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/Plane.h"
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
@@ -56,6 +57,7 @@ void MainScene::Initialize()
 	*/
 
 	auto redLight = std::make_unique<PointLight>(
+		"Red light",
 		XMFLOAT3(-2.5f, 20.0f, -2.5f),
 		XMFLOAT3(1.0f, 0.0f, 0.0f)
 	);
@@ -68,6 +70,7 @@ void MainScene::Initialize()
 	AddLight(std::move(redLight));
 
 	auto blueLight = std::make_unique<PointLight>(
+		"Blue light",
 		XMFLOAT3(2.5f, 20.0f, -2.5f),
 		XMFLOAT3(0.0f, 1.0f, 0.0f)
 	);
@@ -80,6 +83,7 @@ void MainScene::Initialize()
 	AddLight(std::move(blueLight));
 
 	auto greenLight = std::make_unique<PointLight>(
+		"Green light",
 		XMFLOAT3(0.0f, 20.0f, 1.83f),
 		XMFLOAT3(0.0f, 0.0f, 1.0f)
 	);
@@ -93,7 +97,6 @@ void MainScene::Initialize()
 
 	auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
 
-	/*
 	// Add a cube
 	auto cube = std::make_unique<GameObject>(
 		"A cube",
@@ -104,7 +107,8 @@ void MainScene::Initialize()
 	auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "cube.obj");
 	cube->AddComponent(std::move(meshRenderer));
 	cube->Initialize();
-	*/
+	AddChild(std::move(cube));
+	
 
 	auto plane = std::make_unique<Plane>(
 		"Test plane",
@@ -115,4 +119,12 @@ void MainScene::Initialize()
 	plane->Initialize();
 
 	AddChild(std::move(plane));
+
+	auto testParent = std::make_unique<EmptyGameObject>("Test parent");
+	auto testParent2 = std::make_unique<EmptyGameObject>("Test parent 2");
+	auto testChild = std::make_unique<EmptyGameObject>("Test child");
+
+	testParent2->AddChild(std::move(testChild));
+	testParent->AddChild(std::move(testParent2));
+	AddChild(std::move(testParent));
 }

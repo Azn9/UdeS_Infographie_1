@@ -64,6 +64,7 @@ public:
 	const DirectX::XMVECTOR& GetFocusPoint() const { return focusPoint; }
 	const DirectX::XMVECTOR& GetUpVector() const { return upVector; }
 
+	void DrawDebugInfo() const override;
 protected:
 	CameraType cameraType;
 

@@ -189,6 +189,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Imgui\imgui.cpp" />
+    <ClCompile Include="Core\Imgui\imgui_demo.cpp" />
+    <ClCompile Include="Core\Imgui\imgui_draw.cpp" />
+    <ClCompile Include="Core\Imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="Core\Imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="Core\Imgui\imgui_tables.cpp" />
+    <ClCompile Include="Core\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="Core\Private\Core\CDIManipulateur.cpp" />
     <ClCompile Include="Core\Private\Core\dispositif.cpp" />
     <ClCompile Include="Core\Private\Core\dispositifD3D11.cpp" />
@@ -288,6 +295,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Imgui\imconfig.h" />
+    <ClInclude Include="Core\Imgui\imgui.h" />
+    <ClInclude Include="Core\Imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="Core\Imgui\imgui_impl_win32.h" />
+    <ClInclude Include="Core\Imgui\imgui_internal.h" />
+    <ClInclude Include="Core\Imgui\imstb_rectpack.h" />
+    <ClInclude Include="Core\Imgui\imstb_textedit.h" />
+    <ClInclude Include="Core\Imgui\imstb_truetype.h" />
     <ClInclude Include="Core\Public\Core\CDIManipulateur.h" />
     <ClInclude Include="Core\Public\Core\dispositif.h" />
     <ClInclude Include="Core\Public\Core\dispositifD3D11.h" />
@@ -318,6 +333,7 @@
     <ClInclude Include="Core\Public\Util\ChargeurOBJ.h" />
     <ClInclude Include="Core\Public\Util\Resource.h" />
     <ClInclude Include="Core\Public\Util\Singleton.h" />
+    <ClInclude Include="Core\Public\Util\Time.h" />
     <ClInclude Include="Core\Public\Util\util.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -365,7 +381,6 @@
     <Content Include="x64\Debug\jin.OMB" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\" />
     <Folder Include="x64\Debug\" />
   </ItemGroup>
   <ItemGroup>

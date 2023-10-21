@@ -9,6 +9,7 @@
 #include "../../../../../PetitMoteur3D/Core/Public/Mesh/FastobjChargeur.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Texture/GestionnaireDeTextures.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
+#include "../../../../../PetitMoteur3D/Core/Public/Util/Time.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Util/util.h"
 #include "../../../Public/GameHost.h"
 #include "../../../Public/GameObject/GameObject.h"
@@ -55,6 +56,9 @@ void PM3D_API::MeshRenderer::Initialize()
 
 void PM3D_API::MeshRenderer::DrawSelf() const
 {
+	LogBeginDrawSelf();
+	start = Time::GetTimeSpecific();
+	
 	if (!mesh)
 		throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
 
@@ -81,7 +85,11 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	constexpr UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
+	aTime = Time::GetTimeSpecific();
+
 	shader->LoadLights(pImmediateContext);
+
+	bTime = Time::GetTimeSpecific();
 
 	const XMMATRIX viewProj = camera->GetMatViewProj();
 	
@@ -89,6 +97,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
 		XMMatrixTranspose(parentObject->GetMatWorld())
 	);
+
+	cTime = Time::GetTimeSpecific();
 
 	// Dessiner les sous-objets non-transparents
 	for (int i = 0; i < mesh->object_count; ++i)
@@ -121,7 +131,11 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
 	}
 
+	dTime = Time::GetTimeSpecific();
+
 	shader->DeleteParameters(shaderParameters);
+
+	LogEndDrawSelf();
 }
 
 void PM3D_API::MeshRenderer::LoadMesh()

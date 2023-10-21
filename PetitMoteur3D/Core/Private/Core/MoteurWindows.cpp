@@ -5,6 +5,9 @@
 
 #include "Core/Public/Core/MoteurWindows.h"
 
+#include "../../Imgui/imgui.h"
+#include "../../Imgui/imgui_impl_win32.h"
+#include "../../Imgui/imgui_impl_dx11.h"
 
 namespace PM3D
 {
@@ -106,6 +109,21 @@ int CMoteurWindows::InitialisationsSpecific()
 	return 0;
 }
 
+void CMoteurWindows::InitSceneSpecific()
+{
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplWin32_Init(hMainWnd);
+	ImGui_ImplDX11_Init(pDispositif->GetD3DDevice(), pDispositif->GetImmediateContext());
+}
+
 //
 //   FONCTION : RunSpecific 
 //
@@ -176,6 +194,10 @@ void CMoteurWindows::BeginRenderSceneSpecific()
 	const float Couleur[4] = {0.0f, 0.0f, 0.2f, 1.0f}; //  RGBA - Vert pour le moment
 
 	pImmediateContext->ClearRenderTargetView(pRenderTargetView, Couleur);
+	
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
 	// On ré-initialise le tampon de profondeur
 	ID3D11DepthStencilView* pDepthStencilView = pDispositif->GetDepthStencilView();
@@ -184,6 +206,8 @@ void CMoteurWindows::BeginRenderSceneSpecific()
 
 void CMoteurWindows::EndRenderSceneSpecific()
 {
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 //  FONCTION : WndProc(HWND, unsigned, WORD, LONG)
@@ -197,6 +221,10 @@ void CMoteurWindows::EndRenderSceneSpecific()
 //
 LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+		return true;
+	
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;

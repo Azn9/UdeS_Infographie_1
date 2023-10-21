@@ -53,6 +53,10 @@ void PM3D_API::Scene::Draw()
 
 void PM3D_API::Scene::DrawSelf() const
 {
+	LogBeginDrawSelf();
+	
 	if (isDeleted) return;
 	GameObject::DrawSelf();
+
+	LogEndDrawSelf();
 }
