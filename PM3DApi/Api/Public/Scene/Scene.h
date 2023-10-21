@@ -56,7 +56,7 @@ void Scene::AddLight(std::unique_ptr<L>&& child)
 {
 	child->SetScene(this);
 	lights.push_back(child.get());
-	AddChild(std::move(child));
+	GameObject::AddChild(std::move(child));
 
 	lightsNeedUpdate = true;
 }

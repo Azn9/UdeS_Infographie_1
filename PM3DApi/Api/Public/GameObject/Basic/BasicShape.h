@@ -11,56 +11,48 @@ public:
     explicit BasicShape(const std::string& name)
         : GameObject(name)
     {
-        ConstructRenderer();
     }
 
     BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition)
         : GameObject(name, worldPosition)
     {
-        ConstructRenderer();
     }
 
     BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const DirectX::XMFLOAT3& worldRotation)
         : GameObject(name, worldPosition, worldRotation)
     {
-        ConstructRenderer();
     }
 
     BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const Quaternion& worldRotation)
         : GameObject(name, worldPosition, worldRotation)
     {
-        ConstructRenderer();
     }
 
     BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const DirectX::XMFLOAT3& worldRotation,
         const DirectX::XMFLOAT3& worldScale)
         : GameObject(name, worldPosition, worldRotation, worldScale)
     {
-        ConstructRenderer();
     }
 
     BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const Quaternion& worldRotation,
         const DirectX::XMFLOAT3& worldScale)
         : GameObject(name, worldPosition, worldRotation, worldScale)
     {
-        ConstructRenderer();
     }
 
     BasicShape(
         const std::string& name,
         std::unique_ptr<PM3D_API::Shader>&& shader
-    ) : GameObject(name)
+    ) : GameObject(name), shader(std::move(shader))
     {
-        ConstructRenderer(std::move(shader));
     }
 
     BasicShape(
         const std::string& name,
         std::unique_ptr<PM3D_API::Shader>&& shader,
         const DirectX::XMFLOAT3& worldPosition
-    ) : GameObject(name, worldPosition)
+    ) : GameObject(name, worldPosition), shader(std::move(shader))
     {
-        ConstructRenderer(std::move(shader));
     }
 
     BasicShape(
@@ -68,9 +60,8 @@ public:
         std::unique_ptr<PM3D_API::Shader>&& shader,
         const DirectX::XMFLOAT3& worldPosition,
         const DirectX::XMFLOAT3& worldRotation
-    ) : GameObject(name, worldPosition, worldRotation)
+    ) : GameObject(name, worldPosition, worldRotation), shader(std::move(shader))
     {
-        ConstructRenderer(std::move(shader));
     }
 
     BasicShape(
@@ -78,9 +69,8 @@ public:
         std::unique_ptr<PM3D_API::Shader>&& shader,
         const DirectX::XMFLOAT3& worldPosition,
         const Quaternion& worldRotation
-    ) : GameObject(name, worldPosition, worldRotation)
+    ) : GameObject(name, worldPosition, worldRotation), shader(std::move(shader))
     {
-        ConstructRenderer(std::move(shader));
     }
 
     BasicShape(
@@ -89,9 +79,8 @@ public:
         const DirectX::XMFLOAT3& worldPosition,
         const DirectX::XMFLOAT3& worldRotation,
         const DirectX::XMFLOAT3& worldScale
-    ) : GameObject(name, worldPosition, worldRotation, worldScale)
+    ) : GameObject(name, worldPosition, worldRotation, worldScale), shader(std::move(shader))
     {
-        ConstructRenderer(std::move(shader));
     }
 
     BasicShape(
@@ -100,12 +89,23 @@ public:
         const DirectX::XMFLOAT3& worldPosition,
         const Quaternion& worldRotation,
         const DirectX::XMFLOAT3& worldScale
-    ) : GameObject(name, worldPosition, worldRotation, worldScale)
+    ) : GameObject(name, worldPosition, worldRotation, worldScale), shader(std::move(shader))
     {
-        ConstructRenderer(std::move(shader));
+    }
+
+    void Initialize() override
+    {
+        if (shader)
+        {
+            ConstructRenderer(std::move(shader));
+        } else
+        {
+            ConstructRenderer();
+        }
     }
     
 private:
+    std::unique_ptr<PM3D_API::Shader> shader;
     virtual std::wstring GetShaderFileName() = 0;
     virtual std::string GetMeshFileName() = 0;
     

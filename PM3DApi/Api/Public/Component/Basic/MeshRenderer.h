@@ -27,23 +27,20 @@ public:
 
 	void DrawDebugInfo() const override
 	{
-		ImGui::Text("Draw time");
+		ImGui::Text("MeshLoaded");
+		ImGui::SameLine(200.0f); ImGui::Text(meshLoaded ? "true" : "false");
 
-		ImGui::Text("A");
-		ImGui::SameLine(100.0f);
-		ImGui::Text((std::to_string(Time::GetTimeIntervalsInSec(start, aTime) * 1000.0) + " ms").c_str());
+		ImGui::Text("NombreSubmesh");
+		ImGui::SameLine(200.0f); ImGui::Text(std::to_string(NombreSubmesh).c_str());
 
-		ImGui::Text("B");
-		ImGui::SameLine(100.0f);
-		ImGui::Text((std::to_string(Time::GetTimeIntervalsInSec(aTime, bTime) * 1000.0) + " ms").c_str());
+		ImGui::Text("SubmeshMaterialIndex");
+		ImGui::SameLine(200.0f); ImGui::Text(std::to_string(SubmeshMaterialIndex.size()).c_str());
 
-		ImGui::Text("C");
-		ImGui::SameLine(100.0f);
-		ImGui::Text((std::to_string(Time::GetTimeIntervalsInSec(bTime, cTime) * 1000.0) + " ms").c_str());
+		ImGui::Text("SubmeshIndex");
+		ImGui::SameLine(200.0f); ImGui::Text(std::to_string(SubmeshIndex.size()).c_str());
 
-		ImGui::Text("D");
-		ImGui::SameLine(100.0f);
-		ImGui::Text((std::to_string(Time::GetTimeIntervalsInSec(cTime, dTime) * 1000.0) + " ms").c_str());
+		ImGui::Text("Material");
+		ImGui::SameLine(200.0f); ImGui::Text(std::to_string(Material.size()).c_str());
 	}
 private:
 	void LoadMesh();
@@ -57,12 +54,6 @@ private:
 	std::vector<int> SubmeshMaterialIndex; // Index des matériaux
 	std::vector<int> SubmeshIndex; // Index des sous-objets
 	std::vector<CMaterial> Material; // Vecteur des matériaux
-
-	mutable uint64_t start;
-	mutable uint64_t aTime;
-	mutable uint64_t bTime;
-	mutable uint64_t cTime;
-	mutable uint64_t dTime;
 	
 };
 }

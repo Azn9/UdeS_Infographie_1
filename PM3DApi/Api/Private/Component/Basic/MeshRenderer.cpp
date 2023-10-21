@@ -57,7 +57,6 @@ void PM3D_API::MeshRenderer::Initialize()
 void PM3D_API::MeshRenderer::DrawSelf() const
 {
 	LogBeginDrawSelf();
-	start = Time::GetTimeSpecific();
 	
 	if (!mesh)
 		throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
@@ -66,7 +65,7 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	const auto camera = scene->GetMainCamera();
 
 	if (!camera)
-		throw std::runtime_error("MeshRenderer::DrawSelf: camera or directionnalLight is null");
+		throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
 
 	// Obtenir le contexte
 	ID3D11DeviceContext* pImmediateContext = GameHost::GetInstance()->GetDispositif()->GetImmediateContext();
@@ -85,11 +84,7 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	constexpr UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
-	aTime = Time::GetTimeSpecific();
-
 	shader->LoadLights(pImmediateContext);
-
-	bTime = Time::GetTimeSpecific();
 
 	const XMMATRIX viewProj = camera->GetMatViewProj();
 	
@@ -97,8 +92,6 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
 		XMMatrixTranspose(parentObject->GetMatWorld())
 	);
-
-	cTime = Time::GetTimeSpecific();
 
 	// Dessiner les sous-objets non-transparents
 	for (int i = 0; i < mesh->object_count; ++i)
@@ -138,8 +131,6 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		
 		pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
 	}
-
-	dTime = Time::GetTimeSpecific();
 
 	shader->DeleteParameters(shaderParameters);
 
