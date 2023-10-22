@@ -28,7 +28,10 @@ cbuffer param
 };
 
 #define MAX_LIGHTS 10
-StructuredBuffer<Light> lights; //  : register(t0)
+StructuredBuffer<Light> lights;
+
+Texture2D textureEntree; // la texture
+SamplerState SampleState; // l’état de sampling
 
 struct VS_Sortie
 {
@@ -57,9 +60,6 @@ VS_Sortie MainVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coordTex
 	return sortie;
 }
 
-Texture2D textureEntree; // la texture
-SamplerState SampleState; // l’état de sampling
-
 float4 MainPS(VS_Sortie vs) : SV_Target
 {
 	float3 totalAmbiant = float3(0, 0, 0);
@@ -76,26 +76,9 @@ float4 MainPS(VS_Sortie vs) : SV_Target
 			continue;
         }
 
-		float3 lightDirection = normalize(li.position.xyz - vs.posWorld.xyz);
-		float3 unnormalisedLightDirection = li.position.xyz - vs.posWorld.xyz;
-
-		float diffuseFalloff1 = 1 / dot(unnormalisedLightDirection, unnormalisedLightDirection);
-		float diffuseFalloff2 = 1 / (length(unnormalisedLightDirection) * length(unnormalisedLightDirection)) / dot(unnormalisedLightDirection, unnormalisedLightDirection);
-
-		totalAmbiant += li.ambiant.xyz * diffuseFalloff2;
-    
-        float3 diff = saturate(dot(N, lightDirection));
-        float3 R = normalize(2 * diff * N - lightDirection);
-		float3 S = pow(saturate(dot(R, V)), li.specularPower);
-
-		totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff2;
-		totalSpecular += li.specular.rgb * S;
-
-        continue;
-
 		if (li.lightType == 0) // ambiant
 		{
-			continue;
+			
 		}
 		else if (li.lightType == 1) // Directionnal
 		{
@@ -109,34 +92,61 @@ float4 MainPS(VS_Sortie vs) : SV_Target
 		}
 		else if (li.lightType == 2) // Point
 		{
-			float3 L = normalize(li.position.xyz - vs.posWorld.xyz);
-            float3 diff = saturate(dot(N, L));
-            float3 R = normalize(2 * diff * N - L);
-			float3 S = pow(saturate(dot(R, V)), li.specularPower);
-            
-			float diffuseFalloff = ((length(L) * length(L)) / dot(li.position - vs.Pos, li.position - vs.Pos));
-			
-			totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff;
+			float3 lightDirection = normalize(li.position.xyz - vs.posWorld.xyz);
+			float3 unnormalisedLightDirection = li.position.xyz - vs.posWorld.xyz;
 
+			float diffuseFalloff1 = 1 / dot(unnormalisedLightDirection, unnormalisedLightDirection);
+			float diffuseFalloff2 = 1 / (length(unnormalisedLightDirection) * length(unnormalisedLightDirection)) / dot(unnormalisedLightDirection, unnormalisedLightDirection);
+
+			totalAmbiant += li.ambiant.xyz * diffuseFalloff2;
+		
+			float3 diff = saturate(dot(N, lightDirection));
+			float3 R = normalize(2 * diff * N - lightDirection);
+			float3 S = pow(saturate(dot(R, V)), li.specularPower);
+
+			totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff2;
 			totalSpecular += li.specular.rgb * S;
 		}
 		else if (li.lightType == 3) // Spot
 		{
-			// TODO
+			float3 lightDirection = normalize(li.position.xyz - vs.posWorld.xyz);
+			float3 spotDirection = normalize(li.direction.xyz);
+
+			float spotCosine = saturate(dot(lightDirection, -spotDirection));
+
+			if (spotCosine >= cos(li.outerAngle))
+			{
+				float diffuseFalloff;
+
+				if (spotCosine >= cos(li.innerAngle))
+				{
+					diffuseFalloff = 1.0;
+				}
+				else
+				{
+					float t = saturate((spotCosine - cos(li.outerAngle)) / (cos(li.innerAngle) - cos(li.outerAngle)));
+        			diffuseFalloff = smoothstep(0.0, 1.0, t);
+				}
+
+				totalAmbiant += li.ambiant.xyz * diffuseFalloff;
+
+				float3 diff = saturate(dot(N, normalize(vs.posWorld.xyz - li.position.xyz)));
+				float3 R = normalize(2 * diff * N - lightDirection);
+				float3 S = pow(saturate(dot(R, V)), li.specularPower);
+
+				totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff;
+				totalSpecular += li.specular.rgb * S;
+			}
 		}
 	}
 
 	// Échantillonner la couleur du pixel à partir de la texture
-	float3 couleurTexture = textureEntree.Sample(SampleState, vs.coordTex).rgb;
+	float3 couleurTexture = float3(1, 1, 1);
 
 	if (bTex > 0)
     {
         // Échantillonner la couleur du pixel à partir de la texture
         couleurTexture = textureEntree.Sample(SampleState, vs.coordTex).rgb;
-    }
-    else
-    {
-        couleurTexture = float3(1, 1, 1);
     }
 
 	float3 finalColor = couleurTexture.rgb * (totalAmbiant /** vAMat.rgb*/ + totalDiffuse /** vDMat.rgb*/ + totalSpecular /** vSMat.rgb*/);

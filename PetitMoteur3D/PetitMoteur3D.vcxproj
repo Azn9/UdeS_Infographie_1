@@ -204,10 +204,6 @@
     <ClCompile Include="Core\Private\Core\Moteur.cpp" />
     <ClCompile Include="Core\Private\Core\MoteurWindows.cpp" />
     <ClCompile Include="Core\Private\Core\PetitMoteur3D.cpp" />
-    <ClCompile Include="Core\Private\Mesh\ObjectMesh.cpp" />
-    <ClCompile Include="Core\Private\Mesh\sommetbloc.cpp" />
-    <ClCompile Include="Core\Private\Object\Bloc.cpp" />
-    <ClCompile Include="Core\Private\Object\CBlocEffet1.cpp" />
     <ClCompile Include="Core\Private\Object\Panneau.cpp" />
     <ClCompile Include="Core\Private\Sprite\AfficheurSprite.cpp" />
     <ClCompile Include="Core\Private\Sprite\AfficheurTexte.cpp" />
@@ -315,10 +311,6 @@
     <ClInclude Include="Core\Public\Mesh\CSommetMesh.h" />
     <ClInclude Include="Core\Public\Mesh\FastobjChargeur.h" />
     <ClInclude Include="Core\Public\Mesh\fast_obj.h" />
-    <ClInclude Include="Core\Public\Mesh\ObjectMesh.h" />
-    <ClInclude Include="Core\Public\Mesh\sommetbloc.h" />
-    <ClInclude Include="Core\Public\Object\Bloc.h" />
-    <ClInclude Include="Core\Public\Object\CBlocEffet1.h" />
     <ClInclude Include="Core\Public\Object\objet3d.h" />
     <ClInclude Include="Core\Public\Object\Panneau.h" />
     <ClInclude Include="Core\Public\Shader\d3dx11effect.h" />
@@ -381,6 +373,7 @@
     <Content Include="x64\Debug\jin.OMB" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\Private\Mesh\" />
     <Folder Include="DefaultObj\" />
     <Folder Include="x64\Debug\" />
   </ItemGroup>

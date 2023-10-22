@@ -11,6 +11,7 @@
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicPlane.h"
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
+#include "../../../PM3DApi/Api/Public/Light/SpotLight.h"
 #include "../../../PM3DApi/Api/Public/Shader/Basic/DefaultShader.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 
@@ -34,35 +35,27 @@ void MainScene::Initialize()
 
     SetMainCamera(std::move(mainCamera));
 
-    auto redLight = std::make_unique<PM3D_API::PointLight>(
-        "Red light",
-        XMFLOAT3(-2.5f, 20.0f, -2.5f),
-        XMFLOAT3(1.0f, 0.0f, 0.0f)
+    /*auto spotlight = std::make_unique<PM3D_API::SpotLight>(
+        "SpotLight",
+        XMFLOAT3(-6.0f, 6.0f, 0.0f),
+        XMFLOAT3(6.0f, -6.0f, 0.0f),
+        XMFLOAT3(1.0f, 1.0f, 1.0f),
+        0.0001f,
+        12.0f * XM_PI / 180.0f,
+        15.0f * XM_PI / 180.0f
     );
+    spotlight->Initialize();
+    AddLight(std::move(spotlight));*/
 
-    redLight->SetIntensity(1.0f);
-    redLight->Initialize();
-    AddLight(std::move(redLight));
-
-    auto blueLight = std::make_unique<PM3D_API::PointLight>(
-        "Blue light",
-        XMFLOAT3(2.5f, 20.0f, -2.5f),
-        XMFLOAT3(0.0f, 1.0f, 0.0f)
+    auto pointLight = std::make_unique<PM3D_API::PointLight>(
+        XMFLOAT3(0.0f, 5.0f, 0.0f),
+        XMFLOAT3(1.0f, 1.0f, 1.0f)
     );
-    blueLight->SetIntensity(1.0f);
-    blueLight->Initialize();
-    AddLight(std::move(blueLight));
+    pointLight->SetIntensity(2.0f);
+    pointLight->Initialize();
+    AddLight(std::move(pointLight));
 
-    auto greenLight = std::make_unique<PM3D_API::PointLight>(
-        "Green light",
-        XMFLOAT3(0.0f, 20.0f, 1.83f),
-        XMFLOAT3(0.0f, 0.0f, 1.0f)
-    );
-    greenLight->SetIntensity(1.0f);
-    greenLight->Initialize();
-    AddLight(std::move(greenLight));
-
-    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
+    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"Test1.fx");
 
     // Add a cube
     auto plane = std::make_unique<PM3D_API::BasicPlane>(
