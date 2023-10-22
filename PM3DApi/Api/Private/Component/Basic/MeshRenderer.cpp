@@ -119,7 +119,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 			XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse),
 			XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular),
 			Material[SubmeshMaterialIndex[i]].Puissance,
-			Material[SubmeshMaterialIndex[i]].pTextureD3D
+			Material[SubmeshMaterialIndex[i]].pAlbedoTexture,
+			Material[SubmeshMaterialIndex[i]].pNormalmapTexture
 		);
 
 		// IMPORTANT pour ajuster les param.
@@ -211,13 +212,7 @@ void PM3D_API::MeshRenderer::LoadMesh()
 	// 4b) Copie des matériaux dans la version locale
 	for (int32_t i = 0; i < chargeur->GetNombreMaterial(); ++i)
 	{
-		CMaterial mat;
-		chargeur->GetMaterial(i, mat.NomFichierTexture,
-			mat.NomMateriau,
-			mat.Ambient,
-			mat.Diffuse,
-			mat.Specular,
-			mat.Puissance);
+		CMaterial mat =	chargeur->GetMaterial(i);
 		Material.push_back(mat);
 	}
 
@@ -241,12 +236,22 @@ void PM3D_API::MeshRenderer::LoadMesh()
 	
 	for (uint32_t i = 0; i < Material.size(); ++i)
 	{
-		if (Material[i].NomFichierTexture.length() > 0)
+		if (Material[i].albedoTextureFileName.length() > 0)
 		{
-			const std::wstring ws(Material[i].NomFichierTexture.begin(),
-				Material[i].NomFichierTexture.end());
-			Material[i].pTextureD3D = TexturesManager.GetNewTexture(ws.c_str(),
-				GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
+			const std::wstring ws(Material[i].albedoTextureFileName.begin(), Material[i].albedoTextureFileName.end());
+			Material[i].pAlbedoTexture = TexturesManager.GetNewTexture(ws.c_str(), GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
+		} else
+		{
+			std::cout << "MeshRenderer::LoadMesh: Material[" << i << "].albedoTextureFileName is empty" << std::endl;
+		}
+
+		if (Material[i].normalmapTextureFileName.length() > 0)
+		{
+			const std::wstring ws(Material[i].normalmapTextureFileName.begin(), Material[i].normalmapTextureFileName.end());
+			Material[i].pNormalmapTexture = TexturesManager.GetNewTexture(ws.c_str(), GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
+		} else
+		{
+			std::cout << "MeshRenderer::LoadMesh: Material[" << i << "].normalmapTextureFileName is empty" << std::endl;
 		}
 	}
 

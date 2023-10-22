@@ -60,9 +60,6 @@ void PM3D::FastobjChargeur::Chargement(const CParametresChargement& param)
 	{
 		tabIndex.emplace_back(i);
 	}
-
-	std::vector<XMFLOAT3> binormals;
-	std::vector<XMFLOAT3> tangents;
 	
 	for (unsigned int i = 0; i < mesh->group_count; ++i)
 	{
@@ -159,33 +156,42 @@ size_t PM3D::FastobjChargeur::GetNombreMaterial() const
 	return mesh->material_count;
 }
 
-void PM3D::FastobjChargeur::GetMaterial(int _i,
-	std::string& _NomFichierTexture,
-	std::string& _NomMateriau,
-	XMFLOAT4& _Ambient,
-	XMFLOAT4& _Diffuse,
-	XMFLOAT4& _Specular,
-	float& _Puissance) const
+CMaterial PM3D::FastobjChargeur::GetMaterial(int _i) const
 {
-	if (mesh->materials[_i].map_d.path)
-		_NomFichierTexture = mesh->materials[_i].map_d.path; // ?
+	const auto meshMaterial = mesh->materials[_i];
+	CMaterial material;
+	
+	if (meshMaterial.map_Kd.path)
+	{
+		material.albedoTextureFileName = meshMaterial.map_Kd.path; // ?
+	}
 	else
 	{
-		_NomFichierTexture = "";
+		material.albedoTextureFileName = "";
+	}
+
+	if (meshMaterial.map_bump.path)
+	{
+		material.normalmapTextureFileName = meshMaterial.map_bump.path;
+	} else
+	{
+		material.normalmapTextureFileName = "";
 	}
 	
-	_NomMateriau = mesh->materials[_i].name;
+	material.NomMateriau = meshMaterial.name;
 	
-	const auto Ka = mesh->materials[_i].Ka;
-	_Ambient = XMFLOAT4(Ka[0], Ka[1], Ka[2], 1.0f);
+	const auto Ka = meshMaterial.Ka;
+	material.Ambient = XMFLOAT4(Ka[0], Ka[1], Ka[2], 1.0f);
 
-	const auto Kd = mesh->materials[_i].Kd;
-	_Diffuse = XMFLOAT4(Kd[0], Kd[1], Kd[2], 1.0f);
+	const auto Kd = meshMaterial.Kd;
+	material.Diffuse = XMFLOAT4(Kd[0], Kd[1], Kd[2], 1.0f);
 
-	const auto Ks = mesh->materials[_i].Ks;
-	_Specular = XMFLOAT4(Ks[0], Ks[1], Ks[2], 1.0f);
+	const auto Ks = meshMaterial.Ks;
+	material.Specular = XMFLOAT4(Ks[0], Ks[1], Ks[2], 1.0f);
 	
-	_Puissance = mesh->materials[_i].d;
+	material.Puissance = meshMaterial.Ns;
+
+	return material;
 }
 
 const std::string& PM3D::FastobjChargeur::GetMaterialName(int i) const

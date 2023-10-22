@@ -111,7 +111,8 @@ PM3D_API::DefaultShader::DefaultShader(const std::wstring& fileName) : Shader(),
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Création de l’état de sampling
-	pD3DDevice->CreateSamplerState(&samplerDesc, &sampleState);
+	pD3DDevice->CreateSamplerState(&samplerDesc, &albedoSampleState);
+	pD3DDevice->CreateSamplerState(&samplerDesc, &normalmapSampleState);
 }
 
 PM3D_API::DefaultShader::~DefaultShader()
@@ -121,7 +122,8 @@ PM3D_API::DefaultShader::~DefaultShader()
 	PM3D::DXRelacher(vertexLayout);
 	PM3D::DXRelacher(vertexBuffer);
 	PM3D::DXRelacher(indexBuffer);
-	PM3D::DXRelacher(sampleState);
+	PM3D::DXRelacher(albedoSampleState);
+	PM3D::DXRelacher(normalmapSampleState);
 }
 
 void* PM3D_API::DefaultShader::PrepareParameters(
@@ -130,7 +132,10 @@ void* PM3D_API::DefaultShader::PrepareParameters(
 )
 {
 	ID3DX11EffectSamplerVariable* variableSampler = effect->GetVariableByName("SampleState")->AsSampler();
-	variableSampler->SetSampler(0, sampleState);
+	variableSampler->SetSampler(0, albedoSampleState);
+
+	ID3DX11EffectSamplerVariable* variableSamplerNM = effect->GetVariableByName("SampleStateNormalMap")->AsSampler();
+	variableSamplerNM->SetSampler(0, normalmapSampleState);
 
 	const auto cameraPos = GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldPosition();
 
@@ -149,7 +154,9 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
 	DirectX::XMVECTOR materialDiffuse,
 	DirectX::XMVECTOR materialSpecular,
 	float specularPower,
-	ID3D11ShaderResourceView* materialTexture)
+	ID3D11ShaderResourceView* albedoTexture,
+	ID3D11ShaderResourceView* normalmapTexture
+)
 {
 	auto& parameters = *static_cast<DefaultShaderParameters*>(shaderParameters);
 
@@ -158,17 +165,29 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
 	parameters.materialSpecular = materialSpecular;
 	parameters.materialSpecularPower = specularPower;
 
-	if (materialTexture == nullptr)
+	if (albedoTexture == nullptr)
 	{
-		parameters.hasTexture = false;
+		parameters.hasAlbedoTexture = false;
 	}
 	else
 	{
-		parameters.hasTexture = true;
+		parameters.hasAlbedoTexture = true;
 
-		ID3DX11EffectShaderResourceVariable* variableTexture;
-		variableTexture = effect->GetVariableByName("textureEntree")->AsShaderResource();
-		variableTexture->SetResource(materialTexture);
+		ID3DX11EffectShaderResourceVariable* variableTexture = effect->GetVariableByName("textureEntree")->AsShaderResource();
+		variableTexture->SetResource(albedoTexture);
+	}
+
+	if (normalmapTexture != nullptr)
+	{
+		const auto effectVariablePtr = effect->GetVariableByName("normalMap");
+
+		if (effectVariablePtr)
+		{
+			ID3DX11EffectShaderResourceVariable* variableTexture = effectVariablePtr->AsShaderResource();
+			variableTexture->SetResource(normalmapTexture);
+
+			parameters.hasNormalmapTexture = true;
+		}
 	}
 }
 

@@ -22,16 +22,19 @@ cbuffer param
     float4 vAMat; // la valeur ambiante du matériau
     float4 vDMat; // la valeur diffuse du matériau
     float4 vSMat; // la valeur spéculaire du matériau
-    float puissance; // la puissance de spécularité
-    int bTex; // Booléen pour la présence de texture
-    float2 remplissage;
+    float Ns; // la puissance de spécularité
+    
+    int hasAlbedoTexture; // Booléen pour la présence de texture
+    int hasNormalmapTexture;
 };
 
 #define MAX_LIGHTS 10
 StructuredBuffer<Light> lights;
 
 Texture2D textureEntree; // la texture
+Texture2D normalMap;
 SamplerState SampleState; // l’état de sampling
+SamplerState SampleStateNormalMap;
 
 struct VS_Sortie
 {
@@ -54,8 +57,8 @@ VS_Sortie MainVS(
     VS_Sortie output;
 
     output.normal = mul(float4(vNormal, 0.0f), matWorld);
-    //output.binormal = mul(float4(vBiNormal, 0.0f), matWorld);
-    //output.tangent = mul(float4(vTangent, 0.0f), matWorld);
+    output.binormal = mul(float4(vBiNormal, 0.0f), matWorld);
+    output.tangent = mul(float4(vTangent, 0.0f), matWorld);
 
     output.position = mul(vPos, matWorldViewProj);
     output.worldPos = mul(vPos, matWorld);
@@ -70,10 +73,12 @@ VS_Sortie MainVS(
 float4 MainPS(VS_Sortie input) : SV_Target
 {
     float3 normal = input.normal;
-    //float3 binormal = input.binormal;
-    //float3 tangent = input.tangent;
+    float3 binormal = input.binormal;
+    float3 tangent = input.tangent;
 
-    // TODO : normal map
+    if (hasNormalmapTexture) {
+        // TODO
+    }
 
     float3 totalAmbiant = float3(0, 0, 0);
 	float3 totalDiffuse = float3(0, 0, 0);
@@ -111,6 +116,8 @@ float4 MainPS(VS_Sortie input) : SV_Target
             //float S = pow(RdotV, puissance);
             float3 H = normalize(L + V);
             float NdotH = saturate(dot(N, H));
+
+            float puissance = Ns * li.intensity;
             float specularValue = pow(NdotH, puissance);
 
             // Attenuation
@@ -130,7 +137,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
 
     float3 couleurTexture = float3(1, 1, 1);
 
-    if (bTex > 0)
+    if (hasAlbedoTexture)
     {
         couleurTexture = textureEntree.Sample(SampleState, input.coordTex).rgb;
     }

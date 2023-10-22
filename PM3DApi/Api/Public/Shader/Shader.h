@@ -13,15 +13,10 @@ class Shader
 public:
 	virtual ~Shader() = default;
 
-	virtual const std::wstring& GetFileName() const = 0;
 	virtual ID3D11Buffer* GetShaderParametersBuffer() const = 0;
-	virtual ID3DX11Effect* GetEffect() const = 0;
-	virtual ID3DX11EffectTechnique* GetTechnique() const = 0;
 	virtual ID3DX11EffectPass* GetPass() const = 0;
 	virtual ID3D11InputLayout* GetVertexLayout() const = 0;
-	virtual ID3D11Buffer* GetVertexBuffer() const = 0;
 	virtual ID3D11Buffer* GetIndexBuffer() const = 0;
-	virtual ID3D11SamplerState* GetSampleState() const = 0;
 
 	virtual ID3D11Buffer** GetVertexBufferPtr() const = 0;
 	virtual ID3D11Buffer** GetIndexBufferPtr() const = 0;
@@ -36,7 +31,8 @@ public:
 		DirectX::XMVECTOR materialDiffuse,
 		DirectX::XMVECTOR materialSpecular,
 		float specularPower,
-		ID3D11ShaderResourceView* materialTexture
+		ID3D11ShaderResourceView* albedoTexture,
+		ID3D11ShaderResourceView* normalmapTexture
 	) = 0;
 
 	virtual void DeleteParameters(void* shader_parameters) = 0;

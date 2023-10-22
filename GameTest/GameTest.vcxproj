@@ -241,6 +241,7 @@
   <ItemGroup>
     <ClInclude Include="GameTest\Components\CameraMoverComponent.h" />
     <ClInclude Include="GameTest\Components\LightMoverComponent.h" />
+    <ClInclude Include="GameTest\CustomPlane.h" />
     <ClInclude Include="GameTest\GameTest.h" />
     <ClInclude Include="GameTest\Scenes\MainScene.h" />
   </ItemGroup>

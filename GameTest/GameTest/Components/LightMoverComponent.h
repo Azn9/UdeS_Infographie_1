@@ -17,10 +17,11 @@ public:
         angle++;
         if (angle >= 360) angle = 0;
 
-        float y = sinf(static_cast<float>(angle) * DirectX::XM_2PI / 360.0f) * 20.0f + 1.0f;
+        float x = sinf(static_cast<float>(angle) * DirectX::XM_2PI / 360.0f) * 5.0f;
+        float z = cosf(static_cast<float>(angle) * DirectX::XM_2PI / 360.0f) * 5.0f;
 
         const auto worldPosition = parentObject->GetWorldPosition();
-        const DirectX::XMFLOAT3 newWorldPosition = {worldPosition.x, y, worldPosition.z};
+        const DirectX::XMFLOAT3 newWorldPosition = {x, worldPosition.y, z};
 
         parentObject->SetWorldPosition(newWorldPosition);
     }

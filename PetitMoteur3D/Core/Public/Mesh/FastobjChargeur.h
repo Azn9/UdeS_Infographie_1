@@ -13,13 +13,7 @@ public:
 	size_t GetNombreSommets() const override;
 	int GetNombreSubset() const override;
 	size_t GetNombreMaterial() const override;
-	void GetMaterial(int _i,
-		std::string& _NomFichierTexture,
-		std::string& _NomMateriau,
-		XMFLOAT4& _Ambient,
-		XMFLOAT4& _Diffuse,
-		XMFLOAT4& _Specular,
-		float& _Puissance) const override;
+	CMaterial GetMaterial(int _i) const override;
 	const std::string& GetMaterialName(int i) const override;
 	void CopieSubsetIndex(std::vector<int>& dest) const override;
 	const XMFLOAT3& GetPosition(int NoSommet) const override;

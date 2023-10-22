@@ -8,7 +8,8 @@
 
 PM3D_API::Component::~Component()
 {
-	std::cout << "Component::~Component() on " << parentObject->GetName() << std::endl;
+	if (parentObject)
+		std::cout << "Component::~Component() on " << parentObject->GetName() << std::endl;
 }
 
 void PM3D_API::Component::Initialize()

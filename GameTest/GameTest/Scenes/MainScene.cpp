@@ -13,7 +13,9 @@
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
 #include "../../../PM3DApi/Api/Public/Light/SpotLight.h"
 #include "../../../PM3DApi/Api/Public/Shader/Basic/DefaultShader.h"
+#include "GameTest/CustomPlane.h"
 #include "GameTest/Components/CameraMoverComponent.h"
+#include "GameTest/Components/LightMoverComponent.h"
 
 void MainScene::Initialize()
 {
@@ -23,16 +25,12 @@ void MainScene::Initialize()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSECTIVE,
-        XMFLOAT3(0.0f, 5.0f, -1.0f),
+        XMFLOAT3(0.0f, 5.0f, -10.0f),
         XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarPlane(1000.0f);
-
-    auto cameraMover = std::make_unique<CameraMoverComponent>();
-    mainCamera->AddComponent(std::move(cameraMover));
-
     SetMainCamera(std::move(mainCamera));
 
     /*auto spotlight = std::make_unique<PM3D_API::SpotLight>(
@@ -51,20 +49,19 @@ void MainScene::Initialize()
         XMFLOAT3(0.0f, 5.0f, 0.0f),
         XMFLOAT3(1.0f, 1.0f, 1.0f)
     );
+    
+    auto lightMoverComponent = std::make_unique<LightMoverComponent>(0);
+    pointLight->AddComponent(std::move(lightMoverComponent));
+    
     pointLight->SetIntensity(2.0f);
     pointLight->Initialize();
     AddLight(std::move(pointLight));
 
-    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"Test1.fx");
+    //auto shader = std::make_unique<PM3D_API::DefaultShader>(L"Test1.fx");
 
     // Add a cube
-    auto plane = std::make_unique<PM3D_API::BasicPlane>(
-        "A plane",
-        std::move(shader),
-        XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(0.0f, 0.0f, 0.0f),
-        XMFLOAT3(10.0f, 1.0f, 10.0f)
-    );
+    auto plane = std::make_unique<CustomPlane>();
+    plane->SetWorldScale(XMFLOAT3(10.0f, 1.0f, 10.0f));
     plane->Initialize();
     AddChild(std::move(plane));
 }

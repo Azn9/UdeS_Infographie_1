@@ -10,15 +10,10 @@ public:
 	explicit DefaultShader(const std::wstring& fileName);
 	~DefaultShader() override;
 
-	const std::wstring& GetFileName() const override { return fileName; }
 	ID3D11Buffer* GetShaderParametersBuffer() const override { return shaderParametersBuffer; }
-	ID3DX11Effect* GetEffect() const override { return effect; }
-	ID3DX11EffectTechnique* GetTechnique() const override { return technique; }
 	ID3DX11EffectPass* GetPass() const override { return passe; }
 	ID3D11InputLayout* GetVertexLayout() const override { return vertexLayout; }
-	ID3D11Buffer* GetVertexBuffer() const override { return vertexBuffer; }
 	ID3D11Buffer* GetIndexBuffer() const override { return indexBuffer; }
-	ID3D11SamplerState* GetSampleState() const override { return sampleState; }
 
 	ID3D11Buffer** GetVertexBufferPtr() const override { return &vertexBuffer; }
 	ID3D11Buffer** GetIndexBufferPtr() const override { return &indexBuffer; }
@@ -36,7 +31,8 @@ public:
 		DirectX::XMVECTOR materialDiffuse,
 		DirectX::XMVECTOR materialSpecular,
 		float specularPower,
-		ID3D11ShaderResourceView* materialTexture
+		ID3D11ShaderResourceView* albedoTexture,
+		ID3D11ShaderResourceView* normalmapTexture
 	) override;
 
 	void DeleteParameters(void* shader_parameters) override;
@@ -54,7 +50,9 @@ protected:
 	ID3DX11EffectTechnique* technique;
 	ID3DX11EffectPass* passe;
 	ID3D11InputLayout* vertexLayout;
-	ID3D11SamplerState* sampleState;
+	
+	ID3D11SamplerState* albedoSampleState;
+	ID3D11SamplerState* normalmapSampleState;
 
 	mutable ID3D11Buffer* vertexBuffer;
 	mutable ID3D11Buffer* indexBuffer;
@@ -73,7 +71,8 @@ private:
 
 		float materialSpecularPower;
 
-		bool hasTexture;
+		bool hasAlbedoTexture;
+		bool hasNormalmapTexture;
 	};
 };
 }

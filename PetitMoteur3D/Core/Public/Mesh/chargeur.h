@@ -2,6 +2,8 @@
 #include <vector>
 #include <DirectXMath.h>
 
+#include "../../Public/Texture/CMaterial.h"
+
 using namespace DirectX;
 
 namespace PM3D
@@ -34,13 +36,7 @@ public:
 	virtual const void* GetIndexData()  const = 0;
 	virtual int GetNombreSubset() const = 0;
 	virtual size_t  GetNombreMaterial() const = 0;
-	virtual void GetMaterial(int _i,
-		std::string& _NomFichierTexture,
-		std::string& _NomMateriau,
-		XMFLOAT4& _Ambient,
-		XMFLOAT4& _Diffuse,
-		XMFLOAT4& _Specular,
-		float& _Puissance) const = 0;
+	virtual CMaterial GetMaterial(int _i) const = 0;
 
 	virtual const std::string& GetMaterialName(int i) const = 0;
 
