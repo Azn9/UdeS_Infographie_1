@@ -25,6 +25,8 @@ public:
 	const XMFLOAT3& GetPosition(int NoSommet) const override;
 	const XMFLOAT2& GetCoordTex(int NoSommet) const override;
 	const XMFLOAT3& GetNormale(int NoSommet) const override;
+	const XMFLOAT3& GetBiNormale(int NoSommet) const override;
+	const XMFLOAT3& GetTangent(int NoSommet) const override;
 
 	size_t GetNombreIndex() const override { return tabIndex.size(); }
 	const void* GetIndexData() const override { return tabIndex.data(); }
@@ -40,6 +42,8 @@ private:
 	std::vector<XMFLOAT3> Position;				// Tableau des positions ( v )
 	std::vector<XMFLOAT2> CoordTex;				// Tableau des coordonn�es de texture ( vt )
 	std::vector<XMFLOAT3> Normale;				// Tableau des normales ( vn )
+	std::vector<XMFLOAT3> BiNormale;			// Tableau des binormales
+	std::vector<XMFLOAT3> Tangente;				// Tableau des tangentes
 
 	std::vector<std::string> materialName;
 

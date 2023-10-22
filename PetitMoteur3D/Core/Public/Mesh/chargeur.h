@@ -49,6 +49,8 @@ public:
 	virtual const XMFLOAT3& GetPosition(int NoSommet) const = 0;
 	virtual const XMFLOAT2& GetCoordTex(int NoSommet) const = 0;
 	virtual const XMFLOAT3& GetNormale(int NoSommet) const = 0;
+	virtual const XMFLOAT3& GetBiNormale(int NoSommet) const = 0;
+	virtual const XMFLOAT3& GetTangent(int NoSommet) const = 0;
 
 	virtual void* GetMesh()
 	{

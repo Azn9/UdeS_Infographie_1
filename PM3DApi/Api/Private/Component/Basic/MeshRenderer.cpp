@@ -153,6 +153,8 @@ void PM3D_API::MeshRenderer::LoadMesh()
 			ts[i].position = chargeur->GetPosition(i);
 			ts[i].normal = chargeur->GetNormale(i);
 			ts[i].coordTex = chargeur->GetCoordTex(i);
+			ts[i].binormal = chargeur->GetBiNormale(i);
+			ts[i].tangent = chargeur->GetTangent(i);
 		}
 
 		// 1. SOMMETS b) Création du vertex buffer et copie des sommets

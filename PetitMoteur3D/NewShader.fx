@@ -42,8 +42,13 @@ struct VS_Sortie
 	float3 posWorld : TEXCOORD3;
 };
 
-VS_Sortie MainVS(float4 Pos : POSITION, float3 Normale : NORMAL, float2 coordTex: TEXCOORD)
-{
+VS_Sortie MainVS(
+	float4 Pos      : POSITION, 
+    float3 Normale   : NORMAL, 
+    float3 vBiNormal : BINORMAL,
+    float3 vTangent  : TANGENT,
+    float2 coordTex  : TEXCOORD
+) {
 	VS_Sortie sortie = (VS_Sortie)0;
 
 	sortie.Pos = mul(Pos, matWorldViewProj);

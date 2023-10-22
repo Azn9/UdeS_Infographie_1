@@ -211,7 +211,6 @@
     <ClCompile Include="Core\Private\Texture\DDSTextureLoader.cpp" />
     <ClCompile Include="Core\Private\Texture\GestionnaireDeTextures.cpp" />
     <ClCompile Include="Core\Private\Texture\Texture.cpp" />
-    <ClCompile Include="Core\Private\Util\ChargeurOBJ.cpp" />
     <ClCompile Include="Core\Private\Util\Util.cpp" />
     <ClCompile Include="Core\Public\Mesh\FastobjChargeur.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -322,7 +321,6 @@
     <ClInclude Include="Core\Public\Texture\DDSTextureLoader.h" />
     <ClInclude Include="Core\Public\Texture\GestionnaireDeTextures.h" />
     <ClInclude Include="Core\Public\Texture\Texture.h" />
-    <ClInclude Include="Core\Public\Util\ChargeurOBJ.h" />
     <ClInclude Include="Core\Public\Util\Resource.h" />
     <ClInclude Include="Core\Public\Util\Singleton.h" />
     <ClInclude Include="Core\Public\Util\Time.h" />

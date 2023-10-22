@@ -37,18 +37,18 @@ struct VS_Sortie
 {
 	float4 position  : SV_Position;
 	float3 normal    : TEXCOORD0;
-    //float3 binormal  : TEXCOORD1;
-    //float3 tangent   : TEXCOORD2;
-	float3 cameraDir : TEXCOORD1;
-	float2 coordTex  : TEXCOORD2;
-	float3 worldPos  : TEXCOORD3;
+    float3 binormal  : TEXCOORD1;
+    float3 tangent   : TEXCOORD2;
+	float3 cameraDir : TEXCOORD3;
+	float2 coordTex  : TEXCOORD4;
+	float3 worldPos  : TEXCOORD5;
 };
 
 VS_Sortie MainVS(
     float4 vPos      : POSITION, 
     float3 vNormal   : NORMAL, 
-    //float3 vBiNormal : BINORMAL,
-    //float3 vTangent  : TANGENT,
+    float3 vBiNormal : BINORMAL,
+    float3 vTangent  : TANGENT,
     float2 coordTex  : TEXCOORD
 ) {
     VS_Sortie output;
