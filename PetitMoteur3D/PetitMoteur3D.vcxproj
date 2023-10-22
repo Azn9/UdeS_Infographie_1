@@ -285,7 +285,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PetitMoteur3D\Public</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
   </ItemGroup>

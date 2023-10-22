@@ -227,7 +227,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>_DEBUG;CPPDYNAMICLIBRARYTEMPLATE_EXPORTS;_WINDOWS;_USRDLL;_WINDLL;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\GameTest\</AdditionalIncludeDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="GameTest\Scenes\MainScene.cpp" />

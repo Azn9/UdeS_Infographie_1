@@ -193,7 +193,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -225,7 +224,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Component\Basic\MeshRenderer.cpp">
@@ -267,7 +265,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -299,7 +296,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Component\Component.cpp" />
@@ -342,7 +338,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -374,7 +369,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Debug\FPSDebugRenderer.cpp">
@@ -416,7 +410,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -448,7 +441,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Debug\SceneHierarchyDebugRenderer.cpp">
@@ -490,7 +482,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -522,7 +513,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\GameObject\GameObject.cpp" />
@@ -566,7 +556,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -598,7 +587,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Light\DirectionalLight.cpp">
@@ -640,7 +628,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -672,7 +659,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Light\Light.cpp">
@@ -714,7 +700,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -746,7 +731,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Light\PointLight.cpp">
@@ -788,7 +772,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -820,7 +803,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Light\SpotLight.cpp">
@@ -862,7 +844,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -894,7 +875,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Scene\Scene.cpp">
@@ -936,7 +916,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -968,7 +947,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Shader\Basic\DefaultShader.cpp">
@@ -1010,7 +988,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -1042,7 +1019,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Shader\Shader.cpp">
@@ -1084,7 +1060,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -1116,7 +1091,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Util\Quaternion.cpp" />
@@ -1159,7 +1133,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>D:\Cours\Infographie\Chapitre 2 - Départ\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -1191,7 +1164,6 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Cours\Infographie\Chapitre 2 - Départ\PM3DApi\</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
   </ItemGroup>
