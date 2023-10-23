@@ -243,6 +243,7 @@
     <ClInclude Include="GameTest\CustomPlane.h" />
     <ClInclude Include="GameTest\GameTest.h" />
     <ClInclude Include="GameTest\Scenes\MainScene.h" />
+    <ClInclude Include="GameTest\TimeScaleTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

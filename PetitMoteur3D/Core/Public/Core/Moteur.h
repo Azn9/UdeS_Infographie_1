@@ -59,12 +59,13 @@ public:
 		{
 			while (this->running)
 			{
-				const int64_t currentTime = Time::GetTimeSpecific();
-				const double timeElapsed = Time::GetTimeIntervalsInSec(LastUpdateTime, currentTime);
+				const int64_t currentTime = Time::GetInstance().GetTimeSpecific();
+				const double timeElapsed = Time::GetInstance().GetTimeIntervalsInSec(LastUpdateTime, currentTime);
 
 				if (timeElapsed > EcartTemps)
 				{
-					Time::DeltaTime = timeElapsed;
+					Time::GetInstance().SetUpdateDeltaTime(static_cast<float>(timeElapsed) * Time::GetInstance().GetTimeScale());
+					
 					gameHost->Update();
 				
 					LastUpdateTime = currentTime;
@@ -79,12 +80,12 @@ public:
 		{
 			while (this->running)
 			{
-				const int64_t currentTime = Time::GetTimeSpecific();
-				const double timeElapsed = Time::GetTimeIntervalsInSec(LastFixedUpdateTime, currentTime);
+				const int64_t currentTime = Time::GetInstance().GetTimeSpecific();
+				const double timeElapsed = Time::GetInstance().GetTimeIntervalsInSec(LastFixedUpdateTime, currentTime);
 
 				if (timeElapsed > FixedEcartTemps)
 				{
-					Time::PhysicsDeltaTime = timeElapsed;
+					Time::GetInstance().SetPhysicsDeltaTime(static_cast<float>(timeElapsed) * Time::GetInstance().GetTimeScale());
 					gameHost->PhysicsUpdate();
 				
 					LastFixedUpdateTime = currentTime;
@@ -127,19 +128,19 @@ public:
 	{
 		// m�thode pour lire l'heure et calculer le 
 		// temps �coul�
-		const int64_t TempsCompteurCourant = Time::GetTimeSpecific();
-		const double TempsEcoule = Time::GetTimeIntervalsInSec(TempsCompteurPrecedent, TempsCompteurCourant);
+		const int64_t TempsCompteurCourant = Time::GetInstance().GetTimeSpecific();
+		const double TempsEcoule = Time::GetInstance().GetTimeIntervalsInSec(TempsCompteurPrecedent, TempsCompteurCourant);
 
 		// Est-il temps de rendre l'image?
 		if (TempsEcoule > EcartTemps)
 		{
-			uint64_t start = Time::GetTimeSpecific();
+			uint64_t start = Time::GetInstance().GetTimeSpecific();
 			
 			// Affichage optimis�
 			pDispositif->Present(); // On enlevera �//� plus tard
 
-			uint64_t end = Time::GetTimeSpecific();
-			presentTime = Time::GetTimeIntervalsInSec(start, end) * 1000.0;
+			uint64_t end = Time::GetInstance().GetTimeSpecific();
+			presentTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
 
 			// On rend l'image sur la surface de travail
 			// (tampon d'arri�re plan)
@@ -195,7 +196,7 @@ protected:
 	// Autres fonctions
 	virtual int InitAnimation()
 	{
-		TempsSuivant = Time::GetTimeSpecific();
+		TempsSuivant = Time::GetInstance().GetTimeSpecific();
 		TempsCompteurPrecedent = TempsSuivant;
 
 		// premi�re Image
@@ -207,7 +208,7 @@ protected:
 	// Fonctions de rendu et de pr�sentation de la sc�ne
 	virtual bool RenderScene()
 	{
-		const uint64_t start = Time::GetTimeSpecific();
+		const uint64_t start = Time::GetInstance().GetTimeSpecific();
 		
 		BeginRenderSceneSpecific();
 		
@@ -215,9 +216,9 @@ protected:
 
 		EndRenderSceneSpecific();
 
-		const uint64_t end = Time::GetTimeSpecific();
+		const uint64_t end = Time::GetInstance().GetTimeSpecific();
 
-		lastFrameTime = Time::GetTimeIntervalsInSec(start, end) * 1000.0;
+		lastFrameTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
 		
 		return true;
 	}

@@ -14,6 +14,7 @@
 #include "../../../PM3DApi/Api/Public/Light/SpotLight.h"
 #include "../../../PM3DApi/Api/Public/Shader/Basic/DefaultShader.h"
 #include "GameTest/CustomPlane.h"
+#include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
 
@@ -64,4 +65,7 @@ void MainScene::Initialize()
     plane->SetWorldScale(XMFLOAT3(10.0f, 1.0f, 10.0f));
     plane->Initialize();
     AddChild(std::move(plane));
+
+
+    PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
 }

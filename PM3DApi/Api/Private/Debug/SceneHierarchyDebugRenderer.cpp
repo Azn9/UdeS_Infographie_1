@@ -92,7 +92,7 @@ void PM3D_API::SceneHierarchyDebugRenderer::Draw()
 
             ImGui::Text("Self");
             ImGui::SameLine(100);
-            ImGui::Text((std::to_string(Time::GetTimeIntervalsInMs(selectedObject->GetBeginDrawSelf(), selectedObject->GetEndDrawSelf())) + " ms").c_str());
+            ImGui::Text((std::to_string(PM3D::Time::GetInstance().GetTimeIntervalsInMs(selectedObject->GetBeginDrawSelf(), selectedObject->GetEndDrawSelf())) + " ms").c_str());
 
             ImGui::Text("Components");
             ImGui::SameLine(100);
@@ -102,7 +102,7 @@ void PM3D_API::SceneHierarchyDebugRenderer::Draw()
             {
                 if (component)
                 {
-                    totalComponentsDrawTime += Time::GetTimeIntervalsInMs(component->GetBeginDrawSelf(), component->GetEndDrawSelf());
+                    totalComponentsDrawTime += PM3D::Time::GetInstance().GetTimeIntervalsInMs(component->GetBeginDrawSelf(), component->GetEndDrawSelf());
                 }
             }
             ImGui::Text((std::to_string(totalComponentsDrawTime) + " ms").c_str());

@@ -2,7 +2,6 @@
 
 #include "moteur.h"
 #include "dispositifD3D11.h"
-#include "Horloge.h"
 #include <thread>
 #include <string>
 

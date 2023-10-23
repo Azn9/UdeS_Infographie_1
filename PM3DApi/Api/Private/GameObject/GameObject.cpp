@@ -335,10 +335,10 @@ void PM3D_API::GameObject::SetWorldScale(const DirectX::XMFLOAT3 newScale)
 
 void PM3D_API::GameObject::LogBeginDrawSelf() const
 {
-	beginDrawSelf = Time::GetTimeSpecific();
+	beginDrawSelf = PM3D::Time::GetInstance().GetTimeSpecific();
 }
 
 void PM3D_API::GameObject::LogEndDrawSelf() const
 {
-	endDrawSelf = Time::GetTimeSpecific();
+	endDrawSelf = PM3D::Time::GetInstance().GetTimeSpecific();
 }

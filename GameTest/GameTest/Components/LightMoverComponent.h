@@ -14,11 +14,11 @@ public:
 
     void Update() override
     {
-        angle++;
+        angle += 100.0f * PM3D::Time::GetInstance().GetUpdateDeltaTime();
         if (angle >= 360) angle = 0;
 
-        float x = sinf(static_cast<float>(angle) * DirectX::XM_2PI / 360.0f) * 5.0f;
-        float z = cosf(static_cast<float>(angle) * DirectX::XM_2PI / 360.0f) * 5.0f;
+        float x = sinf(angle * DirectX::XM_2PI / 360.0f) * 5.0f;
+        float z = cosf(angle * DirectX::XM_2PI / 360.0f) * 5.0f;
 
         const auto worldPosition = parentObject->GetWorldPosition();
         const DirectX::XMFLOAT3 newWorldPosition = {x, worldPosition.y, z};
@@ -27,5 +27,5 @@ public:
     }
 
 private:
-    int angle;
+    float angle;
 };
