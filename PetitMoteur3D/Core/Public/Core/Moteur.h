@@ -13,10 +13,10 @@
 #include "../../Public/Texture/GestionnaireDeTextures.h"
 #include "../../Public/Sprite/AfficheurSprite.h"
 #include "../../Public/Sprite/SpriteTemp.h"
+#include "../../Public/Util/Time.h"
 
 namespace PM3D
 {
-
 const int IMAGESPARSECONDE = 60;
 const int PHYSICS_PER_SECOND = 60;
 const double EcartTemps = 1.0 / static_cast<double>(IMAGESPARSECONDE);
@@ -59,12 +59,13 @@ public:
 		{
 			while (this->running)
 			{
-				const int64_t currentTime = GetTimeSpecific();
-				const double timeElapsed = GetTimeIntervalsInSec(LastUpdateTime, currentTime);
+				const int64_t currentTime = Time::GetTimeSpecific();
+				const double timeElapsed = Time::GetTimeIntervalsInSec(LastUpdateTime, currentTime);
 
 				if (timeElapsed > EcartTemps)
 				{
-					gameHost->Update(timeElapsed);
+					Time::DeltaTime = timeElapsed;
+					gameHost->Update();
 				
 					LastUpdateTime = currentTime;
 				}
@@ -73,24 +74,25 @@ public:
 		SetThreadName(updateThread, "UpdateThread");
 		updateThread.detach();
 
-		// FixedUpdate thread
-		std::thread fixedUpdateThread([this]
+		// PhysicsUpdate thread
+		std::thread physicsUpdateThread([this]
 		{
 			while (this->running)
 			{
-				const int64_t currentTime = GetTimeSpecific();
-				const double timeElapsed = GetTimeIntervalsInSec(LastFixedUpdateTime, currentTime);
+				const int64_t currentTime = Time::GetTimeSpecific();
+				const double timeElapsed = Time::GetTimeIntervalsInSec(LastFixedUpdateTime, currentTime);
 
 				if (timeElapsed > FixedEcartTemps)
 				{
-					gameHost->FixedUpdate(timeElapsed);
+					Time::PhysicsDeltaTime = timeElapsed;
+					gameHost->PhysicsUpdate();
 				
 					LastFixedUpdateTime = currentTime;
 				}
 			}
 		});
-		SetThreadName(fixedUpdateThread, "PhysicsThread");
-		fixedUpdateThread.detach();
+		SetThreadName(physicsUpdateThread, "PhysicsThread");
+		physicsUpdateThread.detach();
 
 		while (this->running)
 		{
@@ -125,19 +127,19 @@ public:
 	{
 		// m�thode pour lire l'heure et calculer le 
 		// temps �coul�
-		const int64_t TempsCompteurCourant = GetTimeSpecific();
-		const double TempsEcoule = GetTimeIntervalsInSec(TempsCompteurPrecedent, TempsCompteurCourant);
+		const int64_t TempsCompteurCourant = Time::GetTimeSpecific();
+		const double TempsEcoule = Time::GetTimeIntervalsInSec(TempsCompteurPrecedent, TempsCompteurCourant);
 
 		// Est-il temps de rendre l'image?
 		if (TempsEcoule > EcartTemps)
 		{
-			uint64_t start = GetTimeSpecific();
+			uint64_t start = Time::GetTimeSpecific();
 			
 			// Affichage optimis�
 			pDispositif->Present(); // On enlevera �//� plus tard
 
-			uint64_t end = GetTimeSpecific();
-			presentTime = GetTimeIntervalsInSec(start, end) * 1000.0;
+			uint64_t end = Time::GetTimeSpecific();
+			presentTime = Time::GetTimeIntervalsInSec(start, end) * 1000.0;
 
 			// On rend l'image sur la surface de travail
 			// (tampon d'arri�re plan)
@@ -161,9 +163,6 @@ public:
 
 	CGestionnaireDeTextures& GetTextureManager() { return TexturesManager; }
 	CDIManipulateur& GetGestionnaireDeSaisie() {return GestionnaireDeSaisie;}
-
-	virtual int64_t GetTimeSpecific() const = 0;
-	virtual double GetTimeIntervalsInSec(int64_t start, int64_t stop) const = 0;
 
 	virtual double GetLastFrameTime() const
 	{
@@ -196,7 +195,7 @@ protected:
 	// Autres fonctions
 	virtual int InitAnimation()
 	{
-		TempsSuivant = GetTimeSpecific();
+		TempsSuivant = Time::GetTimeSpecific();
 		TempsCompteurPrecedent = TempsSuivant;
 
 		// premi�re Image
@@ -208,7 +207,7 @@ protected:
 	// Fonctions de rendu et de pr�sentation de la sc�ne
 	virtual bool RenderScene()
 	{
-		const uint64_t start = GetTimeSpecific();
+		const uint64_t start = Time::GetTimeSpecific();
 		
 		BeginRenderSceneSpecific();
 		
@@ -216,9 +215,9 @@ protected:
 
 		EndRenderSceneSpecific();
 
-		const uint64_t end = GetTimeSpecific();
+		const uint64_t end = Time::GetTimeSpecific();
 
-		lastFrameTime = GetTimeIntervalsInSec(start, end) * 1000.0;
+		lastFrameTime = Time::GetTimeIntervalsInSec(start, end) * 1000.0;
 		
 		return true;
 	}

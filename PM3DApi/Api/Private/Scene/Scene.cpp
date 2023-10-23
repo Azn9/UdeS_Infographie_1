@@ -22,16 +22,28 @@ void PM3D_API::Scene::SetMainCamera(std::unique_ptr<Camera>&& newMainCamera)
 	GameObject::AddChild(std::move(newMainCamera));
 }
 
-void PM3D_API::Scene::Update(double elapsed)
+void PM3D_API::Scene::SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newPhysicsResolver)
 {
-	if (isDeleted) return;
-	GameObject::Update(elapsed);
+	physicsEnabled = true;
+	physicsResolver = newPhysicsResolver.get();
+	
+	GameObject::AddComponent(std::move(newPhysicsResolver));
 }
 
-void PM3D_API::Scene::FixedUpdate(double elapsed)
+void PM3D_API::Scene::Update()
 {
 	if (isDeleted) return;
-	GameObject::FixedUpdate(elapsed);
+	GameObject::Update();
+}
+
+void PM3D_API::Scene::PhysicsUpdate()
+{
+	if (isDeleted) return;
+	
+	GameObject::PhysicsUpdate();
+
+	if (physicsEnabled && physicsResolver)
+		physicsResolver->ResolvePhysics();
 }
 
 void PM3D_API::Scene::Draw()

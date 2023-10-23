@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/MeshRenderer.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicCube.h"
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicPlane.h"

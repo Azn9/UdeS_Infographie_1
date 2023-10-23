@@ -20,8 +20,8 @@ namespace PM3D_API
         GameHost() = default;
         virtual ~GameHost();
         
-        void Update(double deltaTime) const;
-        void FixedUpdate(double fixedDeltaTime) const;
+        void Update() const;
+        void PhysicsUpdate() const;
         void InitializeScene();
 
         PM3D::CDispositifD3D11* GetDispositif() const { return dispositif; }

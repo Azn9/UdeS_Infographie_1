@@ -11,8 +11,8 @@ public:
 	virtual ~Component();
 
 	virtual void Initialize();
-	virtual void Update(double deltaTime);
-	virtual void FixedUpdate(double fixedDeltaTime);
+	virtual void Update();
+	virtual void PhysicsUpdate();
 	virtual void DrawSelf() const;
 	virtual void DrawDebugInfo() const {}
 

@@ -155,23 +155,6 @@ bool CMoteurWindows::RunSpecific()
 	return bBoucle;
 }
 
-//
-//  FONCTION : GetTimeSpecific 
-//
-//  BUT :	Fonction responsable d'obtenir un temps.
-//
-//
-int64_t CMoteurWindows::GetTimeSpecific() const
-{
-	return m_Horloge.GetTimeCount();
-}
-
-double CMoteurWindows::GetTimeIntervalsInSec(int64_t start, int64_t stop) const
-{
-	return m_Horloge.GetTimeBetweenCounts(start, stop);
-}
-
-
 //  FONCTION : CreationDispositifSpecific 
 //
 //  BUT :	Fonction responsable de créer le 

@@ -17,12 +17,12 @@ void PM3D_API::Component::Initialize()
 	// Do nothing by default
 }
 
-void PM3D_API::Component::Update(double deltaTime)
+void PM3D_API::Component::Update()
 {
 	// Do nothing by default
 }
 
-void PM3D_API::Component::FixedUpdate(double fixedDeltaTime)
+void PM3D_API::Component::PhysicsUpdate()
 {
 	// Do nothing by default
 }
@@ -34,11 +34,11 @@ void PM3D_API::Component::DrawSelf() const
 
 void PM3D_API::Component::LogBeginDrawSelf() const
 {
-	beginDrawSelf = PM3D::CMoteurWindows::GetInstance().GetTimeSpecific();
+	beginDrawSelf = Time::GetTimeSpecific();
 }
 
 void PM3D_API::Component::LogEndDrawSelf() const
 {
-	endDrawSelf = PM3D::CMoteurWindows::GetInstance().GetTimeSpecific();
+	endDrawSelf = Time::GetTimeSpecific();
 }
 

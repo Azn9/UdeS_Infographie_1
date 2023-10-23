@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "BasicShape.h"
-#include "../../../Public/Component/Basic/MeshRenderer.h"
 #include "../../../Public/GameObject/GameObject.h"
 #include "../../../Public/Shader/Shader.h"
 

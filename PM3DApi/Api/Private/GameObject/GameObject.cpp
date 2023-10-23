@@ -58,14 +58,14 @@ void PM3D_API::GameObject::Initialize()
 	}
 }
 
-void PM3D_API::GameObject::Update(const double elapsed)
+void PM3D_API::GameObject::Update()
 {
 	for (auto& component : components)
 	{
 		const auto componentPtr = component.get();
 
 		if (componentPtr)
-			componentPtr->Update(elapsed);
+			componentPtr->Update();
 	}
 
 	for (auto& child : children)
@@ -78,18 +78,31 @@ void PM3D_API::GameObject::Update(const double elapsed)
 		if (!childPtr)
 			continue;
 
-		childPtr->Update(elapsed);
+		childPtr->Update();
 	}
 }
 
-void PM3D_API::GameObject::FixedUpdate(const double elapsed)
+void PM3D_API::GameObject::PhysicsUpdate()
 {
 	for (auto& component : components)
 	{
 		const auto componentPtr = component.get();
 
 		if (componentPtr)
-			componentPtr->FixedUpdate(elapsed);
+			componentPtr->PhysicsUpdate();
+	}
+
+	for (auto& child : children)
+	{
+		if (!child)
+			continue;
+		
+		const auto childPtr = child.get();
+
+		if (!childPtr)
+			continue;
+
+		childPtr->PhysicsUpdate();
 	}
 }
 
@@ -322,10 +335,10 @@ void PM3D_API::GameObject::SetWorldScale(const DirectX::XMFLOAT3 newScale)
 
 void PM3D_API::GameObject::LogBeginDrawSelf() const
 {
-	beginDrawSelf = PM3D::CMoteurWindows::GetInstance().GetTimeSpecific();
+	beginDrawSelf = Time::GetTimeSpecific();
 }
 
 void PM3D_API::GameObject::LogEndDrawSelf() const
 {
-	endDrawSelf = PM3D::CMoteurWindows::GetInstance().GetTimeSpecific();
+	endDrawSelf = Time::GetTimeSpecific();
 }

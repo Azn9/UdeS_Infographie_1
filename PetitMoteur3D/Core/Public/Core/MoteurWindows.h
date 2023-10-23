@@ -15,9 +15,6 @@ class CMoteurWindows final : public CMoteur<CMoteurWindows, CDispositifD3D11>
 public:
 	void SetWindowsAppInstance(HINSTANCE hInstance);
 
-	virtual int64_t GetTimeSpecific() const override;
-	virtual double GetTimeIntervalsInSec(int64_t start, int64_t stop) const override;
-
 	//double GetLastFrameTime() const override
 	//{
 	//	return lastFrameTime;
@@ -43,8 +40,7 @@ private:
 	static HINSTANCE hAppInstance; // handle Windows de l'instance actuelle de l'application
 	HWND hMainWnd; // handle Windows de la fenêtre principale
 	TCHAR szWindowClass[MAX_LOADSTRING]; // le nom de la classe de fenêtre principale
-
-	Horloge m_Horloge;
+	
 
 	float hue = 0.0f;
 

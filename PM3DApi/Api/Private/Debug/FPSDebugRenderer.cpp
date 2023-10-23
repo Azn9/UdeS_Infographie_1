@@ -7,12 +7,12 @@ void PM3D_API::FPSDebugRenderer::Draw()
 {
     if (lastUpdate == 0)
     {
-        lastUpdate = PM3D::CMoteurWindows::GetInstance().GetTimeSpecific();
+        lastUpdate = Time::GetTimeSpecific();
         return;
     }
     
-    const int64_t currentTime = PM3D::CMoteurWindows::GetInstance().GetTimeSpecific();
-    const double msDelta = PM3D::CMoteurWindows::GetInstance().GetTimeIntervalsInSec(lastUpdate, currentTime) * 1000.0;
+    const int64_t currentTime = Time::GetTimeSpecific();
+    const double msDelta = Time::GetTimeIntervalsInMs(lastUpdate, currentTime);
 
     const double fps = 1000.0 / msDelta;
     

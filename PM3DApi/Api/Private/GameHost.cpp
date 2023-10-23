@@ -11,16 +11,16 @@ PM3D_API::GameHost::~GameHost()
 	debugRenderers.clear();
 }
 
-void PM3D_API::GameHost::Update(double deltaTime) const
+void PM3D_API::GameHost::Update() const
 {
 	if (scene)
-		scene->Update(deltaTime);
+		scene->Update();
 }
 
-void PM3D_API::GameHost::FixedUpdate(double fixedDeltaTime) const
+void PM3D_API::GameHost::PhysicsUpdate() const
 {
 	if (scene)
-		scene->FixedUpdate(fixedDeltaTime);
+		scene->PhysicsUpdate();
 }
 
 void PM3D_API::GameHost::InitializeScene()

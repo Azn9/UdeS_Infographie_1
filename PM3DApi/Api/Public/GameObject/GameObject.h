@@ -81,8 +81,8 @@ public:
 	// ============================
 	virtual void Initialize();
 
-	virtual void Update(double elapsed);
-	virtual void FixedUpdate(double elapsed);
+	virtual void Update();
+	virtual void PhysicsUpdate();
 	virtual void Draw();
 
 	virtual void AddChild(std::unique_ptr<GameObject>&& child);
@@ -136,8 +136,8 @@ public:
 	virtual const DirectX::XMMATRIX& GetMatWorld() const { return matWorld; }
 
 	virtual void DrawDebugInfo() const {}
-	uint64_t GetBeginDrawSelf() const { return beginDrawSelf; }
-	uint64_t GetEndDrawSelf() const { return endDrawSelf; }
+	int64_t GetBeginDrawSelf() const { return beginDrawSelf; }
+	int64_t GetEndDrawSelf() const { return endDrawSelf; }
 protected:
 	std::string name = "Unnamed GameObject";
 	
@@ -169,8 +169,8 @@ private:
 
 	void SetParent(GameObject* newParent);
 
-	mutable uint64_t beginDrawSelf;
-	mutable uint64_t endDrawSelf;
+	mutable int64_t beginDrawSelf;
+	mutable int64_t endDrawSelf;
 };
 
 }

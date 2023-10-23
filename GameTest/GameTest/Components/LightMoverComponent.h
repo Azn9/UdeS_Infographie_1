@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 #include <DirectXMath.h>
 
 #include "../../../PM3DApi/Api/Public/Component/Component.h"
@@ -12,7 +12,7 @@ public:
         
     }
 
-    void Update(double deltaTime) override
+    void Update() override
     {
         angle++;
         if (angle >= 360) angle = 0;

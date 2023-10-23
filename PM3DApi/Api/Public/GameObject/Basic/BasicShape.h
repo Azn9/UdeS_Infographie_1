@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "../../Shader/Basic/DefaultShader.h"
-#include "../../../Public/Component/Basic/MeshRenderer.h"
+#include "../../../Public/Component/Basic/Render/MeshRenderer.h"
 
 namespace PM3D_API
 {

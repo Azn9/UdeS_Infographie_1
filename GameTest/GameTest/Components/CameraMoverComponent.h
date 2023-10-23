@@ -9,7 +9,7 @@
 class CameraMoverComponent final : public PM3D_API::Component
 {
 public:
-	void Update(double deltaTime) override
+	void Update() override
 	{
 		angle++;
 		if (angle >= 360)
