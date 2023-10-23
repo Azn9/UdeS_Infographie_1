@@ -27,7 +27,6 @@ public:
 	int GetLargeur() const { return largeurEcran; }
 	int GetHauteur() const { return hauteurEcran; }
 
-protected:
 	int largeurEcran;
 	int hauteurEcran;
 };

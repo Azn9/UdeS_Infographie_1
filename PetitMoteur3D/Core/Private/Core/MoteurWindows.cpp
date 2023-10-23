@@ -8,6 +8,7 @@
 #include "../../Imgui/imgui.h"
 #include "../../Imgui/imgui_impl_win32.h"
 #include "../../Imgui/imgui_impl_dx11.h"
+#include "Core/Public/Util/util.h"
 
 namespace PM3D
 {
@@ -163,6 +164,10 @@ bool CMoteurWindows::RunSpecific()
 //		 CDS_MODE: 	CDS_FENETRE 		application fenêtrée
 //					CDS_PLEIN_ECRAN 	application plein écran
 //
+CDispositifD3D11* CMoteurWindows::CreationDispositifSpecific(const CDS_MODE cdsMode, UINT largeur, UINT hauteur)
+{
+	return new CDispositifD3D11(cdsMode, hMainWnd, largeur, hauteur);
+}
 CDispositifD3D11* CMoteurWindows::CreationDispositifSpecific(const CDS_MODE cdsMode)
 {
 	return new CDispositifD3D11(cdsMode, hMainWnd);
@@ -170,6 +175,8 @@ CDispositifD3D11* CMoteurWindows::CreationDispositifSpecific(const CDS_MODE cdsM
 
 void CMoteurWindows::BeginRenderSceneSpecific()
 {
+	if (!canRender) return;
+	
 	ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
 	ID3D11RenderTargetView* pRenderTargetView = pDispositif->GetRenderTargetView();
 
@@ -184,13 +191,86 @@ void CMoteurWindows::BeginRenderSceneSpecific()
 
 	// On ré-initialise le tampon de profondeur
 	ID3D11DepthStencilView* pDepthStencilView = pDispositif->GetDepthStencilView();
-	pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	if (pDepthStencilView)
+		pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void CMoteurWindows::EndRenderSceneSpecific()
 {
+	if (!canRender) return;
+	
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
+{
+	if (!pDispositif) return;
+
+	std::cout << "Resize: " << largeur << "x" << hauteur << std::endl;
+
+	canRender = false;
+
+	ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+	pImmediateContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+	ID3D11RenderTargetView** pRenderTargetView = pDispositif->GetRenderTargetViewPtr();
+	(*pRenderTargetView)->Release();
+
+	DXEssayer(pDispositif->GetSwapChain()->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0));
+//ResizeBuffers(1, largeur, hauteur, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+
+	ID3D11Texture2D* pBuffer;
+	DXEssayer(pDispositif->GetSwapChain()->GetBuffer(0, __uuidof( ID3D11Texture2D), (void**) &pBuffer ));
+	DXEssayer(pDispositif->GetD3DDevice()->CreateRenderTargetView(pBuffer, nullptr, pRenderTargetView));
+
+	pBuffer->Release();
+
+	pImmediateContext->OMSetRenderTargets(1, pRenderTargetView, pDispositif->GetDepthStencilView());
+
+	D3D11_VIEWPORT vp;
+	vp.Width = (FLOAT)largeur;
+	vp.Height = (FLOAT)hauteur;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	pImmediateContext->RSSetViewports(1, &vp);
+	
+	/*
+	
+	pDispositif->GetDepthStencilView()->Release();
+
+	pDispositif->InitDepthBuffer();
+	pDispositif->InitDepthState();
+	pDispositif->DesactiverDepth();
+	pDispositif->InitBlendStates();
+
+	*/
+
+	pDispositif->largeurEcran = largeur;
+	pDispositif->hauteurEcran = hauteur;
+	
+	// Update the camera
+	if (gameHost)
+	{
+		const auto scene = gameHost->GetScene();
+		if (scene)
+		{
+			const auto camera = scene->GetMainCamera();
+			if (camera)
+			{
+				camera->UpdateInternalMatrices();
+			}
+		}
+	}
+
+	canRender = true;
+}
+
+void CMoteurWindows::ResizeWindow(int largeur, int hauteur)
+{
+	SetWindowPos(hMainWnd, NULL, 0, 0, largeur, hauteur, SWP_NOMOVE);
 }
 
 //  FONCTION : WndProc(HWND, unsigned, WORD, LONG)
@@ -237,6 +317,12 @@ LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
+		break;
+	case WM_SIZE:
+		if (wParam == SIZE_MINIMIZED)
+			break;
+		std::cout << "== RESIZE ==" << std::endl;
+		CMoteurWindows::GetInstance().Resize(LOWORD(lParam), HIWORD(lParam));
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);

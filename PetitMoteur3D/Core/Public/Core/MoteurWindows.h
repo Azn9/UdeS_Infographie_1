@@ -27,10 +27,14 @@ private:
 	virtual int InitialisationsSpecific() override;
 	virtual bool RunSpecific() override;
 	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) override;
+	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode, UINT largeur, UINT hauteur);
 	virtual void InitSceneSpecific() override;
 	virtual void BeginRenderSceneSpecific() override;
 	virtual void EndRenderSceneSpecific() override;
 
+	void Resize(WORD largeur, WORD hauteur) override;
+	void ResizeWindow(int largeur, int hauteur) override;
+	
 	// Fonctions "Callback" -- Doivent être statiques
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 	static INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);

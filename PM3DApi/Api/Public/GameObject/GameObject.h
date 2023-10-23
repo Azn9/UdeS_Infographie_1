@@ -110,7 +110,7 @@ public:
 	const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return children; }
 	const std::vector<std::unique_ptr<Component>>& GetComponents() const { return components; }
 
-	const Scene* GetScene() const { return scene; }
+	Scene* GetScene() { return scene; }
 
 	// ============================
 	// Position, rotation, scale

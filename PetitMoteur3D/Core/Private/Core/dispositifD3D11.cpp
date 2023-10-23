@@ -37,10 +37,12 @@ CDispositifD3D11::~CDispositifD3D11()
 //    			n�cessaire pour la fonction de cr�ation du 
 //				dispositif
 CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
-                                   const HWND hWnd)
+								   const HWND hWnd) : CDispositifD3D11(cdsMode, hWnd, 1920*16, 1080*16)
 {
-	UINT largeur;
-	UINT hauteur;
+}
+	
+CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT largeur, UINT hauteur)
+{
 	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
 
 #ifdef _DEBUG
@@ -64,9 +66,6 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 
 	// Obtenir les informations de l'adaptateur de d�faut
 	CInfoDispositif Dispo0(ADAPTATEUR_COURANT);
-
-	largeur = 1024;
-	hauteur = 768;
 
 	switch (cdsMode)
 	{

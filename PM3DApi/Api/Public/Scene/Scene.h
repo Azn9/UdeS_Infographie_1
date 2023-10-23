@@ -12,11 +12,11 @@ namespace PM3D_API
 class Scene : public GameObject
 {
 public:
-	Scene() : GameObject("Scene", {0, 0, 0}, {0, 0, 0}, {1, 1, 1}), mainCamera(nullptr), physicsResolver(nullptr)
+	Scene() : GameObject("Scene", {0, 0, 0}, {0, 0, 0}, {1, 1, 1})
 	{
 	}
 
-	Scene(const std::string& name) : GameObject(name, {0, 0, 0}, {0, 0, 0}, {1, 1, 1}), mainCamera(nullptr), physicsResolver(nullptr)
+	Scene(const std::string& name) : GameObject(name, {0, 0, 0}, {0, 0, 0}, {1, 1, 1})
 	{
 	}
 
@@ -38,7 +38,7 @@ public:
 	>
 	void AddChild(std::unique_ptr<T>&& child);
 
-	const Camera* GetMainCamera() const { return mainCamera; }
+	Camera* GetMainCamera() const { return mainCamera; }
 	const std::vector<Light*>& GetLights() const { return lights; }
 
 	void SetLightsNeedUpdate(const bool needUpdate) { lightsNeedUpdate = needUpdate; }

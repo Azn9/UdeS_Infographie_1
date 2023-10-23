@@ -66,7 +66,11 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	const auto camera = scene->GetMainCamera();
 
 	if (!camera)
+	{
+		int* p = nullptr;
+		*p = 2;
 		throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
+	}
 
 	// Obtenir le contexte
 	ID3D11DeviceContext* pImmediateContext = GameHost::GetInstance()->GetDispositif()->GetImmediateContext();

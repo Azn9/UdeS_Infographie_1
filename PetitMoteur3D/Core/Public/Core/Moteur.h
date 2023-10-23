@@ -40,19 +40,18 @@ template <class T, class TClasseDispositif> class CMoteur : public CSingleton<T>
 public:
 	virtual void Run()
 	{
+		/*
 		// Draw thread
 		std::thread drawThread([this]
 		{
 			while (this->running)
 			{
-				if (!Animation())
-				{
-					this->running = false;
-				}
+				
 			}
 		});
 		SetThreadName(drawThread, "DrawThread");
 		drawThread.detach();
+		*/
 
 		// Update thread
 		std::thread updateThread([this]
@@ -102,9 +101,19 @@ public:
 			{
 				this->running = false;
 			}
+			
+			if (!canRender) continue;
+				
+			if (!Animation())
+			{
+				this->running = false;
+			}
 		}
 	}
 
+	virtual void Resize(WORD largeur, WORD hauteur) = 0;
+	virtual void ResizeWindow(int largeur, int hauteur) = 0;
+	
 	virtual int Initialisations()
 	{
 		// Propre � la plateforme
@@ -113,6 +122,9 @@ public:
 		// * Initialisation du dispositif de rendu
 		pDispositif = CreationDispositifSpecific(CDS_FENETRE);
 		gameHost->SetDispositif(pDispositif);
+
+		Resize(1280, 720);
+		ResizeWindow(1280, 720);
 
 		// * Initialisation de la sc�ne
 		InitScene();
@@ -135,16 +147,19 @@ public:
 		if (TempsEcoule > EcartTemps)
 		{
 			uint64_t start = Time::GetInstance().GetTimeSpecific();
-			
-			// Affichage optimis�
-			pDispositif->Present(); // On enlevera �//� plus tard
 
-			uint64_t end = Time::GetInstance().GetTimeSpecific();
-			presentTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
+			if (canRender)
+			{
+				// Affichage optimis�
+				pDispositif->Present(); // On enlevera �//� plus tard
 
-			// On rend l'image sur la surface de travail
-			// (tampon d'arri�re plan)
-			RenderScene();
+				const uint64_t end = Time::GetInstance().GetTimeSpecific();
+				presentTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
+
+				// On rend l'image sur la surface de travail
+				// (tampon d'arri�re plan)
+				RenderScene();
+			}
 
 			// Calcul du temps du prochain affichage
 			TempsCompteurPrecedent = TempsCompteurCourant;
@@ -180,6 +195,7 @@ protected:
 		CMoteur::Cleanup();
 	}
 
+	bool canRender = false;
 	bool running = true;
 	double lastFrameTime = 0.0;
 	double presentTime = 0.0;
@@ -200,7 +216,9 @@ protected:
 		TempsCompteurPrecedent = TempsSuivant;
 
 		// premi�re Image
-		RenderScene();
+		//RenderScene();
+
+		canRender = true;
 
 		return true;
 	}
@@ -208,6 +226,12 @@ protected:
 	// Fonctions de rendu et de pr�sentation de la sc�ne
 	virtual bool RenderScene()
 	{
+		if (!canRender)
+		{
+			ImGui::EndFrame();
+			return true;
+		}
+		
 		const uint64_t start = Time::GetInstance().GetTimeSpecific();
 		
 		BeginRenderSceneSpecific();

@@ -67,6 +67,8 @@ namespace PM3D_API
 		const DirectX::XMVECTOR& GetUpVector() const { return upVector; }
 
 		void DrawDebugInfo() const override;
+
+		void UpdateInternalMatrices();
 	protected:
 		CameraType cameraType;
 
@@ -81,7 +83,5 @@ namespace PM3D_API
 		DirectX::XMVECTOR focusPoint;
 		DirectX::XMVECTOR upVector;
 
-	private:
-		void UpdateInternalMatrices();
 	};
 }

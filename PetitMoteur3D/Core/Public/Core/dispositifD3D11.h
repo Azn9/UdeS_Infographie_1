@@ -9,6 +9,7 @@ class CDispositifD3D11 final : public CDispositif
 {
 public:
 	CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd);
+	CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT largeur, UINT hauteur);
 	virtual ~CDispositifD3D11();
 
 	void PresentSpecific() override;
@@ -25,12 +26,16 @@ public:
 	IDXGISwapChain* GetSwapChain() { return pSwapChain; }
 	ID3D11RenderTargetView* GetRenderTargetView() { return pRenderTargetView; }
 	ID3D11DepthStencilView* GetDepthStencilView() { return pDepthStencilView; }
+	
+	ID3D11DepthStencilView** GetDepthStencilViewPtr() { return &pDepthStencilView; }
+	ID3D11RenderTargetView** GetRenderTargetViewPtr() { return &pRenderTargetView; }
 
-private:
 	void InitDepthBuffer();
 	void InitDepthState();
 	void InitBlendStates();
 
+
+private:
 	ID3D11Device* pD3DDevice;
 	ID3D11DeviceContext* pImmediateContext;
 	IDXGISwapChain* pSwapChain;
