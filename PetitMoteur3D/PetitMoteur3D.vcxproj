@@ -370,7 +370,6 @@
     <Content Include="x64\Debug\jin.OMB" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\Private\Mesh\" />
     <Folder Include="DefaultObj\" />
     <Folder Include="x64\Debug\" />
   </ItemGroup>

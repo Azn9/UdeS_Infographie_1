@@ -9,6 +9,7 @@
 
 #include "CDIManipulateur.h"
 #include "../../../../PM3DApi/Api/Public/GameHost.h"
+#include "../../../../PM3DApi/Api/Public/Input/Input.h"
 #include "../../Public/Object/Objet3D.h"
 #include "../../Public/Texture/GestionnaireDeTextures.h"
 #include "../../Public/Sprite/AfficheurSprite.h"
@@ -64,6 +65,11 @@ public:
 				if (timeElapsed > EcartTemps)
 				{
 					Time::GetInstance().SetUpdateDeltaTime(static_cast<float>(timeElapsed) * Time::GetInstance().GetTimeScale());
+
+					GestionnaireDeSaisie.SaisirEtatSouris();
+					GestionnaireDeSaisie.StatutClavier();
+
+					Input::GetInstance().Tick(GestionnaireDeSaisie);
 					
 					gameHost->Update();
 				

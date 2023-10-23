@@ -250,7 +250,8 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 
 	pDispositif->largeurEcran = largeur;
 	pDispositif->hauteurEcran = hauteur;
-	
+
+	/*
 	// Update the camera
 	if (gameHost)
 	{
@@ -263,7 +264,7 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 				camera->UpdateInternalMatrices();
 			}
 		}
-	}
+	}*/
 
 	canRender = true;
 }
