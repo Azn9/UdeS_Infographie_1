@@ -1,51 +1,44 @@
 ﻿#include "MainScene.h"
 
-#include <iostream>
-#include <memory>
 #include <memory>
 
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/BoxCollider.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicCube.h"
-#include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicPlane.h"
+#include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicSphere.h"
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
-#include "../../../PM3DApi/Api/Public/Light/SpotLight.h"
-#include "../../../PM3DApi/Api/Public/Shader/Basic/DefaultShader.h"
 #include "GameTest/CustomPlane.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
 
-void MainScene::Initialize()
+void MainScene::InitializePhysics()
 {
-    std::cout << "MainScene::Initialize()" << std::endl;
+    auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
+    physicsResolver->Initialize();
+    SetPhysicsResolver(std::move(physicsResolver));
+}
 
-    // Add main camera
+void MainScene::InitializeCamera()
+{
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSECTIVE,
-        XMFLOAT3(0.0f, 5.0f, -10.0f),
-        XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
+        XMFLOAT3(0.0f, 5.0f, -15.0f),
+        XMVectorSet(0.0f, 5.0f, 0.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarPlane(1000.0f);
     SetMainCamera(std::move(mainCamera));
+}
 
-    /*auto spotlight = std::make_unique<PM3D_API::SpotLight>(
-        "SpotLight",
-        XMFLOAT3(-6.0f, 6.0f, 0.0f),
-        XMFLOAT3(6.0f, -6.0f, 0.0f),
-        XMFLOAT3(1.0f, 1.0f, 1.0f),
-        0.0001f,
-        12.0f * XM_PI / 180.0f,
-        15.0f * XM_PI / 180.0f
-    );
-    spotlight->Initialize();
-    AddLight(std::move(spotlight));*/
-
+void MainScene::InitializeLights()
+{
     auto pointLight = std::make_unique<PM3D_API::PointLight>(
         XMFLOAT3(0.0f, 5.0f, 0.0f),
         XMFLOAT3(1.0f, 1.0f, 1.0f)
@@ -57,15 +50,47 @@ void MainScene::Initialize()
     pointLight->SetIntensity(2.0f);
     pointLight->Initialize();
     AddLight(std::move(pointLight));
+}
 
-    //auto shader = std::make_unique<PM3D_API::DefaultShader>(L"Test1.fx");
-
-    // Add a cube
+void MainScene::InitializeObjects()
+{
+    // ============= Add a plane =============
     auto plane = std::make_unique<CustomPlane>();
     plane->SetWorldScale(XMFLOAT3(10.0f, 1.0f, 10.0f));
     plane->Initialize();
+
+    auto planeRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+    const auto planeRigidbodyPtr = planeRigidbody.get();
+    plane->AddComponent(std::move(planeRigidbody));
+    planeRigidbodyPtr->Initialize();
+    planeRigidbodyPtr->SetTranslationLock(Axis::XYZ); // No movement
+
+    auto planeCollider = std::make_unique<PM3D_API::BoxCollider>(physicsResolver->GetDefaultMaterial());
+    const auto planeColliderPtr = planeCollider.get();
+    plane->AddComponent(std::move(planeCollider));
+    planeColliderPtr->Initialize();
+
     AddChild(std::move(plane));
 
+    // ============= Add a cube =============
+    auto cube = std::make_unique<PM3D_API::BasicCube>("Cube");
+    cube->SetWorldPosition(XMFLOAT3(0.0f, 10.0f, 0.0f));
+    cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
+    cube->Initialize();
+
+    auto cubeRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+    const auto cubeRigidbodyPtr = cubeRigidbody.get();
+    cube->AddComponent(std::move(cubeRigidbody));
+    cubeRigidbodyPtr->Initialize();
+
+    auto cubeCollider = std::make_unique<PM3D_API::BoxCollider>(physicsResolver->GetDefaultMaterial());
+    const auto cubeColliderPtr = cubeCollider.get();
+    cube->AddComponent(std::move(cubeCollider));
+    cubeColliderPtr->Initialize();
+    
+    AddChild(std::move(cube));
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
+
+    PM3D::Time::GetInstance().SetTimeScale(0.0f);
 }

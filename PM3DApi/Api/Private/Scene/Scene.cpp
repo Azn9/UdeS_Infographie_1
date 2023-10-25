@@ -12,7 +12,14 @@ PM3D_API::Scene::~Scene()
 
 void PM3D_API::Scene::Initialize()
 {
-	// Do nothing by default
+	std::cout << "Scene::Initialize()" << std::endl;
+	
+	GameObject::Initialize();
+	
+	InitializePhysics();
+	InitializeCamera();
+	InitializeLights();
+	InitializeObjects();
 }
 
 void PM3D_API::Scene::SetMainCamera(std::unique_ptr<Camera>&& newMainCamera)

@@ -37,7 +37,7 @@ CDispositifD3D11::~CDispositifD3D11()
 //    			n�cessaire pour la fonction de cr�ation du 
 //				dispositif
 CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
-								   const HWND hWnd) : CDispositifD3D11(cdsMode, hWnd, 1920*16, 1080*16)
+								   const HWND hWnd) : CDispositifD3D11(cdsMode, hWnd, 1280, 720)
 {
 }
 	
@@ -142,7 +142,8 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT
 	InitDepthBuffer();
 
 	InitDepthState();
-	DesactiverDepth();
+	//DesactiverDepth();
+	ActiverDepth();
 
 	InitBlendStates();
 

@@ -188,6 +188,8 @@ void CMoteurWindows::BeginRenderSceneSpecific()
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	
+	//ImGui::DockSpaceOverViewport();
 
 	// On ré-initialise le tampon de profondeur
 	ID3D11DepthStencilView* pDepthStencilView = pDispositif->GetDepthStencilView();
@@ -226,8 +228,6 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 
 	pBuffer->Release();
 
-	pImmediateContext->OMSetRenderTargets(1, pRenderTargetView, pDispositif->GetDepthStencilView());
-
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)largeur;
 	vp.Height = (FLOAT)hauteur;
@@ -237,19 +237,24 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 	vp.TopLeftY = 0;
 	pImmediateContext->RSSetViewports(1, &vp);
 	
-	/*
-	
+	pDispositif->GetDepthStencilState()->Release();
+	pDispositif->GetNoDepthStencilState()->Release();
 	pDispositif->GetDepthStencilView()->Release();
-
-	pDispositif->InitDepthBuffer();
-	pDispositif->InitDepthState();
-	pDispositif->DesactiverDepth();
-	pDispositif->InitBlendStates();
-
-	*/
 
 	pDispositif->largeurEcran = largeur;
 	pDispositif->hauteurEcran = hauteur;
+
+	pDispositif->InitDepthBuffer();
+	pDispositif->InitDepthState();
+
+	pDispositif->ActiverDepth();
+	//pDispositif->DesactiverDepth();
+
+	pDispositif->InitBlendStates();
+
+	pImmediateContext->RSSetState(pDispositif->GetRasterizerState());
+	
+	pImmediateContext->OMSetRenderTargets(1, pRenderTargetView, pDispositif->GetDepthStencilView());
 
 	/*
 	// Update the camera
@@ -259,12 +264,13 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 		if (scene)
 		{
 			const auto camera = scene->GetMainCamera();
-			if (camera)
+			if (camera && camera->IsInitialized()) 
 			{
-				camera->UpdateInternalMatrices();
+				//camera->UpdateInternalMatrices();
 			}
 		}
-	}*/
+	}
+	*/
 
 	canRender = true;
 }
@@ -322,7 +328,7 @@ LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 	case WM_SIZE:
 		if (wParam == SIZE_MINIMIZED)
 			break;
-		std::cout << "== RESIZE ==" << std::endl;
+		std::cout << "== RESIZE " << LOWORD(lParam) << "x" << HIWORD(lParam) << std::endl;
 		CMoteurWindows::GetInstance().Resize(LOWORD(lParam), HIWORD(lParam));
 		break;
 	default:

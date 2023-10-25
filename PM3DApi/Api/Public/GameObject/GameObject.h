@@ -90,21 +90,37 @@ public:
 
 	std::string GetName() const { return name; }
 
-	template <typename T, template_extends<T, Component> = 0>
-	std::vector<T*> GetComponents()
+	template <typename T, template_extends<Component, T> = 0>
+	T* GetComponent()
 	{
-		std::vector<T*> components{};
-		for (const auto component : components)
+		for (const auto& component : components)
 		{
 			if (!component) continue;
 			
 			if (typeid(*component.get()) == typeid(T))
 			{
-				components.push_back(static_cast<T*>(component.get()));
+				return static_cast<T*>(component.get());
 			}
 		}
 
-		return components;
+		return nullptr;
+	}
+	
+	template <typename T, template_extends<Component, T> = 0>
+	std::vector<T*> GetComponents()
+	{
+		std::vector<T*> toReturnComponents{};
+		for (const auto& component : components)
+		{
+			if (!component) continue;
+			
+			if (typeid(*component.get()) == typeid(T))
+			{
+				toReturnComponents.push_back(static_cast<T*>(component.get()));
+			}
+		}
+
+		return toReturnComponents;
 	}
 
 	const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return children; }
