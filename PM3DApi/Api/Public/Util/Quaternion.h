@@ -7,6 +7,7 @@ namespace PM3D_API
 	{
 	public:
 		Quaternion() : XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) {}
+		Quaternion(const float x, const float y, const float z, const float w) : XMFLOAT4(x, y, z, w) {}
 	
 		explicit Quaternion(const DirectX::XMFLOAT3& fromEulerAngles) : XMFLOAT4(EulerToQuaternion(fromEulerAngles)) {};
 		explicit Quaternion(const XMFLOAT4& quaternion) : XMFLOAT4(quaternion) {}

@@ -26,9 +26,13 @@ public:
 	IDXGISwapChain* GetSwapChain() { return pSwapChain; }
 	ID3D11RenderTargetView* GetRenderTargetView() { return pRenderTargetView; }
 	ID3D11DepthStencilView* GetDepthStencilView() { return pDepthStencilView; }
+	ID3D11RasterizerState* GetRasterizerState() { return mSolidCullBackRS; }
+	ID3D11DepthStencilState* GetDepthStencilState() { return pDepthStencilState; }
+	ID3D11DepthStencilState* GetNoDepthStencilState() { return pNoDepthStencilState; }
 	
 	ID3D11DepthStencilView** GetDepthStencilViewPtr() { return &pDepthStencilView; }
 	ID3D11RenderTargetView** GetRenderTargetViewPtr() { return &pRenderTargetView; }
+	ID3D11RasterizerState** GetRasterizerStatePtr() { return &mSolidCullBackRS; }
 
 	void InitDepthBuffer();
 	void InitDepthState();

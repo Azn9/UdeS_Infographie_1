@@ -129,8 +129,8 @@ public:
 		pDispositif = CreationDispositifSpecific(CDS_FENETRE);
 		gameHost->SetDispositif(pDispositif);
 
-		Resize(1280, 720);
-		ResizeWindow(1280, 720);
+		//Resize(1280, 720);
+		//ResizeWindow(1280, 720);
 
 		// * Initialisation de la sc�ne
 		InitScene();

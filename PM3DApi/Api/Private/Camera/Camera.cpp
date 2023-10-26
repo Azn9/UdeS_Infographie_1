@@ -176,4 +176,6 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 
 	// Calcul de VP
 	matViewProj = matView * matProj;
+
+	initialized = true;
 }

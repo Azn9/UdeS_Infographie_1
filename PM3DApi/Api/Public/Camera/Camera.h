@@ -69,7 +69,10 @@ namespace PM3D_API
 		void DrawDebugInfo() const override;
 
 		void UpdateInternalMatrices();
+
+		bool IsInitialized() const { return initialized; }
 	protected:
+		bool initialized = false;
 		CameraType cameraType;
 
 		DirectX::XMMATRIX matView;

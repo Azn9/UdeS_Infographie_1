@@ -28,6 +28,11 @@ public:
 	void Draw() override;
 	void DrawSelf() const override;
 
+	virtual void InitializePhysics() {};
+	virtual void InitializeCamera() {};
+	virtual void InitializeLights() {};
+	virtual void InitializeObjects() {};
+
 	template <typename L, template_extends<Light, L>  = 0>
 	void AddLight(std::unique_ptr<L>&& child);
 
@@ -39,6 +44,8 @@ public:
 	void AddChild(std::unique_ptr<T>&& child);
 
 	Camera* GetMainCamera() const { return mainCamera; }
+	PhysicsResolver* GetPhysicsResolver() const { return physicsResolver; }
+	
 	const std::vector<Light*>& GetLights() const { return lights; }
 
 	void SetLightsNeedUpdate(const bool needUpdate) { lightsNeedUpdate = needUpdate; }
@@ -46,13 +53,14 @@ public:
 
 protected:
 	bool isDeleted = false;
+
+	PhysicsResolver* physicsResolver;
 	
 	void SetMainCamera(std::unique_ptr<Camera>&& newMainCamera);
 	void SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newPhysicsResolver);
 
 private:
 	Camera* mainCamera;
-	PhysicsResolver* physicsResolver;
 	
 	std::vector<Light*> lights;
 	
