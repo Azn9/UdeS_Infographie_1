@@ -149,6 +149,9 @@ public:
 	virtual void SetWorldRotation(DirectX::XMFLOAT3 newRotation);
 	virtual void SetWorldRotation(Quaternion newRotation);
 
+	void SetWorldPositionViaPhysic(DirectX::XMFLOAT3 newPosition);
+	void SetWorldRotationViaPhysic(Quaternion quaternion);
+
 	virtual const DirectX::XMMATRIX& GetMatWorld() const { return matWorld; }
 
 	virtual void DrawDebugInfo() const {}
@@ -174,7 +177,7 @@ protected:
 	Scene* scene = nullptr;
 	GameObject* parent = nullptr;
 
-	virtual void UpdateMatrix();
+	virtual void UpdateMatrix(bool updatePhysicRepresentation);
 	virtual void DrawSelf() const;
 
 	void LogBeginDrawSelf() const;

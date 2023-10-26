@@ -4,10 +4,10 @@
 
 namespace PM3D_API
 {
-class BoxCollider : public Collider
+class SphereCollider : public Collider
 {
 public:
-	explicit BoxCollider(
+	explicit SphereCollider(
 		physx::PxMaterial* _material
 	) : Collider(_material), shape(nullptr) {}
 

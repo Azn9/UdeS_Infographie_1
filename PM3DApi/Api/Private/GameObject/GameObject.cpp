@@ -107,15 +107,16 @@ void PM3D_API::GameObject::PhysicsUpdate()
 	}
 }
 
-void PM3D_API::GameObject::UpdateMatrix()
+void PM3D_API::GameObject::UpdateMatrix(bool updatePhysicRepresentation)
 {
 	matWorld = DirectX::XMMatrixScaling(worldScale.x, worldScale.y, worldScale.z) *
 		DirectX::XMMatrixRotationQuaternion(worldRotationQuaternion.ToXMVector()) *
 		DirectX::XMMatrixTranslation(worldPosition.x, worldPosition.y, worldPosition.z);
 
-	if (const auto rigidBody = GetComponent<Rigidbody>())
+	if (updatePhysicRepresentation)
 	{
-		rigidBody->UpdateGlobalPose();
+		if (const auto rigidBody = GetComponent<Rigidbody>())
+			rigidBody->UpdateGlobalPose();
 	}
 }
 
@@ -191,7 +192,7 @@ void PM3D_API::GameObject::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 		worldPosition.z = parent->GetWorldPosition().z + localPosition.z;
 	}
 
-	UpdateMatrix();
+	UpdateMatrix(true);
 }
 
 void PM3D_API::GameObject::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
@@ -209,7 +210,7 @@ void PM3D_API::GameObject::SetLocalRotation(const DirectX::XMFLOAT3 newRotation)
 	localRotationQuaternion = Quaternion::FromEulerAngles(localRotationEuler);
 	worldRotationQuaternion = Quaternion::FromEulerAngles(worldRotationEuler);
 
-	UpdateMatrix();
+	UpdateMatrix(true);
 }
 
 void PM3D_API::GameObject::SetLocalRotation(const Quaternion newRotation)
@@ -225,7 +226,7 @@ void PM3D_API::GameObject::SetLocalRotation(const Quaternion newRotation)
 	localRotationEuler = localRotationQuaternion.ToEulerAngles();
 	worldRotationEuler = worldRotationQuaternion.ToEulerAngles();
 
-	UpdateMatrix();
+	UpdateMatrix(true);
 }
 
 void PM3D_API::GameObject::SetLocalScale(const DirectX::XMFLOAT3 newScale)
@@ -240,7 +241,7 @@ void PM3D_API::GameObject::SetLocalScale(const DirectX::XMFLOAT3 newScale)
 		worldScale.z = parent->GetWorldScale().z * localScale.z;
 	}
 
-	UpdateMatrix();
+	UpdateMatrix(true);
 }
 
 void PM3D_API::GameObject::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
@@ -255,7 +256,7 @@ void PM3D_API::GameObject::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 		localPosition.z = worldPosition.z - parent->GetWorldPosition().z;
 	}
 
-	UpdateMatrix();
+	UpdateMatrix(true);
 }
 
 void PM3D_API::GameObject::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
@@ -273,7 +274,7 @@ void PM3D_API::GameObject::SetWorldRotation(const DirectX::XMFLOAT3 newRotation)
 	worldRotationQuaternion = Quaternion::FromEulerAngles(worldRotationEuler);
 	localRotationQuaternion = Quaternion::FromEulerAngles(localRotationEuler);
 
-	UpdateMatrix();
+	UpdateMatrix(true);
 }
 
 void PM3D_API::GameObject::SetWorldRotation(const Quaternion newRotation)
@@ -289,7 +290,38 @@ void PM3D_API::GameObject::SetWorldRotation(const Quaternion newRotation)
 	worldRotationEuler = worldRotationQuaternion.ToEulerAngles();
 	localRotationEuler = localRotationQuaternion.ToEulerAngles();
 
-	UpdateMatrix();
+	UpdateMatrix(true);
+}
+
+void PM3D_API::GameObject::SetWorldPositionViaPhysic(const DirectX::XMFLOAT3 newPosition)
+{
+	worldPosition = newPosition;
+	localPosition = newPosition;
+
+	if (parent != nullptr)
+	{
+		localPosition.x = worldPosition.x - parent->GetWorldPosition().x;
+		localPosition.y = worldPosition.y - parent->GetWorldPosition().y;
+		localPosition.z = worldPosition.z - parent->GetWorldPosition().z;
+	}
+
+	UpdateMatrix(false);
+}
+
+void PM3D_API::GameObject::SetWorldRotationViaPhysic(const Quaternion newRotation)
+{
+	worldRotationQuaternion = newRotation;
+	localRotationQuaternion = newRotation;
+
+	if (parent != nullptr)
+	{
+		localRotationQuaternion = localRotationQuaternion * parent->GetWorldRotationQuaternion();
+	}
+
+	worldRotationEuler = worldRotationQuaternion.ToEulerAngles();
+	localRotationEuler = localRotationQuaternion.ToEulerAngles();
+
+	UpdateMatrix(false);
 }
 
 void PM3D_API::GameObject::SetWorldScale(const DirectX::XMFLOAT3 newScale)
@@ -304,7 +336,7 @@ void PM3D_API::GameObject::SetWorldScale(const DirectX::XMFLOAT3 newScale)
 		localScale.z = worldScale.z / parent->GetWorldScale().z;
 	}
 
-	UpdateMatrix();
+	UpdateMatrix(true);
 }
 
 void PM3D_API::GameObject::LogBeginDrawSelf() const

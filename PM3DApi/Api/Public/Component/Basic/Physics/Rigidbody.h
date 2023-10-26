@@ -9,11 +9,14 @@ namespace PM3D_API
 class Rigidbody : public Component
 {
 public:
-	Rigidbody() = default;
+	Rigidbody() : Rigidbody(false) {}
+	explicit Rigidbody(const bool isStatic) : isStatic(isStatic), actor(nullptr), fixedJoint(nullptr)
+	{
+	}
 
 	void Initialize() override;
 
-	physx::PxRigidDynamic* GetActor() const { return actor; }
+	physx::PxRigidActor* GetActor() const { return actor; }
 
 	void UpdateGlobalPose() const;
 	void UpdateRenderPos() const;
@@ -22,8 +25,11 @@ public:
 	void SetRotationLock(Axis axis);
 
 	void DrawDebugInfo() const override;
+
+	bool IsStatic() const { return isStatic; }
 protected:
-	physx::PxRigidDynamic* actor;
+	bool isStatic;
+	physx::PxRigidActor* actor;
 	physx::PxD6Joint* fixedJoint;
 	
 };

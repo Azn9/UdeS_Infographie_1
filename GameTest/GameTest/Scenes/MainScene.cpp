@@ -4,6 +4,7 @@
 
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/BoxCollider.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/PlaneCollider.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
@@ -59,13 +60,12 @@ void MainScene::InitializeObjects()
     plane->SetWorldScale(XMFLOAT3(10.0f, 1.0f, 10.0f));
     plane->Initialize();
 
-    auto planeRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+    auto planeRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
     const auto planeRigidbodyPtr = planeRigidbody.get();
     plane->AddComponent(std::move(planeRigidbody));
     planeRigidbodyPtr->Initialize();
-    planeRigidbodyPtr->SetTranslationLock(Axis::XYZ); // No movement
 
-    auto planeCollider = std::make_unique<PM3D_API::BoxCollider>(physicsResolver->GetDefaultMaterial());
+    auto planeCollider = std::make_unique<PM3D_API::PlaneCollider>(physicsResolver->GetDefaultMaterial());
     const auto planeColliderPtr = planeCollider.get();
     plane->AddComponent(std::move(planeCollider));
     planeColliderPtr->Initialize();

@@ -1,19 +1,20 @@
-﻿#include "PhysicsResolver.h"
-
-#include <iostream>
-#include <ostream>
-
-#include "Rigidbody.h"
+﻿#include "../../../../Public/Component/Basic/Physics/PhysicsResolver.h"
+#include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../../../../PetitMoteur3D/Core/Public/Util/Time.h"
-#include "Api/Public/GameHost.h"
+#include "../../../../Public/GameHost.h"
 
 void PM3D_API::PhysicsResolver::Initialize()
 {
 	foundation = PxCreateFoundation(PX_PHYSICS_VERSION, allocator, errorCallback);
 
-	pvd = physx::PxCreatePvd(*foundation);
-	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-	pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+	if (physx::PxPvdTransport* mTransport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5425, 10000); mTransport !=
+		nullptr)
+	{
+		const physx::PxPvdInstrumentationFlags mPvdFlags = physx::PxPvdInstrumentationFlag::eALL;
+
+		pvd = physx::PxCreatePvd(*foundation);
+		pvd->connect(*mTransport, mPvdFlags);
+	}
 
 	physics = PxCreatePhysics(PX_PHYSICS_VERSION, *foundation, physx::PxTolerancesScale(), true, pvd);
 
@@ -44,8 +45,6 @@ void PM3D_API::PhysicsResolver::InitializeScene()
 
 	// Create default material
 	defaultMaterial = physics->createMaterial(0.4f, 0.4f, 0.0f);
-
-	std::cout << "PhysicsResolver::InitializeScene()" << std::endl;
 }
 
 void PM3D_API::PhysicsResolver::ResolvePhysics()
@@ -55,13 +54,25 @@ void PM3D_API::PhysicsResolver::ResolvePhysics()
 	{
 		return;
 	}
-	
+
 	scene->simulate(physicsDeltaTime);
 	scene->fetchResults(true);
 
-	for (const auto & gameObject : GameHost::GetInstance()->GetScene()->GetChildren())
+	for (const auto& gameObject : GameHost::GetInstance()->GetScene()->GetChildren())
 	{
 		if (const auto rigidbody = gameObject->GetComponent<Rigidbody>())
+		{
+			const auto actor = rigidbody->GetActor();
+
+			if (rigidbody->IsStatic())
+			{
+				continue; // Il n'a pas pu bouger
+			}
+			
+			if (const physx::PxRigidDynamic* dynamic = static_cast<physx::PxRigidDynamic*>(actor); dynamic->isSleeping())
+				continue;
+
 			rigidbody->UpdateRenderPos();
-	} 
+		}
+	}
 }
