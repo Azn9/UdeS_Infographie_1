@@ -75,12 +75,15 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
 	return std::move(ShaderLightDefaultParameters{
 		true,
 		1, // Directional
-		{0.0f, 0.0f, 0.0f, 1.0f}, // Position
-		DirectX::XMFLOAT4(worldRotationEuler.x, worldRotationEuler.y, worldRotationEuler.z, 0.0f),
 
-		{0.2f * color.x, 0.2f * color.y, 0.2f * color.z, 1.0f}, // Ambient
-		{color.x, color.y, color.z, 1.0f}, // Diffuse
-		{0.6f * color.x, 0.6f * color.y, 0.6f * color.z, 1.0f}, // Specular
+		DirectX::XMFLOAT2(0, 0),
+		
+		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), // Position
+		DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),
+
+		DirectX::XMVectorSet(0.2f * color.x, 0.2f * color.y, 0.2f * color.z, 1.0f), // Ambient
+		DirectX::XMVectorSet(color.x, color.y, color.z, 1.0f), // Diffuse
+		DirectX::XMVectorSet(0.6f * color.x, 0.6f * color.y, 0.6f * color.z, 1.0f), // Specular
 		
 		intensity, // Specular power
 
