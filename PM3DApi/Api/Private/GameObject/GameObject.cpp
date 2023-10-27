@@ -244,6 +244,19 @@ void PM3D_API::GameObject::SetLocalScale(const DirectX::XMFLOAT3 newScale)
 	UpdateMatrix(true);
 }
 
+DirectX::XMFLOAT3 PM3D_API::GameObject::GetWorldDirection() const
+{
+	const DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&localRotationQuaternion));
+
+	// Extract the forward vector from the rotation matrix
+	DirectX::XMFLOAT3 direction;
+	direction.x = rotationMatrix.r[2].m128_f32[0];
+	direction.y = rotationMatrix.r[2].m128_f32[1];
+	direction.z = rotationMatrix.r[2].m128_f32[2];
+
+	return direction;
+}
+
 void PM3D_API::GameObject::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)
 {
 	worldPosition = newPosition;

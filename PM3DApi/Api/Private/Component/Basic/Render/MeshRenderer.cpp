@@ -68,8 +68,6 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
 	if (!camera)
 	{
-		int* p = nullptr;
-		*p = 2;
 		throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
 	}
 
@@ -78,7 +76,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		return;
 
 	// Obtenir le contexte
-	ID3D11DeviceContext* pImmediateContext = GameHost::GetInstance()->GetDispositif()->GetImmediateContext();
+	const auto pDispositif = GameHost::GetInstance()->GetDispositif();
+	ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
 
 	// Choisir la topologie des primitives
 	pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -94,7 +93,55 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	constexpr UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
-	shader->LoadLights(pImmediateContext);
+	{ // SHADOWS
+		pImmediateContext->OMSetRenderTargets(0, nullptr, shader->GetDepthStencilView());
+		pImmediateContext->ClearDepthStencilView(shader->GetDepthStencilView(), D3D11_CLEAR_DEPTH,1.0f,0 );
+		pDispositif->SetViewPortDimension(512,512);
+		const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
+		const auto pPasse = pTechnique->GetPassByIndex(0);
+		pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
+
+		shader->LoadLights(pImmediateContext, parentObject);
+
+		const XMMATRIX viewProj = camera->GetMatViewProj();
+	
+		const auto shaderParameters = shader->PrepareParameters(
+			XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
+			XMMatrixTranspose(parentObject->GetMatWorld())
+		);
+
+		for (int i = 0; i < mesh->object_count; ++i)
+		{
+			const auto objGroup = mesh->objects[i];
+			const unsigned indexStart = objGroup.index_offset;
+		
+			unsigned int indexDrawAmount;
+			if (mesh->object_count > 1)
+			{
+				indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+			} else
+			{
+				indexDrawAmount = mesh->index_count;
+			}
+
+			if (!indexDrawAmount)
+			{
+				continue;
+			}
+
+			// IMPORTANT pour ajuster les param.
+			shader->GetPass()->Apply(0, pImmediateContext);
+
+			shader->ApplyShaderParams();
+			pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
+		
+			pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
+		}
+
+		shader->DeleteParameters(shaderParameters);
+	}
+
+	//shader->LoadLights(pImmediateContext, parentObject);
 
 	const XMMATRIX viewProj = camera->GetMatViewProj();
 	

@@ -43,7 +43,7 @@ void MainScene::InitializeCamera()
 void MainScene::InitializeLights()
 {
     auto pointLight = std::make_unique<PM3D_API::PointLight>(
-        XMFLOAT3(0.0f, 5.0f, 0.0f),
+        XMFLOAT3(0.0f, 1.0f, 0.0f),
         XMFLOAT3(1.0f, 1.0f, 1.0f)
     );
     

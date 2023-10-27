@@ -72,6 +72,30 @@ PM3D_API::DefaultShader::DefaultShader(const std::wstring& fileName) : Shader(),
 		throw std::runtime_error("Effect not initialized!");
 	}
 
+	technique = effect->GetTechniqueByName("ShadowMap");
+    passe = technique->GetPassByIndex(0);
+
+	{
+		D3DX11_PASS_SHADER_DESC effectVSDesc;
+		PM3D::DXEssayer(passe->GetVertexShaderDesc(&effectVSDesc));
+
+		D3DX11_EFFECT_SHADER_DESC effectVSDesc2;
+		PM3D::DXEssayer(effectVSDesc.pShaderVariable->GetShaderDesc(effectVSDesc.ShaderIndex, &effectVSDesc2));
+		
+		const void* vsCodePtr = effectVSDesc2.pBytecode;
+		const uint32_t vsCodeLen = effectVSDesc2.BytecodeLength;
+		vertexLayout = nullptr;
+	
+		numElements = ARRAYSIZE(layout);
+
+		PM3D::DXEssayer(pD3DDevice->CreateInputLayout(layout,
+				numElements,
+				vsCodePtr,
+				vsCodeLen,
+				&vertexLayoutShadow),
+			DXE_CREATIONLAYOUT);
+	}
+
 	technique = effect->GetTechniqueByIndex(0);
 	passe = technique->GetPassByIndex(0);
 
@@ -113,6 +137,39 @@ PM3D_API::DefaultShader::DefaultShader(const std::wstring& fileName) : Shader(),
 	// Création de l’état de sampling
 	pD3DDevice->CreateSamplerState(&samplerDesc, &albedoSampleState);
 	pD3DDevice->CreateSamplerState(&samplerDesc, &normalmapSampleState);
+
+	D3D11_TEXTURE2D_DESC depthTextureDesc;
+	ZeroMemory(&depthTextureDesc, sizeof(depthTextureDesc));
+	depthTextureDesc.Width = 512;
+	depthTextureDesc.Height = 512;
+	depthTextureDesc.MipLevels = 1;
+	depthTextureDesc.ArraySize = 1;
+	depthTextureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	depthTextureDesc.SampleDesc.Count = 1;
+	depthTextureDesc.SampleDesc.Quality = 0;
+	depthTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	depthTextureDesc.CPUAccessFlags = 0;
+	depthTextureDesc.MiscFlags = 0;
+	
+	PM3D::DXEssayer(pD3DDevice->CreateTexture2D(&depthTextureDesc, nullptr, &depthTexture), DXE_ERREURCREATIONTEXTURE);
+
+	// Création de la vue du tampon de profondeur (ou de stencil)
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSView;
+	ZeroMemory(&descDSView, sizeof(descDSView));
+	descDSView.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDSView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	descDSView.Texture2D.MipSlice = 0;
+
+	PM3D::DXEssayer(pD3DDevice->CreateDepthStencilView(depthTexture, &descDSView, &depthStencilView), DXE_ERREURCREATIONDEPTHSTENCILTARGET);
+
+	// Création d’une shader resource view pour lire le tampond de profondeur dans le shader.
+	D3D11_SHADER_RESOURCE_VIEW_DESC sr_desc;
+	sr_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	sr_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	sr_desc.Texture2D.MostDetailedMip = 0;
+	sr_desc.Texture2D.MipLevels = 1;
+	PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
 }
 
 PM3D_API::DefaultShader::~DefaultShader()
@@ -124,6 +181,10 @@ PM3D_API::DefaultShader::~DefaultShader()
 	PM3D::DXRelacher(indexBuffer);
 	PM3D::DXRelacher(albedoSampleState);
 	PM3D::DXRelacher(normalmapSampleState);
+	PM3D::DXRelacher(depthStencilView);
+	PM3D::DXRelacher(depthShaderResourceView);
+	PM3D::DXRelacher(depthTexture);
+	PM3D::DXRelacher(vertexLayoutShadow);
 }
 
 void* PM3D_API::DefaultShader::PrepareParameters(
@@ -138,11 +199,13 @@ void* PM3D_API::DefaultShader::PrepareParameters(
 	variableSamplerNM->SetSampler(0, normalmapSampleState);
 
 	const auto cameraPos = GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldPosition();
+	const auto cameraDir = GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldDirection();
 
 	const auto parameters = new DefaultShaderParameters{
 		matWorldViewProj,
 		matWorld,
-		DirectX::XMVectorSet(cameraPos.x, cameraPos.y, cameraPos.z, 1.0f)
+		DirectX::XMVectorSet(cameraPos.x, cameraPos.y, cameraPos.z, 1.0f),
+		DirectX::XMVectorSet(cameraDir.x, cameraDir.y, cameraDir.z, 1.0f)
 	};
 
 	return parameters;
@@ -196,12 +259,12 @@ void PM3D_API::DefaultShader::DeleteParameters(void* shader_parameters)
 	delete static_cast<DefaultShaderParameters*>(shader_parameters);
 }
 
-void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context)
+void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context, GameObject* gameObject)
 {
-	if (!GameHost::GetInstance()->GetScene()->GetLightsNeedUpdate())
+	/*if (!GameHost::GetInstance()->GetScene()->GetLightsNeedUpdate())
 	{
 		return;
-	}
+	}*/
 	
 	const auto& lights = GameHost::GetInstance()->GetScene()->GetLights();
 	const auto lightCount = lights.size();
@@ -262,8 +325,8 @@ void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context)
 	}
 
 	std::vector<ShaderLightDefaultParameters> shaderLightsParameters{};
-	std::for_each(finalLights.begin(), finalLights.end(), [&shaderLightsParameters](const Light* light) {
-		shaderLightsParameters.push_back(light->GetShaderLightDefaultParameters());
+	std::for_each(finalLights.begin(), finalLights.end(), [&shaderLightsParameters, &gameObject](const Light* light) {
+		shaderLightsParameters.push_back(light->GetShaderLightDefaultParameters(gameObject));
 	});
 	
 	for (int i = 0; i < 10 - lightCount; ++i)
