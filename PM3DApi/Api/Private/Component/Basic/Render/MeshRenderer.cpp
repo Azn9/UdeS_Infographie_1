@@ -93,10 +93,11 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	constexpr UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
+	/*
 	{ // SHADOWS
 		pImmediateContext->OMSetRenderTargets(0, nullptr, shader->GetDepthStencilView());
-		pImmediateContext->ClearDepthStencilView(shader->GetDepthStencilView(), D3D11_CLEAR_DEPTH,1.0f,0 );
-		pDispositif->SetViewPortDimension(512,512);
+		pImmediateContext->ClearDepthStencilView(shader->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		pDispositif->SetViewportDimension(512,512);
 		const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
 		const auto pPasse = pTechnique->GetPassByIndex(0);
 		pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
@@ -129,6 +130,16 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 				continue;
 			}
 
+			shader->ApplyMaterialParameters(
+				shaderParameters,
+				XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient),
+				XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse),
+				XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular),
+				Material[SubmeshMaterialIndex[i]].Puissance,
+				Material[SubmeshMaterialIndex[i]].pAlbedoTexture,
+				Material[SubmeshMaterialIndex[i]].pNormalmapTexture
+			);
+
 			// IMPORTANT pour ajuster les param.
 			shader->GetPass()->Apply(0, pImmediateContext);
 
@@ -140,8 +151,15 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
 		shader->DeleteParameters(shaderParameters);
 	}
+	*/
 
-	//shader->LoadLights(pImmediateContext, parentObject);
+	//ID3D11RenderTargetView* tabRTV[1];
+	//tabRTV[0] = pDispositif->GetRenderTargetView();
+	//pImmediateContext->OMSetRenderTargets(1, tabRTV, pDispositif->GetDepthStencilView());
+
+	pDispositif->ResetViewportDimension();
+
+	shader->LoadLights(pImmediateContext, parentObject);
 
 	const XMMATRIX viewProj = camera->GetMatViewProj();
 	
@@ -149,6 +167,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
 		XMMatrixTranspose(parentObject->GetMatWorld())
 	);
+
+	//pDispositif->SetNormalRSState();
 
 	// Dessiner les sous-objets non-transparents
 	for (int i = 0; i < mesh->object_count; ++i)

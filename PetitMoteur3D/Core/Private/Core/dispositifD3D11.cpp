@@ -278,4 +278,33 @@ void CDispositifD3D11::InitBlendStates()
 	DXEssayer( pD3DDevice->CreateBlendState(&blendDesc,&alphaBlendDisable), DXE_ERREURCREATION_BLENDSTATE);
 }
 
+void CDispositifD3D11::SetViewportDimension(int largeur, int hauteur)
+{
+	D3D11_VIEWPORT vp;
+	vp.Width = static_cast<FLOAT>(largeur);
+	vp.Height = static_cast<FLOAT>(hauteur);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	pImmediateContext->RSSetViewports( 1, &vp );
+}
+
+void CDispositifD3D11::ResetViewportDimension()
+{
+	D3D11_VIEWPORT vp;
+    vp.Width = static_cast<FLOAT>(largeurEcran);
+    vp.Height = static_cast<FLOAT>(hauteurEcran);
+    vp.MinDepth = 0.0f;
+    vp.MaxDepth = 1.0f;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    pImmediateContext->RSSetViewports( 1, &vp );
+}
+
+void CDispositifD3D11::SetNormalRSState()
+{
+	pImmediateContext->RSSetState(mSolidCullBackRS);
+}
+
 } // namespace PM3D

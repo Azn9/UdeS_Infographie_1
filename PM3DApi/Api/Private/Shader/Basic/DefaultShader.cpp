@@ -1,4 +1,7 @@
 ﻿#include "../../../Public/Shader/Basic/DefaultShader.h"
+
+#include <codecvt>
+
 #include "../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Util/util.h"
 #include "../../../Public/GameHost.h"
@@ -44,26 +47,49 @@ PM3D_API::DefaultShader::DefaultShader(const std::wstring& fileName) : Shader(),
 
 	PM3D::DXEssayer(pD3DDevice->CreateBuffer(&shaderParametersBufferDesc, nullptr, &shaderParametersBuffer));
 
+	// Convert wstring to string
+	// converter
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	std::string convertedFileName = converter.to_bytes(fileName);
+	
 	ID3DBlob* pFXBlob = nullptr;
-	PM3D::DXEssayer(D3DCompileFromFile(
+
+	ID3DBlob* errorBlob;
+	auto res = D3DCompileFromFile(
 		fileName.c_str(),
 		0,
-		0,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
 		0,
 		"fx_5_0",
-		0,
+		D3DCOMPILE_DEBUG,
 		0,
 		&pFXBlob,
-		nullptr
-	), DXE_ERREURCREATION_FX);
+		&errorBlob
+	);
 
-	PM3D::DXEssayer(D3DX11CreateEffectFromMemory(
+	if (res != S_OK)
+	{
+		if ( errorBlob )
+		{
+			OutputDebugStringA( (char*)errorBlob->GetBufferPointer() );
+			errorBlob->Release();
+		}
+		
+		throw std::runtime_error("Shader compilation failed! (DefaultShader > " + convertedFileName + ")");
+	}
+
+	res = D3DX11CreateEffectFromMemory(
 		pFXBlob->GetBufferPointer(),
 		pFXBlob->GetBufferSize(),
-		0,
+		D3DCOMPILE_DEBUG,
 		pD3DDevice,
 		&effect
-	), DXE_ERREURCREATION_FX);
+	);
+
+	if (res != S_OK)
+	{
+		throw std::runtime_error("Shader creation failed! (DefaultShader > " + convertedFileName + ")");
+	}
 
 	pFXBlob->Release();
 
@@ -252,6 +278,12 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
 			parameters.hasNormalmapTexture = true;
 		}
 	}
+
+	if (depthShaderResourceView)
+	{
+		ID3DX11EffectShaderResourceVariable* pShadowMap = effect->GetVariableByName("shadowTexture")->AsShaderResource();
+		pShadowMap->SetResource(depthShaderResourceView);
+	}
 }
 
 void PM3D_API::DefaultShader::DeleteParameters(void* shader_parameters)
@@ -331,7 +363,7 @@ void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context, GameObjec
 	
 	for (int i = 0; i < 10 - lightCount; ++i)
 	{
-		shaderLightsParameters.push_back(ShaderLightDefaultParameters{});
+		shaderLightsParameters.push_back(DefaultShaderLightDefaultParameters);
 	}
 
 	D3D11_BUFFER_DESC lightParametersBufferDesc;
