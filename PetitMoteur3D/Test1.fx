@@ -1,6 +1,8 @@
 struct Light {
 	bool initialized;
+	
 	int lightType; // 0 = ambient, 1 = directional, 2 = point, 3 = spot
+	
 	float4 position;
 	float4 direction;
 	
@@ -12,6 +14,11 @@ struct Light {
 	// Only for spot
 	float innerAngle;
 	float outerAngle;
+
+    float4x4 matWorldViewProj;
+	
+	float4 padding;
+	float3 padding2;
 };
 
 cbuffer param
@@ -19,6 +26,7 @@ cbuffer param
     float4x4 matWorldViewProj; // la matrice totale 
     float4x4 matWorld; // matrice de transformation dans le monde
     float4 vCamera; // la position de la caméra
+    float4 dCamera; // La direction de la caméra
     float4 vAMat; // la valeur ambiante du matériau
     float4 vDMat; // la valeur diffuse du matériau
     float4 vSMat; // la valeur spéculaire du matériau
@@ -42,9 +50,10 @@ struct VS_Sortie
 	float3 normal    : TEXCOORD0;
     float3 binormal  : TEXCOORD1;
     float3 tangent   : TEXCOORD2;
-	float3 cameraDir : TEXCOORD3;
+	float3 cameraVec : TEXCOORD3;
 	float2 coordTex  : TEXCOORD4;
 	float3 worldPos  : TEXCOORD5;
+	float3 cameraDir : TEXCOORD6;
 };
 
 VS_Sortie MainVS(
@@ -65,7 +74,8 @@ VS_Sortie MainVS(
 
     output.coordTex = coordTex;
 
-    output.cameraDir = vCamera.xyz - output.worldPos;
+    output.cameraVec = vCamera.xyz - output.worldPos;
+    output.cameraDir = dCamera.xyz;
 
     return output;
 }
@@ -101,7 +111,21 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		}
 		else if (li.lightType == 1) // Directionnal
 		{
+            float3 L = normalize(li.direction.xyz);
+            
+            // Diffuse
+            float diffuseValue = saturate(dot(N, L));
 
+            // Specular
+            float3 H = normalize(L + V);
+            float NdotH = saturate(dot(N, H));
+
+            float puissance = Ns * li.intensity;
+            float specularValue = pow(NdotH, puissance);
+
+            totalAmbiant += li.ambiantColor;
+            totalDiffuse += li.diffuseColor * diffuseValue;
+            totalSpecular += li.specularColor * specularValue;
         }
 		else if (li.lightType == 2) // Point
 		{
@@ -148,6 +172,16 @@ float4 MainPS(VS_Sortie input) : SV_Target
 }
 
 technique11 Test1
+{
+	pass pass0
+	{
+		SetVertexShader(CompileShader(vs_5_0, MainVS()));
+		SetPixelShader(CompileShader(ps_5_0, MainPS()));
+		SetGeometryShader(NULL);
+	}
+}
+
+technique11 ShadowMap
 {
 	pass pass0
 	{

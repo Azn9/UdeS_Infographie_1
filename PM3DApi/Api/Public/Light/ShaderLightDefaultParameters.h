@@ -20,5 +20,10 @@ namespace PM3D_API
         // Only for spot light
         float innerAngle;
         float outerAngle;
+        
+        DirectX::XMMATRIX matWorldViewProj;
+
+        DirectX::XMFLOAT4 padding;
+        DirectX::XMFLOAT3 padding2;
     };
 }

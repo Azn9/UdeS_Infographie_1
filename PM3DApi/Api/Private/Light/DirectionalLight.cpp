@@ -51,8 +51,27 @@ PM3D_API::DirectionalLight::DirectionalLight(
 
 }
 
-PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters() const
+PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters(GameObject* gameObject) const
 {
+	const auto mVLight = DirectX::XMMatrixLookAtLH(
+		DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
+		DirectX::XMVectorSet(gameObject->GetWorldPosition().x, gameObject->GetWorldPosition().y,
+							 gameObject->GetWorldPosition().z, 1.0f),
+		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
+	);
+
+	constexpr float nearPlane = 2.0;
+	constexpr float farPlane = 100.0;
+
+	const auto mPLight = DirectX::XMMatrixOrthographicLH(
+		512,
+		512,
+		nearPlane,
+		farPlane
+	);
+
+	const auto matWorldViewProj = mVLight * mPLight;
+	
 	return std::move(ShaderLightDefaultParameters{
 		true,
 		1, // Directional
@@ -67,6 +86,8 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
 
 		// Unused here
 		0.0f, // Inner angle
-		0.0f // Outer angle
+		0.0f, // Outer angle
+
+		matWorldViewProj
 	});
 }

@@ -15,10 +15,17 @@ public:
 	ID3D11InputLayout* GetVertexLayout() const override { return vertexLayout; }
 	ID3D11Buffer* GetIndexBuffer() const override { return indexBuffer; }
 
+	ID3D11InputLayout* GetShadowVertexLayout() const override { return vertexLayoutShadow; }
+	ID3D11Texture2D* GetDepthTexture() const override { return depthTexture; }
+	ID3D11DepthStencilView* GetDepthStencilView() const override { return depthStencilView; }
+	ID3D11ShaderResourceView* GetDepthShaderResourceView() const override { return depthShaderResourceView; }
+
+	ID3DX11Effect* GetEffect() const override { return effect; }
+
 	ID3D11Buffer** GetVertexBufferPtr() const override { return &vertexBuffer; }
 	ID3D11Buffer** GetIndexBufferPtr() const override { return &indexBuffer; }
 
-	void LoadLights(ID3D11DeviceContext* context) override;
+	void LoadLights(ID3D11DeviceContext* context, GameObject* gameObject) override;
 	
 	void* PrepareParameters(
 		DirectX::XMMATRIX matWorldViewProj,
@@ -50,9 +57,14 @@ protected:
 	ID3DX11EffectTechnique* technique;
 	ID3DX11EffectPass* passe;
 	ID3D11InputLayout* vertexLayout;
-	
+
 	ID3D11SamplerState* albedoSampleState;
 	ID3D11SamplerState* normalmapSampleState;
+
+	ID3D11InputLayout* vertexLayoutShadow;
+	ID3D11Texture2D* depthTexture;
+	ID3D11DepthStencilView* depthStencilView;
+	ID3D11ShaderResourceView* depthShaderResourceView;
 
 	mutable ID3D11Buffer* vertexBuffer;
 	mutable ID3D11Buffer* indexBuffer;
@@ -64,6 +76,7 @@ private:
 		DirectX::XMMATRIX matWorld;
 
 		DirectX::XMVECTOR cameraPos;
+		DirectX::XMVECTOR cameraDir;
 
 		DirectX::XMVECTOR materialAmbiant;
 		DirectX::XMVECTOR materialDiffuse;

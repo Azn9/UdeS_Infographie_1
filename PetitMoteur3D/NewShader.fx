@@ -1,6 +1,8 @@
 struct Light {
 	bool initialized;
+
 	int lightType; // 0 = ambient, 1 = directional, 2 = point, 3 = spot
+	
 	float4 position;
 	float4 direction;
 	
@@ -12,6 +14,11 @@ struct Light {
 	// Only for spot
 	float innerAngle;
 	float outerAngle;
+
+	float4x4 matWorldViewProj;
+
+	float4 padding;
+	float3 padding2;
 };
 
 cbuffer param
@@ -159,12 +166,60 @@ float4 MainPS(VS_Sortie vs) : SV_Target
 	return float4(finalColor, 1.0f);
 }
 
+
+struct ShadowMapVS_SORTIE
+{
+	float4 Pos : SV_POSITION;
+};
+
+ShadowMapVS_SORTIE MainVS_SM(
+	float4 Pos      : POSITION, 
+    float3 Normale   : NORMAL, 
+    float3 vBiNormal : BINORMAL,
+    float3 vTangent  : TANGENT,
+    float2 coordTex  : TEXCOORD
+) {
+	ShadowMapVS_SORTIE Out;
+	
+	// Calcul des coordonnées
+	Out.Pos = Pos;
+
+	for (uint i = 0; i < MAX_LIGHTS; ++i) {
+		Light li = lights[i];
+
+		float4 pos = mul(Pos, li.matWorldViewProj);
+		float profondeur = pos.z / pos.w;
+
+		zzzz
+	}
+
+	return Out;
+}
+
+RasterizerState rsCullFront
+{
+	CullMode = Front;
+};
+
+
 technique11 NewShader
 {
 	pass pass0
 	{
 		SetVertexShader(CompileShader(vs_5_0, MainVS()));
 		SetPixelShader(CompileShader(ps_5_0, MainPS()));
+		SetGeometryShader(NULL);
+	}
+}
+
+technique11 ShadowMap
+{
+	pass pass0
+	{
+		SetVertexShader(CompileShader(vs_5_0, MainVS_SM()));
+		SetRasterizerState(rsCullFront);
+
+		SetPixelShader(NULL);
 		SetGeometryShader(NULL);
 	}
 }

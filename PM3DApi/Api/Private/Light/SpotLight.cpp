@@ -1,7 +1,28 @@
 ﻿#include "../../Public/Light/SpotLight.h"
 
-PM3D_API::ShaderLightDefaultParameters PM3D_API::SpotLight::GetShaderLightDefaultParameters() const
+PM3D_API::ShaderLightDefaultParameters PM3D_API::SpotLight::GetShaderLightDefaultParameters(GameObject* gameObject) const
 {
+	const auto mVLight = DirectX::XMMatrixLookAtLH(
+		DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
+		DirectX::XMVectorSet(gameObject->GetWorldPosition().x, gameObject->GetWorldPosition().y,
+							 gameObject->GetWorldPosition().z, 1.0f),
+		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
+	);
+
+	constexpr float fov = DirectX::XM_PI / 4;
+	constexpr float aspectRatio = 1.0f;
+	constexpr float nearPlane = 2.0;
+	constexpr float farPlane = 100.0;
+
+	const auto mPLight = DirectX::XMMatrixPerspectiveFovLH(
+		fov,
+		aspectRatio,
+		nearPlane,
+		farPlane
+	);
+
+	const auto matWorldViewProj = mVLight * mPLight;
+
 	return {
 		true,
 		3, // Spot
@@ -14,6 +35,8 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::SpotLight::GetShaderLightDefaul
 		
 		intensity, // Specular power
 		innerAngle,
-		outerAngle
+		outerAngle,
+		
+		matWorldViewProj
 	};
 }
