@@ -3,9 +3,7 @@
 PM3D_API::ShaderLightDefaultParameters PM3D_API::AmbiantLight::GetShaderLightDefaultParameters(GameObject* gameObject) const
 {
 	return {
-		true,
-		0,
-		DirectX::XMFLOAT2(0, 0),
+		DirectX::XMMatrixIdentity(),
 		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 		DirectX::XMVectorSet(color.x, color.y, color.z, 1.0f),
@@ -14,6 +12,8 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::AmbiantLight::GetShaderLightDef
 		0.0f,
 		0.0f,
 		0.0f,
-		DirectX::XMMatrixIdentity()
+		true,
+		0,
+		{0.0f, 0.0f, 0.0f}
 	};
 }
