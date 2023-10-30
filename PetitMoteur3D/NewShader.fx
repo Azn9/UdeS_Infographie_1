@@ -1,3 +1,4 @@
+#define EPSILON 0.000001
 struct Light {
 	int initialized;
 
@@ -162,7 +163,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
             float3 H = normalize(L + V);
             float NdotH = saturate(dot(N, H));
 
-            float puissance = Ns * li.specularPower;
+            float puissance = max(EPSILON, Ns * li.specularPower);
             float specularValue = pow(NdotH, puissance);
 
             // Attenuation
