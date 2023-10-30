@@ -278,14 +278,19 @@ void PM3D_API::MeshRenderer::LoadMesh()
 	// 4a) Créer un matériau de défaut en index 0
 	// Vous pourriez changer les valeurs, j’ai conservé
 	// celles du constructeur
-	Material.reserve(chargeur->GetNombreMaterial() + 1);
-	Material.emplace_back(CMaterial());
+	//Material.reserve(chargeur->GetNombreMaterial());
+	//Material.emplace_back(CMaterial());
 
 	// 4b) Copie des matériaux dans la version locale
 	for (int32_t i = 0; i < chargeur->GetNombreMaterial(); ++i)
 	{
 		CMaterial mat =	chargeur->GetMaterial(i);
 		Material.push_back(mat);
+	}
+
+	if (Material.empty())
+	{
+		Material.emplace_back(CMaterial());
 	}
 
 	// 4c) Trouver l’index du materiau pour chaque sous-ensemble
