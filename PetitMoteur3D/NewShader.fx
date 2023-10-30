@@ -134,7 +134,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
 
 		if (li.lightType == 0) // ambiant
 		{
-			// Nothing
+			totalAmbiant += li.ambiant;
 		}
 		else if (li.lightType == 1) // Directionnal
 		{
