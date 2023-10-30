@@ -6,11 +6,11 @@
 #include <vector>
 
 #include "Api/Public/Component/Component.h"
-#include "Api/Public/UICanvas/UICanvas.h"
 #include "Api/Public/Util/Instanceof.h"
 
 namespace PM3D_API
 {
+class UICanvas;
     
 enum class Anchor
 {
@@ -21,20 +21,19 @@ enum class Anchor
 
 enum class SizeMode
 {
-    RELATIVE, ABSOLUTE, RELATIVE_X, RELATIVE_Y 
+    BOTH_RELATIVE, NONE_RELATIVE, RELATIVE_X, RELATIVE_Y 
 };
 
 class UIObject
 {
 public:
-
-    UIObject(const std::string& name);
     
     UIObject(const std::string& name
-        , const DirectX::XMFLOAT2& position
-        , const DirectX::XMFLOAT2& size
-        , const Anchor& anchor
-        , const DirectX::XMFLOAT2& pivot);
+        , const DirectX::XMFLOAT2& size = {1.f, 1.f}
+        , const SizeMode& sizeMode = SizeMode::NONE_RELATIVE
+        , const DirectX::XMFLOAT2& position = {0.f, 0.f}
+        , const Anchor& anchor = Anchor::TOP_LEFT
+        , const DirectX::XMFLOAT2& pivot = {0.f, 0.f});
 
 
     virtual ~UIObject();
@@ -65,7 +64,7 @@ protected:
     DirectX::XMFLOAT2 position; 
     
     DirectX::XMFLOAT2 size;
-    SizeMode size_mode;
+    SizeMode sizeMode;
 
     std::vector<std::unique_ptr<UIObject>> children{};
     std::vector<std::unique_ptr<Component>> components{};

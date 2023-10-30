@@ -2,12 +2,10 @@
 
 namespace PM3D_API
 {
-    UIObject::UIObject(const std::string& name)
-    {
-    }
 
-    UIObject::UIObject(const std::string& name, const DirectX::XMFLOAT2& position, const DirectX::XMFLOAT2& size,
-        const Anchor& anchor, const DirectX::XMFLOAT2& pivot)
+    UIObject::UIObject(const std::string& name, const DirectX::XMFLOAT2& size, const SizeMode& sizeMode
+        , const DirectX::XMFLOAT2& position, const Anchor& anchor, const DirectX::XMFLOAT2& pivot)
+        : name(name), position(position), size(size), sizeMode(sizeMode), anchor(anchor), pivot(pivot)
     {
     }
 
