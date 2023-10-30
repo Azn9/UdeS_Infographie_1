@@ -6,6 +6,7 @@
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/BoxCollider.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/PlaneCollider.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Render/BillboardRenderer.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
 #include "../../../PM3DApi/Api/Public/EventSystem/Basic/WindowResizeEvent.h"
@@ -43,12 +44,14 @@ void MainScene::InitializeCamera()
 void MainScene::InitializeLights()
 {
     auto pointLight = std::make_unique<PM3D_API::PointLight>(
-        XMFLOAT3(0.0f, 1.0f, 0.0f),
+        XMFLOAT3(0.0f, 5.0f, 0.0f),
         XMFLOAT3(1.0f, 1.0f, 1.0f)
     );
     
     auto lightMoverComponent = std::make_unique<LightMoverComponent>(0);
     pointLight->AddComponent(std::move(lightMoverComponent));
+
+    pointLight->AddComponent(std::make_unique<PM3D_API::BillboardRenderer>(L"light.dds"));
     
     pointLight->SetIntensity(2.0f);
     pointLight->Initialize();
