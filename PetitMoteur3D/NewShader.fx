@@ -1,10 +1,6 @@
 #define EPSILON 0.000001
 struct Light {
-	int initialized;
-
-	int lightType; // 0 = ambient, 1 = directional, 2 = point, 3 = spot
-
-	float2 padding;
+	float4x4 matWorldViewProj;
 	
 	float4 position;
 	float4 direction;
@@ -12,19 +8,17 @@ struct Light {
 	float4 ambiant;
 	float4 diffuse;
 	float4 specular;
+
 	float specularPower;
 
 	// Only for spot
 	float innerAngle;
 	float outerAngle;
 
-	float padding2;
+	int initialized;
+	int lightType; // 0 = ambient, 1 = directional, 2 = point, 3 = spot
 
-	float4x4 matWorldViewProj;
-
-	//float4 padding;
-	//float3 padding2;
-	//float4 padding3;
+	float3 padding;
 };
 
 cbuffer param

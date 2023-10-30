@@ -5,7 +5,7 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::SpotLight::GetShaderLightDefaul
 	const auto mVLight = DirectX::XMMatrixLookAtLH(
 		DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
 		DirectX::XMVectorSet(gameObject->GetWorldPosition().x, gameObject->GetWorldPosition().y,
-							 gameObject->GetWorldPosition().z, 1.0f),
+			gameObject->GetWorldPosition().z, 1.0f),
 		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
 	);
 
@@ -24,20 +24,20 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::SpotLight::GetShaderLightDefaul
 	const auto matWorldViewProj = mVLight * mPLight;
 
 	return {
-		true,
-		3, // Spot
-		DirectX::XMFLOAT2(0, 0),
+		matWorldViewProj,
 		DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
 		DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),
 
 		DirectX::XMVectorSet(0.2f * color.x, 0.2f * color.y, 0.2f * color.z, 1.0f), // Ambient
 		DirectX::XMVectorSet(color.x, color.y, color.z, 1.0f), // Diffuse
 		DirectX::XMVectorSet(0.6f * color.x, 0.6f * color.y, 0.6f * color.z, 1.0f), // Specular
-		
+
 		intensity, // Specular power
 		innerAngle,
 		outerAngle,
-		
-		matWorldViewProj
+
+		true,
+		3,
+		{0.0f, 0.0f, 0.0f}
 	};
 }

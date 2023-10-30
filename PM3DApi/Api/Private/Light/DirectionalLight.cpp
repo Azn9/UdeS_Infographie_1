@@ -73,10 +73,7 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
 	const auto matWorldViewProj = mVLight * mPLight;
 	
 	return std::move(ShaderLightDefaultParameters{
-		true,
-		1, // Directional
-
-		DirectX::XMFLOAT2(0, 0),
+		matWorldViewProj,
 		
 		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), // Position
 		DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),
@@ -91,6 +88,9 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
 		0.0f, // Inner angle
 		0.0f, // Outer angle
 
-		matWorldViewProj
+		true,
+		1, // Directional
+
+		{0.0f, 0.0f, 0.0f}
 	});
 }

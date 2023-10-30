@@ -6,10 +6,7 @@ namespace PM3D_API
 {
 struct ShaderLightDefaultParameters
 {
-	int initialized;
-	int lightType; // 0 = ambient, 1 = directional, 2 = point, 3 = spot
-	
-	DirectX::XMFLOAT2 padding2;
+	DirectX::XMMATRIX matWorldViewProj;
 	
 	DirectX::XMVECTOR position;
 	DirectX::XMVECTOR direction;
@@ -23,13 +20,14 @@ struct ShaderLightDefaultParameters
 	float innerAngle;
 	float outerAngle;
 
-	DirectX::XMMATRIX matWorldViewProj;
+	int initialized;
+	int lightType; // 0 = ambient, 1 = directional, 2 = point, 3 = spot
+	
+	DirectX::XMFLOAT3 padding;
 };
 
 static ShaderLightDefaultParameters DefaultShaderLightDefaultParameters = {
-	false,
-	0,
-	DirectX::XMFLOAT2(0, 0),
+	DirectX::XMMatrixIdentity(),
 	DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 	DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
 	DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
@@ -38,6 +36,8 @@ static ShaderLightDefaultParameters DefaultShaderLightDefaultParameters = {
 	0.0f,
 	0.0f,
 	0.0f,
-	DirectX::XMMatrixIdentity()
+	false,
+	0,
+	{ 0.0f, 0.0f, 0.0f }
 };
 }
