@@ -5,6 +5,7 @@
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/BoxCollider.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/PlaneCollider.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
@@ -12,10 +13,12 @@
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicSphere.h"
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
+#include "../../../PetitMoteur3D/Core/Public/Mesh/FastobjChargeur.h"
 #include "GameTest/CustomPlane.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
+#include <Heightmap.h>
 
 void MainScene::InitializePhysics()
 {
@@ -29,8 +32,8 @@ void MainScene::InitializeCamera()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSECTIVE,
-        XMFLOAT3(0.0f, 5.0f, -15.0f),
-        XMVectorSet(0.0f, 5.0f, 0.0f, 1.0f),
+        XMFLOAT3(0.0f, 0.1f, 0.0f),
+        XMVectorSet(0.0f, -5.0f, 15.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
@@ -56,8 +59,8 @@ void MainScene::InitializeLights()
 void MainScene::InitializeObjects()
 {
     // ============= Add a plane =============
-    auto plane = std::make_unique<CustomPlane>();
-    plane->SetWorldScale(XMFLOAT3(10.0f, 1.0f, 10.0f));
+    auto plane = std::make_unique<Heightmap>();
+    plane->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
     plane->Initialize();
 
     auto planeRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
@@ -65,16 +68,16 @@ void MainScene::InitializeObjects()
     plane->AddComponent(std::move(planeRigidbody));
     planeRigidbodyPtr->Initialize();
 
-    auto planeCollider = std::make_unique<PM3D_API::PlaneCollider>(physicsResolver->GetDefaultMaterial());
-    const auto planeColliderPtr = planeCollider.get();
-    plane->AddComponent(std::move(planeCollider));
-    planeColliderPtr->Initialize();
+    auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+    const auto meshColliderPtr = meshCollider.get();
+    plane->AddComponent(std::move(meshCollider));
+    meshColliderPtr->Initialize();
 
     AddChild(std::move(plane));
 
     // ============= Add a cube =============
     auto cube = std::make_unique<PM3D_API::BasicCube>("Cube");
-    cube->SetWorldPosition(XMFLOAT3(0.0f, 10.0f, 0.0f));
+    cube->SetWorldPosition(XMFLOAT3(0.0f, 10.0f, 10.0f));
     cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
     cube->Initialize();
 

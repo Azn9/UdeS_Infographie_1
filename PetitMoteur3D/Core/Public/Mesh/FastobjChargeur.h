@@ -27,9 +27,13 @@ public:
 
 	void* GetMesh() override { return mesh; }
 
+	std::vector<XMFLOAT3> getPositionArray() const override { return Position; }
+	std::vector<int> getTabIndex() const override { return tabIndex; }
+
+
 private:
 	fastObjMesh* mesh;
-
+	
 	std::vector<int> SubsetIndex;
 
 	// *** Les sommets 

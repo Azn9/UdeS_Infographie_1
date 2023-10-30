@@ -41,6 +41,9 @@ public:
 		ImGui::Text("Material");
 		ImGui::SameLine(200.0f); ImGui::Text(std::to_string(Material.size()).c_str());
 	}
+
+	PM3D::IChargeur* getChargeur() { return chargeur; }
+
 private:
 	void LoadMesh();
 
