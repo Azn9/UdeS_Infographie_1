@@ -67,7 +67,7 @@ protected:
     DirectX::XMFLOAT2 size;
     SizeMode size_mode;
 
-    std::vector<std::unique_ptr<GameObject>> children{};
+    std::vector<std::unique_ptr<UIObject>> children{};
     std::vector<std::unique_ptr<Component>> components{};
     UICanvas* canvas = nullptr;
     UIObject* parent = nullptr;
@@ -79,7 +79,7 @@ protected:
 
 private:
     friend class Scene;
-    void SetScene(Scene* newScene) { canvas = newScene; }
+    void SetCanvas(UICanvas* newCanvas) { canvas = newCanvas; }
 
     void SetParent(GameObject* newParent);
 
