@@ -41,19 +41,6 @@ template <class T, class TClasseDispositif> class CMoteur : public CSingleton<T>
 public:
 	virtual void Run()
 	{
-		/*
-		// Draw thread
-		std::thread drawThread([this]
-		{
-			while (this->running)
-			{
-				
-			}
-		});
-		SetThreadName(drawThread, "DrawThread");
-		drawThread.detach();
-		*/
-
 		// Update thread
 		std::thread updateThread([this]
 		{

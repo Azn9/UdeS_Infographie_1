@@ -48,8 +48,11 @@ PM3D::CAfficheurTexte::CAfficheurTexte(PM3D::CDispositifD3D11* pDispositif, int 
 
 #pragma warning( push )
 #pragma warning( disable : 4238 )
-    
-    pCharBitmap->LockBits(&Gdiplus::Rect(0, 0, TexWidth, TexHeight), Gdiplus ::ImageLockModeRead, PixelFormat32bppARGB, &bmData);
+
+    const auto rect = new Gdiplus::Rect(0, 0, TexWidth, TexHeight);
+    pCharBitmap->LockBits(rect, Gdiplus ::ImageLockModeRead, PixelFormat32bppARGB, &bmData);
+
+    delete rect;
 
 #pragma warning( pop )
     
@@ -102,9 +105,13 @@ void PM3D::CAfficheurTexte::Ecrire(const std::wstring& s)
 
 #pragma warning( push )
 #pragma warning( disable : 4238 )
+
+    const auto rect = new Gdiplus::Rect(0, 0, TexWidth, TexHeight);
     
-    pCharBitmap->LockBits(&Gdiplus::Rect(0, 0, TexWidth, TexHeight),
+    pCharBitmap->LockBits(rect,
     Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bmData);
+
+    delete rect;
 
 #pragma warning( pop )
     
