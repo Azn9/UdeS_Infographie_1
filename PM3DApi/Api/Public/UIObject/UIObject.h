@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Api/Public/Component/Component.h"
+#include "Api/Public/Component/UIComponent.h"
 #include "Api/Public/Util/Instanceof.h"
 
 namespace PM3D_API
@@ -42,22 +43,36 @@ public:
     virtual void Update();
     virtual void Draw();
     virtual void AddChild(std::unique_ptr<UIObject>&& child);
-    virtual void AddComponent(std::unique_ptr<UIObject>&& component);
+    virtual void AddComponent(std::unique_ptr<UIComponent>&& component);
 
     std::string GetName() const { return name; }
     
-    template <typename T, template_extends<T, Component> = 0>
-    std::vector<T*> GetComponents();
+    template <typename T, template_extends<T, UIComponent> = 0>
+    std::vector<T*> GetComponents()
+    {
+        std::vector<T*> components{};
+        for (const auto component : components)
+        {
+            if (!component) continue;
+			
+            if (typeid(*component.get()) == typeid(T))
+            {
+                components.push_back(static_cast<T*>(component.get()));
+            }
+        }
+
+        return components;
+    }
 
     const std::vector<std::unique_ptr<UIObject>>& GetChildren() const { return children; }
-    const std::vector<std::unique_ptr<Component>>& GetComponents() const { return components; }
+    const std::vector<std::unique_ptr<UIComponent>>& GetComponents() const { return components; }
     
 protected:
 
     std::string name = "Unnamed GameObject";
     
     /// Anchor of parent
-    Anchor anchor;
+    Anchor parentAnchor;
     /// Position of the pivot on the object. pivot=(0,0.5) -> the pivot will be at the left side and at half it's height
     DirectX::XMFLOAT2 pivot; 
     /// Position of the origin (relative to anchor)
@@ -67,7 +82,7 @@ protected:
     SizeMode sizeMode;
 
     std::vector<std::unique_ptr<UIObject>> children{};
-    std::vector<std::unique_ptr<Component>> components{};
+    std::vector<std::unique_ptr<UIComponent>> components{};
     UICanvas* canvas = nullptr;
     UIObject* parent = nullptr;
     
@@ -76,11 +91,16 @@ protected:
     void LogBeginDrawSelf() const;
     void LogEndDrawSelf() const;
 
+    ///Position on the screen in pixels
+    virtual DirectX::XMFLOAT2 ResolvePosition() const;
+    virtual DirectX::XMFLOAT2 ResolveSize() const;
+    virtual DirectX::XMFLOAT2 ResolveAnchorPosition(const Anchor& anchor) const;
+
 private:
     friend class Scene;
     void SetCanvas(UICanvas* newCanvas) { canvas = newCanvas; }
 
-    void SetParent(GameObject* newParent);
+    void SetParent(UIObject* newParent);
 
     mutable int64_t beginDrawSelf;
     mutable int64_t endDrawSelf;

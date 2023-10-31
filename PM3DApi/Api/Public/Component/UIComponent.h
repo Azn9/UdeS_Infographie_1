@@ -3,12 +3,12 @@
 
 namespace PM3D_API
 {
-class UIGameObject;
+class UIObject;
 
 class UIComponent
 {
 public:
-    virtual ~Component();
+    virtual ~UIComponent();
 
     virtual void Initialize();
     virtual void Update();
@@ -19,14 +19,14 @@ public:
     uint64_t GetBeginDrawSelf() const { return beginDrawSelf; }
     uint64_t GetEndDrawSelf() const { return endDrawSelf; }
 protected:
-    UIGameObject* parentObject = nullptr;
+    UIObject* parentObject = nullptr;
 
     void LogBeginDrawSelf() const;
     void LogEndDrawSelf() const;
 
 private:
-    friend class UIGameObject;
-    void SetGameObject(UIGameObject* gameObject) { parentObject = gameObject; }
+    friend class UIObject;
+    void SetUIObject(UIObject* gameObject) { parentObject = gameObject; }
 
     mutable uint64_t beginDrawSelf;
     mutable uint64_t endDrawSelf;
