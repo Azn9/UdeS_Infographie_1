@@ -7,6 +7,8 @@
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/PlaneCollider.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
+#include "../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
+#include "../../../PM3DApi/Api/Public/EventSystem/Basic/WindowResizeEvent.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicCube.h"
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicSphere.h"
@@ -53,6 +55,11 @@ void MainScene::InitializeLights()
     AddLight(std::move(pointLight));
 }
 
+void listener(const PM3D_API::WindowResizeEvent& event)
+{
+    std::cout << "Received WindowResizeEvent : width=" << event.GetWidth() << ", height=" << event.GetHeight() << std::endl;
+}
+
 void MainScene::InitializeObjects()
 {
     // ============= Add a plane =============
@@ -93,4 +100,10 @@ void MainScene::InitializeObjects()
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
 
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
+
+    PM3D_API::EventSystem::Subscribe(listener);
+    PM3D_API::EventSystem::Subscribe([](const PM3D_API::WindowResizeEvent& event)
+    {
+        std::cout << "Received WindowResizeEvent 2 : width=" << event.GetWidth() << ", height=" << event.GetHeight() << std::endl;
+    });
 }
