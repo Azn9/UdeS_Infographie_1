@@ -1,5 +1,6 @@
 #pragma once
 #include <any>
+#include <concurrent_vector.h>
 #include <functional>
 #include <mutex>
 #include <ranges>
@@ -15,23 +16,38 @@ namespace PM3D_API
 class EventSystem : public PM3D::CSingleton<EventSystem>
 {
 public:
-	template <class T, template_extends<Event, T> = 0>
-	void publish(T event)
+	void processEvents()
 	{
-		if (!listeners.contains(typeid(T))) return;
+		if (eventsToProcess.empty()) return;
+		
+		// Swap eventsToProcess with an empty vector
+		concurrency::concurrent_vector<Event*> events;
+		events.swap(eventsToProcess);
 
-		for (const auto& eventListeners = listeners[typeid(T)]; const auto& val : eventListeners | std::views::values)
+		for (const auto event : events)
 		{
-			val(event);
+			if (!event) continue;
+			if (!listeners.contains(typeid(*event))) continue;
+
+			for (const auto& eventListeners = listeners[typeid(*event)]; const auto& val : eventListeners | std::views::values)
+			{
+				val(*event);
+			}
+
+			delete event;
 		}
+	}
+	
+	template <class T, template_extends<Event, T> = 0>
+	void publish(T* event)
+	{
+		eventsToProcess.push_back(event);
 	}
 
 	template <class T, template_extends<Event, T> = 0>
 	long subscribe(const std::function<void(const T&)>& listener)
 	{
-		// Pour éviter que deux threads génèrent le même id
-		std::lock_guard guard(idMutex);
-		long id = nextId++;
+		long id = generateId();
 
 		// Car on ne peut pas stocker une std::function<void(const T&)> dans un std::function<void(const Event&)>
 		auto wrappedListener = [listener](const Event& event) {
@@ -69,7 +85,7 @@ public:
 	}
 
 	template <class T, template_extends<Event, T> = 0>
-	static void Publish(T event)
+	static void Publish(T* event)
 	{
 		GetInstance().publish(event);
 	}
@@ -97,5 +113,13 @@ private:
 	std::mutex idMutex;
 	long nextId = 0;
 	std::unordered_map<std::type_index, std::unordered_map<long, std::function<void(const Event&)>>> listeners;
+	concurrency::concurrent_vector<Event*> eventsToProcess;
+
+	long generateId()
+	{
+		// Pour éviter que deux threads génèrent le même id
+		std::lock_guard guard{idMutex};
+		return nextId++;
+	}
 };
 }

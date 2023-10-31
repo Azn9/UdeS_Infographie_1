@@ -12,8 +12,11 @@ CTexture* CGestionnaireDeTextures::GetNewTexture(
 )
 {
 	// Convert wstring to string
+#pragma warning(push)
+#pragma warning(disable: 4996)
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	const std::string filenameStr = converter.to_bytes(filename);
+#pragma warning(pop)
 	
 	std::cout << "CGestionnaireDeTextures::GetNewTexture(" << filenameStr << ")" << std::endl;
 	

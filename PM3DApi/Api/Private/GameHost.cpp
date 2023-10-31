@@ -4,6 +4,7 @@
 
 #include "Api/Public/Debug/FPSDebugRenderer.h"
 #include "Api/Public/Debug/SceneHierarchyDebugRenderer.h"
+#include "Api/Public/EventSystem/EventSystem.h"
 
 PM3D_API::GameHost::~GameHost()
 {
@@ -13,6 +14,8 @@ PM3D_API::GameHost::~GameHost()
 
 void PM3D_API::GameHost::Update() const
 {
+	EventSystem::GetInstance().processEvents();
+	
 	if (scene)
 		scene->Update();
 }
