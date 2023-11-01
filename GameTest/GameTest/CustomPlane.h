@@ -8,5 +8,5 @@ public:
 
 private:
     std::wstring GetShaderFileName() override { return L"NewShader.fx"; }
-    std::string GetMeshFileName() override { return "testplane.obj"; }
+    std::string GetMeshFileName() override { return "DefaultObj/plane.obj"; }
 };

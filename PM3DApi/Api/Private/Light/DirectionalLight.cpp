@@ -1,62 +1,71 @@
 ﻿#include "../../Public/Light/DirectionalLight.h"
 
+#include <iostream>
+
+#include "Api/Public/Util/Util.h"
+
 PM3D_API::DirectionalLight::DirectionalLight(
-	const DirectX::XMFLOAT3 rotation
-) : Light({0, 0, 0}, rotation)
+	const DirectX::XMFLOAT3 direction
+) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction))
 {
 
 }
 
 PM3D_API::DirectionalLight::DirectionalLight(
-	const DirectX::XMFLOAT3 rotation,
+	const DirectX::XMFLOAT3 direction,
 	const float intensity
-) : Light({0, 0, 0}, rotation, intensity)
+) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity)
 {
 
 }
 
 PM3D_API::DirectionalLight::DirectionalLight(
-	const DirectX::XMFLOAT3 rotation,
+	const DirectX::XMFLOAT3 direction,
 	const float intensity,
 	const DirectX::XMFLOAT3 color
-) : Light({0, 0, 0}, rotation, intensity, color)
+) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity, color)
 {
 
 }
 
 PM3D_API::DirectionalLight::DirectionalLight(
 	const std::string& name,
-	const DirectX::XMFLOAT3 rotation
-) : Light(name, {0, 0, 0}, rotation)
+	const DirectX::XMFLOAT3 direction
+) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction))
 {
-
+	
 }
 
 PM3D_API::DirectionalLight::DirectionalLight(
 	const std::string& name,
-	const DirectX::XMFLOAT3 rotation,
+	const DirectX::XMFLOAT3 direction,
 	const float intensity
-) : Light(name, {0, 0, 0}, rotation, intensity)
+) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity)
 {
 
 }
 
 PM3D_API::DirectionalLight::DirectionalLight(
 	const std::string& name,
-	const DirectX::XMFLOAT3 rotation,
+	const DirectX::XMFLOAT3 direction,
 	const float intensity,
 	const DirectX::XMFLOAT3 color
-) : Light(name, {0, 0, 0}, rotation, intensity, color)
+) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity, color)
 {
 
 }
 
 PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters(GameObject* gameObject) const
 {
+	const auto focusPoint = DirectX::XMVectorSet(
+		worldPosition.x + GetWorldDirection().x,
+		worldPosition.y + GetWorldDirection().y,
+		worldPosition.z + GetWorldDirection().z,
+		1.0f
+	);
 	const auto mVLight = DirectX::XMMatrixLookAtLH(
 		DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
-		DirectX::XMVectorSet(gameObject->GetWorldPosition().x, gameObject->GetWorldPosition().y,
-							 gameObject->GetWorldPosition().z, 1.0f),
+		focusPoint,
 		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
 	);
 
