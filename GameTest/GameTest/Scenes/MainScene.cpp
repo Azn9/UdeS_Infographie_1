@@ -43,6 +43,7 @@ void MainScene::InitializeCamera()
 
 void MainScene::InitializeLights()
 {
+    /*
     auto pointLight = std::make_unique<PM3D_API::PointLight>(
         XMFLOAT3(0.0f, 5.0f, 0.0f),
         XMFLOAT3(1.0f, 1.0f, 1.0f)
@@ -56,6 +57,15 @@ void MainScene::InitializeLights()
     pointLight->SetIntensity(2.0f);
     pointLight->Initialize();
     AddLight(std::move(pointLight));
+    */
+
+    auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
+        "Directional light",
+        XMFLOAT3(1.0f, 3.0f, 0.0f)
+    );
+    directionalLight->SetIntensity(3.0f);
+    directionalLight->Initialize();
+    AddLight(std::move(directionalLight));
 }
 
 void listener(const PM3D_API::WindowResizeEvent& event)

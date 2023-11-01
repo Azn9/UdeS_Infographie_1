@@ -133,15 +133,15 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		}
 		else if (li.lightType == 1) // Directionnal
 		{
-			/*
-			float3 L = normalize(-li.direction.xyz);
+			
+			float3 L = normalize(li.direction.xyz);
             float3 diff = saturate(dot(N, L));
             float3 R = normalize(2 * diff * N - L);
 			float3 S = pow(saturate(dot(R, V)), li.specularPower);
 
+			totalAmbiant += li.ambiant;
 			totalDiffuse += li.diffuse.rgb * diff;
 			totalSpecular += li.specular.rgb * S;
-			*/
 		}
 		else if (li.lightType == 2) // Point
 		{

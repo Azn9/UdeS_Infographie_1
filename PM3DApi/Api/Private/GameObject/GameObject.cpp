@@ -246,13 +246,17 @@ void PM3D_API::GameObject::SetLocalScale(const DirectX::XMFLOAT3 newScale)
 
 DirectX::XMFLOAT3 PM3D_API::GameObject::GetWorldDirection() const
 {
-	const DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&localRotationQuaternion));
+	const XMVECTOR rotationQuat = XMLoadFloat4(&worldRotationQuaternion); // Charge le quaternion de rotation
 
-	// Extract the forward vector from the rotation matrix
-	DirectX::XMFLOAT3 direction;
-	direction.x = rotationMatrix.r[2].m128_f32[0];
-	direction.y = rotationMatrix.r[2].m128_f32[1];
-	direction.z = rotationMatrix.r[2].m128_f32[2];
+	XMVECTOR axis;
+	float angle;
+
+	// Utilise XMQuaternionToAxisAngle pour obtenir l'axe de rotation et l'angle
+	XMQuaternionToAxisAngle(&axis, &angle, rotationQuat);
+
+	// Maintenant, vous pouvez convertir l'axe en direction
+	XMFLOAT3 direction;
+	XMStoreFloat3(&direction, axis); // Convertit l'axe en XMFLOAT3
 
 	return direction;
 }
