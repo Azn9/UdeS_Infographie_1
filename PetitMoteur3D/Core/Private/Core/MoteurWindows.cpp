@@ -274,7 +274,7 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 	}
 	*/
 
-	PM3D_API::EventSystem::Publish(new PM3D_API::WindowResizeEvent(largeur, hauteur));
+	PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
 
 	canRender = true;
 }
