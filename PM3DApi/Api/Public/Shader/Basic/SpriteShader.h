@@ -1,24 +1,23 @@
-﻿#pragma once
-
+#pragma once
 #include "../../../Public/Shader/Shader.h"
 
 namespace PM3D_API
 {
-class DefaultShader final : public Shader
+class SpriteShader final : public Shader
 {
 public:
-	explicit DefaultShader(const std::wstring& fileName);
-	~DefaultShader() override;
+	explicit SpriteShader(const std::wstring& fileName);
+	~SpriteShader() override;
 
 	ID3D11Buffer* GetShaderParametersBuffer() const override { return shaderParametersBuffer; }
 	ID3DX11EffectPass* GetPass() const override { return passe; }
 	ID3D11InputLayout* GetVertexLayout() const override { return vertexLayout; }
 	ID3D11Buffer* GetIndexBuffer() const override { return indexBuffer; }
 
-	ID3D11InputLayout* GetShadowVertexLayout() const override { return vertexLayoutShadow; }
-	ID3D11Texture2D* GetDepthTexture() const override { return depthTexture; }
-	ID3D11DepthStencilView* GetDepthStencilView() const override { return depthStencilView; }
-	ID3D11ShaderResourceView* GetDepthShaderResourceView() const override { return depthShaderResourceView; }
+	ID3D11InputLayout* GetShadowVertexLayout() const override { return nullptr; }
+	ID3D11Texture2D* GetDepthTexture() const override { return nullptr; }
+	ID3D11DepthStencilView* GetDepthStencilView() const override { return nullptr; }
+	ID3D11ShaderResourceView* GetDepthShaderResourceView() const override { return nullptr; }
 
 	ID3DX11Effect* GetEffect() const override { return effect; }
 
@@ -59,33 +58,14 @@ protected:
 	ID3D11InputLayout* vertexLayout;
 
 	ID3D11SamplerState* albedoSampleState;
-	ID3D11SamplerState* normalmapSampleState;
-
-	ID3D11InputLayout* vertexLayoutShadow;
-	ID3D11Texture2D* depthTexture;
-	ID3D11DepthStencilView* depthStencilView;
-	ID3D11ShaderResourceView* depthShaderResourceView;
 
 	mutable ID3D11Buffer* vertexBuffer;
 	mutable ID3D11Buffer* indexBuffer;
 
 private:
-	struct DefaultShaderParameters
+	struct SpriteShaderParameters
 	{
 		DirectX::XMMATRIX matWorldViewProj;
-		DirectX::XMMATRIX matWorld;
-
-		DirectX::XMVECTOR cameraPos;
-		DirectX::XMVECTOR cameraDir;
-
-		DirectX::XMVECTOR materialAmbiant;
-		DirectX::XMVECTOR materialDiffuse;
-		DirectX::XMVECTOR materialSpecular;
-
-		float materialSpecularPower;
-
-		bool hasAlbedoTexture;
-		bool hasNormalmapTexture;
 	};
 };
 }

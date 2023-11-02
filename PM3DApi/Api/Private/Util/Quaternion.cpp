@@ -49,6 +49,12 @@ DirectX::XMVECTOR PM3D_API::Quaternion::ToXMVector() const
 DirectX::XMFLOAT4 PM3D_API::Quaternion::EulerToQuaternion(const DirectX::XMFLOAT3 euler)
 {
 	XMFLOAT4 quaternion;
-	XMStoreFloat4(&quaternion, DirectX::XMQuaternionRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&euler)));
+	const DirectX::XMFLOAT3 radRotation = {
+		euler.x * (DirectX::XM_PI / 180.0f),
+		euler.y * (DirectX::XM_PI / 180.0f),
+		euler.z * (DirectX::XM_PI / 180.0f)
+	};
+	
+	XMStoreFloat4(&quaternion, DirectX::XMQuaternionRotationRollPitchYawFromVector(DirectX::XMLoadFloat3(&radRotation)));
 	return quaternion;
 }

@@ -33,7 +33,7 @@ namespace PM3D_API
 		{
 		}
 
-		ShaderLightDefaultParameters GetShaderLightDefaultParameters() const override;
+		ShaderLightDefaultParameters GetShaderLightDefaultParameters(GameObject* gameObject) const override;
 
 		LightType GetType() const override { return LightType::POINT; }
 

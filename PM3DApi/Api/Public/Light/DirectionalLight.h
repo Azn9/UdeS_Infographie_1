@@ -7,15 +7,20 @@ namespace PM3D_API
 	class DirectionalLight final : public Light
 	{
 	public:
-		explicit DirectionalLight(DirectX::XMFLOAT3 rotation);
-		DirectionalLight(DirectX::XMFLOAT3 rotation, float intensity);
-		DirectionalLight(DirectX::XMFLOAT3 rotation, float intensity, DirectX::XMFLOAT3 color);
+		explicit DirectionalLight(DirectX::XMFLOAT3 direction);
+		DirectionalLight(DirectX::XMFLOAT3 direction, float intensity);
+		DirectionalLight(DirectX::XMFLOAT3 direction, float intensity, DirectX::XMFLOAT3 color);
 
-		DirectionalLight(const std::string& name, DirectX::XMFLOAT3 rotation);
-		DirectionalLight(const std::string& name, DirectX::XMFLOAT3 rotation, float intensity);
-		DirectionalLight(const std::string& name, DirectX::XMFLOAT3 rotation, float intensity, DirectX::XMFLOAT3 color);
+		DirectionalLight(const std::string& name, DirectX::XMFLOAT3 direction);
+		DirectionalLight(const std::string& name, DirectX::XMFLOAT3 direction, float intensity);
+		DirectionalLight(const std::string& name, DirectX::XMFLOAT3 direction, float intensity, DirectX::XMFLOAT3 color);
 
-		ShaderLightDefaultParameters GetShaderLightDefaultParameters() const override;
+		void SetWorldPosition(DirectX::XMFLOAT3) override {}
+		void SetLocalPosition(DirectX::XMFLOAT3) override {}
+
+		void SetDirection(DirectX::XMFLOAT3 newDirection);
+
+		ShaderLightDefaultParameters GetShaderLightDefaultParameters(GameObject* gameObject) const override;
 
 		LightType GetType() const override { return LightType::DIRECTIONAL; }
 
@@ -37,5 +42,10 @@ namespace PM3D_API
 			ImGui::SameLine(200.0); ImGui::Text("g=%f", color.y);
 			ImGui::SameLine(300.0); ImGui::Text("b=%f", color.z);
 		}
+
+		DirectX::XMFLOAT3 GetWorldDirection() const override { return direction; }
+
+	private:
+		DirectX::XMFLOAT3 direction;
 	};
 }

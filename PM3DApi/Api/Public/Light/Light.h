@@ -30,7 +30,7 @@ namespace PM3D_API
 		DirectX::XMFLOAT3 GetColor() const { return color; }
 		void SetColor(const DirectX::XMFLOAT3 newColor) { color = newColor; }
 
-		virtual ShaderLightDefaultParameters GetShaderLightDefaultParameters() const = 0;
+		virtual ShaderLightDefaultParameters GetShaderLightDefaultParameters(GameObject* gameObject) const = 0;
 
 		virtual LightType GetType() const = 0;
 
