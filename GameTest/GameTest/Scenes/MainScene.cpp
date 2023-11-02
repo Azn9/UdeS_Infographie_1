@@ -39,7 +39,7 @@ void MainScene::InitializeCamera()
         XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
-    mainCamera->SetFarPlane(1000.0f);
+    mainCamera->SetFarDist(1000.0f);
     mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
     SetMainCamera(std::move(mainCamera));
 }

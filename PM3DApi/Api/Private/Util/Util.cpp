@@ -52,36 +52,6 @@ bool Util::Plane::IsSphereInFrontOfPlane(const DirectX::XMVECTOR& point, const f
 	return  result > radius;
 }
 
-DirectX::XMVECTOR Util::operator+(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
-{
-	return DirectX::XMVectorAdd(a, b);
-}
-
-DirectX::XMVECTOR Util::operator-(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
-{
-	return DirectX::XMVectorSubtract(a, b);
-}
-
-DirectX::XMVECTOR Util::operator-(const DirectX::XMVECTOR& a)
-{
-	return {-a.m128_f32[0], -a.m128_f32[1], -a.m128_f32[2], 1.f};
-}
-
-DirectX::XMVECTOR Util::Float3ToVec(const DirectX::XMFLOAT3& f3)
-{
-	return DirectX::XMLoadFloat3(&f3);
-}
-
-DirectX::XMVECTOR Util::operator*(const DirectX::XMVECTOR& a, const float& f)
-{
-	return DirectX::XMVectorScale(a, f);
-}
-
-DirectX::XMVECTOR Util::operator/(const DirectX::XMVECTOR& a, const float& f)
-{
-	return DirectX::XMVectorScale(a, 1.f/ f);
-}
-
 void Util::DrawDebugVector3(const std::string name, const DirectX::XMVECTOR& vec)
 {
 	ImGui::Text(name.c_str());

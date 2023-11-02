@@ -1,7 +1,7 @@
 ﻿#include "Api//Public/Camera/Frustrum.h"
 #include "Api/Public/GameHost.h"
 
-
+using namespace DirectX;
 using namespace Util;
 
 void PM3D_API::Frustrum::SetPlanes(const Camera& cam)
