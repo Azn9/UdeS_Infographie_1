@@ -229,6 +229,7 @@
       <SDLCheck>true</SDLCheck>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
+    <ClCompile Include="Api\Private\Camera\Frustrum.cpp" />
     <ClCompile Include="Api\Private\Component\Basic\Physics\BoxCollider.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -1692,6 +1693,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Api\Public\Camera\Camera.h" />
+    <ClInclude Include="Api\Public\Camera\Frustrum.h" />
     <ClInclude Include="Api\Public\Component\Basic\Physics\BoxCollider.h" />
     <ClInclude Include="Api\Public\Component\Basic\Physics\Collider.h" />
     <ClInclude Include="Api\Public\Component\Basic\Physics\PhysicsResolver.h" />

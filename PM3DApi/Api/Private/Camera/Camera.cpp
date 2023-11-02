@@ -5,6 +5,9 @@
 
 #include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 #include "../../Public/GameHost.h"
+#include "../../Public/Util/Util.h"
+
+using namespace Util;
 
 void PM3D_API::Camera::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 {
@@ -89,15 +92,15 @@ void PM3D_API::Camera::SetFieldOfView(const float newFieldOfView)
 	UpdateInternalMatrices();
 }
 
-void PM3D_API::Camera::SetNearPlane(const float newNearPlane)
+void PM3D_API::Camera::SetNearDist(const float newnearDist)
 {
-	nearPlane = newNearPlane;
+	nearDist = newnearDist;
 	UpdateInternalMatrices();
 }
 
-void PM3D_API::Camera::SetFarPlane(const float newFarPlane)
+void PM3D_API::Camera::SetFarDist(const float newfarDist)
 {
-	farPlane = newFarPlane;
+	farDist = newfarDist;
 	UpdateInternalMatrices();
 }
 
@@ -119,10 +122,20 @@ void PM3D_API::Camera::DrawDebugInfo() const
 	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(focusPoint[1])).c_str());
 	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(focusPoint[2])).c_str());
 
+	ImGui::Text("Forward vector");
+	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(forwardVector.m128_f32[0])).c_str());
+	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(forwardVector.m128_f32[1])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(forwardVector.m128_f32[2])).c_str());
+
 	ImGui::Text("Up vector");
 	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(upVector[0])).c_str());
 	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(upVector[1])).c_str());
 	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(upVector[2])).c_str());
+
+	ImGui::Text("Right vector");
+	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(rightVector.m128_f32[0])).c_str());
+	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(rightVector.m128_f32[1])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(rightVector.m128_f32[2])).c_str());
 
 	ImGui::Text("Type");
 	ImGui::SameLine(100); ImGui::Text(cameraType == PERSECTIVE ? "Perspective" : "Orthographic");
@@ -134,10 +147,10 @@ void PM3D_API::Camera::DrawDebugInfo() const
 	}
 
 	ImGui::Text("Near plane");
-	ImGui::SameLine(100); ImGui::Text(std::to_string(nearPlane).c_str());
+	ImGui::SameLine(100); ImGui::Text(std::to_string(nearDist).c_str());
 
 	ImGui::Text("Far plane");
-	ImGui::SameLine(100); ImGui::Text(std::to_string(farPlane).c_str());
+	ImGui::SameLine(100); ImGui::Text(std::to_string(farDist).c_str());
 }
 
 void PM3D_API::Camera::UpdateInternalMatrices()
@@ -145,11 +158,12 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	std::cout << "Camera::UpdateInternalMatrices()" << std::endl;
 	const DirectX::XMFLOAT3 position = GetWorldPosition();
 
-	matView = DirectX::XMMatrixLookAtRH(
-		DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f),
-		focusPoint,
-		upVector
-	);
+	DirectX::XMVECTOR eye_position = DirectX::XMVectorSet(position.x, position.y, position.z, 1.f);
+	matView = DirectX::XMMatrixLookAtRH(eye_position, focusPoint, upVector);
+
+	forwardVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(focusPoint, eye_position));
+	rightVector = DirectX::XMVector3Cross(forwardVector, upVector);
+	
 
 	if (cameraType == PERSECTIVE)
 	{
@@ -160,8 +174,8 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 		matProj = DirectX::XMMatrixPerspectiveFovRH(
 			fieldOfView,
 			aspectRatio,
-			nearPlane,
-			farPlane
+			nearDist,
+			farDist
 		);
 	}
 	else // ORTHOGRAPHIC
@@ -169,8 +183,8 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 		matProj = DirectX::XMMatrixOrthographicRH(
 			PM3D_API::GameHost::GetInstance()->GetScreenWidth(),
 			PM3D_API::GameHost::GetInstance()->GetScreenHeight(),
-			nearPlane,
-			farPlane
+			nearDist,
+			farDist
 		);
 	}
 

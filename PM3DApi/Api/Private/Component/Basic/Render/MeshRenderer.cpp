@@ -15,6 +15,7 @@
 #include "../../../../Public/GameObject/GameObject.h"
 #include "../../../../Public/Scene/Scene.h"
 #include "../../../../Public/Shader/Shader.h"
+#include "Api/Public/Util/Util.h"
 
 PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName) : Renderer(std::move(shader))
 {
@@ -71,6 +72,10 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		*p = 2;
 		throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
 	}
+
+	// Frustrum culling
+	
+	//
 
 	// Obtenir le contexte
 	ID3D11DeviceContext* pImmediateContext = GameHost::GetInstance()->GetDispositif()->GetImmediateContext();
@@ -154,9 +159,11 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		std::cout << "MeshRenderer::LoadMesh: nombreSommets = " << nombreSommets << std::endl;
 		
 		std::unique_ptr<CSommetMesh[]> ts(new CSommetMesh[nombreSommets]);
+		boundingRadius = 0.f;
 		for (uint32_t i = 0; i < nombreSommets; ++i)
 		{
 			ts[i].position = chargeur->GetPosition(i);
+			boundingRadius = max(Util::magnitude(ts[i].position), boundingRadius);
 			ts[i].normal = chargeur->GetNormale(i);
 			ts[i].coordTex = chargeur->GetCoordTex(i);
 			ts[i].binormal = chargeur->GetBiNormale(i);

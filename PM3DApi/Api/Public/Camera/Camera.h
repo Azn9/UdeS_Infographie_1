@@ -56,8 +56,8 @@ namespace PM3D_API
 		void SetUpVector(DirectX::XMFLOAT3 newUpVector);
 
 		void SetFieldOfView(float newFieldOfView);
-		void SetNearPlane(float newNearPlane);
-		void SetFarPlane(float newFarPlane);
+		void SetFarDist(float newFarDist);
+		void SetNearDist(float newNearDist);
 
 		const DirectX::XMMATRIX& GetMatView() const { return matView; }
 		const DirectX::XMMATRIX& GetMatProj() const { return matProj; }
@@ -65,6 +65,14 @@ namespace PM3D_API
 
 		const DirectX::XMVECTOR& GetFocusPoint() const { return focusPoint; }
 		const DirectX::XMVECTOR& GetUpVector() const { return upVector; }
+		const DirectX::XMVECTOR& GetForwardVector() const { return forwardVector; }
+		const DirectX::XMVECTOR& GetRightVector() const { return rightVector; }
+
+		float getFieldOfView() const { return fieldOfView; }
+
+		float getNearDist() const { return nearDist; }
+
+		float getFarDist() const { return farDist; }
 
 		void DrawDebugInfo() const override;
 
@@ -80,11 +88,13 @@ namespace PM3D_API
 		DirectX::XMMATRIX matViewProj;
 
 		float fieldOfView = 45.0f;
-		float nearPlane = 0.05f;
-		float farPlane = 400.0f;
+		float nearDist = 0.05f;
+		float farDist = 400.0f;
 
 		DirectX::XMVECTOR focusPoint;
 		DirectX::XMVECTOR upVector;
+		DirectX::XMVECTOR forwardVector;
+		DirectX::XMVECTOR rightVector;
 
 	};
 }

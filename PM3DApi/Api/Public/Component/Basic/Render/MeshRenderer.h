@@ -53,6 +53,8 @@ private:
 	std::vector<int> SubmeshMaterialIndex; // Index des matériaux
 	std::vector<int> SubmeshIndex; // Index des sous-objets
 	std::vector<CMaterial> Material; // Vecteur des matériaux
-	
+
+	///radius of the bounding sphere
+	float boundingRadius = 0.f;
 };
 }
