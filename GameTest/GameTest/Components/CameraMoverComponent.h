@@ -11,8 +11,6 @@ class CameraMoverComponent final : public PM3D_API::Component
 public:
 	void Update() override
 	{
-		if (PM3D::Time::GetInstance().GetTimeScale() == 0) return;
-		
 		angle += 10.0f * PM3D::Time::GetInstance().GetUpdateDeltaTime();
 		if (angle >= 360)
 			angle = 0;

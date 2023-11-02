@@ -232,6 +232,7 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="GameTest\Scenes\MainScene.cpp" />
+    <ClCompile Include="GameTest\TimeScaleTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PM3DApi\PM3DApi.vcxproj">
@@ -242,6 +243,7 @@
   <ItemGroup>
     <ClInclude Include="GameTest\Components\CameraMoverComponent.h" />
     <ClInclude Include="GameTest\Components\LightMoverComponent.h" />
+    <ClInclude Include="GameTest\CustomCube.h" />
     <ClInclude Include="GameTest\CustomPlane.h" />
     <ClInclude Include="GameTest\GameTest.h" />
     <ClInclude Include="GameTest\Scenes\MainScene.h" />
