@@ -158,7 +158,6 @@ void PM3D_API::Camera::DrawDebugInfo() const
 
 void PM3D_API::Camera::UpdateInternalMatrices()
 {
-	std::cout << "Camera::UpdateInternalMatrices()" << std::endl;
 	const DirectX::XMFLOAT3 position = GetWorldPosition();
 
 	DirectX::XMVECTOR eye_position = DirectX::XMVectorSet(position.x, position.y, position.z, 1.f);
@@ -172,9 +171,7 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	if (cameraType == PERSECTIVE)
 	{
 		const auto aspectRatio = PM3D_API::GameHost::GetInstance()->GetAspectRatio();
-
-		std::cout << "Camera::UpdateInternalMatrices: aspectRatio=" << aspectRatio << std::endl;
-
+		
 		matProj = DirectX::XMMatrixPerspectiveFovRH(
 			fieldOfView,
 			aspectRatio,

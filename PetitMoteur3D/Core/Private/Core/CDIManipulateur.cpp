@@ -1,5 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Core/Public/Core/CDIManipulateur.h"
+
+#include <any>
+
 #include "Core/Public/Util/util.h"
 #include "Core/Public/Util/Resource.h"
 
@@ -40,6 +43,7 @@ bool CDIManipulateur::Init(HINSTANCE hInstance, HWND hWnd)
     return true;
 }
 
+/*
 CDIManipulateur::~CDIManipulateur()
 {
     if (pClavier)
@@ -63,13 +67,14 @@ CDIManipulateur::~CDIManipulateur()
     if (pDirectInput)
     {
         pDirectInput->Release();
-        pClavier = nullptr;
-    }
+    }  
 }
+*/
 
 void CDIManipulateur::StatutClavier()
 {
-    pClavier->GetDeviceState(sizeof(tamponClavier), (void*)& tamponClavier);
+    if (pClavier)
+        pClavier->GetDeviceState(sizeof(tamponClavier), (void*)& tamponClavier);
 }
 
 bool CDIManipulateur::ToucheAppuyee(UINT touche)
@@ -79,5 +84,6 @@ bool CDIManipulateur::ToucheAppuyee(UINT touche)
 
 void CDIManipulateur::SaisirEtatSouris()
 {
-    pSouris->GetDeviceState(sizeof(mouseState), (void*)&mouseState);
+    if (pSouris)
+        pSouris->GetDeviceState(sizeof(mouseState), (void*)&mouseState);
 }

@@ -55,6 +55,8 @@ void PM3D_API::PhysicsResolver::ResolvePhysics()
 		return;
 	}
 
+	std::cout << "Physics update" << std::endl;
+
 	scene->simulate(physicsDeltaTime);
 	scene->fetchResults(true);
 
