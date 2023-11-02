@@ -15,6 +15,7 @@
 #include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicSphere.h"
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
+#include "../../../PM3DApi/Api/Public/Light/SpotLight.h"
 #include "GameTest/CustomPlane.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
@@ -32,12 +33,13 @@ void MainScene::InitializeCamera()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSECTIVE,
-        XMFLOAT3(0.0f, 5.0f, -15.0f),
+        XMFLOAT3(0.0f, 10.0f, -15.0f),
         XMVectorSet(0.0f, 5.0f, 0.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarPlane(1000.0f);
+    mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
     SetMainCamera(std::move(mainCamera));
 }
 
@@ -59,13 +61,27 @@ void MainScene::InitializeLights()
     AddLight(std::move(pointLight));
     */
 
+    /*
     auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
         "Directional light",
-        XMFLOAT3(1.0f, 3.0f, 0.0f)
+        XMFLOAT3(-1.0f, -1.0f, 0.0f)
     );
-    directionalLight->SetIntensity(3.0f);
+    directionalLight->SetIntensity(1.0f);
     directionalLight->Initialize();
     AddLight(std::move(directionalLight));
+    */
+
+    auto spotlight = std::make_unique<PM3D_API::SpotLight>(
+        "Spotlight",
+        XMFLOAT3(0.0f, 5.0f, 0.0f),
+        XMFLOAT3(0.0f, -1.0f, 0.0f),
+        XMFLOAT3(1.0f, 1.0f, 1.0f),
+        1.0f,
+        10.0f * XM_PI / 180.0f,
+        15.0f * XM_PI / 180.0f
+    );
+    spotlight->Initialize();
+    AddLight(std::move(spotlight));
 }
 
 void listener(const PM3D_API::WindowResizeEvent& event)
@@ -77,7 +93,7 @@ void MainScene::InitializeObjects()
 {
     // ============= Add a plane =============
     auto plane = std::make_unique<CustomPlane>();
-    plane->SetWorldScale(XMFLOAT3(10.0f, 1.0f, 10.0f));
+    plane->SetWorldScale(XMFLOAT3(100.0f, 1.0f, 100.0f));
     plane->Initialize();
 
     auto planeRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);

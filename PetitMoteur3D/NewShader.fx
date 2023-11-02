@@ -110,7 +110,8 @@ float4 MainPS(VS_Sortie input) : SV_Target
     float3 tangent = input.tangent;
 
     if (hasNormalmapTexture) {
-        // TODO
+        //normal = (normal.z * normal) + (normal.x * binormal) + (normal.y * -tangent);
+		//normal = normalize(normal);
     }
 
     float3 totalAmbiant = float3(0, 0, 0);
@@ -118,7 +119,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
 	float3 totalSpecular = float3(0, 0, 0);
 
     float3 N = normalize(normal);
-	float3 V = normalize(input.cameraDir);
+	float3 V = normalize(input.cameraVec);
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i) {
 		Light li = lights[i];
@@ -133,15 +134,19 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		}
 		else if (li.lightType == 1) // Directionnal
 		{
-			
-			float3 L = normalize(li.direction.xyz);
-            float3 diff = saturate(dot(N, L));
-            float3 R = normalize(2 * diff * N - L);
-			float3 S = pow(saturate(dot(R, V)), li.specularPower);
+			float3 L = normalize(-li.direction.xyz);
+			float3 diff = saturate(dot(N, L));
+			//float3 R = normalize(2 * diff * N - L);
+			//float3 S = pow(saturate(dot(R, V)), li.specularPower);
+
+			float3 H = normalize(L + V);
+			float NdotH = saturate(dot(N, H));
+			float puissance = max(EPSILON, Ns * li.specularPower);
+			float specularValue = pow(NdotH, puissance);
 
 			totalAmbiant += li.ambiant;
 			totalDiffuse += li.diffuse.rgb * diff;
-			totalSpecular += li.specular.rgb * S;
+			totalSpecular += li.specular.rgb * specularValue;
 		}
 		else if (li.lightType == 2) // Point
 		{
@@ -171,17 +176,16 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		}
 		else if (li.lightType == 3) // Spot
 		{
-			/*
-			float3 lightDirection = normalize(li.position.xyz - vs.posWorld.xyz);
-			float3 spotDirection = normalize(li.direction.xyz);
+			float3 lightDirection = normalize(li.position.xyz - input.position.xyz);
+			float3 spotDirection = normalize(-li.direction.xyz);
 
 			float spotCosine = saturate(dot(lightDirection, -spotDirection));
 
-			if (spotCosine >= cos(li.outerAngle))
+			if (spotCosine <= cos(li.outerAngle))
 			{
 				float diffuseFalloff;
 
-				if (spotCosine >= cos(li.innerAngle))
+				if (spotCosine <= cos(li.innerAngle))
 				{
 					diffuseFalloff = 1.0;
 				}
@@ -191,16 +195,44 @@ float4 MainPS(VS_Sortie input) : SV_Target
         			diffuseFalloff = smoothstep(0.0, 1.0, t);
 				}
 
+				float3 L = normalize(-li.direction.xyz);
+				float3 diff = saturate(dot(N, L));
+				//float3 R = normalize(2 * diff * N - L);
+				//float3 S = pow(saturate(dot(R, V)), li.specularPower);
+
+				float3 H = normalize(L + V);
+				float NdotH = saturate(dot(N, H));
+				float puissance = max(EPSILON, Ns * li.specularPower);
+				float specularValue = pow(NdotH, puissance);
+
 				totalAmbiant += li.ambiant.xyz * diffuseFalloff;
-
-				float3 diff = saturate(dot(N, normalize(vs.posWorld.xyz - li.position.xyz)));
-				float3 R = normalize(2 * diff * N - lightDirection);
-				float3 S = pow(saturate(dot(R, V)), li.specularPower);
-
 				totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff;
-				totalSpecular += li.specular.rgb * S;
+				totalSpecular += li.specular.rgb * specularValue * diffuseFalloff;
 			}
-			*/
+
+/*
+			float3 toLight = li.position.xyz - input.position.xyz;
+			float3 toEye = input.cameraVec.xyz - input.position.xyz;
+			float distToLight = length(toLight);
+			
+			toLight = normalize(toLight);
+
+			float NDotL = saturate(dot(toLight, N));
+			totalDiffuse += li.diffuse.rgb * NDotL;
+			
+			toEye = normalize(toEye);
+   			float3 HalfWay = normalize(toEye + toLight);
+   			float NDotH = saturate(dot(HalfWay, N));
+			float puissance = max(EPSILON, Ns * li.specularPower);
+   			totalDiffuse += li.specular.rgb * pow(NDotH, puissance);
+
+			float conAtt = saturate((cosAng - SpotCosOuterCone) * SpotCosInnerConeRcp);
+   			conAtt *= conAtt;
+
+			float DistToLightNorm = 1.0 - saturate(DistToLight * SpotLightRangeRcp);
+		    float Attn = DistToLightNorm * DistToLightNorm;
+*/
+
 		}
 
 		// SHADOWS

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Light.h"
 #include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
+#include "../../Public/Util/Util.h"
 
 namespace PM3D_API
 {
@@ -10,65 +11,7 @@ namespace PM3D_API
         SpotLight(
             const std::string& name,
             const DirectX::XMFLOAT3& position,
-            const DirectX::XMFLOAT3& rotation,
-            const DirectX::XMFLOAT3& color
-        ) : Light(
-            name,
-            position,
-            rotation,
-            1.0f,
-            color
-        )
-        {
-        }
-
-        SpotLight(
-            const DirectX::XMFLOAT3& position,
-            const DirectX::XMFLOAT3& rotation,
-            const DirectX::XMFLOAT3& color
-        ) : Light(
-            position,
-            rotation,
-            1.0f,
-            color
-        )
-        {
-        }
-
-        SpotLight(
-            const std::string& name,
-            const DirectX::XMFLOAT3& position,
-            const DirectX::XMFLOAT3& rotation,
-            const DirectX::XMFLOAT3& color,
-            const float intensity
-        ) : Light(
-            name,
-            position,
-            rotation,
-            intensity,
-            color
-        )
-        {
-        }
-
-        SpotLight(
-            const DirectX::XMFLOAT3& position,
-            const DirectX::XMFLOAT3& rotation,
-            const DirectX::XMFLOAT3& color,
-            const float intensity
-        ) : Light(
-            position,
-            rotation,
-            intensity,
-            color
-        )
-        {
-        }
-
-        SpotLight(
-            const std::string& name,
-            const DirectX::XMFLOAT3& position,
-            const DirectX::XMFLOAT3& rotation,
+            const DirectX::XMFLOAT3& direction,
             const DirectX::XMFLOAT3& color,
             const float intensity,
             const float innerAngle,
@@ -76,32 +19,38 @@ namespace PM3D_API
         ) : Light(
             name,
             position,
-            rotation,
+            Util::DirectionToEulerAngles(direction),
             intensity,
             color
-        ), innerAngle(innerAngle), outerAngle(outerAngle)
+        ), innerAngle(innerAngle), outerAngle(outerAngle), direction(direction)
         {
         }
 
         SpotLight(
             const DirectX::XMFLOAT3& position,
-            const DirectX::XMFLOAT3& rotation,
+            const DirectX::XMFLOAT3& direction,
             const DirectX::XMFLOAT3& color,
             const float intensity,
             const float innerAngle,
             const float outerAngle
         ) : Light(
             position,
-            rotation,
+            Util::DirectionToEulerAngles(direction),
             intensity,
             color
-        ), innerAngle(innerAngle), outerAngle(outerAngle)
+        ), innerAngle(innerAngle), outerAngle(outerAngle), direction(direction)
         {
         }
 
         ShaderLightDefaultParameters GetShaderLightDefaultParameters(GameObject* gameObject) const override;
 
         LightType GetType() const override { return LightType::SPOT; }
+
+        void SetLocalRotation(Quaternion newRotation) override {}
+        void SetWorldRotation(Quaternion newRotation) override {}
+
+        DirectX::XMFLOAT3 GetWorldDirection() const override { return direction; }
+        void SetDirection(const DirectX::XMFLOAT3 newDirection) { direction = newDirection; }
 
         void DrawDebugInfo() const override
         {
@@ -136,5 +85,6 @@ namespace PM3D_API
     protected:
         float innerAngle = 0.0f;
         float outerAngle = 0.0f;
+        DirectX::XMFLOAT3 direction;
     };
 }
