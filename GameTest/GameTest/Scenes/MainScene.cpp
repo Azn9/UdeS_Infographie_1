@@ -16,6 +16,7 @@
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "../../../PM3DApi/Api/Public/Light/PointLight.h"
 #include "../../../PM3DApi/Api/Public/Light/SpotLight.h"
+#include "GameTest/CustomCube.h"
 #include "GameTest/CustomPlane.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
@@ -34,7 +35,7 @@ void MainScene::InitializeCamera()
         "Main camera",
         PM3D_API::Camera::PERSECTIVE,
         XMFLOAT3(0.0f, 10.0f, -15.0f),
-        XMVectorSet(0.0f, 5.0f, 0.0f, 1.0f),
+        XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
@@ -45,23 +46,6 @@ void MainScene::InitializeCamera()
 
 void MainScene::InitializeLights()
 {
-    /*
-    auto pointLight = std::make_unique<PM3D_API::PointLight>(
-        XMFLOAT3(0.0f, 5.0f, 0.0f),
-        XMFLOAT3(1.0f, 1.0f, 1.0f)
-    );
-    
-    auto lightMoverComponent = std::make_unique<LightMoverComponent>(0);
-    pointLight->AddComponent(std::move(lightMoverComponent));
-
-    pointLight->AddComponent(std::make_unique<PM3D_API::BillboardRenderer>(L"light.dds"));
-    
-    pointLight->SetIntensity(2.0f);
-    pointLight->Initialize();
-    AddLight(std::move(pointLight));
-    */
-
-    /*
     auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
         "Directional light",
         XMFLOAT3(-1.0f, -1.0f, 0.0f)
@@ -69,31 +53,13 @@ void MainScene::InitializeLights()
     directionalLight->SetIntensity(1.0f);
     directionalLight->Initialize();
     AddLight(std::move(directionalLight));
-    */
-
-    auto spotlight = std::make_unique<PM3D_API::SpotLight>(
-        "Spotlight",
-        XMFLOAT3(0.0f, 5.0f, 0.0f),
-        XMFLOAT3(0.0f, -1.0f, 0.0f),
-        XMFLOAT3(1.0f, 1.0f, 1.0f),
-        1.0f,
-        10.0f * XM_PI / 180.0f,
-        15.0f * XM_PI / 180.0f
-    );
-    spotlight->Initialize();
-    AddLight(std::move(spotlight));
-}
-
-void listener(const PM3D_API::WindowResizeEvent& event)
-{
-    std::cout << "Received WindowResizeEvent : width=" << event.GetWidth() << ", height=" << event.GetHeight() << std::endl;
 }
 
 void MainScene::InitializeObjects()
 {
     // ============= Add a plane =============
     auto plane = std::make_unique<CustomPlane>();
-    plane->SetWorldScale(XMFLOAT3(100.0f, 1.0f, 100.0f));
+    plane->SetWorldScale(XMFLOAT3(10.0f, 1.0f, 10.0f));
     plane->Initialize();
 
     auto planeRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
@@ -109,30 +75,28 @@ void MainScene::InitializeObjects()
     AddChild(std::move(plane));
 
     // ============= Add a cube =============
-    auto cube = std::make_unique<PM3D_API::BasicCube>("Cube");
-    cube->SetWorldPosition(XMFLOAT3(0.0f, 10.0f, 0.0f));
-    cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
-    cube->Initialize();
 
-    auto cubeRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-    const auto cubeRigidbodyPtr = cubeRigidbody.get();
-    cube->AddComponent(std::move(cubeRigidbody));
-    cubeRigidbodyPtr->Initialize();
+    for (int i = 0; i < 10; ++i)
+    {
+        auto cube = std::make_unique<CustomCube>();
+        cube->SetWorldPosition(XMFLOAT3(i*2, 1.0f + i*2, 0.0f));
+        cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
+        cube->Initialize();
 
-    auto cubeCollider = std::make_unique<PM3D_API::BoxCollider>(physicsResolver->GetDefaultMaterial());
-    const auto cubeColliderPtr = cubeCollider.get();
-    cube->AddComponent(std::move(cubeCollider));
-    cubeColliderPtr->Initialize();
+        auto cubeRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+        const auto cubeRigidbodyPtr = cubeRigidbody.get();
+        cube->AddComponent(std::move(cubeRigidbody));
+        cubeRigidbodyPtr->Initialize();
+
+        auto cubeCollider = std::make_unique<PM3D_API::BoxCollider>(physicsResolver->GetDefaultMaterial());
+        const auto cubeColliderPtr = cubeCollider.get();
+        cube->AddComponent(std::move(cubeCollider));
+        cubeColliderPtr->Initialize();
     
-    AddChild(std::move(cube));
+        AddChild(std::move(cube));
+    }
+
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
-
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
-
-    PM3D_API::EventSystem::Subscribe(listener);
-    PM3D_API::EventSystem::Subscribe([](const PM3D_API::WindowResizeEvent& event)
-    {
-        std::cout << "Received WindowResizeEvent 2 : width=" << event.GetWidth() << ", height=" << event.GetHeight() << std::endl;
-    });
 }

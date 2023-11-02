@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
+#include "../../../../PetitMoteur3D/Core/Public/Util/Time.h"
 #include "Api/Public/GameObject/GameObject.h"
 
 PM3D_API::Component::~Component()

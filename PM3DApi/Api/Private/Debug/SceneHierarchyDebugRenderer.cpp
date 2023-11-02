@@ -2,6 +2,7 @@
 
 #include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 #include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
+#include "../../../../PetitMoteur3D/Core/Public/Util/Time.h"
 #include "Api/Public/GameHost.h"
 
 void PM3D_API::SceneHierarchyDebugRenderer::DisplayChild(const PM3D_API::GameObject* gameObject)
