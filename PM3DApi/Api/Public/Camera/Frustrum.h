@@ -15,12 +15,12 @@ public:
     void SetPlanes(const PM3D_API::Camera&);
 
 private:
-    Plane near;
-    Plane far;
-    Plane left;
-    Plane right;
-    Plane top;
-    Plane bottom;
+    Plane nearPlane;
+    Plane farPlane;
+    Plane leftPlane;
+    Plane rightPlane;
+    Plane topPlane;
+    Plane bottomPlane;
 
     
 };

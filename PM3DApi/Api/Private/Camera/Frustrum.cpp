@@ -1,5 +1,8 @@
 ﻿#include "Api//Public/Camera/Frustrum.h"
 #include "Api/Public/GameHost.h"
+#include "Api/Public/Util/Util.h"
+
+using namespace Util;
 
 void PM3D_API::Frustrum::SetPlanes(const PM3D_API::Camera& cam)
 {
@@ -7,16 +10,17 @@ void PM3D_API::Frustrum::SetPlanes(const PM3D_API::Camera& cam)
     const float halfHSide = halfVSide * PM3D_API::GameHost::GetInstance()->GetAspectRatio();
     const DirectX::XMVECTOR frontMultFar = DirectX::XMVectorScale(cam.GetForwardVector(), cam.getFarDist());
 
-    frustum.nearFace = { cam.Position + zNear * cam.Front, cam.Front };
+    const DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&cam.GetWorldPosition());
     
-    near = Plane{ DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&cam.GetWorldPosition()), DirectX::XMVectorScale(cam.GetForwardVector(), cam.getNearDist())), cam.GetForwardVector()};
-    far = { cam.Position + frontMultFar, -cam.Front };
-    right = { cam.Position,
-                            glm::cross(frontMultFar - cam.Right * halfHSide, cam.Up) };
-    left = { cam.Position,
-                            glm::cross(cam.Up,frontMultFar + cam.Right * halfHSide) };
-    top = { cam.Position,
-                            glm::cross(cam.Right, frontMultFar - cam.Up * halfVSide) };
-    bottom = { cam.Position,
-                            glm::cross(frontMultFar + cam.Up * halfVSide, cam.Right) };
+    nearPlane = { cam.GetForwardVector(), camPos + cam.GetForwardVector() * cam.getNearDist()};
+    
+    farPlane = { -cam.GetForwardVector(), camPos + frontMultFar };
+    
+    rightPlane = { camPos, DirectX::XMVector2Cross(frontMultFar - cam.GetRightVector() * halfHSide, cam.GetUpVector()) };
+    
+    leftPlane = { camPos, DirectX::XMVector2Cross(cam.GetUpVector(),frontMultFar + cam.GetRightVector() * halfHSide) };
+    
+    topPlane = { camPos,  DirectX::XMVector2Cross(cam.GetRightVector(), frontMultFar - cam.GetUpVector() * halfVSide) };
+    
+    bottomPlane = { camPos, DirectX::XMVector2Cross(frontMultFar + cam.GetUpVector() * halfVSide, cam.GetRightVector()) };
 }

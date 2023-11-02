@@ -14,10 +14,16 @@ namespace Util
 
 	struct Plane
 	{
-		Plane(const DirectX::XMVECTOR& normal, const float& dist) : normal(normal), distance(distance) {}
-		
 		DirectX::XMVECTOR normal;
-		float distance;
+		DirectX::XMVECTOR point;
 	};
+
+	DirectX::XMVECTOR operator+(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b);
+	DirectX::XMVECTOR operator-(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b);
+	DirectX::XMVECTOR operator-(const DirectX::XMVECTOR& a);
+	// /!\ FOR VECTOR3
+	DirectX::XMVECTOR Float3ToVec(const DirectX::XMFLOAT3& f3);
+	DirectX::XMVECTOR operator*(const DirectX::XMVECTOR& a, const float& f);
+	DirectX::XMVECTOR operator/(const DirectX::XMVECTOR& a, const float& f);
 };
 
