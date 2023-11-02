@@ -11,7 +11,9 @@ class CameraMoverComponent final : public PM3D_API::Component
 public:
 	void Update() override
 	{
-		angle += 1.0f * PM3D::Time::GetInstance().GetUpdateDeltaTime();
+		if (PM3D::Time::GetInstance().GetTimeScale() == 0) return;
+		
+		angle += 10.0f * PM3D::Time::GetInstance().GetUpdateDeltaTime();
 		if (angle >= 360)
 			angle = 0;
 
@@ -23,6 +25,7 @@ public:
 		);
 
 		parentObject->SetWorldPosition(newPosition);
+		static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	}
 
 	void DrawDebugInfo() const override
@@ -35,6 +38,6 @@ public:
 	}
 
 private:
-	float distance = 10.0f;
+	float distance = 20.0f;
 	float angle = 0.0f;
 };

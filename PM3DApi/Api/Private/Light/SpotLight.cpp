@@ -14,7 +14,7 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::SpotLight::GetShaderLightDefaul
 	constexpr float nearPlane = 2.0;
 	constexpr float farPlane = 100.0;
 
-	const auto mPLight = DirectX::XMMatrixPerspectiveFovLH(
+	const auto mPLight = DirectX::XMMatrixPerspectiveFovRH(
 		fov,
 		aspectRatio,
 		nearPlane,

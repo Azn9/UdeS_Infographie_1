@@ -6,7 +6,7 @@
 
 PM3D_API::DirectionalLight::DirectionalLight(
 	const DirectX::XMFLOAT3 direction
-) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction))
+) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction)), direction(direction)
 {
 
 }
@@ -14,7 +14,7 @@ PM3D_API::DirectionalLight::DirectionalLight(
 PM3D_API::DirectionalLight::DirectionalLight(
 	const DirectX::XMFLOAT3 direction,
 	const float intensity
-) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity)
+) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity), direction(direction)
 {
 
 }
@@ -23,7 +23,7 @@ PM3D_API::DirectionalLight::DirectionalLight(
 	const DirectX::XMFLOAT3 direction,
 	const float intensity,
 	const DirectX::XMFLOAT3 color
-) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity, color)
+) : Light({0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity, color), direction(direction)
 {
 
 }
@@ -31,7 +31,7 @@ PM3D_API::DirectionalLight::DirectionalLight(
 PM3D_API::DirectionalLight::DirectionalLight(
 	const std::string& name,
 	const DirectX::XMFLOAT3 direction
-) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction))
+) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction)), direction(direction)
 {
 	
 }
@@ -40,7 +40,7 @@ PM3D_API::DirectionalLight::DirectionalLight(
 	const std::string& name,
 	const DirectX::XMFLOAT3 direction,
 	const float intensity
-) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity)
+) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity), direction(direction)
 {
 
 }
@@ -50,9 +50,15 @@ PM3D_API::DirectionalLight::DirectionalLight(
 	const DirectX::XMFLOAT3 direction,
 	const float intensity,
 	const DirectX::XMFLOAT3 color
-) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity, color)
+) : Light(name, {0, 0, 0}, Util::DirectionToEulerAngles(direction), intensity, color), direction(direction)
 {
 
+}
+
+void PM3D_API::DirectionalLight::SetDirection(const DirectX::XMFLOAT3 newDirection)
+{
+	direction = newDirection;
+	SetLocalRotation(Util::DirectionToQuaternion(direction));
 }
 
 PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters(GameObject* gameObject) const

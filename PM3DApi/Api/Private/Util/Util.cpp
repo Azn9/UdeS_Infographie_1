@@ -102,22 +102,11 @@ DirectX::XMFLOAT2 Util::operator-(const DirectX::XMFLOAT2& a, const DirectX::XMF
 
 DirectX::XMFLOAT3 Util::DirectionToEulerAngles(const DirectX::XMFLOAT3 direction)
 {
-	DirectX::XMFLOAT3 angles;
+	float x = asinf(direction.z / DirectX::XMVectorGetX(DirectX::XMVector3Length(XMLoadFloat3(&direction)))) * 180.0f / DirectX::XM_PI;
+	float y = atan2f(direction.x, direction.y) * 180.0f / DirectX::XM_PI;
+	float z = 0.0f;
 
-	// Calculez les angles d'Euler en fonction de la direction avec Y vers le haut
-	// Supposons que la direction représente la direction "forward" de l'objet.
-
-	// Calcul de l'angle de tangage (pitch)
-	const auto xRad = atan2f(-direction.y, sqrtf(direction.x * direction.x + direction.z * direction.z));
-	angles.x = xRad * 180.0f / DirectX::XM_PI;
-
-	// Calcul de l'angle de lacet (yaw)
-	angles.y = atan2f(direction.x, direction.z) * 180.0f / DirectX::XM_PI;
-
-	// L'objet ne roule pas, donc l'angle de roulis (roll) est généralement défini à 0.0f
-	angles.z = 0.0f;
-
-	return angles;
+	return {x, y, z};
 }
 
 PM3D_API::Quaternion Util::DirectionToQuaternion(const DirectX::XMFLOAT3 direction)
