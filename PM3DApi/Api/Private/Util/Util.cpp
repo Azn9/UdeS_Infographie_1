@@ -2,6 +2,7 @@
 #include <valarray>
 #include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 
+
 DirectX::XMFLOAT3 Util::Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t)
 {
 	return {
@@ -31,6 +32,23 @@ float Util::magnitude(const DirectX::XMFLOAT3& f3)
 	return std::sqrt(f3.x * f3.x + f3.y * f3.y + f3.z * f3.z);
 }
 
+
+Util::Plane::Plane(const DirectX::XMVECTOR& _normal, const DirectX::XMVECTOR& point)
+	: normal(DirectX::XMVector3Normalize(_normal))
+{
+	dist = DirectX::XMVector3Dot(point, normal).m128_f32[0];
+}
+
+float Util::Plane::SignedDistanceFromPlane(const DirectX::XMVECTOR& point) const
+{
+	return DirectX::XMVector3Dot(point, normal).m128_f32[0] - dist;
+}
+
+bool Util::Plane::IsSphereInFrontOfPlane(const DirectX::XMVECTOR& point, const float& radius) const
+{
+	float result = SignedDistanceFromPlane(point);
+	return  result > radius;
+}
 
 DirectX::XMVECTOR Util::operator+(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
 {

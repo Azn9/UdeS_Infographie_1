@@ -12,8 +12,8 @@ class Camera;
 class Frustrum
 {
 public:
-
     void SetPlanes(const Camera& cam);
+    bool ContainsSphere(const DirectX::XMVECTOR& point, const float& radius = 0.f) const;
 
     void DrawDebugInfo() const;
 
@@ -24,8 +24,5 @@ private:
     Plane rightPlane;
     Plane topPlane;
     Plane bottomPlane;
-
-    
-    
 };
 }

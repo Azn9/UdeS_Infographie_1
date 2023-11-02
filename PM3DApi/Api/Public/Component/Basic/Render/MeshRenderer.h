@@ -26,6 +26,9 @@ public:
 
 	void DrawDebugInfo() const override
 	{
+		ImGui::Text("Visible");
+		ImGui::SameLine(200.0f); ImGui::Text(IsVisible() ? "Yes" : "No");
+		
 		ImGui::Text("MeshLoaded");
 		ImGui::SameLine(200.0f); ImGui::Text(meshLoaded ? "true" : "false");
 
@@ -41,6 +44,8 @@ public:
 		ImGui::Text("Material");
 		ImGui::SameLine(200.0f); ImGui::Text(std::to_string(Material.size()).c_str());
 	}
+
+	bool IsVisible() const override;
 private:
 	void LoadMesh();
 
@@ -56,5 +61,6 @@ private:
 
 	///radius of the bounding sphere
 	float boundingRadius = 0.f;
+	//bool visible = false;
 };
 }

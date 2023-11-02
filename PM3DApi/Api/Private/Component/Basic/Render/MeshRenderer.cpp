@@ -74,8 +74,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	}
 
 	// Frustrum culling
-	
-	//
+	if(!IsVisible())
+		return;
 
 	// Obtenir le contexte
 	ID3D11DeviceContext* pImmediateContext = GameHost::GetInstance()->GetDispositif()->GetImmediateContext();
@@ -146,6 +146,12 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	shader->DeleteParameters(shaderParameters);
 
 	LogEndDrawSelf();
+}
+
+bool PM3D_API::MeshRenderer::IsVisible() const
+{
+	const Camera* camera = parentObject->GetScene()->GetMainCamera();
+	return camera->getFrustrum().ContainsSphere(DirectX::XMLoadFloat3(&parentObject->GetWorldPosition()), boundingRadius);
 }
 
 void PM3D_API::MeshRenderer::LoadMesh()

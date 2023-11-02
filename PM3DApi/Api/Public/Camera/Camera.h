@@ -69,6 +69,8 @@ namespace PM3D_API
 		const DirectX::XMVECTOR& GetForwardVector() const { return forwardVector; }
 		const DirectX::XMVECTOR& GetRightVector() const { return rightVector; }
 
+		const Frustrum& getFrustrum() const{return frustrum;}
+
 		float getFieldOfView() const { return fieldOfView; }
 
 		float getNearDist() const { return nearDist; }

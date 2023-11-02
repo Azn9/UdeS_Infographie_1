@@ -13,10 +13,20 @@ namespace Util
 	float magnitude(const DirectX::XMFLOAT2& f2);
 	float magnitude(const DirectX::XMFLOAT3& f3);
 
-	struct Plane
+	class Plane
 	{
+	public:
+		Plane() = default;
+		Plane(const DirectX::XMVECTOR& normal, const DirectX::XMVECTOR& point);
+		float SignedDistanceFromPlane(const DirectX::XMVECTOR& point) const;
+		bool IsSphereInFrontOfPlane(const DirectX::XMVECTOR& point, const float& radius) const;
+		
+		DirectX::XMVECTOR GetNormal() const {return normal;}
+		float GetDist() const{return dist;}
+
+	private:
 		DirectX::XMVECTOR normal;
-		DirectX::XMVECTOR point;
+		float dist;
 	};
 
 	DirectX::XMVECTOR operator+(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b);

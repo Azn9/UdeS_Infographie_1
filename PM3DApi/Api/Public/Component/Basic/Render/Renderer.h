@@ -13,7 +13,7 @@ public:
 
 	const Shader* GetShader() const { return shader.get(); }
 
-	virtual bool IsVisible() {return true;}
+	virtual bool IsVisible() const {return true;}
 
 protected:
 	std::unique_ptr<Shader> shader;
