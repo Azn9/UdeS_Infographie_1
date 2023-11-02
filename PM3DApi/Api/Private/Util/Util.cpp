@@ -1,6 +1,6 @@
 ﻿#include "../../Public/Util/Util.h"
-#include <math.h>
 #include <valarray>
+#include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 
 DirectX::XMFLOAT3 Util::Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t)
 {
@@ -60,6 +60,14 @@ DirectX::XMVECTOR Util::operator*(const DirectX::XMVECTOR& a, const float& f)
 DirectX::XMVECTOR Util::operator/(const DirectX::XMVECTOR& a, const float& f)
 {
 	return DirectX::XMVectorScale(a, 1.f/ f);
+}
+
+void Util::DrawDebugVector3(const std::string name, const DirectX::XMVECTOR& vec)
+{
+	ImGui::Text(name.c_str());
+	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(vec.m128_f32[0])).c_str());
+	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(vec.m128_f32[1])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(vec.m128_f32[2])).c_str());
 }
 
 DirectX::XMFLOAT2 Util::operator+(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b)

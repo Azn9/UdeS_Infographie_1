@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Frustrum.h"
 #include "../GameObject/GameObject.h"
 
 namespace PM3D_API
@@ -95,6 +96,8 @@ namespace PM3D_API
 		DirectX::XMVECTOR upVector;
 		DirectX::XMVECTOR forwardVector;
 		DirectX::XMVECTOR rightVector;
+
+		Frustrum frustrum;
 
 	};
 }

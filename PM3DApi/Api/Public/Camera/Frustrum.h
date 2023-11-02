@@ -1,18 +1,21 @@
 ﻿#pragma once
 
-#include "Api/Public/Camera/Camera.h"
-#include "Api/Public/Util/Util.h"
+#include "../../Public/Util/Util.h"
 
 
 namespace PM3D_API
 {
 using namespace Util;
+
+class Camera;
     
 class Frustrum
 {
 public:
 
-    void SetPlanes(const PM3D_API::Camera&);
+    void SetPlanes(const Camera& cam);
+
+    void DrawDebugInfo() const;
 
 private:
     Plane nearPlane;
@@ -22,6 +25,7 @@ private:
     Plane topPlane;
     Plane bottomPlane;
 
+    
     
 };
 }

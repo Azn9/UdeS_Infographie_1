@@ -4,23 +4,33 @@
 
 using namespace Util;
 
-void PM3D_API::Frustrum::SetPlanes(const PM3D_API::Camera& cam)
+void PM3D_API::Frustrum::SetPlanes(const Camera& cam)
 {
     const float halfVSide = cam.getFarDist() * tanf(cam.getFieldOfView() * .5f);
-    const float halfHSide = halfVSide * PM3D_API::GameHost::GetInstance()->GetAspectRatio();
+    const float halfHSide = halfVSide * GameHost::GetInstance()->GetAspectRatio();
     const DirectX::XMVECTOR frontMultFar = DirectX::XMVectorScale(cam.GetForwardVector(), cam.getFarDist());
 
     const DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&cam.GetWorldPosition());
     
-    nearPlane = { cam.GetForwardVector(), camPos + cam.GetForwardVector() * cam.getNearDist()};
+    nearPlane = { -cam.GetForwardVector(), camPos + cam.GetForwardVector() * cam.getNearDist()};
     
-    farPlane = { -cam.GetForwardVector(), camPos + frontMultFar };
+    farPlane = { cam.GetForwardVector(), camPos + frontMultFar };
     
-    rightPlane = { camPos, DirectX::XMVector2Cross(frontMultFar - cam.GetRightVector() * halfHSide, cam.GetUpVector()) };
+    rightPlane = { DirectX::XMVector3Cross(frontMultFar - cam.GetRightVector() * halfHSide, cam.GetUpVector()), camPos };
     
-    leftPlane = { camPos, DirectX::XMVector2Cross(cam.GetUpVector(),frontMultFar + cam.GetRightVector() * halfHSide) };
+    leftPlane = {DirectX::XMVector3Cross(cam.GetUpVector(),frontMultFar + cam.GetRightVector() * halfHSide), camPos };
     
-    topPlane = { camPos,  DirectX::XMVector2Cross(cam.GetRightVector(), frontMultFar - cam.GetUpVector() * halfVSide) };
+    topPlane = { DirectX::XMVector3Cross(cam.GetRightVector(), frontMultFar - cam.GetUpVector() * halfVSide), camPos };
     
-    bottomPlane = { camPos, DirectX::XMVector2Cross(frontMultFar + cam.GetUpVector() * halfVSide, cam.GetRightVector()) };
+    bottomPlane = {DirectX::XMVector3Cross(frontMultFar + cam.GetUpVector() * halfVSide, cam.GetRightVector()), camPos };
+}
+
+void PM3D_API::Frustrum::DrawDebugInfo() const
+{
+    DrawDebugVector3("nearNormal", nearPlane.normal);
+    DrawDebugVector3("farNormal", farPlane.normal);
+    DrawDebugVector3("rightNormal", rightPlane.normal);
+    DrawDebugVector3("leftNormal", leftPlane.normal);
+    DrawDebugVector3("topNormal", topPlane.normal);
+    DrawDebugVector3("bottomNormal", bottomPlane.normal);
 }

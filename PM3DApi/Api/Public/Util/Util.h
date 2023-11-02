@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <DirectXMath.h>
+#include <string>
 
 namespace Util
 {
@@ -25,5 +26,7 @@ namespace Util
 	DirectX::XMVECTOR Float3ToVec(const DirectX::XMFLOAT3& f3);
 	DirectX::XMVECTOR operator*(const DirectX::XMVECTOR& a, const float& f);
 	DirectX::XMVECTOR operator/(const DirectX::XMVECTOR& a, const float& f);
+
+	void DrawDebugVector3(const std::string name, const DirectX::XMVECTOR& vec);
 };
 

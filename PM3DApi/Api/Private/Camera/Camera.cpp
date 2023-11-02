@@ -136,6 +136,9 @@ void PM3D_API::Camera::DrawDebugInfo() const
 	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(rightVector.m128_f32[0])).c_str());
 	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(rightVector.m128_f32[1])).c_str());
 	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(rightVector.m128_f32[2])).c_str());
+	
+	ImGui::Text("Frustrum");
+	frustrum.DrawDebugInfo();
 
 	ImGui::Text("Type");
 	ImGui::SameLine(100); ImGui::Text(cameraType == PERSECTIVE ? "Perspective" : "Orthographic");
@@ -146,10 +149,10 @@ void PM3D_API::Camera::DrawDebugInfo() const
 		ImGui::SameLine(100); ImGui::Text(std::to_string(fieldOfView).c_str());
 	}
 
-	ImGui::Text("Near plane");
+	ImGui::Text("Near distance");
 	ImGui::SameLine(100); ImGui::Text(std::to_string(nearDist).c_str());
 
-	ImGui::Text("Far plane");
+	ImGui::Text("Far distance");
 	ImGui::SameLine(100); ImGui::Text(std::to_string(farDist).c_str());
 }
 
@@ -164,7 +167,8 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	forwardVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(focusPoint, eye_position));
 	rightVector = DirectX::XMVector3Cross(forwardVector, upVector);
 	
-
+	frustrum.SetPlanes(*this);
+	
 	if (cameraType == PERSECTIVE)
 	{
 		const auto aspectRatio = PM3D_API::GameHost::GetInstance()->GetAspectRatio();
