@@ -42,6 +42,12 @@ void PM3D_API::MeshCollider::Initialize()
 	std::transform(indices.begin(), indices.end(), std::back_inserter(indices32), [](int intValue) {
 		return static_cast<PxU32>(intValue);
 		});
+
+	for (int i = 0; i < indices32.size() /3; ++i) {
+		auto temp = indices32[i * 3];
+		indices32[i * 3] = indices32[i * 3 + 1];
+		indices32[i * 3 + 1] = temp;
+	}
 	
 	PxU32 triCount = indices32.size() / 3;
 

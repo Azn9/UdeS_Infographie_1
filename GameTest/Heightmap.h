@@ -4,9 +4,9 @@
 class Heightmap : public PM3D_API::BasicShape
 {
 public:
-    Heightmap() : BasicShape("corps") {}
+    Heightmap() : BasicShape("heightMap") {}
 
 private:
     std::wstring GetShaderFileName() override { return L"Test1.fx"; }
-    std::string GetMeshFileName() override { return "corps.obj"; }
+    std::string GetMeshFileName() override { return "heightMap.obj"; }
 };
