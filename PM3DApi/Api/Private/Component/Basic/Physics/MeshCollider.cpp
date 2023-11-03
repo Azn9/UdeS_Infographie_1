@@ -5,6 +5,8 @@
 #include <PxPhysicsAPI.h>
 #include "../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
 #include "../PetitMoteur3D/Core/Public/Mesh/FastobjChargeur.h"
+#include <algorithm>
+#include <vector>
 
 using namespace physx;
 
@@ -43,6 +45,11 @@ void PM3D_API::MeshCollider::Initialize()
 	
 	PxU32 triCount = indices32.size() / 3;
 
+	for_each(begin(verts), end(verts), [worldScale](XMFLOAT3& vect) {
+		vect.x *= worldScale.x;
+		vect.y *= worldScale.y;
+		vect.z *= worldScale.z;
+		});
 
 	PxTolerancesScale scale;
 	PxCookingParams params(scale);
@@ -60,7 +67,6 @@ void PM3D_API::MeshCollider::Initialize()
 	meshDesc.triangles.count = triCount; // nb triangles
 	meshDesc.triangles.stride = 3 * sizeof(PxU32);
 	meshDesc.triangles.data = indices32.data(); 
-
 
 	PxTriangleMesh* triangleMesh = PxCreateTriangleMesh(params, meshDesc, pxPhysics->getPhysicsInsertionCallback());
 

@@ -60,7 +60,8 @@ void MainScene::InitializeObjects()
 {
     // ============= Add a plane =============
     auto plane = std::make_unique<Heightmap>();
-    plane->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
+    plane->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
+    plane->SetWorldScale(XMFLOAT3(.5f, .5f, .5f));
     plane->Initialize();
 
     auto planeRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
@@ -77,7 +78,7 @@ void MainScene::InitializeObjects()
 
     // ============= Add a cube =============
     auto cube = std::make_unique<PM3D_API::BasicCube>("Cube");
-    cube->SetWorldPosition(XMFLOAT3(0.0f, 10.0f, 10.0f));
+    cube->SetWorldPosition(XMFLOAT3(0.0f, 15.0f, 10.0f));
     cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
     cube->Initialize();
 
