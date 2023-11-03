@@ -31,26 +31,6 @@ DirectX::XMFLOAT2 Util::operator-(const DirectX::XMFLOAT2& a, const DirectX::XMF
 	return {a.x - b.x, a.y - b.y};
 }
 
-DirectX::XMFLOAT2 Util::operator*(const DirectX::XMFLOAT2& a, const float& f)
-{
-	return {a.x * f, a.y * f};
-}
-
-DirectX::XMFLOAT2 Util::operator/(const DirectX::XMFLOAT2& a, const float& f)
-{
-	return {a.x / f, a.y / f};
-}
-
-DirectX::XMFLOAT2 Util::operator+(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b)
-{
-	return {a.x + b.x, a.y + b.y};
-}
-
-DirectX::XMFLOAT2 Util::operator-(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b)
-{
-	return {a.x - b.x, a.y - b.y};
-}
-
 DirectX::XMFLOAT3 Util::DirectionToEulerAngles(const DirectX::XMFLOAT3 direction)
 {
 	float x = asinf(direction.z / DirectX::XMVectorGetX(DirectX::XMVector3Length(XMLoadFloat3(&direction)))) * 180.0f / DirectX::XM_PI;

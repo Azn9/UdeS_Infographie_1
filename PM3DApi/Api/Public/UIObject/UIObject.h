@@ -28,14 +28,14 @@ enum class SizeMode
 class UIObject
 {
 public:
-    
-    UIObject(const std::string& name
-        , const DirectX::XMFLOAT2& size = {1.f, 1.f}
-        , const SizeMode& sizeMode = SizeMode::NONE_RELATIVE
-        , const DirectX::XMFLOAT2& position = {0.f, 0.f}
-        , const Anchor& anchor = Anchor::TOP_LEFT
-        , const DirectX::XMFLOAT2& pivot = {0.f, 0.f});
-
+    explicit UIObject(
+        const std::string& name,
+        const DirectX::XMFLOAT2& size = {1.f, 1.f},
+        const SizeMode& sizeMode = SizeMode::NONE_RELATIVE,
+        const DirectX::XMFLOAT2& position = {0.f, 0.f},
+        const Anchor& anchor = Anchor::MIDDLE,
+        const Anchor& origin = Anchor::MIDDLE
+    );
 
     virtual ~UIObject();
 
@@ -68,13 +68,12 @@ public:
     const std::vector<std::unique_ptr<UIComponent>>& GetComponents() const { return components; }
     
 protected:
-
-    std::string name = "Unnamed GameObject";
+    std::string name = "Unnamed UI Object";
     
     /// Anchor of parent
-    Anchor parentAnchor;
-    /// Position of the pivot on the object. pivot=(0,0.5) -> the pivot will be at the left side and at half it's height
-    DirectX::XMFLOAT2 pivot; 
+    Anchor anchor;
+    /// Position of the origin (relative to anchor)
+    Anchor origin;
     /// Position of the origin (relative to anchor)
     DirectX::XMFLOAT2 position; 
     

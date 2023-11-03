@@ -6,6 +6,7 @@
 #include "../Camera/Camera.h"
 #include "../Light/DirectionalLight.h"
 #include "../Component/Basic/Physics/PhysicsResolver.h"
+#include "Api/Public/UICanvas/UICanvas.h"
 
 namespace PM3D_API
 {
@@ -56,6 +57,7 @@ protected:
 	bool isDeleted = false;
 
 	PhysicsResolver* physicsResolver;
+	UICanvas* uiCanvas;
 	
 	void SetMainCamera(std::unique_ptr<Camera>&& newMainCamera);
 	void SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newPhysicsResolver);
