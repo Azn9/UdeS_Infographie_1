@@ -24,8 +24,7 @@ public:
 	void Draw() override;
 	void DrawSelf() const override;
 
-	//template <typename T, template_extends<UIObject, T> = 0>
-	void AddChild(std::unique_ptr<UIObject>&& child);
+	void AddChild(std::unique_ptr<UIObject>&& child) override;
 
 protected:
 	bool isDeleted = false;

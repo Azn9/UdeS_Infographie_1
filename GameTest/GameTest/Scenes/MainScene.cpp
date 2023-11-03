@@ -103,3 +103,10 @@ void MainScene::InitializeObjects()
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
 }
+
+void MainScene::InitializeUI()
+{
+    Scene::InitializeUI(); // Init the base canvas
+
+    
+}

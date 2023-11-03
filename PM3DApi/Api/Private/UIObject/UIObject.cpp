@@ -91,6 +91,7 @@ void UIObject::AddChild(std::unique_ptr<UIObject>&& child)
 {
 	std::cout << "UIObject::AddChild(UIObject*) on " << name << std::endl;
 	child->parent = this;
+	child->canvas = canvas;
 	children.push_back(std::move(child));
 }
 
@@ -114,7 +115,7 @@ inline void UIObject::LogEndDrawSelf() const
 
 DirectX::XMFLOAT2 UIObject::ResolvePosition() const
 {
-	return position + parent->ResolveAnchorPosition(anchor);
+	return position + parent->ResolveAnchorPosition(anchor, origin);
 }
 
 DirectX::XMFLOAT2 UIObject::ResolveSize() const
@@ -122,18 +123,13 @@ DirectX::XMFLOAT2 UIObject::ResolveSize() const
 
 }
 
-DirectX::XMFLOAT2 UIObject::ResolveAnchorPosition(const Anchor& anchor) const
+DirectX::XMFLOAT2 UIObject::ResolveAnchorPosition(const Anchor& anchor, const Anchor& origin) const
 {
 	DirectX::XMFLOAT2 pos{0, 0};
 
-	if (anchor == Anchor::TOP_LEFT
-		|| anchor == Anchor::MIDDLE_LEFT
-		|| anchor == Anchor::BOTTOM_LEFT)
-	{
-		pos.x -= pivot.x * size.x;
-	}
+	
 
-	return pos + position;
+	return position + pos;
 }
 
 void UIObject::SetParent(UIObject* newParent)

@@ -11,4 +11,5 @@ public:
 	void InitializeCamera() override;
 	void InitializeLights() override;
 	void InitializeObjects() override;
+	void InitializeUI() override;
 };

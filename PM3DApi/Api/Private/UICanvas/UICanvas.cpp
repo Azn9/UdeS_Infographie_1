@@ -36,3 +36,11 @@ void PM3D_API::UICanvas::DrawSelf() const
 
     LogEndDrawSelf();
 }
+
+void PM3D_API::UICanvas::AddChild(std::unique_ptr<UIObject>&& child)
+{
+    std::cout << "UICanvas::AddChild(UIObject*) on " << name << std::endl;
+    child->parent = this;
+    child->canvas = this;
+    children.push_back(std::move(child));
+}

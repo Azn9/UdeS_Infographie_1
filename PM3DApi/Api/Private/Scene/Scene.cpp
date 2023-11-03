@@ -20,6 +20,7 @@ void PM3D_API::Scene::Initialize()
 	InitializeCamera();
 	InitializeLights();
 	InitializeObjects();
+	InitializeUI();
 }
 
 void PM3D_API::Scene::SetMainCamera(std::unique_ptr<Camera>&& newMainCamera)
@@ -90,4 +91,18 @@ void PM3D_API::Scene::DrawSelf() const
 	GameObject::DrawSelf();
 
 	LogEndDrawSelf();
+}
+
+void PM3D_API::Scene::InitializeUI()
+{
+	uiCanvas = std::make_unique<UICanvas>();
+	uiCanvas->Initialize();
+}
+
+void PM3D_API::Scene::AddUiChild(std::unique_ptr<UIObject>&& child) const
+{
+	if (!uiCanvas)
+		throw std::runtime_error("Scene::AddUiChild: uiCanvas is not initialized");
+
+	uiCanvas->AddChild(std::move(child));
 }

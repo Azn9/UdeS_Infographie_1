@@ -72,16 +72,23 @@ protected:
     
     /// Anchor of parent
     Anchor anchor;
-    /// Position of the origin (relative to anchor)
+
+    /// Origin of the object
     Anchor origin;
+    
     /// Position of the origin (relative to anchor)
-    DirectX::XMFLOAT2 position; 
+    DirectX::XMFLOAT2 position;
+    
+    /// Position on the screen in pixels
+    DirectX::XMFLOAT2 screenPosition;
     
     DirectX::XMFLOAT2 size;
     SizeMode sizeMode;
 
     std::vector<std::unique_ptr<UIObject>> children{};
     std::vector<std::unique_ptr<UIComponent>> components{};
+
+    friend class UICanvas;
     UICanvas* canvas = nullptr;
     UIObject* parent = nullptr;
     

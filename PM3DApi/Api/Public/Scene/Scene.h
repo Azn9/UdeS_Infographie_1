@@ -6,7 +6,7 @@
 #include "../Camera/Camera.h"
 #include "../Light/DirectionalLight.h"
 #include "../Component/Basic/Physics/PhysicsResolver.h"
-#include "Api/Public/UICanvas/UICanvas.h"
+#include "../UICanvas/UICanvas.h"
 
 namespace PM3D_API
 {
@@ -33,6 +33,7 @@ public:
 	virtual void InitializeCamera() {};
 	virtual void InitializeLights() {};
 	virtual void InitializeObjects() {};
+	virtual void InitializeUI();
 
 	template <typename L, template_extends<Light, L>  = 0>
 	void AddLight(std::unique_ptr<L>&& child);
@@ -44,8 +45,11 @@ public:
 	>
 	void AddChild(std::unique_ptr<T>&& child);
 
+	void AddUiChild(std::unique_ptr<UIObject>&& child) const;
+
 	Camera* GetMainCamera() const { return mainCamera; }
 	PhysicsResolver* GetPhysicsResolver() const { return physicsResolver; }
+	UICanvas* GetUICanvas() const { return uiCanvas.get(); }
 	
 	const std::vector<Light*>& GetLights() const { return lights; }
 
@@ -57,7 +61,7 @@ protected:
 	bool isDeleted = false;
 
 	PhysicsResolver* physicsResolver;
-	UICanvas* uiCanvas;
+	std::unique_ptr<UICanvas> uiCanvas;
 	
 	void SetMainCamera(std::unique_ptr<Camera>&& newMainCamera);
 	void SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newPhysicsResolver);
