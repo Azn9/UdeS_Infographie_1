@@ -54,7 +54,7 @@ public:
 	}
 
 	virtual std::vector<XMFLOAT3> getPositionArray() const = 0;
-	virtual std::vector<int> getTabIndex() const = 0;
+	virtual std::vector<int> getIndexFaces() const = 0;
 };
 
 } // namespace PM3D

@@ -26,17 +26,22 @@ void PM3D_API::MeshCollider::Initialize()
 	PM3D::FastobjChargeur* chargeur = static_cast<PM3D::FastobjChargeur*>(meshRenderer->getChargeur());
 
 	std::vector<XMFLOAT3> verts = chargeur->getPositionArray();
+
+	if (!verts.empty()) {
+		verts.erase(verts.begin());
+	}
+
 	PxU32 nbVerts = verts.size();
 
 	std::vector<PxU32> indices32;
 	
-	std::vector<int> indices = chargeur->getTabIndex();
+	std::vector<int> indices = chargeur->getIndexFaces();
 
 	std::transform(indices.begin(), indices.end(), std::back_inserter(indices32), [](int intValue) {
 		return static_cast<PxU32>(intValue);
 		});
 	
-	PxU32 triCount = 0;// indices32.size();
+	PxU32 triCount = indices32.size() / 3;
 
 
 	PxTolerancesScale scale;

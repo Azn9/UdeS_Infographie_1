@@ -78,6 +78,8 @@ void PM3D::FastobjChargeur::Chargement(const CParametresChargement& param)
 			{
 				const fastObjIndex mi = mesh->indices[grp.index_offset + idx];
 
+				indexFaces.push_back(mi.p);
+
 				const float p1 = mesh->positions[3 * mi.p + 0];
 				const float p2 = mesh->positions[3 * mi.p + 1];
 				const float p3 = mesh->positions[3 * mi.p + 2];
