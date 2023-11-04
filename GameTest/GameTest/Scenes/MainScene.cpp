@@ -2,18 +2,23 @@
 
 #include <memory>
 
-#include "../../../PM3DApi/Api/Public/Camera/Camera.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/BoxCollider.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/PlaneCollider.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/MeshCollider.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
-#include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
-#include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicCube.h"
-#include "../../../PM3DApi/Api/Public/GameObject/Basic/BasicSphere.h"
-#include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
-#include "../../../PM3DApi/Api/Public/Light/PointLight.h"
-#include "../../../PetitMoteur3D/Core/Public/Mesh/FastobjChargeur.h"
+#include "Camera/Camera.h"
+
+#include "Component/Basic/Physics/BoxCollider.h"
+#include "Component/Basic/Physics/SphereCollider.h"
+#include "Component/Basic/Physics/PlaneCollider.h"
+#include "Component/Basic/Physics/MeshCollider.h"
+#include "Component/Basic/Physics/Rigidbody.h"
+
+#include "Component/Basic/Render/MeshRenderer.h"
+#include "GameObject/GameObject.h"
+#include "GameObject/Basic/BasicCube.h"
+#include "GameObject/Basic/BasicSphere.h"
+#include "Light/AmbiantLight.h"
+#include "Light/PointLight.h"
+
+#include "Mesh/FastobjChargeur.h"
+
 #include "GameTest/CustomPlane.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
@@ -59,40 +64,40 @@ void MainScene::InitializeLights()
 void MainScene::InitializeObjects()
 {
     // ============= Add a plane =============
-    auto plane = std::make_unique<Heightmap>();
-    plane->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
-    plane->SetWorldScale(XMFLOAT3(.5f, .5f, .5f));
-    plane->Initialize();
+    auto map = std::make_unique<Heightmap>();
+    map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
+    map->SetWorldScale(XMFLOAT3(.5f, .5f, .5f));
+    map->Initialize();
 
-    auto planeRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-    const auto planeRigidbodyPtr = planeRigidbody.get();
-    plane->AddComponent(std::move(planeRigidbody));
-    planeRigidbodyPtr->Initialize();
+    auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+    const auto mapRigidbodyPtr = mapRigidbody.get();
+    map->AddComponent(std::move(mapRigidbody));
+    mapRigidbodyPtr->Initialize();
 
     auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
     const auto meshColliderPtr = meshCollider.get();
-    plane->AddComponent(std::move(meshCollider));
+    map->AddComponent(std::move(meshCollider));
     meshColliderPtr->Initialize();
 
-    AddChild(std::move(plane));
+    AddChild(std::move(map));
 
     // ============= Add a cube =============
-    auto cube = std::make_unique<PM3D_API::BasicCube>("Cube");
-    cube->SetWorldPosition(XMFLOAT3(0.0f, 15.0f, 10.0f));
-    cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
-    cube->Initialize();
+    auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
+    sphere->SetWorldPosition(XMFLOAT3(0.0f, 15.0f, 10.0f));
+    sphere->SetWorldScale(XMFLOAT3(.25f, .25f, .25f));
+    sphere->Initialize();
 
-    auto cubeRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-    const auto cubeRigidbodyPtr = cubeRigidbody.get();
-    cube->AddComponent(std::move(cubeRigidbody));
-    cubeRigidbodyPtr->Initialize();
+    auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+    const auto sphereRigidbodyPtr = sphereRigidbody.get();
+    sphere->AddComponent(std::move(sphereRigidbody));
+    sphereRigidbodyPtr->Initialize();
 
-    auto cubeCollider = std::make_unique<PM3D_API::BoxCollider>(physicsResolver->GetDefaultMaterial());
-    const auto cubeColliderPtr = cubeCollider.get();
-    cube->AddComponent(std::move(cubeCollider));
-    cubeColliderPtr->Initialize();
+    auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(physicsResolver->GetDefaultMaterial());
+    const auto sphereColliderPtr = sphereCollider.get();
+    sphere->AddComponent(std::move(sphereCollider));
+    sphereColliderPtr->Initialize();
     
-    AddChild(std::move(cube));
+    AddChild(std::move(sphere));
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
 
