@@ -4,29 +4,21 @@
 
 namespace PM3D_API
 {
-class UICanvas : public UIObject
-{
-public:
-	static constexpr DirectX::XMFLOAT2 referenceResolution { 1920, 1080 };
-	
-	UICanvas() : UIObject("Canvas")
-	{
-	}
+    class UICanvas : public UIObject
+    {
+    public:
+        UICanvas();
 
-	UICanvas(const std::string& name) : UIObject(name, referenceResolution)
-	{
-	}
+        ~UICanvas() override;
 
-	~UICanvas() override;
-	
-	void Initialize() override;
-	void Update() override;
-	void Draw() override;
-	void DrawSelf() const override;
+        void Initialize() override;
+        void Update() override;
+        void Draw() override;
+        void DrawSelf() const override;
 
-	void AddChild(std::unique_ptr<UIObject>&& child) override;
+        void AddChild(std::unique_ptr<UIObject>&& child) override;
 
-protected:
-	bool isDeleted = false;
-};
+    protected:
+        bool isDeleted = false;
+    };
 }

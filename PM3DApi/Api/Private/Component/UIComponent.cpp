@@ -1,43 +1,43 @@
-#include "../../Public/Component/Component.h"
+#include "../../Public/Component/UIComponent.h"
 
 #include <iostream>
 #include <ostream>
 
 #include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
-#include "Api/Public/UIObject/UIObject.h"
+#include "../../../../PetitMoteur3D/Core/Public/Util/Time.h"
 
-PM3D_API::Component::~Component()
+PM3D_API::UIComponent::~UIComponent()
 {
     if (parentObject)
-        std::cout << "Component::~Component() on " << parentObject->GetName() << std::endl;
+        std::cout << "UIComponent::~UIComponent() on " << parentObject->GetName() << std::endl;
 }
 
-void PM3D_API::Component::Initialize()
+void PM3D_API::UIComponent::Initialize()
 {
     // Do nothing by default
 }
 
-void PM3D_API::Component::Update()
+void PM3D_API::UIComponent::Update()
 {
     // Do nothing by default
 }
 
-void PM3D_API::Component::PhysicsUpdate()
+void PM3D_API::UIComponent::UpdateMatrix()
 {
     // Do nothing by default
 }
 
-void PM3D_API::Component::DrawSelf() const
+void PM3D_API::UIComponent::DrawSelf() const
 {
     // Do nothing by default
 }
 
-void PM3D_API::Component::LogBeginDrawSelf() const
+void PM3D_API::UIComponent::LogBeginDrawSelf() const
 {
     beginDrawSelf = PM3D::Time::GetInstance().GetTimeSpecific();
 }
 
-void PM3D_API::Component::LogEndDrawSelf() const
+void PM3D_API::UIComponent::LogEndDrawSelf() const
 {
     endDrawSelf = PM3D::Time::GetInstance().GetTimeSpecific();
 }

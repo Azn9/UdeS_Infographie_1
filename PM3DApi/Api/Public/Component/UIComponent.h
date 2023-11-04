@@ -12,7 +12,7 @@ public:
 
     virtual void Initialize();
     virtual void Update();
-    virtual void PhysicsUpdate();
+    virtual void UpdateMatrix();
     virtual void DrawSelf() const;
     virtual void DrawDebugInfo() const {}
 

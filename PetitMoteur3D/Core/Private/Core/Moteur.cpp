@@ -189,6 +189,7 @@ bool PM3D::CMoteur::RenderScene()
 	BeginRenderSceneSpecific();
 		
 	gameHost->Draw();
+	gameHost->DrawUI();
 
 	EndRenderSceneSpecific();
 

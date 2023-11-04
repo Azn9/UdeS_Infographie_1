@@ -5,110 +5,119 @@
 #include <string>
 #include <vector>
 
-#include "Api/Public/Component/Component.h"
-#include "Api/Public/Component/UIComponent.h"
-#include "Api/Public/Util/Instanceof.h"
+#include "../../Public/Component/UIComponent.h"
+#include "../../Public/Util/Instanceof.h"
 
 namespace PM3D_API
 {
-class UICanvas;
-    
-enum class Anchor
-{
-    TOP_LEFT, TOP_MIDDLE, TOP_RIGHT,
-    MIDDLE_LEFT, MIDDLE, MIDDLE_RIGHT,
-    BOTTOM_LEFT, BOTTOM_MIDDLE, BOTTOM_RIGHT
-};
+    class UICanvas;
 
-enum class SizeMode
-{
-    BOTH_RELATIVE, NONE_RELATIVE, RELATIVE_X, RELATIVE_Y 
-};
-
-class UIObject
-{
-public:
-    explicit UIObject(
-        const std::string& name,
-        const DirectX::XMFLOAT2& size = {1.f, 1.f},
-        const SizeMode& sizeMode = SizeMode::NONE_RELATIVE,
-        const DirectX::XMFLOAT2& position = {0.f, 0.f},
-        const Anchor& anchor = Anchor::MIDDLE,
-        const Anchor& origin = Anchor::MIDDLE
-    );
-
-    virtual ~UIObject();
-
-    virtual void Initialize();
-    virtual void Update();
-    virtual void Draw();
-    virtual void AddChild(std::unique_ptr<UIObject>&& child);
-    virtual void AddComponent(std::unique_ptr<UIComponent>&& component);
-
-    std::string GetName() const { return name; }
-    
-    template <typename T, template_extends<T, UIComponent> = 0>
-    std::vector<T*> GetComponents()
+    //@formatter:off
+    enum class Anchor
     {
-        std::vector<T*> components{};
-        for (const auto component : components)
+        TOP_LEFT,       TOP_MIDDLE,     TOP_RIGHT,
+        MIDDLE_LEFT,    MIDDLE,         MIDDLE_RIGHT,
+        BOTTOM_LEFT,    BOTTOM_MIDDLE,  BOTTOM_RIGHT
+    };
+
+    enum class ScaleMode
+    {
+        BOTH_RELATIVE, NONE_RELATIVE, RELATIVE_X, RELATIVE_Y 
+    };
+    //@formatter:on
+
+    class UIObject
+    {
+    public:
+        UIObject(
+            const std::string& name,
+            UIObject* parent,
+            const DirectX::XMFLOAT2& scale,
+            const DirectX::XMFLOAT2& position = {0.f, 0.f},
+            const ScaleMode& scaleMode = ScaleMode::NONE_RELATIVE,
+            const Anchor& anchor = Anchor::MIDDLE,
+            const Anchor& origin = Anchor::MIDDLE
+        );
+        virtual ~UIObject();
+
+        virtual void Initialize();
+        virtual void Update();
+        virtual void Draw();
+        virtual void AddChild(std::unique_ptr<UIObject>&& child);
+        virtual void AddComponent(std::unique_ptr<UIComponent>&& component);
+
+        std::string GetName() const { return name; }
+
+        template <typename T, template_extends<T, UIComponent>  = 0>
+        std::vector<T*> GetComponents()
         {
-            if (!component) continue;
-			
-            if (typeid(*component.get()) == typeid(T))
+            std::vector<T*> components{};
+            for (const auto component : components)
             {
-                components.push_back(static_cast<T*>(component.get()));
+                if (!component) continue;
+
+                if (typeid(*component.get()) == typeid(T))
+                {
+                    components.push_back(static_cast<T*>(component.get()));
+                }
             }
+
+            return components;
         }
 
-        return components;
-    }
+        const std::vector<std::unique_ptr<UIObject>>& GetChildren() const { return children; }
+        const std::vector<std::unique_ptr<UIComponent>>& GetComponents() const { return components; }
 
-    const std::vector<std::unique_ptr<UIObject>>& GetChildren() const { return children; }
-    const std::vector<std::unique_ptr<UIComponent>>& GetComponents() const { return components; }
-    
-protected:
-    std::string name = "Unnamed UI Object";
-    
-    /// Anchor of parent
-    Anchor anchor;
+        DirectX::XMFLOAT2 GetScreenPosition() const { return screenPosition; }
+        DirectX::XMFLOAT2 GetRelativePosition() const { return relativePosition; }
+        DirectX::XMFLOAT2 GetTopLeftPosition() const { return topLeftPosition; }
 
-    /// Origin of the object
-    Anchor origin;
-    
-    /// Position of the origin (relative to anchor)
-    DirectX::XMFLOAT2 position;
-    
-    /// Position on the screen in pixels
-    DirectX::XMFLOAT2 screenPosition;
-    
-    DirectX::XMFLOAT2 size;
-    SizeMode sizeMode;
+        void SetScreenPosition(const DirectX::XMFLOAT2& newOriginPosition);
+        void SetRelativePosition(const DirectX::XMFLOAT2& newOriginPosition);
 
-    std::vector<std::unique_ptr<UIObject>> children{};
-    std::vector<std::unique_ptr<UIComponent>> components{};
+        DirectX::XMFLOAT2 GetScreenScale() const { return screenScale; }
+        DirectX::XMFLOAT2 GetRelativeScale() const { return relativeScale; }
 
-    friend class UICanvas;
-    UICanvas* canvas = nullptr;
-    UIObject* parent = nullptr;
-    
-    virtual void DrawSelf() const;
+        void SetScreenScale(const DirectX::XMFLOAT2& newScale);
+        void SetRelativeScale(const DirectX::XMFLOAT2& newScale);
 
-    void LogBeginDrawSelf() const;
-    void LogEndDrawSelf() const;
+    protected:
+        std::string name = "Unnamed UI Object";
 
-    ///Position on the screen in pixels
-    virtual DirectX::XMFLOAT2 ResolvePosition() const;
-    virtual DirectX::XMFLOAT2 ResolveSize() const;
-    virtual DirectX::XMFLOAT2 ResolveAnchorPosition(const Anchor& anchor) const;
+        Anchor anchor;
+        Anchor origin;
 
-private:
-    friend class Scene;
-    void SetCanvas(UICanvas* newCanvas) { canvas = newCanvas; }
+        DirectX::XMFLOAT2 relativePosition;
+        DirectX::XMFLOAT2 screenPosition;
+        DirectX::XMFLOAT2 topLeftPosition;
 
-    void SetParent(UIObject* newParent);
+        ScaleMode scaleMode;
+        DirectX::XMFLOAT2 relativeScale;
 
-    mutable int64_t beginDrawSelf;
-    mutable int64_t endDrawSelf;
-};
+        DirectX::XMFLOAT2 screenScale;
+
+        std::vector<std::unique_ptr<UIObject>> children{};
+        std::vector<std::unique_ptr<UIComponent>> components{};
+
+        friend class UICanvas;
+        UICanvas* canvas = nullptr;
+        UIObject* parent = nullptr;
+
+        virtual void DrawSelf() const;
+
+        void LogBeginDrawSelf() const;
+        void LogEndDrawSelf() const;
+
+        void UpdateScale();
+        void UpdatePosition();
+
+    private:
+        friend class Scene;
+        void SetCanvas(UICanvas* newCanvas) { canvas = newCanvas; }
+
+        mutable int64_t beginDrawSelf;
+        mutable int64_t endDrawSelf;
+        
+        void UpdateTopLeftPosition();
+    };
 }

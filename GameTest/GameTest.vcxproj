@@ -234,6 +234,7 @@
     </ClCompile>
     <ClCompile Include="GameTest\Scenes\MainScene.cpp" />
     <ClCompile Include="GameTest\TimeScaleTest.cpp" />
+    <ClCompile Include="GameTest\UI\TestUIObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PM3DApi\PM3DApi.vcxproj">
@@ -250,6 +251,7 @@
     <ClInclude Include="GameTest\GameTest.h" />
     <ClInclude Include="GameTest\Scenes\MainScene.h" />
     <ClInclude Include="GameTest\TimeScaleTest.h" />
+    <ClInclude Include="GameTest\UI\TestUIObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

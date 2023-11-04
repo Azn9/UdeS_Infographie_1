@@ -2,28 +2,20 @@
 
 #include <memory>
 
-#include "Camera/Camera.h"
-
-#include "Component/Basic/Physics/BoxCollider.h"
-#include "Component/Basic/Physics/SphereCollider.h"
-#include "Component/Basic/Physics/PlaneCollider.h"
-#include "Component/Basic/Physics/MeshCollider.h"
-#include "Component/Basic/Physics/Rigidbody.h"
-
-#include "Component/Basic/Render/MeshRenderer.h"
-#include "GameObject/GameObject.h"
-#include "GameObject/Basic/BasicCube.h"
-#include "GameObject/Basic/BasicSphere.h"
-#include "Light/AmbiantLight.h"
-#include "Light/PointLight.h"
-
-#include "Mesh/FastobjChargeur.h"
-
+#include "../../../PM3DApi/Api/Public/Camera/Camera.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/BoxCollider.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/PlaneCollider.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
+#include "../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
+#include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
+#include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
+#include "GameTest/CustomCube.h"
 #include "GameTest/CustomPlane.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
-#include "GameTest/Components/LightMoverComponent.h"
+#include "GameTest/UI/TestUIObject.h"
 #include <Heightmap.h>
 
 void MainScene::InitializePhysics()
@@ -108,5 +100,15 @@ void MainScene::InitializeUI()
 {
     Scene::InitializeUI(); // Init the base canvas
 
-    
+    auto testUiObject = std::make_unique<TestUIObject>(
+        "TestUIObject",
+        XMFLOAT2(0.5f, 0.5f),
+        uiCanvas.get(),
+        PM3D_API::ScaleMode::BOTH_RELATIVE,
+        XMFLOAT2(0.0f, 0.0f),
+        PM3D_API::Anchor::MIDDLE,
+        PM3D_API::Anchor::MIDDLE
+    );
+    testUiObject->Initialize();
+    AddUiChild(std::move(testUiObject));
 }
