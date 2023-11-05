@@ -5,6 +5,8 @@
 
 #include "Api/Public/Util/Quaternion.h"
 
+#include "Api/Public/Util/Quaternion.h"
+
 DirectX::XMFLOAT3 Util::Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t)
 {
 	return {

@@ -46,6 +46,9 @@ public:
 	}
 
 	bool IsVisible() const override;
+
+	PM3D::IChargeur* getChargeur() { return chargeur; }
+
 private:
 	void LoadMesh();
 
@@ -61,6 +64,5 @@ private:
 
 	///radius of the bounding sphere
 	float boundingRadius = 0.f;
-	//bool visible = false;
 };
 }

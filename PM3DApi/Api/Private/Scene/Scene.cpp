@@ -29,6 +29,26 @@ void PM3D_API::Scene::SetMainCamera(std::unique_ptr<Camera>&& newMainCamera)
 	GameObject::AddChild(std::move(newMainCamera));
 }
 
+void PM3D_API::Scene::SetMainCamera(Camera* newMainCamera)
+{
+	// Check if newMainCamera is a child of this scene
+
+	const auto it = std::find_if(
+		children.begin(),
+		children.end(),
+		[newMainCamera](const std::unique_ptr<GameObject>& child) {
+			return child.get() == newMainCamera;
+		}
+	);
+	
+	if (it == children.end())
+	{
+		throw std::runtime_error("newMainCamera is not a child of this scene");
+	}
+	
+	mainCamera = newMainCamera;
+}
+
 void PM3D_API::Scene::SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newPhysicsResolver)
 {
 	physicsEnabled = true;
