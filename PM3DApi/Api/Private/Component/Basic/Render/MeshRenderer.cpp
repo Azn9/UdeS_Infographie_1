@@ -67,13 +67,12 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
 	if (!camera)
 	{
-		int* p = nullptr;
-		*p = 2;
 		throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
 	}
 
 	// Obtenir le contexte
-	ID3D11DeviceContext* pImmediateContext = GameHost::GetInstance()->GetDispositif()->GetImmediateContext();
+	const auto pDispositif = GameHost::GetInstance()->GetDispositif();
+	ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
 
 	// Choisir la topologie des primitives
 	pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -89,7 +88,73 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	constexpr UINT offset = 0;
 	pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
-	shader->LoadLights(pImmediateContext);
+	/*
+	{ // SHADOWS
+		pImmediateContext->OMSetRenderTargets(0, nullptr, shader->GetDepthStencilView());
+		pImmediateContext->ClearDepthStencilView(shader->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+		pDispositif->SetViewportDimension(512,512);
+		const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
+		const auto pPasse = pTechnique->GetPassByIndex(0);
+		pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
+
+		shader->LoadLights(pImmediateContext, parentObject);
+
+		const XMMATRIX viewProj = camera->GetMatViewProj();
+	
+		const auto shaderParameters = shader->PrepareParameters(
+			XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
+			XMMatrixTranspose(parentObject->GetMatWorld())
+		);
+
+		for (int i = 0; i < mesh->object_count; ++i)
+		{
+			const auto objGroup = mesh->objects[i];
+			const unsigned indexStart = objGroup.index_offset;
+		
+			unsigned int indexDrawAmount;
+			if (mesh->object_count > 1)
+			{
+				indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+			} else
+			{
+				indexDrawAmount = mesh->index_count;
+			}
+
+			if (!indexDrawAmount)
+			{
+				continue;
+			}
+
+			shader->ApplyMaterialParameters(
+				shaderParameters,
+				XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient),
+				XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse),
+				XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular),
+				Material[SubmeshMaterialIndex[i]].Puissance,
+				Material[SubmeshMaterialIndex[i]].pAlbedoTexture,
+				Material[SubmeshMaterialIndex[i]].pNormalmapTexture
+			);
+
+			// IMPORTANT pour ajuster les param.
+			shader->GetPass()->Apply(0, pImmediateContext);
+
+			shader->ApplyShaderParams();
+			pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
+		
+			pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
+		}
+
+		shader->DeleteParameters(shaderParameters);
+	}
+	*/
+
+	//ID3D11RenderTargetView* tabRTV[1];
+	//tabRTV[0] = pDispositif->GetRenderTargetView();
+	//pImmediateContext->OMSetRenderTargets(1, tabRTV, pDispositif->GetDepthStencilView());
+
+	pDispositif->ResetViewportDimension();
+
+	shader->LoadLights(pImmediateContext, parentObject);
 
 	const XMMATRIX viewProj = camera->GetMatViewProj();
 	
@@ -97,6 +162,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
 		XMMatrixTranspose(parentObject->GetMatWorld())
 	);
+
+	//pDispositif->SetNormalRSState();
 
 	// Dessiner les sous-objets non-transparents
 	for (int i = 0; i < mesh->object_count; ++i)
@@ -211,14 +278,19 @@ void PM3D_API::MeshRenderer::LoadMesh()
 	// 4a) Créer un matériau de défaut en index 0
 	// Vous pourriez changer les valeurs, j’ai conservé
 	// celles du constructeur
-	Material.reserve(chargeur->GetNombreMaterial() + 1);
-	Material.emplace_back(CMaterial());
+	//Material.reserve(chargeur->GetNombreMaterial());
+	//Material.emplace_back(CMaterial());
 
 	// 4b) Copie des matériaux dans la version locale
 	for (int32_t i = 0; i < chargeur->GetNombreMaterial(); ++i)
 	{
 		CMaterial mat =	chargeur->GetMaterial(i);
 		Material.push_back(mat);
+	}
+
+	if (Material.empty())
+	{
+		Material.emplace_back(CMaterial());
 	}
 
 	// 4c) Trouver l’index du materiau pour chaque sous-ensemble

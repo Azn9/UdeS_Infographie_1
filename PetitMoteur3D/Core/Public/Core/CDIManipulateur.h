@@ -12,7 +12,7 @@ public:
         pSouris = nullptr;
         pJoystick = nullptr;
     }
-    ~CDIManipulateur();
+    ~CDIManipulateur() = default;
     
     void StatutClavier();
     bool ToucheAppuyee(UINT touche);

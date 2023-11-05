@@ -144,6 +144,7 @@ public:
 	virtual const DirectX::XMFLOAT3& GetWorldScale() const { return worldScale; }
 	virtual const DirectX::XMFLOAT3& GetWorldRotationEuler() const { return worldRotationEuler; }
 	virtual const Quaternion& GetWorldRotationQuaternion() const { return worldRotationQuaternion; }
+	virtual DirectX::XMFLOAT3 GetWorldDirection() const;
 	virtual void SetWorldPosition(DirectX::XMFLOAT3 newPosition);
 	virtual void SetWorldScale(DirectX::XMFLOAT3 newScale);
 	virtual void SetWorldRotation(DirectX::XMFLOAT3 newRotation);

@@ -1,4 +1,4 @@
-﻿#include "MainScene.h"
+#include "MainScene.h"
 
 #include <memory>
 
@@ -43,22 +43,19 @@ void MainScene::InitializeCamera()
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarPlane(1000.0f);
+    mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
     SetMainCamera(std::move(mainCamera));
 }
 
 void MainScene::InitializeLights()
 {
-    auto pointLight = std::make_unique<PM3D_API::PointLight>(
-        XMFLOAT3(0.0f, 5.0f, 0.0f),
-        XMFLOAT3(1.0f, 1.0f, 1.0f)
+    auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
+        "Directional light",
+        XMFLOAT3(-1.0f, -1.0f, 0.0f)
     );
-    
-    auto lightMoverComponent = std::make_unique<LightMoverComponent>(0);
-    pointLight->AddComponent(std::move(lightMoverComponent));
-    
-    pointLight->SetIntensity(2.0f);
-    pointLight->Initialize();
-    AddLight(std::move(pointLight));
+    directionalLight->SetIntensity(1.0f);
+    directionalLight->Initialize();
+    AddLight(std::move(directionalLight));
 }
 
 void MainScene::InitializeObjects()
@@ -81,7 +78,7 @@ void MainScene::InitializeObjects()
 
     AddChild(std::move(map));
 
-    // ============= Add a cube =============
+    // ============= Add a sphere =============
     auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
     sphere->SetWorldPosition(XMFLOAT3(0.0f, 15.0f, 10.0f));
     sphere->SetWorldScale(XMFLOAT3(.25f, .25f, .25f));
@@ -99,7 +96,7 @@ void MainScene::InitializeObjects()
     
     AddChild(std::move(sphere));
 
-    PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
 
+    PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
 }

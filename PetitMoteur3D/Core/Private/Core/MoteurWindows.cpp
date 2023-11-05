@@ -5,6 +5,8 @@
 
 #include "Core/Public/Core/MoteurWindows.h"
 
+#include "../../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
+#include "../../../../PM3DApi/Api/Public/EventSystem/Basic/WindowResizeEvent.h"
 #include "../../Imgui/imgui.h"
 #include "../../Imgui/imgui_impl_win32.h"
 #include "../../Imgui/imgui_impl_dx11.h"
@@ -271,6 +273,8 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 		}
 	}
 	*/
+
+	PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
 
 	canRender = true;
 }

@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
+#include "../../../../PetitMoteur3D/Core/Public/Util/Time.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 
 PM3D_API::GameObject::GameObject(
@@ -242,6 +243,23 @@ void PM3D_API::GameObject::SetLocalScale(const DirectX::XMFLOAT3 newScale)
 	}
 
 	UpdateMatrix(true);
+}
+
+DirectX::XMFLOAT3 PM3D_API::GameObject::GetWorldDirection() const
+{
+	const XMVECTOR rotationQuat = XMLoadFloat4(&worldRotationQuaternion); // Charge le quaternion de rotation
+
+	XMVECTOR axis;
+	float angle;
+
+	// Utilise XMQuaternionToAxisAngle pour obtenir l'axe de rotation et l'angle
+	XMQuaternionToAxisAngle(&axis, &angle, rotationQuat);
+
+	// Maintenant, vous pouvez convertir l'axe en direction
+	XMFLOAT3 direction;
+	XMStoreFloat3(&direction, axis); // Convertit l'axe en XMFLOAT3
+
+	return direction;
 }
 
 void PM3D_API::GameObject::SetWorldPosition(const DirectX::XMFLOAT3 newPosition)

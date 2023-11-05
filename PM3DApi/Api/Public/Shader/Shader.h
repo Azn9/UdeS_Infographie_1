@@ -18,6 +18,13 @@ public:
 	virtual ID3D11InputLayout* GetVertexLayout() const = 0;
 	virtual ID3D11Buffer* GetIndexBuffer() const = 0;
 
+	virtual ID3D11InputLayout* GetShadowVertexLayout() const = 0;
+	virtual ID3D11Texture2D* GetDepthTexture() const = 0;
+	virtual ID3D11DepthStencilView* GetDepthStencilView() const = 0;
+	virtual ID3D11ShaderResourceView* GetDepthShaderResourceView() const = 0;
+
+	virtual ID3DX11Effect* GetEffect() const = 0;
+
 	virtual ID3D11Buffer** GetVertexBufferPtr() const = 0;
 	virtual ID3D11Buffer** GetIndexBufferPtr() const = 0;
 
@@ -39,7 +46,7 @@ public:
 	
 	virtual void ApplyShaderParams() const = 0;
 
-	virtual void LoadLights(ID3D11DeviceContext* context) = 0;
+	virtual void LoadLights(ID3D11DeviceContext* context, GameObject* gameObject) = 0;
 
 };
 }

@@ -38,6 +38,9 @@ public:
 	void InitDepthState();
 	void InitBlendStates();
 
+	void SetViewportDimension(int largeur, int hauteur);
+	void ResetViewportDimension();
+	void SetNormalRSState();
 
 private:
 	ID3D11Device* pD3DDevice;

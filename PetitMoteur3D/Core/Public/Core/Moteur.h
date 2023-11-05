@@ -2,19 +2,16 @@
 #include <thread>
 #include <string>
 
-#include "../../Public/Util/Singleton.h"
 #include "dispositif.h"
 
 #include <vector>
 
 #include "CDIManipulateur.h"
 #include "../../../../PM3DApi/Api/Public/GameHost.h"
-#include "../../../../PM3DApi/Api/Public/Input/Input.h"
 #include "../../Public/Object/Objet3D.h"
 #include "../../Public/Texture/GestionnaireDeTextures.h"
 #include "../../Public/Sprite/AfficheurSprite.h"
 #include "../../Public/Sprite/SpriteTemp.h"
-#include "../../Public/Util/Time.h"
 
 namespace PM3D
 {
@@ -36,143 +33,28 @@ const double FixedEcartTemps = 1.0 / static_cast<double>(PHYSICS_PER_SECOND);
 //        le dispositif Direct3D), l'utilisation d'un singleton 
 //        nous simplifiera plusieurs aspects.
 //
-template <class T, class TClasseDispositif> class CMoteur : public CSingleton<T>
+class CMoteur
 {
 public:
-	virtual void Run()
+	CMoteur() = default;
+	virtual ~CMoteur()
 	{
-		/*
-		// Draw thread
-		std::thread drawThread([this]
-		{
-			while (this->running)
-			{
-				
-			}
-		});
-		SetThreadName(drawThread, "DrawThread");
-		drawThread.detach();
-		*/
-
-		// Update thread
-		std::thread updateThread([this]
-		{
-			while (this->running)
-			{
-				const int64_t currentTime = Time::GetInstance().GetTimeSpecific();
-				const double timeElapsed = Time::GetInstance().GetTimeIntervalsInSec(LastUpdateTime, currentTime);
-
-				if (timeElapsed > EcartTemps)
-				{
-					Time::GetInstance().SetUpdateDeltaTime(static_cast<float>(timeElapsed) * Time::GetInstance().GetTimeScale());
-
-					GestionnaireDeSaisie.SaisirEtatSouris();
-					GestionnaireDeSaisie.StatutClavier();
-
-					Input::GetInstance().Tick(GestionnaireDeSaisie);
-					
-					gameHost->Update();
-				
-					LastUpdateTime = currentTime;
-				}
-			}
-		});
-		SetThreadName(updateThread, "UpdateThread");
-		updateThread.detach();
-
-		// PhysicsUpdate thread
-		std::thread physicsUpdateThread([this]
-		{
-			while (this->running)
-			{
-				const int64_t currentTime = Time::GetInstance().GetTimeSpecific();
-				const double timeElapsed = Time::GetInstance().GetTimeIntervalsInSec(LastFixedUpdateTime, currentTime);
-
-				if (timeElapsed > FixedEcartTemps)
-				{
-					Time::GetInstance().SetPhysicsDeltaTime(static_cast<float>(timeElapsed) * Time::GetInstance().GetTimeScale());
-					gameHost->PhysicsUpdate();
-				
-					LastFixedUpdateTime = currentTime;
-				}
-			}
-		});
-		SetThreadName(physicsUpdateThread, "PhysicsThread");
-		physicsUpdateThread.detach();
-
-		while (this->running)
-		{
-			// Propre � la plateforme - (Conditions d'arr�t, interface, messages)
-			if (!RunSpecific())
-			{
-				this->running = false;
-			}
-			
-			if (!canRender) continue;
-				
-			if (!Animation())
-			{
-				this->running = false;
-			}
-		}
+		CMoteur::Cleanup();
 	}
+	
+	virtual void Run();
+
+	std::atomic_bool shouldStepOneFrameUpdate = false;
+	std::atomic_bool shouldStepOneFramePhysics = false;
+
+	void StepOneFrame();
 
 	virtual void Resize(WORD largeur, WORD hauteur) = 0;
 	virtual void ResizeWindow(int largeur, int hauteur) = 0;
 	
-	virtual int Initialisations()
-	{
-		// Propre � la plateforme
-		InitialisationsSpecific();
+	virtual int Initialisations();
 
-		// * Initialisation du dispositif de rendu
-		pDispositif = CreationDispositifSpecific(CDS_FENETRE);
-		gameHost->SetDispositif(pDispositif);
-
-		//Resize(1280, 720);
-		//ResizeWindow(1280, 720);
-
-		// * Initialisation de la sc�ne
-		InitScene();
-
-		// * Initialisation des param�tres de l'animation et 
-		//   pr�paration de la premi�re image
-		InitAnimation();
-
-		return 0;
-	}
-
-	virtual bool Animation()
-	{
-		// m�thode pour lire l'heure et calculer le 
-		// temps �coul�
-		const int64_t TempsCompteurCourant = Time::GetInstance().GetTimeSpecific();
-		const double TempsEcoule = Time::GetInstance().GetTimeIntervalsInSec(TempsCompteurPrecedent, TempsCompteurCourant);
-
-		// Est-il temps de rendre l'image?
-		if (TempsEcoule > EcartTemps)
-		{
-			uint64_t start = Time::GetInstance().GetTimeSpecific();
-
-			if (canRender)
-			{
-				// Affichage optimis�
-				pDispositif->Present(); // On enlevera �//� plus tard
-
-				const uint64_t end = Time::GetInstance().GetTimeSpecific();
-				presentTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
-
-				// On rend l'image sur la surface de travail
-				// (tampon d'arri�re plan)
-				RenderScene();
-			}
-
-			// Calcul du temps du prochain affichage
-			TempsCompteurPrecedent = TempsCompteurCourant;
-		}
-
-		return true;
-	}
+	virtual bool Animation();
 
 	void SetGameHost(PM3D_API::GameHost* newGameHost)
 	{
@@ -196,10 +78,6 @@ public:
 		return presentTime;
 	}
 protected:
-	virtual ~CMoteur()
-	{
-		CMoteur::Cleanup();
-	}
 
 	bool canRender = false;
 	bool running = true;
@@ -210,109 +88,20 @@ protected:
 	virtual bool RunSpecific() = 0;
 	virtual int InitialisationsSpecific() = 0;
 
-	virtual TClasseDispositif* CreationDispositifSpecific(const CDS_MODE cdsMode) = 0;
+	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) = 0;
 	virtual void InitSceneSpecific() = 0;
 	virtual void BeginRenderSceneSpecific() = 0;
 	virtual void EndRenderSceneSpecific() = 0;
 
 	// Autres fonctions
-	virtual int InitAnimation()
-	{
-		TempsSuivant = Time::GetInstance().GetTimeSpecific();
-		TempsCompteurPrecedent = TempsSuivant;
+	virtual int InitAnimation();
 
-		// premi�re Image
-		//RenderScene();
-
-		canRender = true;
-
-		return true;
-	}
-	
 	// Fonctions de rendu et de pr�sentation de la sc�ne
-	virtual bool RenderScene()
-	{
-		if (!canRender)
-		{
-			ImGui::EndFrame();
-			return true;
-		}
-		
-		const uint64_t start = Time::GetInstance().GetTimeSpecific();
-		
-		BeginRenderSceneSpecific();
-		
-		gameHost->Draw();
+	virtual bool RenderScene();
 
-		EndRenderSceneSpecific();
+	virtual void Cleanup();
 
-		const uint64_t end = Time::GetInstance().GetTimeSpecific();
-
-		lastFrameTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
-		
-		return true;
-	}
-
-	virtual void Cleanup()
-	{
-		// d�truire les objets
-		ListeScene.clear();
-
-		// D�truire le dispositif
-		if (pDispositif)
-		{
-			delete pDispositif;
-			pDispositif = nullptr;
-		}
-	}
-
-	virtual int InitScene()
-	{
-		InitSceneSpecific();
-		
-		gameHost->InitializeScene();
-
-		return 0;
-	}
-
-	bool InitObjets()
-	{
-/*
-		FastobjChargeur chargeur;
-		chargeur.Chargement(param);
-		std::unique_ptr<CObjetMesh> pMesh = std::make_unique<CObjetMesh>(chargeur, pDispositif);
-		pMesh->SetPosition({0.0f, 0.0f, 0.0f});
-		ListeScene.emplace_back(std::move(pMesh));
-
-		std ::unique_ptr<CAfficheurSprite> pAfficheurSprite = std ::make_unique<CAfficheurSprite>(pDispositif);
-
-		pAfficheurSprite->AjouterSprite("DebugTexture.dds", 200, 400, 10, 10);
-		pAfficheurSprite->AjouterPanneau("DebugTexture.dds", XMFLOAT3(0.0f, 0.0f, 0.0f), 100.0f, 100.0f);
-
-		CAfficheurTexte::Init();
-        const Gdiplus::FontFamily oFamily(L"Arial", nullptr);
-        auto pPolice = std::make_unique<Gdiplus::Font>(&oFamily, 16.0f,
-        Gdiplus::FontStyleBold, Gdiplus::UnitPixel);
-        auto pTexte1 = std::make_unique<CAfficheurTexte>(pDispositif, 256, 256, pPolice.get());
-        pAfficheurSprite->AjouterSpriteTexte(pTexte1->GetTextureView(), 0, 257);
-
-		pTexte1->Ecrire(L"Test de texte");
-
-		ListeScene.emplace_back(std::move(pAfficheurSprite));
-		*/
-		return true;
-	}
-
-	bool AnimeScene(float tempsEcoule)
-	{
-		// Prendre en note le statut du clavier
-		GestionnaireDeSaisie.StatutClavier();
-
-		// Prendre en note l’état de la souris
-		GestionnaireDeSaisie.SaisirEtatSouris();
-		
-		return true;
-	}
+	virtual int InitScene();
 
 protected:
 	PM3D_API::GameHost* gameHost;
@@ -325,7 +114,7 @@ protected:
 	int64_t LastFixedUpdateTime;
 
 	// Le dispositif de rendu
-	TClasseDispositif* pDispositif;
+	CDispositifD3D11* pDispositif;
 
 	// La seule sc�ne
 	std::vector<std::unique_ptr<CObjet3D>> ListeScene;

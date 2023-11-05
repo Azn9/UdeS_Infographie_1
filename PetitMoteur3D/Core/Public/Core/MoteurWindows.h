@@ -1,18 +1,21 @@
 #pragma once
-
-#include "moteur.h"
-#include "dispositifD3D11.h"
-#include <thread>
-#include <string>
+#include "Moteur.h"
 
 namespace PM3D
 {
 #define MAX_LOADSTRING 100
 
-class CMoteurWindows final : public CMoteur<CMoteurWindows, CDispositifD3D11>
+class CMoteurWindows final : public CMoteur
 {
 public:
+	CMoteurWindows() = default;
 	void SetWindowsAppInstance(HINSTANCE hInstance);
+
+	static CMoteurWindows& GetInstance()
+	{
+		static CMoteurWindows instance;
+		return instance;
+	}
 
 	//double GetLastFrameTime() const override
 	//{
