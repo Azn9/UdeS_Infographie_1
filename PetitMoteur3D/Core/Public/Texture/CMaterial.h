@@ -22,7 +22,7 @@ public:
         Diffuse = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
         Specular = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
         transparent = false;
-        Puissance = 0;
+        Puissance = 250;
         pAlbedoTexture = nullptr;
         albedoTextureFileName = "";
         pNormalmapTexture = nullptr;
