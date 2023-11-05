@@ -153,7 +153,7 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	const DirectX::XMFLOAT3 position = GetWorldPosition();
 
 	DirectX::XMVECTOR eye_position = DirectX::XMVectorSet(position.x, position.y, position.z, 1.f);
-	matWorld = DirectX::XMMatrixLookAtRH(eye_position, focusPoint, upVector);
+	matView = DirectX::XMMatrixLookAtRH(eye_position, focusPoint, upVector);
 
 	//forwardVector = DirectX::XMVector3TransformCoord()
 	//forwardVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(focusPoint, eye_position));
@@ -183,7 +183,7 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	}
 
 	// Calcul de VP
-	matViewProj = matWorld * matProj;
+	matViewProj = matView * matProj;
 
 	initialized = true;
 }

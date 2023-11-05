@@ -60,6 +60,7 @@ namespace PM3D_API
 		void SetFarDist(float newFarDist);
 		void SetNearDist(float newNearDist);
 
+		const DirectX::XMMATRIX& GetMatView() const { return matView; }
 		const DirectX::XMMATRIX& GetMatProj() const { return matProj; }
 		const DirectX::XMMATRIX& GetMatViewProj() const { return matViewProj; }
 
@@ -85,6 +86,7 @@ namespace PM3D_API
 		bool initialized = false;
 		CameraType cameraType;
 
+		DirectX::XMMATRIX matView;
 		DirectX::XMMATRIX matProj;
 		DirectX::XMMATRIX matViewProj;
 
