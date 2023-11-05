@@ -158,6 +158,10 @@ public:
 	virtual void DrawDebugInfo() const {}
 	int64_t GetBeginDrawSelf() const { return beginDrawSelf; }
 	int64_t GetEndDrawSelf() const { return endDrawSelf; }
+
+	std::unique_ptr<GameObject> DetachFromParent();
+	void SetParent(GameObject* newParent);
+	
 protected:
 	std::string name = "Unnamed GameObject";
 	
@@ -186,8 +190,6 @@ protected:
 private:
 	friend class Scene;
 	void SetScene(Scene* newScene) { scene = newScene; }
-
-	void SetParent(GameObject* newParent);
 
 	mutable int64_t beginDrawSelf;
 	mutable int64_t endDrawSelf;

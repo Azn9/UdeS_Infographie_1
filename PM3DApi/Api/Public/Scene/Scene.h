@@ -51,6 +51,7 @@ public:
 	void SetLightsNeedUpdate(const bool needUpdate) { lightsNeedUpdate = needUpdate; }
 	bool GetLightsNeedUpdate() const { return lightsNeedUpdate; }
 
+	void SetMainCamera(Camera* newMainCamera);
 protected:
 	bool isDeleted = false;
 

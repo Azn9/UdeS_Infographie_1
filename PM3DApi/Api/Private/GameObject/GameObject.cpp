@@ -147,6 +147,30 @@ void PM3D_API::GameObject::DrawSelf() const
 	// Do nothing by default
 }
 
+std::unique_ptr<PM3D_API::GameObject> PM3D_API::GameObject::DetachFromParent()
+{
+	if (parent == nullptr)
+	{
+		throw std::runtime_error("Cannot detach a GameObject from its parent if it has no parent!");
+	}
+
+	const auto it = std::ranges::find_if(parent->children, [this](const auto& child) {
+		return child.get() == this;
+	});
+	if (it == parent->children.end())
+	{
+		// Should never happen
+		throw std::runtime_error("Cannot detach a GameObject from its parent if it is not a child of its parent!");
+	}
+
+	std::unique_ptr<GameObject> uniquePtr = std::move(*it);
+	parent->children.erase(it);
+
+	parent = nullptr;
+
+	return uniquePtr;
+}
+
 void PM3D_API::GameObject::SetParent(GameObject* newParent)
 {
 	if (parent == this)
@@ -164,7 +188,19 @@ void PM3D_API::GameObject::SetParent(GameObject* newParent)
 		newParentParent = newParentParent->parent;
 	}
 
-	parent = newParent;
+	if (parent != nullptr)
+	{
+		auto ref = DetachFromParent();
+		newParent->AddChild(std::move(ref));
+	} else
+	{
+		parent = newParent;
+	}
+
+	// Force recalculation based on new parent
+	SetLocalPosition(localPosition);
+	SetLocalRotation(localRotationEuler);
+	SetLocalScale(localScale);
 }
 
 void PM3D_API::GameObject::AddChild(std::unique_ptr<GameObject>&& child)
