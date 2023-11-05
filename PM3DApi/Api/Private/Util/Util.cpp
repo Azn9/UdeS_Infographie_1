@@ -49,7 +49,7 @@ float Util::Plane::SignedDistanceFromPlane(const DirectX::XMVECTOR& point) const
 bool Util::Plane::IsSphereInFrontOfPlane(const DirectX::XMVECTOR& point, const float& radius) const
 {
 	float result = SignedDistanceFromPlane(point);
-	return  result > radius;
+	return  result > radius + 0.01f;
 }
 
 void Util::DrawDebugVector3(const std::string name, const DirectX::XMVECTOR& vec)
