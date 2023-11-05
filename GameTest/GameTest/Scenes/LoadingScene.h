@@ -1,7 +1,11 @@
 ﻿#pragma once
-#include "Scene/Scene.h"
-#include "Sprite/AfficheurSprite.h"
-#include "Util/Singleton.h"
+#include "../../../PetitMoteur3D/Core/Public/Util/Singleton.h"
+#include "../../../PM3DApi/Api/Public/Scene/Scene.h"
+
+namespace PM3D
+{
+    class CAfficheurSprite;
+}
 
 class LoadingScene final : public PM3D_API::Scene, public PM3D::CSingleton<LoadingScene>
 {
