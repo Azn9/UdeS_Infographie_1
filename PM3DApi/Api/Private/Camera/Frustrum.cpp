@@ -8,21 +8,20 @@ void PM3D_API::Frustrum::SetPlanes(const Camera& cam)
 {
     const float halfVSide = cam.getFarDist() * tanf(cam.getFieldOfView() * .5f);
     const float halfHSide = halfVSide * GameHost::GetInstance()->GetAspectRatio();
-    const DirectX::XMVECTOR frontMultFar = DirectX::XMVectorScale(cam.GetForwardVector(), cam.getFarDist());
+    const DirectX::XMVECTOR frontMultFar = DirectX::XMVectorScale(VECTORFORWARD, cam.getFarDist());
 
-    const DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&cam.GetWorldPosition());
     
-    nearPlane = { -cam.GetForwardVector(), camPos + cam.GetForwardVector() * cam.getNearDist()};
+    nearPlane = { -cam.GetForwardVector(), VECTORFORWARD * cam.getNearDist()};
     
-    farPlane = { cam.GetForwardVector(), camPos + frontMultFar };
+    farPlane = { cam.GetForwardVector(), frontMultFar };
     
-    rightPlane = { -DirectX::XMVector3Cross(frontMultFar - cam.GetRightVector() * halfHSide, cam.GetUpVector()), camPos };
+    rightPlane = { -DirectX::XMVector3Cross(frontMultFar - VECTORRIGHT * halfHSide, VECTORUP), VECTORZERO };
     
-    leftPlane = {-DirectX::XMVector3Cross(cam.GetUpVector(),frontMultFar + cam.GetRightVector() * halfHSide), camPos };
+    leftPlane = {-DirectX::XMVector3Cross(VECTORUP,frontMultFar + VECTORRIGHT * halfHSide), VECTORZERO };
     
-    topPlane = { -DirectX::XMVector3Cross(cam.GetRightVector(), frontMultFar - cam.GetUpVector() * halfVSide), camPos };
+    topPlane = { -DirectX::XMVector3Cross(VECTORRIGHT, frontMultFar - VECTORUP * halfVSide), VECTORZERO };
     
-    bottomPlane = {-DirectX::XMVector3Cross(frontMultFar + cam.GetUpVector() * halfVSide, cam.GetRightVector()), camPos };
+    bottomPlane = {-DirectX::XMVector3Cross(frontMultFar + VECTORUP * halfVSide, VECTORRIGHT), VECTORZERO };
 }
 
 bool PM3D_API::Frustrum::ContainsSphere(const DirectX::XMVECTOR& point, const float& radius) const
