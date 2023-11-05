@@ -25,6 +25,8 @@
 #include "GameTest/Components/LightMoverComponent.h"
 #include <Heightmap.h>
 
+#include "EventSystem/EventSystem.h"
+
 void MainScene::InitializePhysics()
 {
     auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
@@ -65,37 +67,36 @@ void MainScene::InitializeObjects()
     map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
     map->SetWorldScale(XMFLOAT3(.5f, .5f, .5f));
     map->Initialize();
+    const auto mapPtr = map.get();
+    AddChild(std::move(map));
 
     auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
     const auto mapRigidbodyPtr = mapRigidbody.get();
-    map->AddComponent(std::move(mapRigidbody));
+    mapPtr->AddComponent(std::move(mapRigidbody));
     mapRigidbodyPtr->Initialize();
 
     auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
     const auto meshColliderPtr = meshCollider.get();
-    map->AddComponent(std::move(meshCollider));
+    mapPtr->AddComponent(std::move(meshCollider));
     meshColliderPtr->Initialize();
-
-    AddChild(std::move(map));
 
     // ============= Add a sphere =============
     auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
     sphere->SetWorldPosition(XMFLOAT3(0.0f, 15.0f, 10.0f));
     sphere->SetWorldScale(XMFLOAT3(.25f, .25f, .25f));
     sphere->Initialize();
+    const auto spherePtr = sphere.get();
+    AddChild(std::move(sphere));
 
     auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
     const auto sphereRigidbodyPtr = sphereRigidbody.get();
-    sphere->AddComponent(std::move(sphereRigidbody));
+    spherePtr->AddComponent(std::move(sphereRigidbody));
     sphereRigidbodyPtr->Initialize();
 
     auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(physicsResolver->GetDefaultMaterial());
     const auto sphereColliderPtr = sphereCollider.get();
-    sphere->AddComponent(std::move(sphereCollider));
+    spherePtr->AddComponent(std::move(sphereCollider));
     sphereColliderPtr->Initialize();
-    
-    AddChild(std::move(sphere));
-
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);

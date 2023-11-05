@@ -60,7 +60,7 @@ void PM3D_API::PhysicsResolver::ResolvePhysics()
 	scene->simulate(physicsDeltaTime);
 	scene->fetchResults(true);
 
-	for (const auto& gameObject : GameHost::GetInstance()->GetScene()->GetChildren())
+	for (const auto& gameObject : parentObject->GetScene()->GetChildren())
 	{
 		if (const auto rigidbody = gameObject->GetComponent<Rigidbody>())
 		{

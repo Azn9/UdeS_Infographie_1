@@ -44,6 +44,8 @@ namespace PM3D_API
 			SetFocusPoint(focusPoint); // Recalculate rotation
 		}
 
+		void Initialize() override;
+
 		void SetLocalPosition(DirectX::XMFLOAT3 newPosition) override;
 		void SetWorldPosition(DirectX::XMFLOAT3 newPosition) override;
 		void SetWorldRotation(DirectX::XMFLOAT3 newRotation) override;
@@ -86,5 +88,7 @@ namespace PM3D_API
 		DirectX::XMVECTOR focusPoint;
 		DirectX::XMVECTOR upVector;
 
+	private:
+		//void WindowResizeEventListener(WindowResizeEvent& event);
 	};
 }

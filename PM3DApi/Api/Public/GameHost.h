@@ -49,9 +49,9 @@ namespace PM3D_API
         void AddDebugRenderer(std::unique_ptr<DebugRenderer>&& child) { debugRenderers.push_back(std::move(child)); }
         const std::vector<std::unique_ptr<DebugRenderer>>& GetDebugRenderers() { return debugRenderers; }
 
+        virtual void SetScene(Scene* newScene);
     protected:
         std::vector<std::unique_ptr<DebugRenderer>> debugRenderers;
-        virtual void SetScene(Scene* newScene);
 
     private:
         Scene* scene;

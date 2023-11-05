@@ -51,6 +51,7 @@ public:
 		}
 	};
 
+	virtual void Draw();
 private:
 	static CSommetSprite sommets[6];
 	ID3D11Buffer* pVertexBuffer;
@@ -71,6 +72,5 @@ private:
 	virtual void Anime(float) override
 	{
 	};
-	virtual void Draw();
 };
 } // namespace PM3D

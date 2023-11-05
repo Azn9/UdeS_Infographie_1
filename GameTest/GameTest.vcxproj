@@ -78,7 +78,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -110,7 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;CPPDYNAMICLIBRARYTEMPLATE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include;$(SolutionDir)PM3DApi/Api/Public;$(SolutionDir)PetitMoteur3D/Core/Public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,6 +148,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -232,6 +232,7 @@
       <SDLCheck>true</SDLCheck>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="GameTest\Scenes\LoadingScene.cpp" />
     <ClCompile Include="GameTest\Scenes\MainScene.cpp" />
     <ClCompile Include="GameTest\TimeScaleTest.cpp" />
   </ItemGroup>
@@ -247,6 +248,7 @@
     <ClInclude Include="GameTest\CustomCube.h" />
     <ClInclude Include="GameTest\CustomPlane.h" />
     <ClInclude Include="GameTest\GameTest.h" />
+    <ClInclude Include="GameTest\Scenes\LoadingScene.h" />
     <ClInclude Include="GameTest\Scenes\MainScene.h" />
     <ClInclude Include="GameTest\TimeScaleTest.h" />
   </ItemGroup>

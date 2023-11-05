@@ -1,5 +1,6 @@
 ﻿#include "GameTest.h"
 
+#include "Scenes/LoadingScene.h"
 #include "Scenes/MainScene.h"
 
 PM3D_API::GameHost* PM3D_API::GameHost::GetInstance()
@@ -10,5 +11,5 @@ PM3D_API::GameHost* PM3D_API::GameHost::GetInstance()
 
 void GameTest::Initialize()
 {
-	SetScene(MainScene::GetInstancePtr());
+	SetScene(LoadingScene::GetInstancePtr());
 }

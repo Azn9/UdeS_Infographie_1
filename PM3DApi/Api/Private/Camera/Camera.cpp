@@ -5,6 +5,13 @@
 
 #include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 #include "../../Public/GameHost.h"
+//#include "../../Public/EventSystem/EventSystem.h"
+#include "../../Public/EventSystem/Basic/WindowResizeEvent.h"
+
+void PM3D_API::Camera::Initialize()
+{
+	//PM3D_API::EventSystem::Subscribe([](const PM3D_API::WindowResizeEvent& event) {});
+}
 
 void PM3D_API::Camera::SetLocalPosition(const DirectX::XMFLOAT3 newPosition)
 {
@@ -176,3 +183,8 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 
 	initialized = true;
 }
+
+//void PM3D_API::Camera::WindowResizeEventListener(WindowResizeEvent& event)
+//{
+//	UpdateInternalMatrices();
+//}

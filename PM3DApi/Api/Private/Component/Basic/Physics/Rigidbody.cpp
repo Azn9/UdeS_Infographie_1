@@ -3,7 +3,7 @@
 
 void PM3D_API::Rigidbody::Initialize()
 {
-	const auto physicsResolver = GameHost::GetInstance()->GetScene()->GetPhysicsResolver();
+	const auto physicsResolver = parentObject->GetScene()->GetPhysicsResolver();
 
 	const auto globalPos = physx::PxTransform(
 		physx::PxVec3(
