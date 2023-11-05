@@ -60,24 +60,16 @@ void PM3D_API::Camera::SetFocusPoint(const DirectX::XMVECTOR newFocusPoint)
 {
 	focusPoint = newFocusPoint;
 
-	const auto position = GetWorldPosition();
+	//const auto position = GetWorldPosition();
 
-	// Generate a new rotation from the focus point
-	const DirectX::XMVECTOR newRotation = DirectX::XMQuaternionRotationRollPitchYawFromVector(
-		DirectX::XMVector3Normalize(
-			DirectX::XMVectorSubtract(
-				DirectX::XMVectorSet(DirectX::XMVectorGetX(newFocusPoint), DirectX::XMVectorGetY(newFocusPoint),
-					DirectX::XMVectorGetZ(newFocusPoint), 1.0f),
-				DirectX::XMVectorSet(position.x, position.y, position.z, 1.0f)
-			)
-		)
-	);
-
-	PM3D_API::Quaternion rotation;
-	XMStoreFloat4(&rotation, newRotation);
-
-	PM3D_API::GameObject::SetWorldRotation(rotation);
 	UpdateInternalMatrices();
+	
+	DirectX::XMVECTOR rotation = DirectX::XMQuaternionRotationMatrix(matWorld);
+	PM3D_API::GameObject::SetWorldRotation({
+		rotation.m128_f32[0],
+		rotation.m128_f32[1],
+		rotation.m128_f32[2],
+		rotation.m128_f32[3]});
 }
 
 void PM3D_API::Camera::SetUpVector(const DirectX::XMFLOAT3 newUpVector)

@@ -11,17 +11,17 @@ void PM3D_API::Frustrum::SetPlanes(const Camera& cam)
     const DirectX::XMVECTOR frontMultFar = DirectX::XMVectorScale(VECTORFORWARD, cam.getFarDist());
 
     
-    nearPlane = { -cam.GetForwardVector(), VECTORFORWARD * cam.getNearDist()};
+    nearPlane = { -VECTORFORWARD, VECTORFORWARD * cam.getNearDist()};
     
-    farPlane = { cam.GetForwardVector(), frontMultFar };
+    farPlane = { VECTORFORWARD, frontMultFar };
     
-    rightPlane = { -DirectX::XMVector3Cross(frontMultFar - VECTORRIGHT * halfHSide, VECTORUP), VECTORZERO };
+    rightPlane = { DirectX::XMVector3Cross(frontMultFar - VECTORRIGHT * halfHSide, VECTORUP), VECTORZERO };
     
-    leftPlane = {-DirectX::XMVector3Cross(VECTORUP,frontMultFar + VECTORRIGHT * halfHSide), VECTORZERO };
+    leftPlane = {DirectX::XMVector3Cross(VECTORUP,frontMultFar + VECTORRIGHT * halfHSide), VECTORZERO };
     
-    topPlane = { -DirectX::XMVector3Cross(VECTORRIGHT, frontMultFar - VECTORUP * halfVSide), VECTORZERO };
+    topPlane = { DirectX::XMVector3Cross(VECTORRIGHT, frontMultFar - VECTORUP * halfVSide), VECTORZERO };
     
-    bottomPlane = {-DirectX::XMVector3Cross(frontMultFar + VECTORUP * halfVSide, VECTORRIGHT), VECTORZERO };
+    bottomPlane = {DirectX::XMVector3Cross(frontMultFar + VECTORUP * halfVSide, VECTORRIGHT), VECTORZERO };
 }
 
 bool PM3D_API::Frustrum::ContainsSphere(const DirectX::XMVECTOR& point, const float& radius) const

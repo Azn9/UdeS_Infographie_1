@@ -223,7 +223,8 @@ bool PM3D_API::MeshRenderer::IsVisible() const
 	const Camera* camera = parentObject->GetScene()->GetMainCamera();
 	float maxScale =
 		max(max(parentObject->GetWorldScale().x, parentObject->GetWorldScale().y), parentObject->GetWorldScale().z);
-	return camera->getFrustrum().ContainsSphere(DirectX::XMLoadFloat3(&parentObject->GetWorldPosition()), boundingRadius * maxScale);
+	DirectX::XMVECTOR viewPos = DirectX::XMVector3Transform( DirectX::XMLoadFloat3(&parentObject->GetWorldPosition()), camera->GetMatWorld());
+	return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
 }
 
 void PM3D_API::MeshRenderer::LoadMesh()
