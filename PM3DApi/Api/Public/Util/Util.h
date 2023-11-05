@@ -35,6 +35,11 @@ namespace Util
 		float dist;
 	};
 
+	const DirectX::XMVECTOR VECTORFORWARD = DirectX::XMVECTOR{0.f,0.f,1.f,0.f};
+	const DirectX::XMVECTOR VECTORRIGHT = DirectX::XMVECTOR{-1.f,0.f,0.f,0.f};
+	const DirectX::XMVECTOR VECTORUP = DirectX::XMVECTOR{0.f,1.f,0.f,0.f};
+	const DirectX::XMVECTOR VECTORZERO = DirectX::XMVECTOR{0.f,0.f,0.f,0.f};
+
 
 
 	void DrawDebugVector3(const std::string name, const DirectX::XMVECTOR& vec);
