@@ -18,14 +18,13 @@ namespace PM3D_API
 			const std::string& name,
 			const CameraType cameraType,
 			const DirectX::XMFLOAT3 worldPosition,
-			const DirectX::XMVECTOR focusPoint,
-			const DirectX::XMVECTOR upVector
+			const DirectX::XMVECTOR focusPoint
 		) : GameObject(
 				name,
 				worldPosition,
 				{0.0f, 0.0f, 0.0f},
 				{1.0f, 1.0f, 1.0f}
-			), cameraType(cameraType), focusPoint(focusPoint), upVector(upVector)
+			), cameraType(cameraType), focusPoint(focusPoint)
 		{
 			SetFocusPoint(focusPoint); // Recalculate rotation
 		}
@@ -33,14 +32,13 @@ namespace PM3D_API
 		Camera(
 			const CameraType cameraType,
 			const DirectX::XMFLOAT3 worldPosition,
-			const DirectX::XMVECTOR focusPoint,
-			const DirectX::XMVECTOR upVector
+			const DirectX::XMVECTOR focusPoint
 		) : GameObject(
 				"Main camera",
 				worldPosition,
 				{0.0f, 0.0f, 0.0f},
 				{1.0f, 1.0f, 1.0f}
-			), cameraType(cameraType), focusPoint(focusPoint), upVector(upVector)
+			), cameraType(cameraType), focusPoint(focusPoint)
 		{
 			SetFocusPoint(focusPoint); // Recalculate rotation
 		}

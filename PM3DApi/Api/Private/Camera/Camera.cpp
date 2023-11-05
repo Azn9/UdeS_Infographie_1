@@ -153,7 +153,8 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	const DirectX::XMFLOAT3 position = GetWorldPosition();
 
 	DirectX::XMVECTOR eye_position = DirectX::XMVectorSet(position.x, position.y, position.z, 1.f);
-	matView = DirectX::XMMatrixLookAtRH(eye_position, focusPoint, upVector);
+	matView = DirectX::XMMatrixLookAtRH(eye_position, focusPoint, Util::VECTORUP);
+	matWorld = DirectX::XMMatrixInverse(nullptr, matView);
 
 	//forwardVector = DirectX::XMVector3TransformCoord()
 	//forwardVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(focusPoint, eye_position));
