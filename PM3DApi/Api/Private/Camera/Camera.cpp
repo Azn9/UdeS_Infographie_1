@@ -72,12 +72,6 @@ void PM3D_API::Camera::SetFocusPoint(const DirectX::XMVECTOR newFocusPoint)
 		rotation.m128_f32[3]});
 }
 
-void PM3D_API::Camera::SetUpVector(const DirectX::XMFLOAT3 newUpVector)
-{
-	upVector = DirectX::XMVectorSet(newUpVector.x, newUpVector.y, newUpVector.z, 1.0f);
-	UpdateInternalMatrices();
-}
-
 void PM3D_API::Camera::SetFieldOfView(const float newFieldOfView)
 {
 	fieldOfView = newFieldOfView;
@@ -103,34 +97,29 @@ void PM3D_API::Camera::DrawDebugInfo() const
 		DirectX::XMVectorGetY(this->focusPoint),
 		DirectX::XMVectorGetZ(this->focusPoint)
 	};
-	const float upVector[3] = {
-		DirectX::XMVectorGetX(this->upVector),
-		DirectX::XMVectorGetY(this->upVector),
-		DirectX::XMVectorGetZ(this->upVector)
-	};
 	
 	ImGui::Text("Focus point");
 	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(focusPoint[0])).c_str());
 	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(focusPoint[1])).c_str());
 	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(focusPoint[2])).c_str());
 
-	ImGui::Text("Forward vector");
+	/*ImGui::Text("Forward vector");
 	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(forwardVector.m128_f32[0])).c_str());
 	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(forwardVector.m128_f32[1])).c_str());
 	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(forwardVector.m128_f32[2])).c_str());
 
 	ImGui::Text("Up vector");
-	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(upVector[0])).c_str());
-	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(upVector[1])).c_str());
-	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(upVector[2])).c_str());
+	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(upVector.m128_f32[0])).c_str());
+	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(upVector.m128_f32[1])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(upVector.m128_f32[2])).c_str());
 
 	ImGui::Text("Right vector");
 	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(rightVector.m128_f32[0])).c_str());
 	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(rightVector.m128_f32[1])).c_str());
-	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(rightVector.m128_f32[2])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(rightVector.m128_f32[2])).c_str());*/
 	
-	ImGui::Text("Frustrum");
-	frustrum.DrawDebugInfo();
+	//ImGui::Text("Frustrum");
+	//frustrum.DrawDebugInfo();
 
 	ImGui::Text("Type");
 	ImGui::SameLine(100); ImGui::Text(cameraType == PERSECTIVE ? "Perspective" : "Orthographic");

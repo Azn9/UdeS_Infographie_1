@@ -93,9 +93,10 @@ namespace PM3D_API
 		float farDist = 400.0f;
 
 		DirectX::XMVECTOR focusPoint;
-		DirectX::XMVECTOR upVector;
+		
+		/*DirectX::XMVECTOR upVector;
 		DirectX::XMVECTOR forwardVector;
-		DirectX::XMVECTOR rightVector;
+		DirectX::XMVECTOR rightVector;*/
 
 		Frustrum frustrum;
 
