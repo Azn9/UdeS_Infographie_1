@@ -27,13 +27,18 @@ public:
 
 	void* GetMesh() override { return mesh; }
 
+	std::vector<XMFLOAT3> getPositionArray() const override { return Position; }
+	std::vector<int> getIndexFaces() const override { return indexFaces; }
+
+
 private:
 	fastObjMesh* mesh;
-
+	
 	std::vector<int> SubsetIndex;
 
 	// *** Les sommets 
 	std::vector<XMFLOAT3> Position;				// Tableau des positions ( v )
+	std::vector<int> indexFaces;				// Tableau des positions ( v )
 	std::vector<XMFLOAT2> CoordTex;				// Tableau des coordonn�es de texture ( vt )
 	std::vector<XMFLOAT3> Normale;				// Tableau des normales ( vn )
 	std::vector<XMFLOAT3> BiNormale;			// Tableau des binormales
