@@ -155,8 +155,9 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	DirectX::XMVECTOR eye_position = DirectX::XMVectorSet(position.x, position.y, position.z, 1.f);
 	matWorld = DirectX::XMMatrixLookAtRH(eye_position, focusPoint, upVector);
 
-	forwardVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(focusPoint, eye_position));
-	rightVector = DirectX::XMVector3Cross(forwardVector, upVector);
+	//forwardVector = DirectX::XMVector3TransformCoord()
+	//forwardVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(focusPoint, eye_position));
+	//rightVector = DirectX::XMVector3Cross(forwardVector, upVector);
 	
 	frustrum.SetPlanes(*this);
 	
