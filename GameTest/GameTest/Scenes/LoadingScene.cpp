@@ -6,6 +6,7 @@
 #include "GameTest/CustomCube.h"
 #include "GameTest/CustomPlane.h"
 #include "GameTest/Components/CameraMoverComponent.h"
+#include "GameTest/Components/LightMoverComponent.h"
 
 void LoadingScene::InitializeCamera()
 {
@@ -18,7 +19,7 @@ void LoadingScene::InitializeCamera()
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarPlane(100.0f);
-    mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
+    //mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
     SetMainCamera(std::move(mainCamera));
 }
 
@@ -46,5 +47,8 @@ void LoadingScene::InitializeObjects()
     cube->SetWorldPosition(XMFLOAT3(0, 1.0f, 0.0f));
     cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
     cube->Initialize();
+
+    cube->AddComponent(std::make_unique<LightMoverComponent>(0));
+    
     AddChild(std::move(cube));
 }
