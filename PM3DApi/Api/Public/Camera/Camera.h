@@ -18,13 +18,14 @@ namespace PM3D_API
 			const std::string& name,
 			const CameraType cameraType,
 			const DirectX::XMFLOAT3 worldPosition,
-			const DirectX::XMVECTOR focusPoint
+			const DirectX::XMVECTOR focusPoint,
+			const DirectX::XMVECTOR upDirection = {0.f,1.f,0.f,0.f}
 		) : GameObject(
 				name,
 				worldPosition,
 				{0.0f, 0.0f, 0.0f},
 				{1.0f, 1.0f, 1.0f}
-			), cameraType(cameraType), focusPoint(focusPoint)
+			), cameraType(cameraType), focusPoint(focusPoint), upDirection(upDirection)
 		{
 			SetFocusPoint(focusPoint); // Recalculate rotation
 		}
@@ -32,13 +33,14 @@ namespace PM3D_API
 		Camera(
 			const CameraType cameraType,
 			const DirectX::XMFLOAT3 worldPosition,
-			const DirectX::XMVECTOR focusPoint
+			const DirectX::XMVECTOR focusPoint,
+			const DirectX::XMVECTOR upDirection = {0.f,1.f,0.f,0.f}
 		) : GameObject(
 				"Main camera",
 				worldPosition,
 				{0.0f, 0.0f, 0.0f},
 				{1.0f, 1.0f, 1.0f}
-			), cameraType(cameraType), focusPoint(focusPoint)
+			), cameraType(cameraType), focusPoint(focusPoint), upDirection(upDirection)
 		{
 			SetFocusPoint(focusPoint); // Recalculate rotation
 		}
@@ -52,7 +54,7 @@ namespace PM3D_API
 
 		void SetFocusPoint(DirectX::XMFLOAT3 newFocusPoint);
 		void SetFocusPoint(DirectX::XMVECTOR newFocusPoint);
-		void SetUpVector(DirectX::XMFLOAT3 newUpVector);
+		void SetUpDirection(DirectX::XMFLOAT3 newUpDirection);
 
 		void SetFieldOfView(float newFieldOfView);
 		void SetFarDist(float newFarDist);
@@ -90,7 +92,8 @@ namespace PM3D_API
 		float farDist = 400.0f;
 
 		DirectX::XMVECTOR focusPoint;
-		
+
+		DirectX::XMVECTOR upDirection;
 		/*DirectX::XMVECTOR upVector;
 		DirectX::XMVECTOR forwardVector;
 		DirectX::XMVECTOR rightVector;*/

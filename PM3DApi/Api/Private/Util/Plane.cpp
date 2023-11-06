@@ -1,5 +1,8 @@
 ﻿#include "../../Public/Util/Plane.h"
 
+namespace PM3D_API
+{
+
 Plane::Plane(const DirectX::XMVECTOR& _normal, const DirectX::XMVECTOR& point)
     : normal(DirectX::XMVector3Normalize(_normal))
 {
@@ -15,4 +18,6 @@ bool Plane::IsSphereInFrontOfPlane(const DirectX::XMVECTOR& point, const float& 
 {
     float result = SignedDistanceFromPlane(point);
     return  result > radius + 0.01f;
+}
+
 }

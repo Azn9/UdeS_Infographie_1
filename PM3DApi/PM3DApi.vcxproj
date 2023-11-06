@@ -1659,7 +1659,6 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <ObjectFileName>x64\Debug\</ObjectFileName>
       <CallingConvention>Cdecl</CallingConvention>
-      <ProgramDataBaseFileName>C:\Users\ugola\Documents\_ekol\_IG\UdeS_Infographie_1\x64\Debug\PM3DApi.pdb</ProgramDataBaseFileName>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>x64\Debug\PM3DApi.pch</PrecompiledHeaderOutputFile>
       <PreprocessToFile>false</PreprocessToFile>
@@ -1691,7 +1690,6 @@
       <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\ugola\Documents\_ekol\_IG\UdeS_Infographie_1\PM3DApi\;C:\Users\ugola\Documents\_ekol\_IG\UdeS_Infographie_1\libs\physx_include</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Util\Quaternion.cpp" />
