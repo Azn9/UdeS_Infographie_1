@@ -54,7 +54,7 @@ namespace PM3D_API
 
 		void SetFocusPoint(DirectX::XMFLOAT3 newFocusPoint);
 		void SetFocusPoint(DirectX::XMVECTOR newFocusPoint);
-		void SetUpDirection(DirectX::XMFLOAT3 newUpDirection);
+		void SetUpDirection(DirectX::XMVECTOR newUpDirection);
 
 		void SetFieldOfView(float newFieldOfView);
 		void SetFarDist(float newFarDist);

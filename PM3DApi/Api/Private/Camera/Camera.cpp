@@ -106,14 +106,14 @@ void PM3D_API::Camera::DrawDebugInfo() const
 	/*ImGui::Text("Forward vector");
 	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(forwardVector.m128_f32[0])).c_str());
 	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(forwardVector.m128_f32[1])).c_str());
-	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(forwardVector.m128_f32[2])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(forwardVector.m128_f32[2])).c_str());*/
 
-	ImGui::Text("Up vector");
-	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(upVector.m128_f32[0])).c_str());
-	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(upVector.m128_f32[1])).c_str());
-	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(upVector.m128_f32[2])).c_str());
+	ImGui::Text("Up direction");
+	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(upDirection.m128_f32[0])).c_str());
+	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(upDirection.m128_f32[1])).c_str());
+	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(upDirection.m128_f32[2])).c_str());
 
-	ImGui::Text("Right vector");
+	/*ImGui::Text("Right vector");
 	ImGui::SameLine(100); ImGui::Text(("x=" + std::to_string(rightVector.m128_f32[0])).c_str());
 	ImGui::SameLine(200); ImGui::Text(("y=" + std::to_string(rightVector.m128_f32[1])).c_str());
 	ImGui::SameLine(300); ImGui::Text(("z=" + std::to_string(rightVector.m128_f32[2])).c_str());*/
@@ -174,4 +174,9 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	matViewProj = matView * matProj;
 
 	initialized = true;
+}
+
+void PM3D_API::Camera::SetUpDirection(DirectX::XMVECTOR newUpDirection)
+{
+	upDirection = newUpDirection;
 }
