@@ -3,7 +3,6 @@
 #include <thread>
 
 #include "MainScene.h"
-#include "../../../PetitMoteur3D/Core/Public/Sprite/AfficheurSprite.h"
 #include "GameTest/CustomCube.h"
 #include "GameTest/CustomPlane.h"
 #include "GameTest/Components/CameraMoverComponent.h"
@@ -48,35 +47,4 @@ void LoadingScene::InitializeObjects()
     cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
     cube->Initialize();
     AddChild(std::move(cube));
-    
-    afficheurSprite = new PM3D::CAfficheurSprite(PM3D_API::GameHost::GetInstance()->GetDispositif());
-    afficheurSprite->AjouterSprite("tree02s.dds", 200,400);
-
-
-    // Load scene in the background
-    std::thread loadingThread([this]()
-    {
-        const auto mainScenePtr = MainScene::GetInstancePtr();
-        mainScenePtr->Initialize();
-        
-        isLoaded = true;
-    });
-    loadingThread.detach();
-}
-
-void LoadingScene::Draw()
-{
-    if (!isLoaded)
-    {
-        Scene::Draw();
-        return;
-    }
-
-    PM3D_API::GameHost::GetInstance()->SetScene(MainScene::GetInstancePtr());
-    MainScene::GetInstancePtr()->Draw();
-}
-
-void LoadingScene::DrawSelf() const
-{
-    afficheurSprite->Draw();
 }

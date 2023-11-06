@@ -7,6 +7,6 @@ public:
     CustomPlane() : BasicShape("TestPlane") {}
 
 private:
-    std::wstring GetShaderFileName() override { return L"NewShader.fx"; }
+    std::wstring GetShaderFileName() override { return L"SnowShader.fx"; }
     std::string GetMeshFileName() override { return "testplane.obj"; }
 };
