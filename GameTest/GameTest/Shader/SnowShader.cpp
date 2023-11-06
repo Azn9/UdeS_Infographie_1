@@ -224,7 +224,7 @@ void SnowShader::Initialize(const std::wstring& wstring)
 
     // Création d’une shader resource view pour lire le tampond de profondeur dans le shader.
     D3D11_SHADER_RESOURCE_VIEW_DESC sr_desc;
-    sr_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sr_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
     sr_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     sr_desc.Texture2D.MostDetailedMip = 0;
     sr_desc.Texture2D.MipLevels = 1;

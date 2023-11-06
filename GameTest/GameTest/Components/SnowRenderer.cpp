@@ -32,16 +32,14 @@ void SnowRenderer::Initialize()
     sr_desc.Texture2D.MostDetailedMip = 0;
     sr_desc.Texture2D.MipLevels = 1;
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(snowRVT, &sr_desc, &snowRVTResourceView));
-
-    D3D11_TEXTURE2D_DESC stagingDesc;
-    ZeroMemory(&stagingDesc, sizeof(stagingDesc));
-    stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
-    stagingDesc.Usage = D3D11_USAGE_STAGING;
-    stagingDesc.BindFlags = 0;
-    stagingDesc.MiscFlags = 0;
+    
+    textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+    textureDesc.Usage = D3D11_USAGE_STAGING;
+    textureDesc.BindFlags = 0;
+    textureDesc.MiscFlags = 0;
 
     stagingTexture = nullptr;
-    PM3D::DXEssayer(pD3DDevice->CreateTexture2D(&stagingDesc, nullptr, &stagingTexture));
+    PM3D::DXEssayer(pD3DDevice->CreateTexture2D(&textureDesc, nullptr, &stagingTexture));
 }
 
 void SnowRenderer::DrawSelf() const
