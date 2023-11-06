@@ -21,6 +21,9 @@
     <ClCompile Include="GameTest\Scenes\MainScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameTest\TimeScaleTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameTest\Components\CameraMoverComponent.h">
@@ -39,6 +42,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameTest\TimeScaleTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTest\CustomCube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTest\Components\CameraFollowComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

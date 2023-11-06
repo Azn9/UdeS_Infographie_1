@@ -22,6 +22,7 @@
 #include "GameTest/CustomPlane.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
+#include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
 #include <Heightmap.h>
 
@@ -43,7 +44,7 @@ void MainScene::InitializeCamera()
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarPlane(1000.0f);
-    mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
+    mainCamera->AddComponent(std::make_unique<CameraFollowComponent>());
     SetMainCamera(std::move(mainCamera));
 }
 
@@ -51,7 +52,7 @@ void MainScene::InitializeLights()
 {
     auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
         "Directional light",
-        XMFLOAT3(-1.0f, -1.0f, 0.0f)
+        XMFLOAT3(1.0f, -1.0f, 0.0f)
     );
     directionalLight->SetIntensity(1.0f);
     directionalLight->Initialize();
@@ -63,7 +64,7 @@ void MainScene::InitializeObjects()
     // ============= Add a plane =============
     auto map = std::make_unique<Heightmap>();
     map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
-    map->SetWorldScale(XMFLOAT3(.5f, .5f, .5f));
+    map->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
     map->Initialize();
 
     auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
@@ -94,8 +95,10 @@ void MainScene::InitializeObjects()
     sphere->AddComponent(std::move(sphereCollider));
     sphereColliderPtr->Initialize();
     
-    AddChild(std::move(sphere));
+    GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere.get());
 
+    AddChild(std::move(sphere));
+    GetMainCamera();
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);

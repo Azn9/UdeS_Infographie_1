@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>_DEBUG;CPPDYNAMICLIBRARYTEMPLATE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include;$(SolutionDir)PM3DApi/Api/Public;$(SolutionDir)PetitMoteur3D/Core/Public</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include;$(SolutionDir)PM3DApi/Api/Public;$(SolutionDir)PetitMoteur3D/Core/Public;$(SolutionDir)PetitMoteur3D/Core</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -242,6 +242,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameTest\Components\CameraFollowComponent.h" />
     <ClInclude Include="GameTest\Components\CameraMoverComponent.h" />
     <ClInclude Include="GameTest\Components\LightMoverComponent.h" />
     <ClInclude Include="GameTest\CustomCube.h" />
