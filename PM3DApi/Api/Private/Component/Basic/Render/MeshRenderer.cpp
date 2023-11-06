@@ -172,7 +172,7 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		const unsigned indexStart = objGroup.index_offset;
 		
 		unsigned int indexDrawAmount;
-		if (mesh->object_count > 1)
+		if (mesh->object_count > 1 && i + 1 < mesh->object_count)
 		{
 			indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
 		} else
@@ -184,15 +184,17 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		{
 			continue;
 		}
+
+		const auto material = Material[SubmeshMaterialIndex[i]];
 		
 		shader->ApplyMaterialParameters(
 			shaderParameters,
-			XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient),
-			XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse),
-			XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular),
-			Material[SubmeshMaterialIndex[i]].Puissance,
-			Material[SubmeshMaterialIndex[i]].pAlbedoTexture,
-			Material[SubmeshMaterialIndex[i]].pNormalmapTexture
+			XMLoadFloat4(&material.Ambient),
+			XMLoadFloat4(&material.Diffuse),
+			XMLoadFloat4(&material.Specular),
+			material.Puissance,
+			material.pAlbedoTexture,
+			material.pNormalmapTexture
 		);
 
 		// IMPORTANT pour ajuster les param.
@@ -307,6 +309,8 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		if (index >= Material.size()) index = 0; // valeur de défaut
 		SubmeshMaterialIndex.push_back(index);
 	}
+
+	std::reverse(SubmeshMaterialIndex.begin(), SubmeshMaterialIndex.end());
 
 	// 4d) Chargement des textures
 	PM3D::CGestionnaireDeTextures& TexturesManager = PM3D::CMoteurWindows::GetInstance().GetTextureManager();
