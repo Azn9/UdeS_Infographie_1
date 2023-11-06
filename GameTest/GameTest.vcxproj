@@ -245,6 +245,7 @@
     <ClInclude Include="GameTest\Components\CameraFollowComponent.h" />
     <ClInclude Include="GameTest\Components\CameraMoverComponent.h" />
     <ClInclude Include="GameTest\Components\LightMoverComponent.h" />
+    <ClInclude Include="GameTest\Components\MovableComponent.h" />
     <ClInclude Include="GameTest\CustomCube.h" />
     <ClInclude Include="GameTest\CustomPlane.h" />
     <ClInclude Include="GameTest\GameTest.h" />

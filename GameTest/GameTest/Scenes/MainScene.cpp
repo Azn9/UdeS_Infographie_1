@@ -23,6 +23,7 @@
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
+#include "GameTest/Components/MovableComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
 #include <Heightmap.h>
 
@@ -97,9 +98,13 @@ void MainScene::InitializeObjects()
     
     GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere.get());
 
+    sphere->AddComponent(std::make_unique<MovableComponent>());
+
     AddChild(std::move(sphere));
-    GetMainCamera();
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
+
+
+    GetPhysicsResolver()->GetPhysics();
 }

@@ -3,6 +3,7 @@
 
 #include "../../../../Public/Component/Component.h"
 #include "../../../../Public/Util/Axis.h"
+#include "../../../../../../libs/physx_include/PxPhysicsAPI.h"
 
 namespace PM3D_API
 {
@@ -27,6 +28,15 @@ public:
 	void DrawDebugInfo() const override;
 
 	bool IsStatic() const { return isStatic; }
+
+	physx::PxRigidDynamic* getRigidDynamic() 
+	{ 
+		if (isStatic) 
+			return nullptr; 
+		else 
+			return static_cast<physx::PxRigidDynamic*>(actor);
+	}
+
 protected:
 	bool isStatic;
 	physx::PxRigidActor* actor;
