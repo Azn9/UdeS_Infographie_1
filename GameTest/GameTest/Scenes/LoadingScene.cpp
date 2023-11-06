@@ -48,7 +48,15 @@ void LoadingScene::InitializeObjects()
     cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
     cube->Initialize();
 
-    cube->AddComponent(std::make_unique<LightMoverComponent>(0));
+    cube->AddComponent(std::make_unique<LightMoverComponent>(0.f));
     
     AddChild(std::move(cube));
+
+    auto tree = std::make_unique<GameObject>("tree");
+    tree->Initialize();
+
+    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
+    tree->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "tree_pineDefaultA.obj"));
+
+    AddChild(std::move(tree));
 }

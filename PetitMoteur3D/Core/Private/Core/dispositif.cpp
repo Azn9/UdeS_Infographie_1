@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Core/Public/Core/dispositif.h"
 
 namespace PM3D

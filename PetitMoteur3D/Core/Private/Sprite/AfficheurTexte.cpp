@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "Core/Public/Sprite/AfficheurTexte.h"
+﻿#include "Core/Public/Sprite/AfficheurTexte.h"
 
 #include "Core/Public/Util/util.h"
 

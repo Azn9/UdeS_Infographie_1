@@ -1,11 +1,5 @@
 ﻿#pragma once
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <DirectXMath.h>
-
-// ReSharper disable once CppUnusedIncludeDirective
-#include "../../../PetitMoteur3D/stdafx.h" // NECESSAIRE POUR COMPILER DispositifD3D11.h
-
 #include "../../../PetitMoteur3D/Core/Public/Core/DispositifD3D11.h"
 #include "Debug/DebugRenderer.h"
 #include "Scene/Scene.h"

@@ -33,7 +33,7 @@ void PM3D_API::MeshCollider::Initialize()
 		verts.erase(verts.begin());
 	}
 
-	PxU32 nbVerts = verts.size();
+	PxU32 nbVerts = static_cast<PxU32>(verts.size());
 
 	std::vector<PxU32> indices32;
 	
@@ -49,7 +49,7 @@ void PM3D_API::MeshCollider::Initialize()
 		indices32[i * 3 + 1] = temp;
 	}
 	
-	PxU32 triCount = indices32.size() / 3;
+	PxU32 triCount = static_cast<PxU32>(indices32.size() / 3);
 
 	for_each(begin(verts), end(verts), [worldScale](XMFLOAT3& vect) {
 		vect.x *= worldScale.x;

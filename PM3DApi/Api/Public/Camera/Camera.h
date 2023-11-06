@@ -85,8 +85,11 @@ namespace PM3D_API
 		float nearPlane = 0.05f;
 		float farPlane = 400.0f;
 
+#pragma warning(push)
+#pragma warning(disable: 4324)
 		DirectX::XMVECTOR focusPoint;
 		DirectX::XMVECTOR upVector;
+#pragma warning(pop)
 
 	private:
 		//void WindowResizeEventListener(WindowResizeEvent& event);

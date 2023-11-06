@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include <thread>
 #include <string>
 #include "Core/Public/Util/resource.h"

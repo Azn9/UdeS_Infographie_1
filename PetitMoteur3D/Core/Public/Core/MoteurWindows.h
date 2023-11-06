@@ -1,6 +1,9 @@
 #pragma once
 #include "Moteur.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 namespace PM3D
 {
 #define MAX_LOADSTRING 100

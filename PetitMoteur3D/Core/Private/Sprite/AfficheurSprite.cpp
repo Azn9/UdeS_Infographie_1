@@ -1,5 +1,6 @@
-﻿#include "stdafx.h"
-#include "Core/Public/Sprite/AfficheurSprite.h"
+﻿#include "Core/Public/Sprite/AfficheurSprite.h"
+
+#include <d3dcompiler.h>
 
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Core/MoteurWindows.h"
