@@ -11,4 +11,7 @@ public:
 
 private:
     void DrawRVT() const;
+    ID3D11Texture2D* snowRVT;
+    ID3D11Texture2D* stagingTexture;
+    ID3D11ShaderResourceView* snowRVTResourceView;
 };

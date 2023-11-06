@@ -100,6 +100,7 @@ struct Light {
 cbuffer param
 {
     float4x4 matWorldViewProj; // la matrice totale 
+    float4x4 matViewProj; // la matrice totale 
     float4x4 matWorld; // matrice de transformation dans le monde
     float4 vCamera; // la position de la caméra
     float4 dCamera; // La direction de la caméra
@@ -126,37 +127,19 @@ SamplerState ShadowMapSampler
 	AddressV = Clamp;
 };
 
-Texture2D snowRVT;
-SamplerState snowRVTSampler
-{
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
-
-Texture2D sparkleTexture;
-SamplerState sparkleTextureSampler
-{
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
-
 Texture2D normalMap;
 SamplerState SampleStateNormalMap;
 
 struct VS_Sortie
 {
-	float4 position  : SV_Position;
-	float3 normal    : TEXCOORD0;
-    float3 binormal  : TEXCOORD1;
-    float3 tangent   : TEXCOORD2;
-	float3 cameraVec : TEXCOORD3;
-	float2 coordTex  : TEXCOORD4;
-	float3 worldPos  : TEXCOORD5;
-	float3 cameraDir : TEXCOORD6;
-    float  noiseValue : TEXCOORD7;
-	float4 PosInMap[MAX_LIGHTS] : TEXCOORD8;
+	float4 position  : Position;
+	float3 normal    : NORMAL;
+    float3 binormal  : BINORMAL;
+    float3 tangent   : TANGENT;
+	float3 cameraVec : TEXCOORD0;
+	float2 coordTex  : TEXCOORD1;
+	float3 worldPos  : TEXCOORD2;
+	float3 cameraDir : TEXCOORD3;
 };
 
 VS_Sortie MainVS(
@@ -172,10 +155,13 @@ VS_Sortie MainVS(
     output.binormal = mul(float4(vBiNormal, 0.0f), matWorld);
     output.tangent = mul(float4(vTangent, 0.0f), matWorld);
 
+
+    /*ANCHOR
     float noiseV = snoise01(vPos.xz * 2.0f);
     vPos.y = vPos.y + noiseV * 1;
 
     output.noiseValue = noiseV;
+    */
 
     output.position = mul(vPos, matWorldViewProj);
     output.worldPos = mul(vPos, matWorld);
@@ -187,6 +173,7 @@ VS_Sortie MainVS(
     output.cameraVec = vCamera.xyz - output.worldPos;
     output.cameraDir = dCamera.xyz;
 
+    /*ANCHOR
 	float4 PosInMaps[MAX_LIGHTS];
 
 	for (uint i = 0; i < MAX_LIGHTS; ++i) {
@@ -199,11 +186,101 @@ VS_Sortie MainVS(
 	}
 
 	output.PosInMap = PosInMaps;
+    */
 
 	return output;
 }
 
-float4 MainPS(VS_Sortie input) : SV_Target
+struct HS_CONSTANTES_Sortie
+{
+    float edgeTesselationFactor[4]   : SV_TessFactor;
+    float insideTesselationFactor[2] : SV_InsideTessFactor;
+};
+
+struct HS_Sortie
+{
+	float4 position  : Position;
+	float3 normal    : NORMAL;
+    float3 binormal  : BINORMAL;
+    float3 tangent   : TANGENT;
+	float3 cameraVec : TEXCOORD0;
+	float2 coordTex  : TEXCOORD1;
+	float3 worldPos  : TEXCOORD2;
+	float3 cameraDir : TEXCOORD3;
+};
+
+#define TessellationFactor 1
+
+HS_CONSTANTES_Sortie ConstantHS(InputPatch<VS_Sortie, 4> ip, uint PatchID :SV_PrimitiveID)
+{
+    HS_CONSTANTES_Sortie Sortie;
+    
+    Sortie.edgeTesselationFactor[0] = 
+    Sortie.edgeTesselationFactor[1] = 
+    Sortie.edgeTesselationFactor[2] = 
+    Sortie.edgeTesselationFactor[3] = TessellationFactor;
+
+    Sortie.insideTesselationFactor[0] = 
+    Sortie.insideTesselationFactor[1] = TessellationFactor;
+
+    return Sortie;
+}
+
+[domain("quad")]
+[partitioning("integer")]
+[outputtopology("triangle_ccw")]
+[outputcontrolpoints(4)]
+[patchconstantfunc("ConstantHS")]
+HS_Sortie EssaiHS( InputPatch<VS_Sortie, 4> p, uint i : SV_OutputControlPointID, uint PatchID : SV_PrimitiveID )
+{
+    HS_Sortie Sortie;
+    
+    Sortie.position = p[i].position;
+    Sortie.normal = p[i].normal;
+    Sortie.binormal = p[i].binormal;
+    Sortie.tangent = p[i].tangent;
+    Sortie.cameraDir = p[i].cameraDir;
+    Sortie.cameraVec = p[i].cameraVec;
+    Sortie.worldPos = p[i].worldPos;
+    Sortie.coordTex = p[i].coordTex;
+
+    return Sortie;
+}
+
+struct DS_Sortie
+{
+	float4 position  : Position;
+	float3 normal    : NORMAL;
+    float3 binormal  : BINORMAL;
+    float3 tangent   : TANGENT;
+	float3 cameraVec : TEXCOORD0;
+	float2 coordTex  : TEXCOORD1;
+	float3 worldPos  : TEXCOORD2;
+	float3 cameraDir : TEXCOORD3;
+};
+
+[domain("quad")]
+DS_Sortie EssaiDS( HS_CONSTANTES_Sortie entree, float2 UV : SV_DomainLocation, const OutputPatch<HS_Sortie, 4> quad ) 
+{
+    DS_Sortie Sortie;
+    
+    float3 verticalPos1 = lerp(quad[0].position, quad[1].position, UV.y);
+    float3 verticalPos2 = lerp(quad[3].position, quad[2].position, UV.y);
+    float3 finalPos = lerp(verticalPos1, verticalPos2, UV.x);
+    
+    Sortie.position = mul(float4(finalPos, 1), matViewProj);
+    
+    float3 coordTex1 = lerp(quad[0].coordTex,quad[1].coordTex,UV.y);
+    float3 coordTex2 = lerp(quad[3].coordTex,quad[2].coordTex,UV.y);
+    Sortie.coordTex = lerp(coordTex1, coordTex2,UV.x);
+    
+    return Sortie;
+}
+
+
+
+
+float4 MainPS(DS_Sortie input) : SV_Target
 {
     float3 normal = input.normal;
     float3 binormal = input.binormal;
