@@ -1,5 +1,4 @@
-﻿#include "stdafx.h"
-#include "Core/Public/Core/CDIManipulateur.h"
+﻿#include "Core/Public/Core/CDIManipulateur.h"
 
 #include <any>
 

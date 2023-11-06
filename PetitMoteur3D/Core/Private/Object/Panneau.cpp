@@ -1,2 +1,1 @@
-﻿#include "stdafx.h"
-#include "Core/Public/Object/Panneau.h"
+﻿#include "Core/Public/Object/Panneau.h"

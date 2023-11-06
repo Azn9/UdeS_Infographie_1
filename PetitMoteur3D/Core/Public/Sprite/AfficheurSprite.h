@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "SpriteTemp.h"
 #include "../../Public/Shader/d3dx11effect.h"
 #include "../../Public/Core/DispositifD3D11.h"

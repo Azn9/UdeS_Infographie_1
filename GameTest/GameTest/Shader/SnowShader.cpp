@@ -1,6 +1,8 @@
 ﻿#include "SnowShader.h"
 
 #include <codecvt>
+#include <d3dcompiler.h>
+#include <algorithm>
 
 #include "../../../PetitMoteur3D/Core/Public/Util/resource.h"
 #include "../../../PetitMoteur3D/Core/Public/Util/util.h"
@@ -450,7 +452,7 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
         }
         else
         {
-            int remaining = 10 - ambiantLights.size();
+            int remaining = 10 - static_cast<int>(ambiantLights.size());
 
             if (directionalLights.size() > remaining)  // NOLINT(bugprone-branch-clone)
             {
@@ -459,7 +461,7 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
             }
             else
             {
-                remaining -= directionalLights.size();
+                remaining -= static_cast<int>(directionalLights.size());
 
                 // Adds the remaining lights
                 std::copy_n(otherLights.begin(), remaining,
@@ -493,7 +495,7 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
     lightParametersBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     lightParametersBufferDesc.StructureByteStride = sizeof(PM3D_API::ShaderLightDefaultParameters);
     lightParametersBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * shaderLightsParameters.size();
+    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * static_cast<UINT>(shaderLightsParameters.size());
 
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = shaderLightsParameters.data();
@@ -506,7 +508,7 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
     srvDesc.Format = DXGI_FORMAT_UNKNOWN;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     srvDesc.Buffer.FirstElement = 0;
-    srvDesc.Buffer.ElementWidth = shaderLightsParameters.size();
+    srvDesc.Buffer.ElementWidth = static_cast<UINT>(shaderLightsParameters.size());
 
     ID3D11ShaderResourceView* lightSRV = nullptr;
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(lightBuffer, &srvDesc, &lightSRV));

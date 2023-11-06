@@ -1,5 +1,4 @@
-﻿#include "StdAfx.h"
-#include "Core/Public/Core/dispositifd3d11.h"
+﻿#include "Core/Public/Core/dispositifd3d11.h"
 #include "Core/Public/Texture/Texture.h"
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Util/util.h"
