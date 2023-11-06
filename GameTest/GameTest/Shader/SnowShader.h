@@ -53,6 +53,25 @@ public:
 
 	void ApplyShaderParams() const override;
 
+	struct SnowShaderParameters
+	{
+		DirectX::XMMATRIX matWorldViewProj;
+		DirectX::XMMATRIX matWorld;
+
+		DirectX::XMVECTOR cameraPos;
+		DirectX::XMVECTOR cameraDir;
+
+		DirectX::XMVECTOR materialAmbiant;
+		DirectX::XMVECTOR materialDiffuse;
+		DirectX::XMVECTOR materialSpecular;
+
+		float materialSpecularPower;
+
+		float fallback;
+		int hasAlbedoTexture;
+		int hasNormalmapTexture;
+		int isPreCompute;
+	};
 protected:
 	std::wstring fileName;
 
@@ -74,24 +93,6 @@ protected:
 	mutable ID3D11Buffer* indexBuffer;
 
 private:
-	struct SnowShaderParameters
-	{
-		DirectX::XMMATRIX matWorldViewProj;
-		DirectX::XMMATRIX matWorld;
-
-		DirectX::XMVECTOR cameraPos;
-		DirectX::XMVECTOR cameraDir;
-
-		DirectX::XMVECTOR materialAmbiant;
-		DirectX::XMVECTOR materialDiffuse;
-		DirectX::XMVECTOR materialSpecular;
-
-		float materialSpecularPower;
-
-		bool hasAlbedoTexture;
-		bool hasNormalmapTexture;
-	};
-
 	PM3D_API::FileWatcher fileWatcher;
 	mutable std::mutex reloadingMutex{};
 };

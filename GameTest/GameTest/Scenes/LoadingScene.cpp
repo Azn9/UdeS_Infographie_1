@@ -7,6 +7,7 @@
 #include "GameTest/CustomPlane.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
+#include "GameTest/Components/SnowMover.h"
 
 void LoadingScene::InitializeCamera()
 {
@@ -49,14 +50,7 @@ void LoadingScene::InitializeObjects()
     cube->Initialize();
 
     cube->AddComponent(std::make_unique<LightMoverComponent>(0.f));
+    cube->AddComponent(std::make_unique<SnowMover>());
     
     AddChild(std::move(cube));
-
-    auto tree = std::make_unique<GameObject>("tree");
-    tree->Initialize();
-
-    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
-    tree->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "tree_pineDefaultA.obj"));
-
-    AddChild(std::move(tree));
 }
