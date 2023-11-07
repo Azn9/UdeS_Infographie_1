@@ -13,14 +13,23 @@ public:
 	void Update() override
 	{
 		DirectX::XMFLOAT3 preScale = parentObject->GetWorldScale();
+		physx::PxShape* shape = parentObject->GetComponent<PM3D_API::SphereCollider>()->getShape();
+		physx::PxShapeFlags flags = shape->getFlags(); // might be put in the if condition
+		if (flags & physx::PxShapeFlag::eTRIGGER_SHAPE)
+		{
+			preScale.x = preScale.x / 2.f;
+			preScale.y = preScale.y / 2.f;
+			preScale.z = preScale.z / 2.f;
+			flags &= ~physx::PxShapeFlag::eTRIGGER_SHAPE;
+			shape->setFlags(flags);
+		}
+
 		parentObject->SetWorldScale(DirectX::XMFLOAT3(
 			preScale.x * _sizeModificationSpeed,
 			preScale.y * _sizeModificationSpeed,
 			preScale.z * _sizeModificationSpeed
 		));
 
-		// modify the scale of the collider here
-		physx::PxShape* shape = parentObject->GetComponent<PM3D_API::SphereCollider>()->getShape();
 		shape->setGeometry(physx::PxSphereGeometry(preScale.x * _sizeModificationSpeed));
 	}
 

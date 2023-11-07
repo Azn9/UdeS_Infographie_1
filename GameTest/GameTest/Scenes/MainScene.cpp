@@ -16,6 +16,7 @@
 #include "GameObject/Basic/BasicSphere.h"
 #include "Light/AmbiantLight.h"
 #include "Light/PointLight.h"
+#include "Util/FilterGroup.h"
 
 #include "Mesh/FastobjChargeur.h"
 
@@ -25,7 +26,8 @@
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
 #include "GameTest/Components/SizeModifierComponent.h"
-#include <Heightmap.h>
+#include "GameTest/Heightmap.h"
+#include "GameTest/Pine.h"
 
 void MainScene::InitializePhysics()
 {
@@ -95,14 +97,40 @@ void MainScene::InitializeObjects()
     const auto sphereColliderPtr = sphereCollider.get();
     sphere->AddComponent(std::move(sphereCollider));
     sphereColliderPtr->Initialize();
+    physx::PxFilterData filterDataSnowball;
+    filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
+    physx::PxShape* sphereShape = sphereColliderPtr->getShape();
+    sphereShape->setSimulationFilterData(filterDataSnowball);
     
     GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere.get());
 
     sphere->AddComponent(std::make_unique<SizeModifierComponent>());
 
     AddChild(std::move(sphere));
-    GetMainCamera();
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
+
+    // ============= Add a pine =============
+    auto pine = std::make_unique<Pine>();
+    pine->SetWorldPosition(XMFLOAT3(-0.4f, -11.80f, 14.0f));
+    pine->SetWorldScale(XMFLOAT3(1.5f, 1.5f, 1.5f));
+    pine->Initialize();
+
+
+    auto pineRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+    const auto pineRigidbodyPtr = pineRigidbody.get(); 
+    pine->AddComponent(std::move(pineRigidbody));
+    pineRigidbodyPtr->Initialize();
+
+    auto pineMeshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+    const auto pineMeshColliderPtr = pineMeshCollider.get();
+    pine->AddComponent(std::move(pineMeshCollider));
+    pineMeshColliderPtr->Initialize();
+    physx::PxFilterData filterDataObstacle;
+    filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
+    physx::PxShape* treeShape = pineMeshColliderPtr->getShape();
+    treeShape->setSimulationFilterData(filterDataObstacle);
+
+    AddChild(std::move(pine));
 }

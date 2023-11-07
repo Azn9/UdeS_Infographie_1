@@ -249,6 +249,8 @@
     <ClInclude Include="GameTest\CustomCube.h" />
     <ClInclude Include="GameTest\CustomPlane.h" />
     <ClInclude Include="GameTest\GameTest.h" />
+    <ClInclude Include="GameTest\Heightmap.h" />
+    <ClInclude Include="GameTest\Pine.h" />
     <ClInclude Include="GameTest\Scenes\MainScene.h" />
     <ClInclude Include="GameTest\TimeScaleTest.h" />
   </ItemGroup>

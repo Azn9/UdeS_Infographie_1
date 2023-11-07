@@ -13,6 +13,8 @@ namespace PM3D_API
 
 		void Initialize() override;
 
+		physx::PxShape* getShape() { return shape; }
+
 	protected:
 		physx::PxShape* shape;
 	};

@@ -2,6 +2,8 @@
 #include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../../../../PetitMoteur3D/Core/Public/Util/Time.h"
 #include "../../../../Public/GameHost.h"
+#include "Api/Public/Util/FilterShader.h"
+#include "Api/Public/Util/SimulationCallback.h"
 
 void PM3D_API::PhysicsResolver::Initialize()
 {
@@ -27,9 +29,14 @@ void PM3D_API::PhysicsResolver::InitializeScene()
 	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
 	dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = dispatcher;
-	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = FilterShader;
+
+	SimulationCallback* simulationCallback = new SimulationCallback;
+	sceneDesc.simulationEventCallback = simulationCallback;
 
 	scene = physics->createScene(sceneDesc);
+
+	scene->setContactModifyCallback(simulationCallback);
 
 	if (!scene)
 	{
