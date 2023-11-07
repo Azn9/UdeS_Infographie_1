@@ -141,8 +141,8 @@ Texture2D sparkleTexture;
 SamplerState sparkleTextureSampler
 {
 	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Clamp;
-	AddressV = Clamp;
+	AddressU = Wrap;
+	AddressV = Wrap;
 };
 
 Texture2D normalMap;
@@ -379,9 +379,18 @@ float4 MainPS(VS_Sortie input) : SV_Target
 	}
 	else
 	{
+		#define sparkleScale 5.0f
+		#define sparkleCutoffValue 0.99f
+
+		// Sample sparkle texture
+		float sparkleValue = sparkleTexture.Sample(sparkleTextureSampler, input.coordTex * sparkleScale).r;
+		float sparkleCutoff = step(sparkleCutoffValue, sparkleValue);
+
 		finalColor = couleurTexture.rgb * 
 			(totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb)
-			* (noiseV * (1-pathV)) + (1-pathV) * float3(0.95f, 0.98f, 0.99f);
+			* (noiseV * (1-pathV)) 
+			+ (1-pathV) * float3(0.95f, 0.98f, 0.99f)
+			+ sparkleCutoff * saturate(1- (pathV * 2)) * 4;
 
 		if (pathV > 0.3f) {
 			finalColor += pathV * float3(0.45f, 0.98f, 0.99f);

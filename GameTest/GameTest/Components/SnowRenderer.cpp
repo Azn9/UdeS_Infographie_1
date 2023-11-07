@@ -7,6 +7,8 @@
 #include "../../../PetitMoteur3D/Core/Public/Util/util.h"
 #include "GameTest/Shader/SnowShader.h"
 
+#define TEXTURE_SCALE 512
+
 void SnowRenderer::Initialize()
 {
     MeshRenderer::Initialize();
@@ -19,8 +21,8 @@ void SnowRenderer::Initialize()
 
     D3D11_TEXTURE2D_DESC textureDesc;
     ZeroMemory(&textureDesc, sizeof(textureDesc));
-    textureDesc.Width = 512;
-    textureDesc.Height = 512;
+    textureDesc.Width = TEXTURE_SCALE;
+    textureDesc.Height = TEXTURE_SCALE;
     textureDesc.MipLevels = 1;
     textureDesc.ArraySize = 1;
     textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -61,6 +63,14 @@ void SnowRenderer::DrawSelf() const
 {
     DrawRVT();
 
+    const auto effect = shader->GetEffect();
+    
+    auto variableTexture = effect->GetVariableByName("snowRVT")->AsShaderResource();
+    PM3D::DXEssayer(variableTexture->SetResource(snowRVTResourceView));
+
+    variableTexture = effect->GetVariableByName("sparkleTexture")->AsShaderResource();
+    PM3D::DXEssayer(variableTexture->SetResource(sparklesTexture->GetD3DTexture()));
+
     MeshRenderer::DrawSelf();
 }
 
@@ -70,42 +80,36 @@ void SnowRenderer::DrawRVT() const
     const auto context = dispositif->GetImmediateContext();
 
     dispositif->ActiverMelangeAlpha();
-    
-    context->CopyResource(stagingTexture, snowRVT);
 
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    PM3D::DXEssayer(context->Map(stagingTexture, 0, D3D11_MAP_READ_WRITE, 0, &mappedResource));
-    
-    for (int i = 0; i < 512; ++i)
+    // Improvement possible : update fade only every 1/4th frame to save performance
+    // Or disable the whole following block if we don't want the snow to fade back
     {
-        for (int j = 0; j < 512; ++j)
+        context->CopyResource(stagingTexture, snowRVT);
+
+        D3D11_MAPPED_SUBRESOURCE mappedResource;
+        PM3D::DXEssayer(context->Map(stagingTexture, 0, D3D11_MAP_READ_WRITE, 0, &mappedResource));
+    
+        for (int i = 0; i < TEXTURE_SCALE; ++i)
         {
-            const auto pixel = static_cast<unsigned char*>(mappedResource.pData)
-                + (i * mappedResource.RowPitch) + (j * 4);
+            for (int j = 0; j < TEXTURE_SCALE; ++j)
+            {
+                const auto pixel = static_cast<unsigned char*>(mappedResource.pData)
+                    + (i * mappedResource.RowPitch) + (j * 4);
 
-            auto value = pixel[0]; // gray so all channels have the same value
-            if (value == 0) continue;
+                auto value = pixel[0]; // gray so all channels have the same value
+                if (value == 0) continue;
 
-            value -= 1;
+                value -= 1;
 
-            pixel[0] = value; // red
-            pixel[1] = value; // green
-            pixel[2] = value; // blue
+                pixel[0] = value; // red
+                pixel[1] = value; // green
+                pixel[2] = value; // blue
+            }
         }
+
+        context->Unmap(stagingTexture, 0);
+        context->CopyResource(snowRVT, stagingTexture);
     }
-
-    /*
-    // Set pixel 42/ 42 to red
-    const auto pixel = static_cast<unsigned char*>(mappedResource.pData)
-        + (42 * mappedResource.RowPitch) + (42 * 4);
-    pixel[0] = 0xFF; // red
-    pixel[1] = 0x00; // green
-    pixel[2] = 0x00; // blue
-    pixel[3] = 0xFF; // alpha
-    */
-
-    context->Unmap(stagingTexture, 0);
-    context->CopyResource(snowRVT, stagingTexture);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -124,7 +128,7 @@ void SnowRenderer::DrawRVT() const
     tabRTV[0] = snowRVTRTV;
     context->OMSetRenderTargets(1, tabRTV, nullptr);
 
-    dispositif->SetViewportDimension(512, 512);
+    dispositif->SetViewportDimension(TEXTURE_SCALE, TEXTURE_SCALE);
 
     const auto pos = parentObject->GetWorldPosition();
 
@@ -166,6 +170,11 @@ void SnowRenderer::DrawRVT() const
     for (const auto & child : parentObject->GetScene()->GetChildren())
     {
         if (!child) continue;
+
+        // TODO : use only objects that are near the snow
+        // TODO : use only objects that are in the snow
+        // TODO : use only objects that are in the camera's view
+        // TODO : list the available objects and skip the whole render if there are none
 
         if (child->HasComponent<SnowMover>())
         {
@@ -253,9 +262,6 @@ void SnowRenderer::DrawRVT() const
     
     tabRTV[0] = dispositif->GetRenderTargetView();
     context->OMSetRenderTargets(1, tabRTV, dispositif->GetDepthStencilView());
-
-    variableTexture = effect->GetVariableByName("snowRVT")->AsShaderResource();
-    variableTexture->SetResource(snowRVTResourceView);
 
     dispositif->DesactiverMelangeAlpha();
 }

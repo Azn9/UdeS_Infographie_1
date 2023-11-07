@@ -14,13 +14,13 @@ void LoadingScene::InitializeCamera()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSECTIVE,
-        XMFLOAT3(0.0f, 10.0f, -15.0f),
+        XMFLOAT3(0.0f, 4.0f, -15.0f),
         XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarPlane(100.0f);
-    //mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
+    mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
     SetMainCamera(std::move(mainCamera));
 }
 
