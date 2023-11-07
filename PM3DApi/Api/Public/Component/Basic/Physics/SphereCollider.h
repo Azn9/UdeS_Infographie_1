@@ -13,6 +13,8 @@ public:
 
 	void Initialize() override;
 
+	physx::PxShape* getShape() { return shape; };
+
 protected:
 	physx::PxShape* shape;
 };

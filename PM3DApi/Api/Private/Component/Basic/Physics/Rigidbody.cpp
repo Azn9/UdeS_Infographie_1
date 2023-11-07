@@ -58,7 +58,7 @@ void PM3D_API::Rigidbody::UpdateGlobalPose() const
 
 	actor->setGlobalPose(newGlobalPos);
 
-	std::cout << "Rigidbody::UpdateGlobalPos() on " << parentObject->GetName() << ": " << newGlobalPos.p.x << ", " << newGlobalPos.p.y << ", " << newGlobalPos.p.z << std::endl;
+	//std::cout << "Rigidbody::UpdateGlobalPos() on " << parentObject->GetName() << ": " << newGlobalPos.p.x << ", " << newGlobalPos.p.y << ", " << newGlobalPos.p.z << std::endl;
 }
 
 void PM3D_API::Rigidbody::UpdateRenderPos() const

@@ -20,7 +20,8 @@ public:
 		));
 
 		// modify the scale of the collider here
-		parentObject->GetComponent<PM3D_API::SphereCollider>();
+		physx::PxShape* shape = parentObject->GetComponent<PM3D_API::SphereCollider>()->getShape();
+		shape->setGeometry(physx::PxSphereGeometry(preScale.x * _sizeModificationSpeed));
 	}
 
 	void DrawDebugInfo() const override
