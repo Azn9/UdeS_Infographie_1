@@ -24,6 +24,7 @@
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
+#include "GameTest/Components/SizeModifierComponent.h"
 #include <Heightmap.h>
 
 void MainScene::InitializePhysics()
@@ -96,6 +97,8 @@ void MainScene::InitializeObjects()
     sphereColliderPtr->Initialize();
     
     GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere.get());
+
+    sphere->AddComponent(std::make_unique<SizeModifierComponent>());
 
     AddChild(std::move(sphere));
     GetMainCamera();
