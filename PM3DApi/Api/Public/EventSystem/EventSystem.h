@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "Event.h"
+#include "PhysicEvent.h"
 #include "../../../../PetitMoteur3D/Core/Public/Util/Singleton.h"
 #include "../../Public/Util/Instanceof.h"
 
@@ -99,10 +100,43 @@ namespace PM3D_API
             }
         }
 
+        void processPhysicsEvents()
+        {
+            if (physicsEventsToProcess.empty()) return;
+
+            // Swap eventsToProcess with an empty vector
+            concurrency::concurrent_vector<std::unique_ptr<BaseWrapper>> events;
+            events.swap(physicsEventsToProcess);
+
+            for (const auto& event : events)
+            {
+                if (!event) continue;
+
+                const auto id = event->getId();
+                const auto eventId = id.get();
+
+                if (!listeners.contains(eventId)) continue;
+
+                BaseWrapper* wrapperPtr = event.get();
+
+                for (const auto& eventListeners = listeners[eventId]; const auto& listener : eventListeners |
+                     std::views::values)
+                {
+                    wrapperPtr->apply(listener);
+                }
+            }
+        }
+
         template <class T, template_extends<Event, T>  = 0>
         void publish(T&& event)
         {
             eventsToProcess.push_back(std::make_unique<EventWrapper<T>>(std::forward<T>(event)));
+        }
+
+        template <class T, template_extends<PhysicEvent, T>  = 0>
+        void publish(T&& event)
+        {
+            physicsEventsToProcess.push_back(std::make_unique<EventWrapper<T>>(std::forward<T>(event)));
         }
 
         template <class T, template_extends<Event, T>  = 0>
@@ -157,6 +191,12 @@ namespace PM3D_API
             GetInstance().publish(std::forward<T>(event));
         }
 
+        template <class T, template_extends<PhysicEvent, T>  = 0>
+        static void Publish(T&& event)
+        {
+            GetInstance().publish(std::forward<T>(event));
+        }
+
         template <class T, template_extends<Event, T>  = 0>
         static long Subscribe(const std::function<void(const T&)>& listener)
         {
@@ -181,6 +221,7 @@ namespace PM3D_API
         long nextId = 0;
         std::unordered_map<long, std::unordered_map<long, std::function<void(const Event&)>>> listeners;
         concurrency::concurrent_vector<std::unique_ptr<BaseWrapper>> eventsToProcess;
+        concurrency::concurrent_vector<std::unique_ptr<BaseWrapper>> physicsEventsToProcess;
 
         long generateId()
         {
