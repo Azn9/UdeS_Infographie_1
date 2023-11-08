@@ -1713,6 +1713,7 @@
     <ClInclude Include="Api\Public\EventSystem\Basic\WindowResizeEvent.h" />
     <ClInclude Include="Api\Public\EventSystem\Event.h" />
     <ClInclude Include="Api\Public\EventSystem\EventSystem.h" />
+    <ClInclude Include="Api\Public\EventSystem\PhysicEvent.h" />
     <ClInclude Include="Api\Public\GameObject\Basic\BasicCone.h" />
     <ClInclude Include="Api\Public\GameObject\Basic\BasicCube.h" />
     <ClInclude Include="Api\Public\GameObject\Basic\BasicCylinder.h" />

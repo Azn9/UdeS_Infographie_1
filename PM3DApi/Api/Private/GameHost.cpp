@@ -22,6 +22,8 @@ void PM3D_API::GameHost::Update() const
 
 void PM3D_API::GameHost::PhysicsUpdate() const
 {
+	EventSystem::GetInstance().processPhysicsEvents();
+	
 	if (scene)
 		scene->PhysicsUpdate();
 }
