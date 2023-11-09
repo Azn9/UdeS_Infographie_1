@@ -1,12 +1,17 @@
 #pragma once
-#include "../../PM3DApi/Api/Public/GameObject/Basic/BasicShape.h"
 
-class CustomPlane : public PM3D_API::BasicShape
+#include "Components/SnowRenderer.h"
+#include "Shader/SnowShader.h"
+
+class CustomPlane final : public PM3D_API::GameObject
 {
 public:
-    CustomPlane() : BasicShape("TestPlane") {}
-
-private:
-    std::wstring GetShaderFileName() override { return L"NewShader.fx"; }
-    std::string GetMeshFileName() override { return "testplane.obj"; }
+    CustomPlane() : GameObject("TestPlane") {}
+    void Initialize() override
+    {
+        auto shader = std::make_unique<SnowShader>(L"SnowShader.fx");
+        auto renderer = std::make_unique<SnowRenderer>(std::move(shader), "snowplane.obj");
+        renderer->Initialize();
+        AddComponent(std::move(renderer));
+    }
 };

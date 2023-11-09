@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Core/DispositifD3D11.h"
 #include "Core/Public/Util/Util.h"

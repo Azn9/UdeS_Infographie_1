@@ -1,5 +1,6 @@
-﻿#include "stdafx.h"
-#include "FastobjChargeur.h"
+﻿#include "FastobjChargeur.h"
+
+#include <stdexcept>
 
 #ifndef FAST_OBJ_IMPLEMENTATION
 #define FAST_OBJ_IMPLEMENTATION

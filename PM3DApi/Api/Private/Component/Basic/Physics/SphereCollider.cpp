@@ -6,7 +6,7 @@ void PM3D_API::SphereCollider::Initialize()
 {
 	Collider::Initialize();
 
-	const auto pxPhysics = GameHost::GetInstance()->GetScene()->GetPhysicsResolver()->GetPhysics();
+	const auto pxPhysics = parentObject->GetScene()->GetPhysicsResolver()->GetPhysics();
 
 	const auto worldScale = parentObject->GetWorldScale();
 	shape = pxPhysics->createShape(physx::PxSphereGeometry{ worldScale.x }, *material, true);

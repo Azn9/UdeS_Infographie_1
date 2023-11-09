@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include <string.h>
 #include "Core/Public/Core/dispositifD3D11.h"
 #include <Gdiplus.h>
+#include <memory>
 #include <string>
 #pragma comment(lib, "gdiplus.lib")
 

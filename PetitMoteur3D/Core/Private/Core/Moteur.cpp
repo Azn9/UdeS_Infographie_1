@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "../../Public/Core/Moteur.h"
 
 #include "../../../../PM3DApi/Api/Public/Input/Input.h"

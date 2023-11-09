@@ -1,6 +1,9 @@
 ﻿#pragma once
 
+#include <mutex>
+
 #include "../../../Public/Shader/Shader.h"
+#include "../../../Public/Util/FileWatcher.h"
 
 namespace PM3D_API
 {
@@ -9,23 +12,29 @@ class DefaultShader final : public Shader
 public:
 	explicit DefaultShader(const std::wstring& fileName);
 	~DefaultShader() override;
+	
+	void Initialize(const std::wstring& wstring);
+	void Destroy();
 
-	ID3D11Buffer* GetShaderParametersBuffer() const override { return shaderParametersBuffer; }
-	ID3DX11EffectPass* GetPass() const override { return passe; }
-	ID3D11InputLayout* GetVertexLayout() const override { return vertexLayout; }
-	ID3D11Buffer* GetIndexBuffer() const override { return indexBuffer; }
+	ID3D11Buffer* GetShaderParametersBuffer() const override;
+	ID3DX11EffectPass* GetPass() const override;
+	ID3D11InputLayout* GetVertexLayout() const override;
+	ID3D11Buffer* GetIndexBuffer() const override;
 
-	ID3D11InputLayout* GetShadowVertexLayout() const override { return vertexLayoutShadow; }
-	ID3D11Texture2D* GetDepthTexture() const override { return depthTexture; }
-	ID3D11DepthStencilView* GetDepthStencilView() const override { return depthStencilView; }
-	ID3D11ShaderResourceView* GetDepthShaderResourceView() const override { return depthShaderResourceView; }
+	ID3D11InputLayout* GetShadowVertexLayout() const override;
+	ID3D11Texture2D* GetDepthTexture() const override;
+	ID3D11DepthStencilView* GetDepthStencilView() const override;
+	ID3D11ShaderResourceView* GetDepthShaderResourceView() const override;
 
-	ID3DX11Effect* GetEffect() const override { return effect; }
+	ID3DX11Effect* GetEffect() const override;
 
-	ID3D11Buffer** GetVertexBufferPtr() const override { return &vertexBuffer; }
-	ID3D11Buffer** GetIndexBufferPtr() const override { return &indexBuffer; }
+	ID3D11Buffer** GetVertexBufferPtr() const override;
+	ID3D11Buffer** GetIndexBufferPtr() const override;
 
-	void LoadLights(ID3D11DeviceContext* context, GameObject* gameObject) override;
+	void LoadLights(
+		ID3D11DeviceContext* context,
+		GameObject* gameObject
+	) override;
 	
 	void* PrepareParameters(
 		DirectX::XMMATRIX matWorldViewProj,
@@ -44,10 +53,7 @@ public:
 
 	void DeleteParameters(void* shader_parameters) override;
 
-	void ApplyShaderParams() const override {
-		ID3DX11EffectConstantBuffer* pCB = effect->GetConstantBufferByName("param");
-		pCB->SetConstantBuffer(shaderParametersBuffer);
-	}
+	void ApplyShaderParams() const override;
 
 protected:
 	std::wstring fileName;
@@ -87,5 +93,8 @@ private:
 		bool hasAlbedoTexture;
 		bool hasNormalmapTexture;
 	};
+
+	FileWatcher fileWatcher;
+	mutable std::mutex reloadingMutex{};
 };
 }

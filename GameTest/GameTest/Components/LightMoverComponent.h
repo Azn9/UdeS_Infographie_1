@@ -7,7 +7,7 @@
 class LightMoverComponent : public PM3D_API::Component
 {
 public:
-    explicit LightMoverComponent(const int offset) : angle(offset)
+    explicit LightMoverComponent(const float offset) : angle(offset)
     {
         
     }

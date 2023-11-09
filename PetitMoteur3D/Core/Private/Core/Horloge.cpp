@@ -1,5 +1,7 @@
-#include "stdafx.h"
 #include "Core/Public/Core/Horloge.h"
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 namespace PM3D
 {

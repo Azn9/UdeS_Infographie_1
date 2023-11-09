@@ -30,5 +30,6 @@ namespace Util
 	DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t);
 	DirectX::XMFLOAT3 DirectionToEulerAngles(DirectX::XMFLOAT3 direction);
 	PM3D_API::Quaternion DirectionToQuaternion(DirectX::XMFLOAT3 direction);
+	std::string ws2s(const std::wstring& wstr);
 };
 

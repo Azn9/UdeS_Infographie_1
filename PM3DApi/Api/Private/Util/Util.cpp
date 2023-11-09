@@ -5,6 +5,9 @@
 
 #include "Api/Public/Util/Quaternion.h"
 
+#include <codecvt>
+#include <locale>
+
 #include "Api/Public/Util/Quaternion.h"
 
 DirectX::XMFLOAT3 Util::Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t)
@@ -76,4 +79,10 @@ PM3D_API::Quaternion Util::DirectionToQuaternion(const DirectX::XMFLOAT3 directi
 	DirectX::XMStoreFloat4(&quaternion, quatVector);
 
 	return quaternion;
+}
+
+std::string Util::ws2s(const std::wstring& wstr)
+{
+	static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+	return converter.to_bytes(wstr);
 }

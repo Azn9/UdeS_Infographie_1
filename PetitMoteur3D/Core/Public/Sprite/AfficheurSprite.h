@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "SpriteTemp.h"
 #include "../../Public/Shader/d3dx11effect.h"
 #include "../../Public/Core/DispositifD3D11.h"
@@ -51,6 +55,7 @@ public:
 		}
 	};
 
+	virtual void Draw();
 private:
 	static CSommetSprite sommets[6];
 	ID3D11Buffer* pVertexBuffer;
@@ -71,6 +76,5 @@ private:
 	virtual void Anime(float) override
 	{
 	};
-	virtual void Draw();
 };
 } // namespace PM3D

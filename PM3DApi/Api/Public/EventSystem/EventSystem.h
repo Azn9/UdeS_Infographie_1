@@ -1,4 +1,10 @@
 #pragma once
+#if !_HAS_CXX17
+
+
+#error "This file requires C++17"
+#endif
+
 #include <any>
 #include <concurrent_vector.h>
 #include <functional>
@@ -208,6 +214,12 @@ namespace PM3D_API
         static auto Subscribe(F&& listener) -> decltype(Subscribe(std::function(std::forward<F>(listener))))
         {
             return GetInstance().subscribe(std::function(std::forward<F>(listener)));
+        }
+
+        template <class T, template_extends<Event, T>  = 0>
+        static long Subscribe(const std::function<void(const T&)>& listener)
+        {
+            return GetInstance().subscribe(listener);
         }
 
         template <class T, template_extends<Event, T>  = 0>

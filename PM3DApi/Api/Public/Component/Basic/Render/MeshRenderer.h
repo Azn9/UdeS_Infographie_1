@@ -13,7 +13,7 @@
 
 namespace PM3D_API
 {
-class MeshRenderer final : public Renderer
+class MeshRenderer : public Renderer
 {
 public:
 	MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName);

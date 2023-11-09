@@ -1,7 +1,10 @@
 // PetitMoteur3D.cpp�: d�finit le point d'entr�e pour l'application.
 //
 
-#include "stdafx.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <tchar.h>
+
 #include "Core/Public/Core/PetitMoteur3D.h"
 #include "Core/Public/Core/MoteurWindows.h"
 

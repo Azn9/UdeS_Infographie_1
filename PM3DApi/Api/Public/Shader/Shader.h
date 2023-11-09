@@ -13,20 +13,20 @@ class Shader
 public:
 	virtual ~Shader() = default;
 
-	virtual ID3D11Buffer* GetShaderParametersBuffer() const = 0;
-	virtual ID3DX11EffectPass* GetPass() const = 0;
-	virtual ID3D11InputLayout* GetVertexLayout() const = 0;
-	virtual ID3D11Buffer* GetIndexBuffer() const = 0;
+	[[nodiscard]] virtual ID3D11Buffer* GetShaderParametersBuffer() const = 0;
+	[[nodiscard]] virtual ID3DX11EffectPass* GetPass() const = 0;
+	[[nodiscard]] virtual ID3D11InputLayout* GetVertexLayout() const = 0;
+	[[nodiscard]] virtual ID3D11Buffer* GetIndexBuffer() const = 0;
 
-	virtual ID3D11InputLayout* GetShadowVertexLayout() const = 0;
-	virtual ID3D11Texture2D* GetDepthTexture() const = 0;
-	virtual ID3D11DepthStencilView* GetDepthStencilView() const = 0;
-	virtual ID3D11ShaderResourceView* GetDepthShaderResourceView() const = 0;
+	[[nodiscard]] virtual ID3D11InputLayout* GetShadowVertexLayout() const = 0;
+	[[nodiscard]] virtual ID3D11Texture2D* GetDepthTexture() const = 0;
+	[[nodiscard]] virtual ID3D11DepthStencilView* GetDepthStencilView() const = 0;
+	[[nodiscard]] virtual ID3D11ShaderResourceView* GetDepthShaderResourceView() const = 0;
 
-	virtual ID3DX11Effect* GetEffect() const = 0;
+	[[nodiscard]] virtual ID3DX11Effect* GetEffect() const = 0;
 
-	virtual ID3D11Buffer** GetVertexBufferPtr() const = 0;
-	virtual ID3D11Buffer** GetIndexBufferPtr() const = 0;
+	[[nodiscard]] virtual ID3D11Buffer** GetVertexBufferPtr() const = 0;
+	[[nodiscard]] virtual ID3D11Buffer** GetIndexBufferPtr() const = 0;
 
 	virtual void* PrepareParameters(
 		DirectX::XMMATRIX matWorldViewProj,

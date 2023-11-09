@@ -18,9 +18,23 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-#include "stdafx.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <cassert>
+#include <cstdint>
+#include <cstring>
+#include <tchar.h>
+#include <algorithm>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
+#define _XM_NO_INTRINSICS_
+#include <d3d11.h>
+#include <DirectXMath.h>
+#include <d3dcompiler.h>
+
 #include <dxgiformat.h>
-#include <assert.h>
 #include <algorithm>
 #include <memory>
 
@@ -133,7 +147,7 @@ namespace
 
 struct handle_closer { void operator()(HANDLE h) { if (h) CloseHandle(h); } };
 
-typedef public std::unique_ptr<void, handle_closer> ScopedHandle;
+typedef std::unique_ptr<void, handle_closer> ScopedHandle;
 
 inline HANDLE safe_handle( HANDLE h ) { return (h == INVALID_HANDLE_VALUE) ? 0 : h; }
 

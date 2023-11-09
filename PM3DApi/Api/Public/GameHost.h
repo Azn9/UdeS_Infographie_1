@@ -1,11 +1,5 @@
 ﻿#pragma once
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <DirectXMath.h>
-
-// ReSharper disable once CppUnusedIncludeDirective
-#include "../../../PetitMoteur3D/stdafx.h" // NECESSAIRE POUR COMPILER DispositifD3D11.h
-
 #include "../../../PetitMoteur3D/Core/Public/Core/DispositifD3D11.h"
 #include "Debug/DebugRenderer.h"
 #include "Scene/Scene.h"
@@ -49,9 +43,9 @@ namespace PM3D_API
         void AddDebugRenderer(std::unique_ptr<DebugRenderer>&& child) { debugRenderers.push_back(std::move(child)); }
         const std::vector<std::unique_ptr<DebugRenderer>>& GetDebugRenderers() { return debugRenderers; }
 
+        virtual void SetScene(Scene* newScene);
     protected:
         std::vector<std::unique_ptr<DebugRenderer>> debugRenderers;
-        virtual void SetScene(Scene* newScene);
 
     private:
         Scene* scene;

@@ -5,7 +5,14 @@
 
 #include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
 #include "../../Public/GameHost.h"
+//#include "../../Public/EventSystem/EventSystem.h"
+#include "../../Public/EventSystem/Basic/WindowResizeEvent.h"
 #include "../../Public/Util/Util.h"
+
+void PM3D_API::Camera::Initialize()
+{
+	//PM3D_API::EventSystem::Subscribe([](const PM3D_API::WindowResizeEvent& event) {});
+}
 
 using namespace Util;
 

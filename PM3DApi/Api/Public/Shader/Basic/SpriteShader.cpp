@@ -2,6 +2,7 @@
 
 #include <codecvt>
 #include <locale>
+#include <d3dcompiler.h>
 
 #include "../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
 #include "../../../../../PetitMoteur3D/Core/Public/Util/util.h"

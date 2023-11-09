@@ -1,8 +1,9 @@
-﻿#include "StdAfx.h"
-#include "Core/Public/Core/dispositifD3D11.h"
+﻿#include "Core/Public/Core/dispositifD3D11.h"
 #include "Core/Public/Texture/GestionnaireDeTextures.h"
 
+#include <assert.h>
 #include <codecvt>
+#include <iostream>
 
 namespace PM3D
 {

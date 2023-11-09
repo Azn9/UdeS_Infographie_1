@@ -7,7 +7,7 @@ void PM3D_API::PlaneCollider::Initialize()
 {
 	Collider::Initialize();
 
-	const auto pxPhysics = GameHost::GetInstance()->GetScene()->GetPhysicsResolver()->GetPhysics();
+	const auto pxPhysics = parentObject->GetScene()->GetPhysicsResolver()->GetPhysics();
 
 	const auto worldScale = parentObject->GetWorldScale();
 	shape = pxPhysics->createShape(physx::PxBoxGeometry{ worldScale.x, std::numeric_limits<physx::PxReal>::epsilon(), worldScale.z }, *material, true);

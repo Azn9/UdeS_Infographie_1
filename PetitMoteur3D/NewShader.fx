@@ -249,7 +249,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
         couleurTexture = textureEntree.Sample(SampleState, input.coordTex).rgb;
     }
 
-	float3 finalColor = couleurTexture.rgb * (totalAmbiant /** vAMat.rgb*/ + totalDiffuse /** vDMat.rgb*/ + totalSpecular /** vSMat.rgb*/);
+	float3 finalColor = couleurTexture.rgb * (totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb);
 
 	return float4(finalColor, 1.0f);
 }

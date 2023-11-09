@@ -2,20 +2,16 @@
 
 #include <memory>
 
-#include "Camera/Camera.h"
+#include "../../PM3DApi/Api/Public/Camera/Camera.h"
 
-#include "Component/Basic/Physics/BoxCollider.h"
-#include "Component/Basic/Physics/SphereCollider.h"
-#include "Component/Basic/Physics/PlaneCollider.h"
-#include "Component/Basic/Physics/MeshCollider.h"
-#include "Component/Basic/Physics/Rigidbody.h"
+#include "../../PM3DApi/Api/Public/Component/Basic/Physics/SphereCollider.h"
+#include "../../PM3DApi/Api/Public/Component/Basic/Physics/MeshCollider.h"
+#include "../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
 
-#include "Component/Basic/Render/MeshRenderer.h"
-#include "GameObject/GameObject.h"
-#include "GameObject/Basic/BasicCube.h"
-#include "GameObject/Basic/BasicSphere.h"
-#include "Light/AmbiantLight.h"
-#include "Light/PointLight.h"
+#include "../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
+#include "../../PM3DApi/Api/Public/GameObject/GameObject.h"
+#include "../../PM3DApi/Api/Public/GameObject/Basic/BasicSphere.h"
+#include "../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 
 #include "Mesh/FastobjChargeur.h"
 
@@ -25,6 +21,8 @@
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/MovableComponent.h"
 #include "GameTest/Components/LightMoverComponent.h"
+#include "../TimeScaleTest.h"
+#include "../Components/CameraMoverComponent.h"
 #include <Heightmap.h>
 
 void MainScene::InitializePhysics()
@@ -66,33 +64,35 @@ void MainScene::InitializeObjects()
     map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
     map->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
     map->Initialize();
+    const auto mapPtr = map.get();
+    AddChild(std::move(map));
 
     auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
     const auto mapRigidbodyPtr = mapRigidbody.get();
-    map->AddComponent(std::move(mapRigidbody));
+    mapPtr->AddComponent(std::move(mapRigidbody));
     mapRigidbodyPtr->Initialize();
 
     auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
     const auto meshColliderPtr = meshCollider.get();
-    map->AddComponent(std::move(meshCollider));
+    mapPtr->AddComponent(std::move(meshCollider));
     meshColliderPtr->Initialize();
-
-    AddChild(std::move(map));
 
     // ============= Add a sphere =============
     auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
     sphere->SetWorldPosition(XMFLOAT3(0.0f, 15.0f, 10.0f));
     sphere->SetWorldScale(XMFLOAT3(.25f, .25f, .25f));
     sphere->Initialize();
+    const auto spherePtr = sphere.get();
+    AddChild(std::move(sphere));
 
     auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
     const auto sphereRigidbodyPtr = sphereRigidbody.get();
-    sphere->AddComponent(std::move(sphereRigidbody));
+    spherePtr->AddComponent(std::move(sphereRigidbody));
     sphereRigidbodyPtr->Initialize();
 
     auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(physicsResolver->GetDefaultMaterial());
     const auto sphereColliderPtr = sphereCollider.get();
-    sphere->AddComponent(std::move(sphereCollider));
+    spherePtr->AddComponent(std::move(sphereCollider));
     sphereColliderPtr->Initialize();
     
     GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere.get());

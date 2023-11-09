@@ -13,6 +13,8 @@ PM3D_API::Scene::~Scene()
 void PM3D_API::Scene::Initialize()
 {
 	std::cout << "Scene::Initialize()" << std::endl;
+
+	scene = this;
 	
 	GameObject::Initialize();
 	

@@ -35,6 +35,8 @@
 #define FAST_OBJ_VERSION        ((FAST_OBJ_VERSION_MAJOR << 8) | FAST_OBJ_VERSION_MINOR)
 
 #include <stdlib.h>
+#include <iostream>
+#include <fstream>
 
 
 typedef struct

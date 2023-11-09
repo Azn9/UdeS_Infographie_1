@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <DirectXMath.h>
+
 #include "Core/Public/Sprite/AfficheurSprite.h"
 
 class CPanneau : public PM3D::CAfficheurSprite::CSprite

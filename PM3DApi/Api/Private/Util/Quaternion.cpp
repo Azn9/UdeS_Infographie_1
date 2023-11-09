@@ -38,7 +38,7 @@ PM3D_API::Quaternion&& PM3D_API::Quaternion::operator*(const PM3D_API::Quaternio
 	XMFLOAT4 resultVector;
 	XMStoreFloat4(&resultVector, result);
 	
-	return std::move(PM3D_API::Quaternion(resultVector));
+	return PM3D_API::Quaternion(resultVector); // TODO Warning C4172 : retourne l'adresse d'une variable locale ou  temporaire
 }
 
 DirectX::XMVECTOR PM3D_API::Quaternion::ToXMVector() const

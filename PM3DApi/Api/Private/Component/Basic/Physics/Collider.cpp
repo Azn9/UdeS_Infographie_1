@@ -8,7 +8,7 @@
 
 void PM3D_API::Collider::Initialize()
 {
-	if (!GameHost::GetInstance()->GetScene()->GetPhysicsResolver())
+	if (!parentObject->GetScene()->GetPhysicsResolver())
 	{
 		throw std::runtime_error("Collider::Initialize() - No physics resolver found in scene");
 	}
