@@ -13,6 +13,8 @@ public:
 	void Update() override
 	{
 		const auto positionObjectToFollow = _objectToFollow->GetWorldPosition();
+		const auto scaleObjectToFollow = _objectToFollow->GetWorldScale();
+		_distance = 10.f;//scaleObjectToFollow.x * 20.f;
 
 		const auto rigidbody = _objectToFollow->GetComponent<PM3D_API::Rigidbody>();
 		const auto vel = static_cast<physx::PxRigidDynamic*>(rigidbody->GetActor())->getLinearVelocity();
@@ -46,5 +48,5 @@ public:
 private:
 	float _distance = 5.0f;
 	float _angle = 45.0f;
-	PM3D_API::GameObject* _objectToFollow;
+	PM3D_API::GameObject* _objectToFollow{};
 };

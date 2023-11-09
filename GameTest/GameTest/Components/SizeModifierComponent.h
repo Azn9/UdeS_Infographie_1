@@ -20,7 +20,7 @@ public:
 			});
 	}
 
-	void Update() override
+	void PhysicsUpdate() override
 	{
 		DirectX::XMFLOAT3 preScale = parentObject->GetWorldScale();
 		physx::PxShape* shape = parentObject->GetComponent<PM3D_API::SphereCollider>()->getShape();
@@ -44,7 +44,6 @@ public:
 			));
 			shape->setGeometry(physx::PxSphereGeometry(preScale.x * _sizeModificationSpeed));
 		}
-
 	}
 
 	void DrawDebugInfo() const override
