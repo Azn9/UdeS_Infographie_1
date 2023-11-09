@@ -50,24 +50,23 @@ void PM3D_API::SpriteRenderer::UpdateMatrix()
 
     std::cout << "Texture size is x=" << textureSizeX << ", y=" << textureSizeY << std::endl;
     std::cout << "Scale is x=" << scale.x << ", y=" << scale.y << std::endl;
+    std::cout << "Screen size is x=" << largeur << ", y=" << hauteur << std::endl;
+    std::cout << "Position is x=" << position.x << ", y=" << position.y << std::endl;
 
     // Scale = zone en pixels
-    const float scaleX = scale.x / textureSizeX;
-    const float scaleY = scale.y / textureSizeY;
+    //const float scaleX = scale.x / textureSizeX;
+    //const float scaleY = scale.y / textureSizeY;
     
     // Dimension en facteur
-    const float facteurX = scale.x * 2.f / (largeur * scaleX);
-    const float facteurY = scale.y * 2.f / (hauteur * scaleY);
+    const float facteurX = scale.x * 2.f / largeur;// * scaleX);
+    const float facteurY = scale.y * 2.f / hauteur;// * scaleY);
 
     // Position en coordonnées logiques
-    // 0,0 pixel = -1,1
-    const auto x = position.x;
-    const auto y = position.y;
-    const float posX = x * 2.f / largeur - 1.0f;
-    const float posY = 1.0f - y * 2.f / hauteur;
+    // 0,0 pixel = -1,1 | largeur,hauteur pixel = 1,-1
+    const float posX = position.x * 2.f / largeur - 1.f;
+    const float posY = position.y * 2.f / hauteur - 1.f;
 
-    matWVP = XMMatrixScaling(facteurX, facteurY, 1.0f)
-        * XMMatrixTranslation(posX, posY, 0.0f);
+    matWVP = XMMatrixTranslation(posX, posY, 0.0f) * XMMatrixScaling(facteurX, facteurY, 1.0f);
 
     std::cout << "SpriteRenderer::UpdateMatrix() on " << parentObject->GetName() << ", with scale " << facteurX << ", " << facteurY << ", position " << posX << ", " << posY << std::endl;
 }

@@ -20,7 +20,7 @@ namespace PM3D_API
         , origin(origin)
         , relativePosition(position)
         , scaleMode(scaleMode)
-        , screenScale(scale)
+        , relativeScale(scale)
         , parent(parent)
         , beginDrawSelf(0)
         , endDrawSelf(0)

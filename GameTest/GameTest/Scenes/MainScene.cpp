@@ -53,6 +53,7 @@ void MainScene::InitializeLights()
 
 void MainScene::InitializeObjects()
 {
+    /*
     // ============= Add a plane =============
     auto map = std::make_unique<Heightmap>();
     map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
@@ -94,6 +95,7 @@ void MainScene::InitializeObjects()
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
+    */
 }
 
 void MainScene::InitializeUI()
