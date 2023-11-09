@@ -1,13 +1,13 @@
-﻿#include "../../../Public/Shader/Basic/DefaultShader.h"
+﻿#include "Api/Public/Shader/Basic/DefaultShader.h"
 
 #include <codecvt>
 #include <d3dcompiler.h>
 #include <algorithm>
 
-#include "../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
-#include "../../../../../PetitMoteur3D/Core/Public/Util/util.h"
-#include "../../../Public/GameHost.h"
-#include "../../../Public/Light/AmbiantLight.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Util/util.h"
+#include "Api/Public/GameHost.h"
+#include "Api/Public/Light/AmbiantLight.h"
 #include "Api/Public/Util/FileWatcher.h"
 #include "Api/Public/Util/Util.h"
 
@@ -85,8 +85,11 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
 
     // Convert wstring to string
     // converter
+#pragma warning(push)
+#pragma warning(disable: 4996)
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     std::string convertedFileName = converter.to_bytes(wstring);
+#pragma warning(pop)
 
     ID3DBlob* pFXBlob = nullptr;
 

@@ -11,6 +11,8 @@
 
 void LoadingScene::InitializeCamera()
 {
+    std::cout << "LoadingScene::InitializeCamera()" << std::endl;
+    
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSECTIVE,
@@ -26,6 +28,8 @@ void LoadingScene::InitializeCamera()
 
 void LoadingScene::InitializeLights()
 {
+    std::cout << "LoadingScene::InitializeLights()" << std::endl;
+    
     auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
        "Directional light",
        XMFLOAT3(-1.0f, -1.0f, 0.0f)
@@ -55,10 +59,39 @@ void LoadingScene::InitializeObjects()
     AddChild(std::move(cube));
 
     auto tree = std::make_unique<GameObject>("tree");
+    tree->SetWorldScale({5.0f, 5.0f, 5.0f});
     tree->Initialize();
 
     auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
-    tree->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "tree_pineDefaultA.obj"));
+    tree->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "tree_pineTallA.obj"));
 
     AddChild(std::move(tree));
+
+    // Load scene in the background
+    std::thread loadingThread([this]()
+    {
+        const auto mainScenePtr = MainScene::GetInstancePtr();
+        mainScenePtr->Initialize();
+        
+        isLoaded = true;
+    });
+    loadingThread.detach();
 }
+
+void LoadingScene::Draw()
+{
+    if (!isLoaded)
+    {
+        Scene::Draw();
+        return;
+    }
+
+    PM3D_API::GameHost::GetInstance()->SetScene(MainScene::GetInstancePtr());
+    MainScene::GetInstancePtr()->Draw();
+}
+
+void LoadingScene::DrawSelf() const
+{
+    
+}
+

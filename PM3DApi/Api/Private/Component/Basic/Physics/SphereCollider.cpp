@@ -1,6 +1,6 @@
-#include "../../../../Public/Component/Basic/Physics/SphereCollider.h"
-#include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../../../Public/GameHost.h"
+#include "Api/Public/Component/Basic/Physics/SphereCollider.h"
+#include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/GameHost.h"
 #include "geometry/PxGeometry.h"
 
 void PM3D_API::SphereCollider::Initialize()

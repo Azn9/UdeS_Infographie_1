@@ -2,8 +2,8 @@
 #include <codecvt>
 
 #include "Renderer.h"
-#include "../../../../../Public/Shader/Basic/DefaultShader.h"
-#include "../../../../../Public/Shader/Basic/SpriteShader.h"
+#include "Api/Public/Shader/Basic/DefaultShader.h"
+#include "Api/Public/Shader/Basic/SpriteShader.h"
 
 namespace PM3D
 {

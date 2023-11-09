@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "CDIManipulateur.h"
-#include "../../../../PM3DApi/Api/Public/GameHost.h"
+#include "Api/Public/GameHost.h"
 #include "../../Public/Object/Objet3D.h"
 #include "../../Public/Texture/GestionnaireDeTextures.h"
 #include "../../Public/Sprite/AfficheurSprite.h"

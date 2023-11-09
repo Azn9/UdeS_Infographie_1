@@ -15,10 +15,12 @@ class Scene : public GameObject
 public:
 	Scene() : GameObject("Scene", {0, 0, 0}, {0, 0, 0}, {1, 1, 1})
 	{
+		std::cout << "Scene::Scene()" << std::endl;
 	}
 
 	Scene(const std::string& name) : GameObject(name, {0, 0, 0}, {0, 0, 0}, {1, 1, 1})
 	{
+		std::cout << "Scene::Scene(const std::string&)" << std::endl;
 	}
 
 	~Scene() override;

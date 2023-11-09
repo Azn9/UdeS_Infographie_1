@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "../../Public/Util/Util.h"
-#include "../../Public/Util/Plane.h"
+#include "Api/Public/Util/Util.h"
+#include "Api/Public/Util/Plane.h"
 
 
 namespace PM3D_API

@@ -9,7 +9,7 @@
 #include "Core/Public/Core/MoteurWindows.h"
 
 
-#include "../../../../PM3DApi/Api/Public/GameHost.h"
+#include "Api/Public/GameHost.h"
 
 using namespace PM3D;
 using namespace PM3D_API;
@@ -24,24 +24,39 @@ int APIENTRY _tWinMain(
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	UNREFERENCED_PARAMETER(nCmdShow);
+	
+	std::cout << "A" << std::endl;
 
 	const auto gameHost = GameHost::GetInstance();
 	gameHost->Initialize();
+
+	std::cout << "B" << std::endl;
 
 	try
 	{
 		// Cr�ation de l'objet Moteur
 		CMoteurWindows& rMoteur = CMoteurWindows::GetInstance();
+
+		std::cout << "C" << std::endl;
+		
 		rMoteur.SetGameHost(gameHost);
 
+		std::cout << "D" << std::endl;
+		
 		// Sp�cifiques � une application Windows
 		rMoteur.SetWindowsAppInstance(hInstance);
+
+		std::cout << "E" << std::endl;
 
 		// Initialisation du moteur
 		rMoteur.Initialisations();
 
+		std::cout << "F" << std::endl;
+
 		// Boucle d'application
 		rMoteur.Run();
+
+		std::cout << "G" << std::endl;
 
 		return (int)1;
 	}
@@ -53,7 +68,7 @@ int APIENTRY _tWinMain(
 
 		size_t numCharacterConverted;
 		mbstowcs_s(&numCharacterConverted, message, E.what(), BufferSize - 1);
-		::MessageBox(nullptr, message, L"Erreur", MB_ICONWARNING);
+		::MessageBox(nullptr, LPCSTR(message), LPCSTR(L"Erreur"), MB_ICONWARNING);
 
 		return (int)99;
 	}
@@ -62,8 +77,8 @@ int APIENTRY _tWinMain(
 	{
 		wchar_t szErrMsg[MAX_LOADSTRING]; // Un message d'erreur selon le code
 
-		::LoadString(hInstance, codeErreur, szErrMsg, MAX_LOADSTRING);
-		::MessageBox(nullptr, szErrMsg, L"Erreur", MB_ICONWARNING);
+		::LoadString(hInstance, codeErreur, LPSTR(szErrMsg), MAX_LOADSTRING);
+		::MessageBox(nullptr, LPCSTR(szErrMsg), LPCSTR(L"Erreur"), MB_ICONWARNING);
 
 		return (int)99; // POURQUOI 99???
 	}

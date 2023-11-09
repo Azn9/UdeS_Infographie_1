@@ -1,7 +1,7 @@
 #include "TimeScaleTest.h"
 
-#include "../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
-#include "../../PetitMoteur3D/Core/Public/Util/Time.h"
+#include "Core/Public/Core/MoteurWindows.h"
+#include "Core/Public/Util/Time.h"
 
 void TimeScaleTest::StepOneFrame()
 {

@@ -1,6 +1,6 @@
 #include "../../Public/Core/Moteur.h"
 
-#include "../../../../PM3DApi/Api/Public/Input/Input.h"
+#include "Api/Public/Input/Input.h"
 #include "Core/Public/Util/Time.h"
 
 void PM3D::CMoteur::Run()
@@ -110,22 +110,35 @@ void PM3D::CMoteur::StepOneFrame()
 
 int PM3D::CMoteur::Initialisations()
 {
+	std::cout << "2A" << std::endl;
+	
 	// Propre ? la plateforme
 	InitialisationsSpecific();
 
+	std::cout << "2B" << std::endl;
+
 	// * Initialisation du dispositif de rendu
 	pDispositif = CreationDispositifSpecific(CDS_FENETRE);
+
+	std::cout << "2C" << std::endl;
+	
 	gameHost->SetDispositif(pDispositif);
+
+	std::cout << "2D" << std::endl;
 
 	//Resize(1280, 720);
 	//ResizeWindow(1280, 720);
 
 	// * Initialisation de la sc?ne
 	InitScene();
+	
+	std::cout << "2E" << std::endl;
 
 	// * Initialisation des param?tres de l'animation et 
 	//   pr?paration de la premi?re image
 	InitAnimation();
+
+	std::cout << "2F" << std::endl;
 
 	return 0;
 }

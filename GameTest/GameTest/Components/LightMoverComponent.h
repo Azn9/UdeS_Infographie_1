@@ -1,8 +1,8 @@
 #pragma once
 #include <DirectXMath.h>
 
-#include "../../../PM3DApi/Api/Public/Component/Component.h"
-#include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
+#include "Api/Public/Component/Component.h"
+#include "Api/Public/GameObject/GameObject.h"
 
 class LightMoverComponent : public PM3D_API::Component
 {

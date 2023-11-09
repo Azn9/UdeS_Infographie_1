@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Core/DispositifD3D11.h"
 #include "Core/Public/Util/Util.h"
@@ -38,10 +40,12 @@ CDispositifD3D11::~CDispositifD3D11()
 CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 								   const HWND hWnd) : CDispositifD3D11(cdsMode, hWnd, 1280, 720)
 {
+	std::cout << "CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd)" << std::endl;
 }
 	
 CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT largeur, UINT hauteur)
 {
+	std::cout << "4A" << std::endl;
 	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
 
 #ifdef _DEBUG
@@ -118,7 +122,7 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT
 	ptDiff.y = (rcWindow.bottom - rcWindow.top) - rcClient.bottom;
 	MoveWindow(hWnd, rcWindow.left, rcWindow.top, largeur + ptDiff.x, hauteur + ptDiff.y, TRUE);
 
-	DXEssayer(D3D11CreateDeviceAndSwapChain(0,
+	const auto code = D3D11CreateDeviceAndSwapChain(0,
 			D3D_DRIVER_TYPE_HARDWARE,
 			nullptr,
 			createDeviceFlags,
@@ -128,8 +132,13 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT
 			&pSwapChain,
 			&pD3DDevice,
 			nullptr,
-			&pImmediateContext),
-		DXE_ERREURCREATIONDEVICE);
+			&pImmediateContext);
+
+	if (code != S_OK)
+	{
+		std::cerr << "Erreur de cr�ation du dispositif Direct3D 11" << std::endl;
+		abort();
+	}
 
 	// Cr�ation d'un �render target view�
 	ID3D11Texture2D* pBackBuffer;

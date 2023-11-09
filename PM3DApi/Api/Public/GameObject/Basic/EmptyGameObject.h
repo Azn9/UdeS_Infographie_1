@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../Public/GameObject/GameObject.h"
+#include "Api/Public/GameObject/GameObject.h"
 
 namespace PM3D_API
 {

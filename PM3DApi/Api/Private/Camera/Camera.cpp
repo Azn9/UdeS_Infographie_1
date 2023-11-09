@@ -1,13 +1,13 @@
-﻿#include "../../Public/Camera/Camera.h"
+﻿#include "Api/Public/Camera/Camera.h"
 
 #include <DirectXMath.h>
 #include <DirectXMathMatrix.inl>
 
-#include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
-#include "../../Public/GameHost.h"
-//#include "../../Public/EventSystem/EventSystem.h"
-#include "../../Public/EventSystem/Basic/WindowResizeEvent.h"
-#include "../../Public/Util/Util.h"
+#include "Core/Imgui/imgui.h"
+#include "Api/Public/GameHost.h"
+//#include "Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/EventSystem/Basic/WindowResizeEvent.h"
+#include "Api/Public/Util/Util.h"
 
 void PM3D_API::Camera::Initialize()
 {

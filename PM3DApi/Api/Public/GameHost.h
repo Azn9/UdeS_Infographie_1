@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../../../PetitMoteur3D/Core/Public/Core/DispositifD3D11.h"
+#include "Core/Public/Core/dispositifD3D11.h"
 #include "Debug/DebugRenderer.h"
 #include "Scene/Scene.h"
 

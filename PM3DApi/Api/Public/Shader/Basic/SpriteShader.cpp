@@ -4,9 +4,9 @@
 #include <locale>
 #include <d3dcompiler.h>
 
-#include "../../../../../PetitMoteur3D/Core/Public/Sprite/AfficheurSprite.h"
-#include "../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
-#include "../../../../../PetitMoteur3D/Core/Public/Util/util.h"
+#include "Core/Public/Sprite/AfficheurSprite.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Util/util.h"
 
 // Definir l’organisation de notre sommet
 D3D11_INPUT_ELEMENT_DESC spriteShaderLayout[] =

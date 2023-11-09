@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../PM3DApi/Api/Public/GameObject/UIObject.h"
+#include "Api/Public/GameObject/UIObject.h"
 
 class TestUIObject : public PM3D_API::UIObject
 {

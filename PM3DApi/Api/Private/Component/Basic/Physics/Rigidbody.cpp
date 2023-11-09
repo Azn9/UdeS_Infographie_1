@@ -1,5 +1,5 @@
-#include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../../../Public/GameHost.h"
+#include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/GameHost.h"
 
 void PM3D_API::Rigidbody::Initialize()
 {

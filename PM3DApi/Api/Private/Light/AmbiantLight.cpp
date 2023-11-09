@@ -1,4 +1,4 @@
-﻿#include "../../Public/Light/AmbiantLight.h"
+﻿#include "Api/Public/Light/AmbiantLight.h"
 
 PM3D_API::ShaderLightDefaultParameters PM3D_API::AmbiantLight::GetShaderLightDefaultParameters(GameObject* gameObject) const
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../Public/Shader/Shader.h"
+#include "Api/Public/Shader/Shader.h"
 
 namespace PM3D_API
 {

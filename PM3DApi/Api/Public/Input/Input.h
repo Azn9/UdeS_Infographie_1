@@ -4,8 +4,8 @@
 #include <vector>
 
 #include "KeyCode.h"
-#include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
-#include "../../../../PetitMoteur3D/Core/Public/Util/Singleton.h"
+#include "Core/Imgui/imgui.h"
+#include "Core/Public/Util/Singleton.h"
 
 struct ImGuiIO;
 class CDIManipulateur;

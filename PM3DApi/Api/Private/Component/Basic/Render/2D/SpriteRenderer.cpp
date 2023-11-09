@@ -1,7 +1,7 @@
-#include "../../../../../Public/Component/Basic/Render/2D/SpriteRenderer.h"
-#include "../../../../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
-#include "../../../../../../../PetitMoteur3D/Core/Public/Util/Util.h"
-#include "../../../../../Public/Shader/Basic/SpriteShader.h"
+#include "Api/Public/Component/Basic/Render/2D/SpriteRenderer.h"
+#include "Core/Public/Core/MoteurWindows.h"
+#include "Core/Public/Util/Util.h"
+#include "Api/Public/Shader/Basic/SpriteShader.h"
 
 PM3D_API::SpriteRenderer::SpriteRenderer(const std::wstring& textureName) : matWVP(XMMatrixIdentity())
 {

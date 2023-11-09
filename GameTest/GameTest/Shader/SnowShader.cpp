@@ -4,9 +4,9 @@
 #include <d3dcompiler.h>
 #include <algorithm>
 
-#include "../../../PetitMoteur3D/Core/Public/Util/resource.h"
-#include "../../../PetitMoteur3D/Core/Public/Util/util.h"
-#include "../../../PM3DApi/Api/Public/Util/Util.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Util/util.h"
+#include "Api/Public/Util/Util.h"
 
 
 // Definir l’organisation de notre sommet
@@ -83,8 +83,11 @@ void SnowShader::Initialize(const std::wstring& wstring)
 
     // Convert wstring to string
     // converter
+#pragma warning(push)
+#pragma warning(disable: 4996)
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     std::string convertedFileName = converter.to_bytes(wstring);
+#pragma warning(pop)
 
     ID3DBlob* pFXBlob = nullptr;
 

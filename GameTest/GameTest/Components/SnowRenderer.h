@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../../../PM3DApi/Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
+#include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 
 namespace PM3D
 {

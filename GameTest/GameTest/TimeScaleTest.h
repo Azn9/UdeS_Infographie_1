@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../PM3DApi/Api/Public/Debug/DebugRenderer.h"
+#include "Api/Public/Debug/DebugRenderer.h"
 
 class TimeScaleTest final : public PM3D_API::DebugRenderer
 {

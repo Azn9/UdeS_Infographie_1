@@ -1,8 +1,8 @@
-﻿#include "../../Public/Debug/FPSDebugRenderer.h"
+﻿#include "Api/Public/Debug/FPSDebugRenderer.h"
 
-#include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
-#include "../../../../PetitMoteur3D/Core/Public/Core/moteurWindows.h"
-#include "../../../../PetitMoteur3D/Core/Public/Util/Time.h"
+#include "Core/Imgui/imgui.h"
+#include "Core/Public/Core/moteurWindows.h"
+#include "Core/Public/Util/Time.h"
 
 void PM3D_API::FPSDebugRenderer::Draw()
 {

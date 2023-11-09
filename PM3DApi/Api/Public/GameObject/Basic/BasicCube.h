@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "BasicShape.h"
-#include "../../../Public/GameObject/GameObject.h"
-#include "../../../Public/Shader/Shader.h"
+#include "Api/Public/GameObject/GameObject.h"
+#include "Api/Public/Shader/Shader.h"
 
 namespace PM3D_API
 {

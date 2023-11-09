@@ -1,8 +1,8 @@
-﻿#include "../../Public/Input/Input.h"
+﻿#include "Api/Public/Input/Input.h"
 
-#include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
-#include "../../../../PetitMoteur3D/Core/Public/Core/CDIManipulateur.h"
-#include "../../Public/GameHost.h"
+#include "Core/Imgui/imgui.h"
+#include "Core/Public/Core/CDIManipulateur.h"
+#include "Api/Public/GameHost.h"
 
 struct ImGuiIO;
 

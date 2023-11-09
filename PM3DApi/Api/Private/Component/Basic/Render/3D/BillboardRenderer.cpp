@@ -1,8 +1,8 @@
-#include "../../../../../Public/Component/Basic/Render/3D/BillboardRenderer.h"
+#include "Api/Public/Component/Basic/Render/3D/BillboardRenderer.h"
 
-#include "../../../../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
-#include "../../../../../../../PetitMoteur3D/Core/Public/Mesh/CSommetMesh.h"
-#include "../../../../../../../PetitMoteur3D/Core/Public/Texture/GestionnaireDeTextures.h"
+#include "Core/Public/Core/MoteurWindows.h"
+#include "Core/Public/Mesh/CSommetMesh.h"
+#include "Core/Public/Texture/GestionnaireDeTextures.h"
 
 PM3D_API::BillboardRenderer::~BillboardRenderer()
 {

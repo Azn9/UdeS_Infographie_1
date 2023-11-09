@@ -14,8 +14,8 @@
 
 #include "Event.h"
 #include "PhysicEvent.h"
-#include "../../../../PetitMoteur3D/Core/Public/Util/Singleton.h"
-#include "../../Public/Util/Instanceof.h"
+#include "Core/Public/Util/Singleton.h"
+#include "Api/Public/Util/Instanceof.h"
 
 namespace PM3D_API
 {

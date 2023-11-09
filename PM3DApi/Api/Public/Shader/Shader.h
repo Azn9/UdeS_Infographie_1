@@ -3,8 +3,8 @@
 #include <DirectXMath.h>
 #include <string>
 
-#include "../../../../PetitMoteur3D/Core/Public/Shader/d3dx11effect.h"
-#include "../../Public/GameHost.h"
+#include "Core/Public/Shader/d3dx11effect.h"
+#include "Api/Public/GameHost.h"
 
 namespace PM3D_API
 {

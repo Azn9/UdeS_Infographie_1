@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "../../../PetitMoteur3D/Core/Public/Util/Singleton.h"
-#include "../../../PM3DApi/Api/Public/Scene/Scene.h"
+#include "Core/Public/Util/Singleton.h"
+#include "Api/Public/Scene/Scene.h"
 
 class MainScene final : public PM3D_API::Scene, public PM3D::CSingleton<MainScene>
 {

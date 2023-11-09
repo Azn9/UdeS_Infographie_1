@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Light.h"
-#include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
+#include "Core/Imgui/imgui.h"
 
 namespace PM3D_API
 {

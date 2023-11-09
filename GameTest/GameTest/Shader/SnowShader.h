@@ -2,8 +2,8 @@
 
 #include <mutex>
 
-#include "../../../PM3DApi/Api/Public/Shader/Shader.h"
-#include "../../../PM3DApi/Api/Public/Util/FileWatcher.h"
+#include "Api/Public/Shader/Shader.h"
+#include "Api/Public/Util/FileWatcher.h"
 
 class SnowShader final : public PM3D_API::Shader
 {

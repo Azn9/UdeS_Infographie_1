@@ -1,6 +1,6 @@
-﻿#include "../../Public/Util/Util.h"
+﻿#include "Api/Public/Util/Util.h"
 #include <valarray>
-#include "../../../../PetitMoteur3D/Core/Imgui/imgui.h"
+#include "Core/Imgui/imgui.h"
 
 
 #include "Api/Public/Util/Quaternion.h"

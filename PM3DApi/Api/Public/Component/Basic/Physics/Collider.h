@@ -1,7 +1,7 @@
 #pragma once
 #include <PxMaterial.h>
 
-#include "../../../../Public/Component/Component.h"
+#include "Api/Public/Component/Component.h"
 
 namespace PM3D_API
 {

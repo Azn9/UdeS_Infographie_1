@@ -1,6 +1,6 @@
-#include "../../../../Public/Component/Basic/Physics/BoxCollider.h"
-#include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../../../Public/GameHost.h"
+#include "Api/Public/Component/Basic/Physics/BoxCollider.h"
+#include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/GameHost.h"
 
 void PM3D_API::BoxCollider::Initialize()
 {

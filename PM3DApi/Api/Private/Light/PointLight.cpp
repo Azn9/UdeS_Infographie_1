@@ -1,4 +1,4 @@
-﻿#include "../../Public/Light/PointLight.h"
+﻿#include "Api/Public/Light/PointLight.h"
 
 PM3D_API::ShaderLightDefaultParameters PM3D_API::PointLight::GetShaderLightDefaultParameters(
 	GameObject* gameObject) const

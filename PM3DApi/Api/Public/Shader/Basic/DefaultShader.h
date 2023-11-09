@@ -2,8 +2,8 @@
 
 #include <mutex>
 
-#include "../../../Public/Shader/Shader.h"
-#include "../../../Public/Util/FileWatcher.h"
+#include "Api/Public/Shader/Shader.h"
+#include "Api/Public/Util/FileWatcher.h"
 
 namespace PM3D_API
 {

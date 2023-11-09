@@ -1,6 +1,6 @@
-#include "../../../../Public/Component/Basic/Physics/PlaneCollider.h"
-#include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../../../Public/GameHost.h"
+#include "Api/Public/Component/Basic/Physics/PlaneCollider.h"
+#include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/GameHost.h"
 #include <limits>
 
 void PM3D_API::PlaneCollider::Initialize()

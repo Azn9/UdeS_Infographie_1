@@ -1,10 +1,10 @@
-﻿#include "../../Public/GameObject/GameObject.h"
+﻿#include "Api/Public/GameObject/GameObject.h"
 
 #include <iostream>
 #include <stdexcept>
 
-#include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
-#include "../../../../PetitMoteur3D/Core/Public/Util/Time.h"
+#include "Core/Public/Core/MoteurWindows.h"
+#include "Core/Public/Util/Time.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 
 PM3D_API::GameObject::GameObject(

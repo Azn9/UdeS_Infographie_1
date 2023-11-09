@@ -1,10 +1,10 @@
-#include "../../Public/Component/UIComponent.h"
+#include "Api/Public/Component/UIComponent.h"
 
 #include <iostream>
 #include <ostream>
 
-#include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
-#include "../../../../PetitMoteur3D/Core/Public/Util/Time.h"
+#include "Core/Public/Core/MoteurWindows.h"
+#include "Core/Public/Util/Time.h"
 
 PM3D_API::UIComponent::~UIComponent()
 {

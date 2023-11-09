@@ -1,10 +1,10 @@
-#include "../../../../Public/Component/Basic/Physics/Collider.h"
+#include "Api/Public/Component/Basic/Physics/Collider.h"
 
 #include <stdexcept>
 
-#include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../../../Public/GameHost.h"
-#include "../../../../Public/GameObject/GameObject.h"
+#include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/GameHost.h"
+#include "Api/Public/GameObject/GameObject.h"
 
 void PM3D_API::Collider::Initialize()
 {

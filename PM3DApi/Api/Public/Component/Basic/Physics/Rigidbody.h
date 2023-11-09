@@ -1,8 +1,8 @@
 #pragma once
 #include <extensions/PxFixedJoint.h>
 
-#include "../../../../Public/Component/Component.h"
-#include "../../../../Public/Util/Axis.h"
+#include "Api/Public/Component/Component.h"
+#include "Api/Public/Util/Axis.h"
 #include "../../../../../../libs/physx_include/PxPhysicsAPI.h"
 
 namespace PM3D_API

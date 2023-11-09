@@ -1,10 +1,10 @@
-#include "../../Public/GameObject/UICanvas.h"
+#include "Api/Public/GameObject/UICanvas.h"
 
 #include <iostream>
 
-#include "../../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
-#include "../../Public/EventSystem/EventSystem.h"
-#include "../../Public/EventSystem/Basic/WindowResizeEvent.h"
+#include "Core/Public/Core/MoteurWindows.h"
+#include "Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/EventSystem/Basic/WindowResizeEvent.h"
 
 PM3D_API::UICanvas::UICanvas() : UIObject(
     "Canvas",

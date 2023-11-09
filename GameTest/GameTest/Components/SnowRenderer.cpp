@@ -1,10 +1,10 @@
 ﻿#include "SnowRenderer.h"
 
 #include "SnowMover.h"
-#include "../../../PetitMoteur3D/Core/Public/Core/MoteurWindows.h"
-#include "../../../PetitMoteur3D/Core/Public/Mesh/CSommetMesh.h"
-#include "../../../PetitMoteur3D/Core/Public/Util/resource.h"
-#include "../../../PetitMoteur3D/Core/Public/Util/util.h"
+#include "Core/Public/Core/MoteurWindows.h"
+#include "Core/Public/Mesh/CSommetMesh.h"
+#include "Core/Public/Util/resource.h"
+#include "Core/Public/Util/util.h"
 #include "GameTest/Shader/SnowShader.h"
 
 #define TEXTURE_SCALE 512

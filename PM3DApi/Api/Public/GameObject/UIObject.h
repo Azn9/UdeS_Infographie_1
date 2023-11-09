@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "../../Public/Component/UIComponent.h"
-#include "../../Public/Util/Instanceof.h"
+#include "Api/Public/Component/UIComponent.h"
+#include "Api/Public/Util/Instanceof.h"
 
 namespace PM3D_API
 {

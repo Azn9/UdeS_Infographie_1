@@ -1,4 +1,4 @@
-﻿#include "../../Public/Util/FileWatcher.h"
+﻿#include "Api/Public/Util/FileWatcher.h"
 
 #include <iostream>
 #include <ostream>
@@ -42,7 +42,7 @@ PM3D_API::FileWatcher::~FileWatcher()
 
 void PM3D_API::FileWatcher::Start()
 {
-    HANDLE hDir = CreateFile(path.c_str(), // pointer to the file name
+    HANDLE hDir = CreateFile(LPCSTR(path.c_str()), // pointer to the file name
                              FILE_LIST_DIRECTORY, // access (read/write) mode
                              FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, // share mode
                              NULL, // security descriptor

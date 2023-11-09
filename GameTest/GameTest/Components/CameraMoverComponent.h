@@ -2,9 +2,9 @@
 #include <DirectXMath.h>
 #include <iostream>
 
-#include "../../../PetitMoteur3D/Core/Imgui/imgui.h"
-#include "../../../PM3DApi/Api/Public/Component/Component.h"
-#include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
+#include "Core/Imgui/imgui.h"
+#include "Api/Public/Component/Component.h"
+#include "Api/Public/GameObject/GameObject.h"
 
 class CameraMoverComponent final : public PM3D_API::Component
 {

@@ -2,15 +2,15 @@
 
 #include <memory>
 
-#include "../../PM3DApi/Api/Public/Camera/Camera.h"
+#include "Api/Public/Camera/Camera.h"
 
-#include "../../PM3DApi/Api/Public/Component/Basic/Physics/MeshCollider.h"
-#include "../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../PM3DApi/Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
-#include "../../PM3DApi/Api/Public/GameObject/GameObject.h"
-#include "../../PM3DApi/Api/Public/Light/AmbiantLight.h"
-#include "../../../PM3DApi/Api/Public/Util/FilterGroup.h"
-#include "../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/Component/Basic/Physics/MeshCollider.h"
+#include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
+#include "Api/Public/GameObject/GameObject.h"
+#include "Api/Public/Light/AmbiantLight.h"
+#include "Api/Public/Util/FilterGroup.h"
+#include "Api/Public/EventSystem/EventSystem.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/UI/TestUIObject.h"
@@ -111,23 +111,22 @@ void MainScene::InitializeObjects()
     pine->SetWorldScale(XMFLOAT3(1.5f, 1.5f, 1.5f));
     pine->SetWorldRotation(XMFLOAT3(0.0f, 0.90f, 0.f));
     pine->Initialize();
-
+    const auto pinePtr = pine.get();
+    AddChild(std::move(pine));
 
     auto pineRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
     const auto pineRigidbodyPtr = pineRigidbody.get(); 
-    pine->AddComponent(std::move(pineRigidbody));
+    pinePtr->AddComponent(std::move(pineRigidbody));
     pineRigidbodyPtr->Initialize();
 
     auto pineMeshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
     const auto pineMeshColliderPtr = pineMeshCollider.get();
-    pine->AddComponent(std::move(pineMeshCollider));
+    pinePtr->AddComponent(std::move(pineMeshCollider));
     pineMeshColliderPtr->Initialize();
     physx::PxFilterData filterDataObstacle;
     filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
     physx::PxShape* treeShape = pineMeshColliderPtr->getShape();
     treeShape->setSimulationFilterData(filterDataObstacle);
-
-    AddChild(std::move(pine));
 }
 
 void MainScene::InitializeUI()

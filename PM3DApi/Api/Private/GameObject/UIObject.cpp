@@ -1,7 +1,7 @@
 #include <iostream>
-#include "../../Public/GameObject/UIObject.h"
-#include "../../../../PetitMoteur3D/Core/Public/Util/Time.h"
-#include "../../Public/Util/Util.h"
+#include "Api/Public/GameObject/UIObject.h"
+#include "Core/Public/Util/Time.h"
+#include "Api/Public/Util/Util.h"
 #include "Api/Public/GameHost.h"
 #include "Api/Public/GameObject/UICanvas.h"
 #include "Api/Public/Util/Axis.h"

@@ -1,7 +1,7 @@
-﻿#include "../../../../Public/Component/Basic/Physics/PhysicsResolver.h"
-#include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Util/Time.h"
-#include "../../../../Public/GameHost.h"
+﻿#include "Api/Public/Component/Basic/Physics/PhysicsResolver.h"
+#include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Core/Public/Util/Time.h"
+#include "Api/Public/GameHost.h"
 #include "Api/Public/Util/FilterShader.h"
 #include "Api/Public/Util/SimulationCallback.h"
 
