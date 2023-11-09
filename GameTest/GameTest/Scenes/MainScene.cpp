@@ -3,20 +3,20 @@
 #include <memory>
 
 #include "../../../PM3DApi/Api/Public/Camera/Camera.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/BoxCollider.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/PlaneCollider.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
 #include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
 #include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
-#include "GameTest/CustomCube.h"
-#include "GameTest/CustomPlane.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/UI/TestUIObject.h"
 #include <Heightmap.h>
+
+#include "Component/Basic/Physics/MeshCollider.h"
+#include "Component/Basic/Physics/SphereCollider.h"
+#include "GameObject/Basic/BasicSphere.h"
 
 void MainScene::InitializePhysics()
 {
