@@ -4,3 +4,10 @@ PetitMoteur3D.sln.DotSettings.user
 .vs
 x64
 PetitMoteur3D/imgui.ini
+***/*.obj
+***/*.dds
+***/*.mtl
+***/*.dll
+***/*.pdb
+***/*.pch
+***/*.lib
