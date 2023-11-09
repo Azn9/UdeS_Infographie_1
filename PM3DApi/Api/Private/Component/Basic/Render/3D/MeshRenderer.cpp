@@ -1,20 +1,20 @@
-﻿#include "../../../../Public/Component/Basic/Render/MeshRenderer.h"
+﻿#include "../../../../../Public/Component/Basic/Render/3D/MeshRenderer.h"
 
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <stdexcept>
 
-#include "../../../../../../PetitMoteur3D/Core/Public/Core/moteurWindows.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Mesh/CSommetMesh.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Mesh/FastobjChargeur.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Texture/GestionnaireDeTextures.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Util/Time.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Util/util.h"
-#include "../../../../Public/GameHost.h"
-#include "../../../../Public/GameObject/GameObject.h"
-#include "../../../../Public/Scene/Scene.h"
-#include "../../../../Public/Shader/Shader.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Core/moteurWindows.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Mesh/CSommetMesh.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Mesh/FastobjChargeur.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Texture/GestionnaireDeTextures.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Util/resource.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Util/Time.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Util/util.h"
+#include "../../../../../Public/GameHost.h"
+#include "../../../../../Public/GameObject/GameObject.h"
+#include "../../../../../Public/Scene/Scene.h"
+#include "../../../../../Public/Shader/Shader.h"
 #include "Api/Public/Util/Util.h"
 
 PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName) : Renderer(std::move(shader))

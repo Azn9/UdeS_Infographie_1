@@ -312,6 +312,7 @@
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="GameTest\TimeScaleTest.cpp" />
+    <ClCompile Include="GameTest\UI\TestUIObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PM3DApi\PM3DApi.vcxproj">
@@ -421,6 +422,7 @@
     <ClInclude Include="GameTest\Scenes\LoadingScene.h" />
     <ClInclude Include="GameTest\Shader\SnowShader.h" />
     <ClInclude Include="GameTest\TimeScaleTest.h" />
+    <ClInclude Include="GameTest\UI\TestUIObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

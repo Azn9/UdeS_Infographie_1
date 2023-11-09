@@ -14,14 +14,14 @@ VS_Sortie Sprite1VS(float4 Pos : POSITION, float2 coordTex : TEXCOORD)
     VS_Sortie sortie = (VS_Sortie)0;
     sortie.Pos = mul(Pos, matWVP);
     
-    // Coordonnées d’application de texture
+    // Coordonnï¿½es dï¿½application de texture
     sortie.coordTex = coordTex;
     
     return sortie;
 }
 
 Texture2D textureEntree; // la texture
-SamplerState SampleState; // l’état de sampling
+SamplerState SampleState; // lï¿½ï¿½tat de sampling
 
 float4 Sprite1PS(VS_Sortie vs) : SV_Target
 {

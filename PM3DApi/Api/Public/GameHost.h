@@ -36,6 +36,7 @@ namespace PM3D_API
 
         virtual void Initialize() = 0;
         virtual void Draw();
+        virtual void DrawUI();
 
         Scene* GetScene() const { return scene; }
 

@@ -2,14 +2,14 @@
 
 #include <string>
 
-#include "../../../Util/fast_obj.h"
+#include "../../../../Util/fast_obj.h"
 
 #include "Renderer.h"
-#include "../../../../../../PetitMoteur3D/Core/Imgui/imgui.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Mesh/chargeur.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Texture/CMaterial.h"
-#include "../../../../../../PetitMoteur3D/Core/Public/Util/Time.h"
-#include "../../../../Public/Shader/Shader.h"
+#include "../../../../../../../PetitMoteur3D/Core/Imgui/imgui.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Mesh/chargeur.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Texture/CMaterial.h"
+#include "../../../../../../../PetitMoteur3D/Core/Public/Util/Time.h"
+#include "../../../../../Public/Shader/Shader.h"
 
 namespace PM3D_API
 {

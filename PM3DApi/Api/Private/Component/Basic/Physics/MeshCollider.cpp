@@ -1,9 +1,8 @@
 #include "../../../../Public/Component/Basic/Physics/MeshCollider.h"
 #include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../../Public/GameHost.h"
-#include <limits>
 #include <PxPhysicsAPI.h>
-#include "../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
+#include "../PM3DApi/Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "../PetitMoteur3D/Core/Public/Mesh/FastobjChargeur.h"
 #include <algorithm>
 #include <vector>

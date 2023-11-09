@@ -1,8 +1,8 @@
 #pragma once
 #include <stdbool.h>
 
-#include "../../../../Public/Component/Component.h"
-#include "../../../../Public/Shader/Shader.h"
+#include "../../../../../Public/Component/Component.h"
+#include "../../../../../Public/Shader/Shader.h"
 
 namespace PM3D_API
 {

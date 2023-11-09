@@ -29,16 +29,26 @@
 #include "Mesh/FastobjChargeur.h"
 
 #include "GameTest/CustomPlane.h"
+#include "../../../PM3DApi/Api/Public/Camera/Camera.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "../../../PM3DApi/Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
+#include "../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
+#include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
+#include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/MovableComponent.h"
-#include "GameTest/Components/LightMoverComponent.h"
+#include "GameTest/UI/TestUIObject.h"
 #include "GameTest/Components/SizeModifierComponent.h"
 #include "../TimeScaleTest.h"
 #include "../Components/CameraMoverComponent.h"
 #include "GameTest/Heightmap.h"
 #include "GameTest/Pine.h"
+
+#include "Component/Basic/Physics/MeshCollider.h"
+#include "Component/Basic/Physics/SphereCollider.h"
+#include "GameObject/Basic/BasicSphere.h"
 
 void MainScene::InitializePhysics()
 {
@@ -74,6 +84,7 @@ void MainScene::InitializeLights()
 
 void MainScene::InitializeObjects()
 {
+    /*
     // ============= Add a plane =============
     auto map = std::make_unique<Heightmap>();
     map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
@@ -126,6 +137,7 @@ void MainScene::InitializeObjects()
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
+    */
 
     // ============= Add a pine =============
     auto pine = std::make_unique<Pine>();
@@ -150,4 +162,19 @@ void MainScene::InitializeObjects()
     treeShape->setSimulationFilterData(filterDataObstacle);
 
     AddChild(std::move(pine));
+}
+
+void MainScene::InitializeUI()
+{
+    Scene::InitializeUI(); // Init the base canvas
+
+    auto testUiObject = std::make_unique<TestUIObject>(
+        "TestUIObject",
+        XMFLOAT2(0.5f, 0.5f),
+        XMFLOAT2(0.25f, 0.25f),
+        true,
+        true
+    );
+    testUiObject->Initialize();
+    AddUiChild(std::move(testUiObject));
 }

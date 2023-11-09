@@ -16,8 +16,12 @@ void PM3D_API::GameHost::Update() const
 {
 	EventSystem::GetInstance().processEvents();
 	
-	if (scene)
-		scene->Update();
+	if (!scene)	return;
+
+	scene->Update();
+
+	if (const auto uiCanvas = scene->GetUICanvas())
+		uiCanvas->Update();
 }
 
 void PM3D_API::GameHost::PhysicsUpdate() const
@@ -79,4 +83,12 @@ void PM3D_API::GameHost::Draw()
 		if (renderer)
 			renderer->Draw();
 	}
+}
+
+void PM3D_API::GameHost::DrawUI()
+{
+	if (!scene) return;
+
+	if (const auto uiCanvas = scene->GetUICanvas())
+		uiCanvas->Draw();
 }
