@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../UIObject/UIObject.h"
+#include "UIObject.h"
 
 namespace PM3D_API
 {
@@ -16,9 +16,11 @@ namespace PM3D_API
         void Draw() override;
         void DrawSelf() const override;
 
-        void AddChild(std::unique_ptr<UIObject>&& child) override;
+        void AddChild(std::unique_ptr<UIObject>&& child);
 
-    protected:
+        void SetScale(const DirectX::XMFLOAT2& newScale) override;
+    private:
         bool isDeleted = false;
+        std::vector<std::unique_ptr<UIObject>> children{};
     };
 }

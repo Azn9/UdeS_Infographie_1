@@ -6,7 +6,7 @@
 #include "../Camera/Camera.h"
 #include "../Light/DirectionalLight.h"
 #include "../Component/Basic/Physics/PhysicsResolver.h"
-#include "../UICanvas/UICanvas.h"
+#include "../GameObject/UICanvas.h"
 
 namespace PM3D_API
 {

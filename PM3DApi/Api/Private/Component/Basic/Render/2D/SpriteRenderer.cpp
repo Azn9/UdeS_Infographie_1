@@ -42,8 +42,8 @@ void PM3D_API::SpriteRenderer::UpdateMatrix()
     const XMMATRIX& viewProj = PM3D::CMoteurWindows::GetInstance().GetMatViewProj();
     const auto pDispositif = GameHost::GetInstance()->GetDispositif();
 
-    const auto position = parentObject->GetTopLeftPosition();
-    const auto scale = parentObject->GetScreenScale();
+    const auto position = parentObject->GetPosition();
+    const auto scale = parentObject->GetScale();
 
     const auto largeur = static_cast<float>(pDispositif->GetLargeur());
     const auto hauteur = static_cast<float>(pDispositif->GetHauteur());
@@ -53,22 +53,20 @@ void PM3D_API::SpriteRenderer::UpdateMatrix()
     std::cout << "Screen size is x=" << largeur << ", y=" << hauteur << std::endl;
     std::cout << "Position is x=" << position.x << ", y=" << position.y << std::endl;
 
-    // Scale = zone en pixels
-    //const float scaleX = scale.x / textureSizeX;
-    //const float scaleY = scale.y / textureSizeY;
+    // Position is the top left corner, but we display from the bottom left corner
+    //const auto revertedPosition = DirectX::XMFLOAT2(position.x, hauteur - position.y);
     
     // Dimension en facteur
-    const float facteurX = scale.x * 2.f / largeur;// * scaleX);
-    const float facteurY = scale.y * 2.f / hauteur;// * scaleY);
+    const float facteurX = scale.x * 2.f / largeur;
+    const float facteurY = scale.y * 2.f / hauteur;
 
     // Position en coordonnées logiques
-    // 0,0 pixel = -1,1 | largeur,hauteur pixel = 1,-1
     const float posX = position.x * 2.f / largeur - 1.f;
-    const float posY = position.y * 2.f / hauteur - 1.f;
+    const float posY = (position.y + scale.y) / hauteur * -2.f + 1.f;
 
-    matWVP = XMMatrixTranslation(posX, posY, 0.0f) * XMMatrixScaling(facteurX, facteurY, 1.0f);
-
-    std::cout << "SpriteRenderer::UpdateMatrix() on " << parentObject->GetName() << ", with scale " << facteurX << ", " << facteurY << ", position " << posX << ", " << posY << std::endl;
+    matWVP = XMMatrixTranslation(posX, posY, 0.0f)
+            * XMMatrixRotationZ(parentObject->GetRotation())
+            * XMMatrixScaling(facteurX, facteurY, 1.0f);
 }
 
 void PM3D_API::SpriteRenderer::DrawSelf() const

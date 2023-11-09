@@ -105,11 +105,9 @@ void MainScene::InitializeUI()
     auto testUiObject = std::make_unique<TestUIObject>(
         "TestUIObject",
         XMFLOAT2(0.5f, 0.5f),
-        uiCanvas.get(),
-        PM3D_API::ScaleMode::BOTH_RELATIVE,
-        XMFLOAT2(0.0f, 0.0f),
-        PM3D_API::Anchor::MIDDLE,
-        PM3D_API::Anchor::MIDDLE
+        XMFLOAT2(0.25f, 0.25f),
+        true,
+        true
     );
     testUiObject->Initialize();
     AddUiChild(std::move(testUiObject));
