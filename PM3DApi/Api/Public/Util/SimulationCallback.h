@@ -6,6 +6,9 @@
 #include <vector>
 #include <algorithm>
 #include "FilterGroup.h"
+#include "Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/EventSystem/CollisionObstacleEvent.h"
+
 using namespace physx;
 
 class SimulationCallback : public PxSimulationEventCallback, public PxContactModifyCallback {
@@ -20,13 +23,7 @@ public:
             PxShape* shape = modifyPair.shapes[0];
             if (shape->getSimulationFilterData().word0 == FilterGroup::eSNOWBALL)
             {
-                PxShapeFlags flags = shape->getFlags();
-                flags |= PxShapeFlag::eTRIGGER_SHAPE;
-                shape->setFlags(flags);
-
-                dynamicToShrink.push_back(shape);
-
-                PxRigidDynamic* snowBall = static_cast<PxRigidDynamic*>(shape->getActor());
+                PM3D_API::EventSystem::Publish(CollisionObstacleEvent{});
             }
         }
 

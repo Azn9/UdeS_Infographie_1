@@ -9,8 +9,8 @@
 #include "Component/Basic/Physics/PlaneCollider.h"
 #include "Component/Basic/Physics/MeshCollider.h"
 #include "Component/Basic/Physics/Rigidbody.h"
-
 #include "Component/Basic/Render/MeshRenderer.h"
+
 #include "GameObject/GameObject.h"
 #include "GameObject/Basic/BasicCube.h"
 #include "GameObject/Basic/BasicSphere.h"
@@ -107,6 +107,8 @@ void MainScene::InitializeObjects()
     sphere->AddComponent(std::make_unique<SizeModifierComponent>());
 
     AddChild(std::move(sphere));
+
+    
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);

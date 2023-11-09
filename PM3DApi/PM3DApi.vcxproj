@@ -107,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include;$(SolutionDir)GameTest</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -1711,6 +1711,7 @@
     <ClInclude Include="Api\Public\Debug\FPSDebugRenderer.h" />
     <ClInclude Include="Api\Public\Debug\SceneHierarchyDebugRenderer.h" />
     <ClInclude Include="Api\Public\EventSystem\Basic\WindowResizeEvent.h" />
+    <ClInclude Include="Api\Public\EventSystem\CollisionObstacleEvent.h" />
     <ClInclude Include="Api\Public\EventSystem\Event.h" />
     <ClInclude Include="Api\Public\EventSystem\EventSystem.h" />
     <ClInclude Include="Api\Public\EventSystem\PhysicEvent.h" />

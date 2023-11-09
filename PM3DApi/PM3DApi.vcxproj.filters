@@ -245,5 +245,11 @@
     <ClInclude Include="Api\Public\Util\SimulationCallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Api\Public\EventSystem\PhysicEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Api\Public\EventSystem\CollisionObstacleEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
