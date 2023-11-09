@@ -217,12 +217,6 @@ namespace PM3D_API
         }
 
         template <class T, template_extends<Event, T>  = 0>
-        static long Subscribe(const std::function<void(const T&)>& listener)
-        {
-            return GetInstance().subscribe(listener);
-        }
-
-        template <class T, template_extends<Event, T>  = 0>
         static void Unsubscribe(const long& listenerId)
         {
             GetInstance().unsubscribe<T>(listenerId);

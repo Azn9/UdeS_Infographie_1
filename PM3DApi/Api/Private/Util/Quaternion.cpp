@@ -31,7 +31,7 @@ DirectX::XMFLOAT3 PM3D_API::Quaternion::ToEulerAngles() const
 	return euler;
 }
 
-PM3D_API::Quaternion&& PM3D_API::Quaternion::operator*(const PM3D_API::Quaternion& quaternion) const
+PM3D_API::Quaternion PM3D_API::Quaternion::operator*(const PM3D_API::Quaternion& quaternion) const
 {
 	const auto result = DirectX::XMQuaternionMultiply(XMLoadFloat4(this), XMLoadFloat4(&quaternion));
 

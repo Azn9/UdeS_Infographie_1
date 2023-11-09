@@ -4,51 +4,17 @@
 
 #include "../../PM3DApi/Api/Public/Camera/Camera.h"
 
-#include "../../PM3DApi/Api/Public/Component/Basic/Physics/SphereCollider.h"
 #include "../../PM3DApi/Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
-
-#include "../../PM3DApi/Api/Public/Component/Basic/Render/MeshRenderer.h"
+#include "../../PM3DApi/Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "../../PM3DApi/Api/Public/GameObject/GameObject.h"
-#include "../../PM3DApi/Api/Public/GameObject/Basic/BasicSphere.h"
 #include "../../PM3DApi/Api/Public/Light/AmbiantLight.h"
-#include "Component/Basic/Physics/BoxCollider.h"
-#include "Component/Basic/Physics/SphereCollider.h"
-#include "Component/Basic/Physics/PlaneCollider.h"
-#include "Component/Basic/Physics/MeshCollider.h"
-#include "Component/Basic/Physics/Rigidbody.h"
-#include "Component/Basic/Render/MeshRenderer.h"
-
-#include "GameObject/GameObject.h"
-#include "GameObject/Basic/BasicCube.h"
-#include "GameObject/Basic/BasicSphere.h"
-#include "Light/AmbiantLight.h"
-#include "Light/PointLight.h"
 #include "Util/FilterGroup.h"
-
-#include "Mesh/FastobjChargeur.h"
-
-#include "GameTest/CustomPlane.h"
-#include "../../../PM3DApi/Api/Public/Camera/Camera.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Physics/Rigidbody.h"
-#include "../../../PM3DApi/Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
-#include "../../../PM3DApi/Api/Public/GameObject/GameObject.h"
-#include "../../../PM3DApi/Api/Public/Light/AmbiantLight.h"
-#include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
-#include "GameTest/Components/MovableComponent.h"
 #include "GameTest/UI/TestUIObject.h"
-#include "GameTest/Components/SizeModifierComponent.h"
-#include "../TimeScaleTest.h"
-#include "../Components/CameraMoverComponent.h"
-#include "GameTest/Heightmap.h"
 #include "GameTest/Pine.h"
-
-#include "Component/Basic/Physics/MeshCollider.h"
-#include "Component/Basic/Physics/SphereCollider.h"
-#include "GameObject/Basic/BasicSphere.h"
 
 void MainScene::InitializePhysics()
 {
