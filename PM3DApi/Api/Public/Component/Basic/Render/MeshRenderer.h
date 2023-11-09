@@ -26,6 +26,9 @@ public:
 
 	void DrawDebugInfo() const override
 	{
+		ImGui::Text("Visible");
+		ImGui::SameLine(200.0f); ImGui::Text(IsVisible() ? "Yes" : "No");
+		
 		ImGui::Text("MeshLoaded");
 		ImGui::SameLine(200.0f); ImGui::Text(meshLoaded ? "true" : "false");
 
@@ -42,6 +45,8 @@ public:
 		ImGui::SameLine(200.0f); ImGui::Text(std::to_string(Material.size()).c_str());
 	}
 
+	bool IsVisible() const override;
+
 	PM3D::IChargeur* getChargeur() { return chargeur; }
 
 private:
@@ -56,6 +61,8 @@ private:
 	std::vector<int> SubmeshMaterialIndex; // Index des matériaux
 	std::vector<int> SubmeshIndex; // Index des sous-objets
 	std::vector<CMaterial> Material; // Vecteur des matériaux
-	
+
+	///radius of the bounding sphere
+	float boundingRadius = 0.f;
 };
 }

@@ -15,6 +15,7 @@
 #include "../../../../Public/GameObject/GameObject.h"
 #include "../../../../Public/Scene/Scene.h"
 #include "../../../../Public/Shader/Shader.h"
+#include "Api/Public/Util/Util.h"
 
 PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName) : Renderer(std::move(shader))
 {
@@ -68,6 +69,13 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	if (!camera)
 	{
 		throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
+	}
+
+	// Frustrum culling
+	if(!IsVisible())
+	{
+		LogEndDrawSelf();
+		return;
 	}
 
 	// Obtenir le contexte
@@ -212,6 +220,16 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	LogEndDrawSelf();
 }
 
+bool PM3D_API::MeshRenderer::IsVisible() const
+{
+	const Camera* camera = parentObject->GetScene()->GetMainCamera();
+	float maxScale =
+		max(max(parentObject->GetWorldScale().x, parentObject->GetWorldScale().y), parentObject->GetWorldScale().z);
+	const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&parentObject->GetWorldPosition());
+	const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform( worldPos, camera->GetMatView());
+	return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
+}
+
 void PM3D_API::MeshRenderer::LoadMesh()
 {
 	ID3D11Device* pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
@@ -223,9 +241,11 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		std::cout << "MeshRenderer::LoadMesh: nombreSommets = " << nombreSommets << std::endl;
 		
 		std::unique_ptr<CSommetMesh[]> ts(new CSommetMesh[nombreSommets]);
+		boundingRadius = 0.f;
 		for (uint32_t i = 0; i < nombreSommets; ++i)
 		{
 			ts[i].position = chargeur->GetPosition(i);
+			boundingRadius = max(Util::magnitude(ts[i].position), boundingRadius);
 			ts[i].normal = chargeur->GetNormale(i);
 			ts[i].coordTex = chargeur->GetCoordTex(i);
 			ts[i].binormal = chargeur->GetBiNormale(i);
