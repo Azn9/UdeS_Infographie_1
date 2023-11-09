@@ -1,6 +1,7 @@
 #include "../../../../Public/Component/Basic/Physics/SphereCollider.h"
 #include "../../../../Public/Component/Basic/Physics/Rigidbody.h"
 #include "../../../../Public/GameHost.h"
+#include "geometry/PxGeometry.h"
 
 void PM3D_API::SphereCollider::Initialize()
 {
@@ -10,14 +11,13 @@ void PM3D_API::SphereCollider::Initialize()
 
 	const auto worldScale = parentObject->GetWorldScale();
 	shape = pxPhysics->createShape(physx::PxSphereGeometry{ worldScale.x }, *material, true);
-
 	const auto rigidbody = parentObject->GetComponent<Rigidbody>(); // Ne peut pas être null, vérifié dans Collider::Initialize()
 
 	const auto actor = rigidbody->GetActor();
 
 	physx::PxShape* baseShape;
 	actor->getShapes(&baseShape, 1, 0);
-	
+
 	actor->detachShape(*baseShape);
 	actor->attachShape(*shape);
 

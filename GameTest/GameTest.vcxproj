@@ -323,6 +323,7 @@
     <ClInclude Include="GameTest\Components\CameraFollowComponent.h" />
     <ClInclude Include="GameTest\Components\CameraMoverComponent.h" />
     <ClInclude Include="GameTest\Components\LightMoverComponent.h" />
+    <ClInclude Include="GameTest\Components\SizeModifierComponent.h" />
     <ClInclude Include="GameTest\Components\SnowMover.h" />
     <ClInclude Include="GameTest\Components\MovableComponent.h" />
     <ClInclude Include="GameTest\Components\SnowRenderer.h" />
