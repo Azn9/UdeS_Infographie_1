@@ -67,7 +67,7 @@ void MainScene::InitializeObjects()
     // ============= Add a plane =============
     auto map = std::make_unique<Heightmap>();
     map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
-    map->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
+    map->SetWorldScale(XMFLOAT3(10.f, 10.f, 10.f));
     map->Initialize();
 
     auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
@@ -84,8 +84,8 @@ void MainScene::InitializeObjects()
 
     // ============= Add a sphere =============
     auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-    sphere->SetWorldPosition(XMFLOAT3(0.0f, 15.0f, 10.0f));
-    sphere->SetWorldScale(XMFLOAT3(.25f, .25f, .25f));
+    sphere->SetWorldPosition(XMFLOAT3(0.0f, -9.5f, 10.0f));
+    sphere->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
     sphere->Initialize();
 
     auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
@@ -93,7 +93,7 @@ void MainScene::InitializeObjects()
     sphere->AddComponent(std::move(sphereRigidbody));
     sphereRigidbodyPtr->Initialize();
 
-    auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(physicsResolver->GetDefaultMaterial());
+    auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
     const auto sphereColliderPtr = sphereCollider.get();
     sphere->AddComponent(std::move(sphereCollider));
     sphereColliderPtr->Initialize();
@@ -115,8 +115,9 @@ void MainScene::InitializeObjects()
 
     // ============= Add a pine =============
     auto pine = std::make_unique<Pine>();
-    pine->SetWorldPosition(XMFLOAT3(-0.4f, -11.80f, 14.0f));
+    pine->SetWorldPosition(XMFLOAT3(-0.4f, -12.0f, 14.0f));
     pine->SetWorldScale(XMFLOAT3(1.5f, 1.5f, 1.5f));
+    pine->SetWorldRotation(XMFLOAT3(0.0f, 0.90f, 0.f));
     pine->Initialize();
 
 

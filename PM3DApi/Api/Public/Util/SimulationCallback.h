@@ -33,11 +33,21 @@ public:
     void onContactModify(PxContactModifyPair* const pairs, PxU32 count) {
         for (PxU32 i = 0; i < count; i++) {
             PxContactModifyPair& modifyPair = pairs[i];
-            /*if (modifyPair.shape[0]->getSimulationFilterData().word0 == FilterGroup::eBALLUP)
+            if (modifyPair.shape[0]->getSimulationFilterData().word0 == FilterGroup::eSNOWBALL || modifyPair.shape[1]->getSimulationFilterData().word0 == FilterGroup::eSNOWBALL)
             {
-                modifyPair.contacts.setNormal(i, PxVec3{ 0.f,1.f,0.f }.getNormalized());
-                modifyPair.contacts.setRestitution(i, 100.f);
-            }*/
+                physx::PxVec3 normalContact = modifyPair.contacts.getNormal(i);
+                if (normalContact.x >= 0)
+                {
+                    normalContact = PxVec3(0.5f, 0.5f, -.5f);
+                }
+                else
+                {
+                    normalContact = PxVec3(-0.5f, 0.5f, -.5f);
+                }
+                modifyPair.contacts.setNormal(i, normalContact.getNormalized());
+                modifyPair.contacts.setRestitution(i, 1.0f);
+                PM3D_API::EventSystem::Publish(CollisionObstacleEvent{});
+            }
 
         }
     }
