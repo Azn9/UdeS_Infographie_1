@@ -109,11 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;CPPDYNAMICLIBRARYTEMPLATE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-<<<<<<< HEAD
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include;$(SolutionDir)PM3DApi/Api/Public;$(SolutionDir)PetitMoteur3D/Core/Public;$(SolutionDir)PetitMoteur3D/Core</AdditionalIncludeDirectories>
-=======
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
->>>>>>> origin/feat/debug-textures
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -327,11 +323,9 @@
     <ClInclude Include="GameTest\Components\CameraFollowComponent.h" />
     <ClInclude Include="GameTest\Components\CameraMoverComponent.h" />
     <ClInclude Include="GameTest\Components\LightMoverComponent.h" />
-<<<<<<< HEAD
+    <ClInclude Include="GameTest\Components\SnowMover.h" />
     <ClInclude Include="GameTest\Components\MovableComponent.h" />
-=======
     <ClInclude Include="GameTest\Components\SnowRenderer.h" />
->>>>>>> origin/feat/debug-textures
     <ClInclude Include="GameTest\CustomCube.h" />
     <ClInclude Include="GameTest\CustomPlane.h" />
     <ClInclude Include="GameTest\GameTest.h" />

@@ -93,10 +93,13 @@ namespace PM3D_API
 		float nearDist = 0.05f;
 		float farDist = 400.0f;
 
+#pragma warning(push)
+#pragma warning(disable: 4324)
 		DirectX::XMVECTOR focusPoint;
 
 		DirectX::XMVECTOR upDirection;
 		Frustrum frustrum;
+#pragma warning(pop)
 
 	private:
 		//void WindowResizeEventListener(WindowResizeEvent& event);

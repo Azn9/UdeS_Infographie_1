@@ -49,7 +49,7 @@ public:
 
 	PM3D::IChargeur* getChargeur() { return chargeur; }
 
-private:
+protected:
 	void LoadMesh();
 
 	PM3D::IChargeur* chargeur;

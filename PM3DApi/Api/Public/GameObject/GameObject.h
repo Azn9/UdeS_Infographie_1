@@ -105,6 +105,22 @@ public:
 
 		return nullptr;
 	}
+
+	template <typename T, template_extends<Component, T> = 0>
+	bool HasComponent() const
+	{
+		for (const auto& component : components)
+		{
+			if (!component) continue;
+			
+			if (typeid(*component.get()) == typeid(T))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 	
 	template <typename T, template_extends<Component, T> = 0>
 	std::vector<T*> GetComponents()

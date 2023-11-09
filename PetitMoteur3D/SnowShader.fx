@@ -108,8 +108,11 @@ cbuffer param
     float4 vSMat; // la valeur spéculaire du matériau
     float Ns; // la puissance de spécularité
     
-    int hasAlbedoTexture; // Booléen pour la présence de texture
-    int hasNormalmapTexture;
+	float fallback;
+	
+    bool hasAlbedoTexture; // Booléen pour la présence de texture
+    bool hasNormalmapTexture;
+	bool isPreCompute;
 };
 
 #define MAX_LIGHTS 10
@@ -138,8 +141,8 @@ Texture2D sparkleTexture;
 SamplerState sparkleTextureSampler
 {
 	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Clamp;
-	AddressV = Clamp;
+	AddressU = Wrap;
+	AddressV = Wrap;
 };
 
 Texture2D normalMap;
@@ -156,7 +159,8 @@ struct VS_Sortie
 	float3 worldPos  : TEXCOORD5;
 	float3 cameraDir : TEXCOORD6;
     float  noiseValue : TEXCOORD7;
-	float4 PosInMap[MAX_LIGHTS] : TEXCOORD8;
+	float  pathValue : TEXCOORD8;
+	float4 PosInMap[MAX_LIGHTS] : TEXCOORD9;
 };
 
 VS_Sortie MainVS(
@@ -172,10 +176,14 @@ VS_Sortie MainVS(
     output.binormal = mul(float4(vBiNormal, 0.0f), matWorld);
     output.tangent = mul(float4(vTangent, 0.0f), matWorld);
 
-    float noiseV = snoise01(vPos.xz * 2.0f);
-    vPos.y = vPos.y + noiseV * 1;
+	if (!isPreCompute) {
+    	float noiseV = snoise01(vPos.xz * 2.0f);
+		float pathV = snowRVT.SampleLevel(snowRVTSampler, coordTex, 0).r;
 
-    output.noiseValue = noiseV;
+		vPos.y = vPos.y + 2 * noiseV * (1-pathV) - pathV;
+		output.noiseValue = noiseV;
+		output.pathValue = pathV;
+	}
 
     output.position = mul(vPos, matWorldViewProj);
     output.worldPos = mul(vPos, matWorld);
@@ -270,6 +278,10 @@ float4 MainPS(VS_Sortie input) : SV_Target
             float attenuation = (1 / D) * li.specularPower;
             //float attenuation = (1 / (D * D)) * li.intensity;
 
+			if (isPreCompute) {
+				attenuation *= 0.6;
+			}
+
             totalAmbiant += li.ambiant * attenuation;
             totalDiffuse += li.diffuse * diffuseValue * attenuation;
             totalSpecular += li.specular * specularValue * attenuation;
@@ -350,12 +362,45 @@ float4 MainPS(VS_Sortie input) : SV_Target
     }
 
     float noiseV = (input.noiseValue + 0.7f) / 1.7f;
+	float pathV = (input.pathValue + 0.7f) / 1.7f;
 
-	float3 finalColor = couleurTexture.rgb * 
-        (totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb)
-        * noiseV;        ;
+	float3 finalColor;
 
-	return float4(finalColor, 1.0f);
+	if (isPreCompute)
+	{
+		finalColor = couleurTexture.rgb * 
+			(totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb);
+
+		if (finalColor.r > 0.9) {
+			return float4(finalColor, 1.0);
+		} else {
+			return float4(finalColor, finalColor.r/20);
+		}
+	}
+	else
+	{
+		#define sparkleScale 5.0f
+		#define sparkleCutoffValue 0.99f
+
+		// Sample sparkle texture
+		float sparkleValue = sparkleTexture.Sample(sparkleTextureSampler, input.coordTex * sparkleScale).r;
+		float sparkleCutoff = step(sparkleCutoffValue, sparkleValue);
+
+		finalColor = couleurTexture.rgb * 
+			(totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb)
+			* (noiseV * (1-pathV)) 
+			+ (1-pathV) * float3(0.95f, 0.98f, 0.99f)
+			+ sparkleCutoff * saturate(1- (pathV * 2)) * 4;
+
+		if (pathV > 0.3f) {
+			finalColor += pathV * float3(0.45f, 0.98f, 0.99f);
+
+			finalColor /= 1.2f;
+			//finalColor = saturate(finalColor);
+		}
+
+		return float4(finalColor, 1.0f);
+	}
 }
 
 technique11 NewShader

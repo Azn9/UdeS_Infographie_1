@@ -36,6 +36,6 @@ public:
 	}
 
 private:
-	float distance = 20.0f;
+	float distance = 10.0f;
 	float angle = 0.0f;
 };

@@ -334,6 +334,8 @@ void* SnowShader::PrepareParameters(
         DirectX::XMVectorSet(cameraPos.x, cameraPos.y, cameraPos.z, 1.0f),
         DirectX::XMVectorSet(cameraDir.x, cameraDir.y, cameraDir.z, 1.0f)
     };
+    parameters->isPreCompute = false;
+    parameters->fallback = 1.0f;
 
     return parameters;
 }
@@ -352,9 +354,18 @@ void SnowShader::ApplyMaterialParameters(
 
     auto& parameters = *static_cast<SnowShaderParameters*>(shaderParameters);
 
-    parameters.materialAmbiant = materialAmbiant;
-    parameters.materialDiffuse = materialDiffuse;
-    parameters.materialSpecular = materialSpecular;
+    parameters.materialAmbiant = DirectX::XMVectorSet(DirectX::XMVectorGetX(materialAmbiant) * 0.875f,
+                                                      DirectX::XMVectorGetY(materialAmbiant),
+                                                      DirectX::XMVectorGetZ(materialAmbiant),
+                                                      1.0f);
+    parameters.materialDiffuse = DirectX::XMVectorSet(DirectX::XMVectorGetX(materialDiffuse) * 0.875f,
+                                                      DirectX::XMVectorGetY(materialDiffuse),
+                                                      DirectX::XMVectorGetZ(materialDiffuse),
+                                                      1.0f);;
+    parameters.materialSpecular = DirectX::XMVectorSet(DirectX::XMVectorGetX(materialSpecular) * 0.875f,
+                                                      DirectX::XMVectorGetY(materialSpecular),
+                                                      DirectX::XMVectorGetZ(materialSpecular),
+                                                      1.0f);;
     parameters.materialSpecularPower = specularPower;
 
     if (albedoTexture == nullptr)
