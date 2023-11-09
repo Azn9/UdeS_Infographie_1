@@ -5,6 +5,7 @@
 #include "Imgui/imgui.h"
 #include "Component/Component.h"
 #include "GameObject/GameObject.h"
+#include "Util/Util.h"
 
 class CameraFollowComponent final : public PM3D_API::Component
 {
@@ -13,12 +14,19 @@ public:
 	{
 		const auto positionObjectToFollow = _objectToFollow->GetWorldPosition();
 
-		const auto position = XMFLOAT3(
-			positionObjectToFollow.x,
-			positionObjectToFollow.y + (sinf(_angle * DirectX::XM_PI / 180.0f) * _distance),
-			positionObjectToFollow.z - (cosf(_angle * DirectX::XM_PI / 180.0f) * _distance));
+		const auto rigidbody = _objectToFollow->GetComponent<PM3D_API::Rigidbody>();
+		const auto vel = static_cast<physx::PxRigidDynamic*>(rigidbody->GetActor())->getLinearVelocity();
 
-		parentObject->SetWorldPosition(position);
+		const auto velNormalized = vel.getNormalized();
+
+		const auto position = XMFLOAT3(
+			positionObjectToFollow.x - 10 * velNormalized.x,
+			positionObjectToFollow.y - 10 * velNormalized.y + 5.0f,
+			positionObjectToFollow.z - 10 * velNormalized.z
+		);
+		const auto finalPosition = Util::Lerp(parentObject->GetWorldPosition(), position, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 3.0f);
+
+		parentObject->SetWorldPosition(finalPosition);
 		static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(positionObjectToFollow);
 	}
 

@@ -50,5 +50,8 @@
     <ClInclude Include="GameTest\Components\CameraFollowComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameTest\Components\MovableComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
