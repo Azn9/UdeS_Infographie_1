@@ -149,9 +149,9 @@ size_t PM3D::FastobjChargeur::GetNombreSommets() const
 	return tabIndex.size();
 }
 
-int PM3D::FastobjChargeur::GetNombreSubset() const
+size_t PM3D::FastobjChargeur::GetNombreSubset() const
 {
-	return mesh->object_count;
+	return mesh->group_count;
 }
 
 size_t PM3D::FastobjChargeur::GetNombreMaterial() const

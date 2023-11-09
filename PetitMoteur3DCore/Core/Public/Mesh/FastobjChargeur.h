@@ -11,7 +11,7 @@ public:
 	~FastobjChargeur() override;
 	void Chargement(const CParametresChargement& param) override;
 	size_t GetNombreSommets() const override;
-	int GetNombreSubset() const override;
+	size_t GetNombreSubset() const override;
 	size_t GetNombreMaterial() const override;
 	CMaterial GetMaterial(int _i) const override;
 	const std::string& GetMaterialName(int i) const override;

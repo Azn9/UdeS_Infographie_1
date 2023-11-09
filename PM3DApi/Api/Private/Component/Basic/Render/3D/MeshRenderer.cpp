@@ -174,15 +174,15 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	//pDispositif->SetNormalRSState();
 
 	// Dessiner les sous-objets non-transparents
-	for (unsigned int i = 0; i < mesh->object_count; ++i)
+	for (unsigned int i = 0; i < mesh->group_count; ++i)
 	{
-		const auto objGroup = mesh->objects[i];
+		const auto objGroup = mesh->groups[i];
 		const unsigned indexStart = objGroup.index_offset;
 		
 		unsigned int indexDrawAmount;
-		if (mesh->object_count > 1 && i + 1 < mesh->object_count)
+		if (mesh->group_count > 1 && i + 1 < mesh->group_count)
 		{
-			indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+			indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
 		} else
 		{
 			indexDrawAmount = mesh->index_count;
