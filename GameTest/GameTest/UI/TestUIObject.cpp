@@ -1,7 +1,7 @@
 #include "TestUIObject.h"
 
+#include "../../../PetitMoteur3D/Core/Public/Util/Time.h"
 #include "../../../PM3DApi/Api/Public/Component/Basic/Render/2D/SpriteRenderer.h"
-#include "Util/Time.h"
 
 void TestUIObject::Initialize()
 {

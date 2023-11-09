@@ -2,11 +2,6 @@
 #include <DirectXMath.h>
 #include <iostream>
 
-#include "Imgui/imgui.h"
-#include "Component/Component.h"
-#include "GameObject/GameObject.h"
-#include "Util/Util.h"
-
 class CameraFollowComponent final : public PM3D_API::Component
 {
 public:

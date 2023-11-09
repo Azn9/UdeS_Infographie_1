@@ -109,7 +109,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include;$(SolutionDir)GameTest</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -151,7 +151,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -305,7 +305,7 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Component\Basic\Physics\Collider.cpp">
@@ -379,7 +379,7 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Component\Basic\Physics\MeshCollider.cpp" />
@@ -454,7 +454,7 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Component\Basic\Physics\PlaneCollider.cpp">
@@ -528,7 +528,7 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Component\Basic\Physics\Rigidbody.cpp">
@@ -602,7 +602,7 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Component\Basic\Physics\SphereCollider.cpp">
@@ -676,7 +676,7 @@
       <BuildStlModules>true</BuildStlModules>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PM3DApi\;$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Component\Basic\Render\2D\SpriteRenderer.cpp" />
@@ -1920,7 +1920,7 @@
       <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_UNICODE;UNICODE;</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs;$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Api\Private\Util\FileWatcher.cpp">
