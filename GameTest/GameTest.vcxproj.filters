@@ -56,5 +56,11 @@
     <ClInclude Include="GameTest\Components\MovableComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameTest\Heightmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTest\Pine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

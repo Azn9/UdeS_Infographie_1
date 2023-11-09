@@ -109,7 +109,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include;$(SolutionDir)GameTest</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -1861,6 +1861,7 @@
     <ClInclude Include="Api\Public\Debug\FPSDebugRenderer.h" />
     <ClInclude Include="Api\Public\Debug\SceneHierarchyDebugRenderer.h" />
     <ClInclude Include="Api\Public\EventSystem\Basic\WindowResizeEvent.h" />
+    <ClInclude Include="Api\Public\EventSystem\CollisionObstacleEvent.h" />
     <ClInclude Include="Api\Public\EventSystem\Event.h" />
     <ClInclude Include="Api\Public\EventSystem\EventSystem.h" />
     <ClInclude Include="Api\Public\EventSystem\PhysicEvent.h" />
@@ -1887,6 +1888,8 @@
     <ClInclude Include="Api\Public\Shader\Shader.h" />
     <ClInclude Include="Api\Public\Util\Axis.h" />
     <ClInclude Include="Api\Public\Util\fast_obj.h" />
+    <ClInclude Include="Api\Public\Util\FilterGroup.h" />
+    <ClInclude Include="Api\Public\Util\FilterShader.h" />
     <ClInclude Include="Api\Public\Util\FileWatcher.h" />
     <ClInclude Include="Api\Public\Util\Instanceof.h" />
     <ClInclude Include="Api\Public\Util\Plane.h" />
@@ -2045,6 +2048,7 @@
     <ClInclude Include="Api\Public\Util\FileWatcher.h" />
     <ClInclude Include="Api\Public\Util\Plane.h" />
     <ClInclude Include="Api\Public\Util\Quaternion.h" />
+    <ClInclude Include="Api\Public\Util\SimulationCallback.h" />
     <ClInclude Include="Api\Public\Util\Util.h" />
   </ItemGroup>
   <ItemGroup>

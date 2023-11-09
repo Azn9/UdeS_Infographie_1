@@ -331,6 +331,8 @@
     <ClInclude Include="GameTest\CustomPlane.h" />
     <ClInclude Include="GameTest\GameTest.h" />
     <ClInclude Include="GameTest\Scenes\LoadingScene.h" />
+    <ClInclude Include="GameTest\Heightmap.h" />
+    <ClInclude Include="GameTest\Pine.h" />
     <ClInclude Include="GameTest\Scenes\MainScene.h" />
     <ClInclude Include="GameTest\Shader\SnowShader.h" />
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\physx_include;$(SolutionDir)PM3DApi/Api/Public;$(SolutionDir)PetitMoteur3D/Core/Public;$(SolutionDir)PetitMoteur3D/Core</AdditionalIncludeDirectories>
