@@ -1,11 +1,18 @@
 // PetitMoteur3D.cpp�: d�finit le point d'entr�e pour l'application.
 //
 
-#include "stdafx.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <tchar.h>
+
 #include "Core/Public/Core/PetitMoteur3D.h"
 #include "Core/Public/Core/MoteurWindows.h"
 
+
+#include "../../../../PM3DApi/Api/Public/GameHost.h"
+
 using namespace PM3D;
+using namespace PM3D_API;
 
 int APIENTRY _tWinMain(
 	HINSTANCE hInstance,
@@ -18,10 +25,14 @@ int APIENTRY _tWinMain(
 	UNREFERENCED_PARAMETER(lpCmdLine);
 	UNREFERENCED_PARAMETER(nCmdShow);
 
+	const auto gameHost = GameHost::GetInstance();
+	gameHost->Initialize();
+
 	try
 	{
 		// Cr�ation de l'objet Moteur
 		CMoteurWindows& rMoteur = CMoteurWindows::GetInstance();
+		rMoteur.SetGameHost(gameHost);
 
 		// Sp�cifiques � une application Windows
 		rMoteur.SetWindowsAppInstance(hInstance);

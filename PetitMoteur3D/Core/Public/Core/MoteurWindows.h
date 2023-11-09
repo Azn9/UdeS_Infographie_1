@@ -1,18 +1,29 @@
 #pragma once
+#include "Moteur.h"
 
-#include "moteur.h"
-#include "dispositifD3D11.h"
-#include "Horloge.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 namespace PM3D
 {
 #define MAX_LOADSTRING 100
 
-class CMoteurWindows final : public CMoteur<CMoteurWindows, CDispositifD3D11>
+class CMoteurWindows final : public CMoteur
 {
 public:
+	CMoteurWindows() = default;
 	void SetWindowsAppInstance(HINSTANCE hInstance);
 
+	static CMoteurWindows& GetInstance()
+	{
+		static CMoteurWindows instance;
+		return instance;
+	}
+
+	//double GetLastFrameTime() const override
+	//{
+	//	return lastFrameTime;
+	//}
 private:
 	ATOM MyRegisterClass(HINSTANCE hInstance);
 	bool InitAppInstance();
@@ -21,12 +32,15 @@ private:
 	// Les fonctions spécifiques
 	virtual int InitialisationsSpecific() override;
 	virtual bool RunSpecific() override;
-	virtual int64_t GetTimeSpecific() const override;
-	virtual double GetTimeIntervalsInSec(int64_t start, int64_t stop) const override;
 	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) override;
+	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode, UINT largeur, UINT hauteur);
+	virtual void InitSceneSpecific() override;
 	virtual void BeginRenderSceneSpecific() override;
 	virtual void EndRenderSceneSpecific() override;
 
+	void Resize(WORD largeur, WORD hauteur) override;
+	void ResizeWindow(int largeur, int hauteur) override;
+	
 	// Fonctions "Callback" -- Doivent être statiques
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 	static INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
@@ -35,10 +49,11 @@ private:
 	static HINSTANCE hAppInstance; // handle Windows de l'instance actuelle de l'application
 	HWND hMainWnd; // handle Windows de la fenêtre principale
 	TCHAR szWindowClass[MAX_LOADSTRING]; // le nom de la classe de fenêtre principale
-
-	Horloge m_Horloge;
+	
 
 	float hue = 0.0f;
+
+	void SetThreadName(std::thread& thread, const std::string& name) override;
 };
 
 } // namespace PM3D

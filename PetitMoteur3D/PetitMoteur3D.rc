@@ -127,6 +127,13 @@ BEGIN
     DXE_ERREURCREATION_FX   "Erreur de cr�ation du fichier FX"
     DXE_FICHIERTEXTUREINTROUVABLE
                             "Fichier de texture introuvable"
+    ERREUR_CREATION_DIRECTINPUT "Erreur de cr�ation de DirectInput"
+    ERREUR_CREATION_CLAVIER "Erreur de cr�ation du clavier"
+    ERREUR_CREATION_FORMAT_CLAVIER "Erreur de cr�ation du format du clavier"
+    ERREUR_CREATION_SOURIS "Erreur de cr�ation de la souris"
+    ERREUR_CREATION_FORMAT_SOURIS "Erreur de cr�ation du format de la souris"
+    ERREUR_CREATION_JOYSTICK "Erreur de cr�ation du joystick"
+    ERREUR_CREATION_FORMAT_JOYSTICK "Erreur de cr�ation du format du joystick"
 END
 
 STRINGTABLE

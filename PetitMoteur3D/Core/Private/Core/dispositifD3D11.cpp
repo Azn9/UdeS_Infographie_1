@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Core/DispositifD3D11.h"
 #include "Core/Public/Util/Util.h"
@@ -14,6 +13,8 @@ CDispositifD3D11::~CDispositifD3D11()
 	DXRelacher(mSolidCullBackRS);
 	DXRelacher(pDepthTexture);
 	DXRelacher(pDepthStencilView);
+	DXRelacher(pDepthStencilState);
+	DXRelacher(pNoDepthStencilState);
 
 	if (pImmediateContext)
 	{
@@ -35,11 +36,13 @@ CDispositifD3D11::~CDispositifD3D11()
 //    			n�cessaire pour la fonction de cr�ation du 
 //				dispositif
 CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
-                                   const HWND hWnd)
+								   const HWND hWnd) : CDispositifD3D11(cdsMode, hWnd, 1280, 720)
 {
-	UINT largeur;
-	UINT hauteur;
-	UINT createDeviceFlags = 0;
+}
+	
+CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT largeur, UINT hauteur)
+{
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG;
 
 #ifdef _DEBUG
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -62,9 +65,6 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 
 	// Obtenir les informations de l'adaptateur de d�faut
 	CInfoDispositif Dispo0(ADAPTATEUR_COURANT);
-
-	largeur = 1024;
-	hauteur = 768;
 
 	switch (cdsMode)
 	{
@@ -140,6 +140,10 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode,
 
 	InitDepthBuffer();
 
+	InitDepthState();
+	//DesactiverDepth();
+	ActiverDepth();
+
 	InitBlendStates();
 
 	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
@@ -181,6 +185,16 @@ void CDispositifD3D11::DesactiverMelangeAlpha() const
 	pImmediateContext->OMSetBlendState(alphaBlendDisable, nullptr, 0xffffffff);
 }
 
+void CDispositifD3D11::ActiverDepth() const
+{
+	pImmediateContext->OMSetDepthStencilState(pDepthStencilState, 1);
+}
+
+void CDispositifD3D11::DesactiverDepth() const
+{
+	pImmediateContext->OMSetDepthStencilState(pNoDepthStencilState, 1);
+}
+
 void CDispositifD3D11::InitDepthBuffer()
 {
 	D3D11_TEXTURE2D_DESC depthTextureDesc;
@@ -209,6 +223,33 @@ void CDispositifD3D11::InitDepthBuffer()
 		DXE_ERREURCREATIONDEPTHSTENCILTARGET);
 }
 
+void CDispositifD3D11::InitDepthState()
+{
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	dsDesc.StencilEnable = true;
+	dsDesc.StencilReadMask = 0xFF;
+	dsDesc.StencilWriteMask = 0xFF;
+	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Create depth stencil state
+	pD3DDevice->CreateDepthStencilState(&dsDesc, &pDepthStencilState);
+
+	D3D11_DEPTH_STENCIL_DESC dsDescCopy = dsDesc;
+	dsDescCopy.DepthEnable = false;
+
+	pD3DDevice->CreateDepthStencilState(&dsDescCopy, &pNoDepthStencilState);
+}
+
 void CDispositifD3D11::InitBlendStates()
 {
 	D3D11_BLEND_DESC blendDesc;
@@ -234,6 +275,35 @@ void CDispositifD3D11::InitBlendStates()
 	
 	// On cr�� l��tat alphaBlendDisable
 	DXEssayer( pD3DDevice->CreateBlendState(&blendDesc,&alphaBlendDisable), DXE_ERREURCREATION_BLENDSTATE);
+}
+
+void CDispositifD3D11::SetViewportDimension(int largeur, int hauteur)
+{
+	D3D11_VIEWPORT vp;
+	vp.Width = static_cast<FLOAT>(largeur);
+	vp.Height = static_cast<FLOAT>(hauteur);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	pImmediateContext->RSSetViewports( 1, &vp );
+}
+
+void CDispositifD3D11::ResetViewportDimension()
+{
+	D3D11_VIEWPORT vp;
+    vp.Width = static_cast<FLOAT>(largeurEcran);
+    vp.Height = static_cast<FLOAT>(hauteurEcran);
+    vp.MinDepth = 0.0f;
+    vp.MaxDepth = 1.0f;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    pImmediateContext->RSSetViewports( 1, &vp );
+}
+
+void CDispositifD3D11::SetNormalRSState()
+{
+	pImmediateContext->RSSetState(mSolidCullBackRS);
 }
 
 } // namespace PM3D

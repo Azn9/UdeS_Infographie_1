@@ -1,9 +1,13 @@
 ﻿#pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "SpriteTemp.h"
-#include "Core/Public/Shader/d3dx11effect.h"
-#include "Core/Public/Core/DispositifD3D11.h"
-#include "Core/Public/Object/objet3d.h"
+#include "../../Public/Shader/d3dx11effect.h"
+#include "../../Public/Core/DispositifD3D11.h"
+#include "../../Public/Object/objet3d.h"
 
 namespace PM3D
 {
@@ -34,8 +38,9 @@ public:
 	virtual ~CAfficheurSprite();
 
 	void AjouterSprite(std::string NomTexture, int _x, int _y, int _dx=0, int _dy=0);
+	void AjouterPanneau(const std ::string& NomTexture, const XMFLOAT3& _position, float _dx=0.0f, float _dy=0.0f);
+	void AjouterSpriteTexte(ID3D11ShaderResourceView* pTexture, int _x, int _y);
 
-private:
 	class CSprite
 	{
 		public :
@@ -50,6 +55,7 @@ private:
 		}
 	};
 
+	virtual void Draw();
 private:
 	static CSommetSprite sommets[6];
 	ID3D11Buffer* pVertexBuffer;
@@ -70,6 +76,5 @@ private:
 	virtual void Anime(float) override
 	{
 	};
-	virtual void Draw();
 };
 } // namespace PM3D

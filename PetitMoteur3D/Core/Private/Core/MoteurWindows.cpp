@@ -1,8 +1,15 @@
-#include "StdAfx.h"
+#include <thread>
+#include <string>
 #include "Core/Public/Util/resource.h"
 
 #include "Core/Public/Core/MoteurWindows.h"
 
+#include "../../../../PM3DApi/Api/Public/EventSystem/EventSystem.h"
+#include "../../../../PM3DApi/Api/Public/EventSystem/Basic/WindowResizeEvent.h"
+#include "../../Imgui/imgui.h"
+#include "../../Imgui/imgui_impl_win32.h"
+#include "../../Imgui/imgui_impl_dx11.h"
+#include "Core/Public/Util/util.h"
 
 namespace PM3D
 {
@@ -98,7 +105,25 @@ int CMoteurWindows::InitialisationsSpecific()
 	InitAppInstance();
 	Show();
 
+	// Initialisation de DirectInput
+	GestionnaireDeSaisie.Init(hAppInstance, hMainWnd);
+
 	return 0;
+}
+
+void CMoteurWindows::InitSceneSpecific()
+{
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // IF using Docking Branch
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplWin32_Init(hMainWnd);
+	ImGui_ImplDX11_Init(pDispositif->GetD3DDevice(), pDispositif->GetImmediateContext());
 }
 
 //
@@ -132,23 +157,6 @@ bool CMoteurWindows::RunSpecific()
 	return bBoucle;
 }
 
-//
-//  FONCTION : GetTimeSpecific 
-//
-//  BUT :	Fonction responsable d'obtenir un temps.
-//
-//
-int64_t CMoteurWindows::GetTimeSpecific() const
-{
-	return m_Horloge.GetTimeCount();
-}
-
-double CMoteurWindows::GetTimeIntervalsInSec(int64_t start, int64_t stop) const
-{
-	return m_Horloge.GetTimeBetweenCounts(start, stop);
-}
-
-
 //  FONCTION : CreationDispositifSpecific 
 //
 //  BUT :	Fonction responsable de créer le 
@@ -157,6 +165,10 @@ double CMoteurWindows::GetTimeIntervalsInSec(int64_t start, int64_t stop) const
 //		 CDS_MODE: 	CDS_FENETRE 		application fenêtrée
 //					CDS_PLEIN_ECRAN 	application plein écran
 //
+CDispositifD3D11* CMoteurWindows::CreationDispositifSpecific(const CDS_MODE cdsMode, UINT largeur, UINT hauteur)
+{
+	return new CDispositifD3D11(cdsMode, hMainWnd, largeur, hauteur);
+}
 CDispositifD3D11* CMoteurWindows::CreationDispositifSpecific(const CDS_MODE cdsMode)
 {
 	return new CDispositifD3D11(cdsMode, hMainWnd);
@@ -164,34 +176,111 @@ CDispositifD3D11* CMoteurWindows::CreationDispositifSpecific(const CDS_MODE cdsM
 
 void CMoteurWindows::BeginRenderSceneSpecific()
 {
+	if (!canRender) return;
+	
 	ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
 	ID3D11RenderTargetView* pRenderTargetView = pDispositif->GetRenderTargetView();
 
-	hue--;
-	if (hue <= 0.0f) hue = 360.0f;
-
-	/*
-	const double r = 0.5f + 0.5f * sin(hue * 3.14159f / 180.0f);
-	const double g = 0.5f + 0.5f * sin((hue + 120.0f) * 3.14159f / 180.0f);
-	const double b = 0.5f + 0.5f * sin((hue + 240.0f) * 3.14159f / 180.0f);
-
-	const auto rf = static_cast<float>(r);
-	const auto gf = static_cast<float>(g);
-	const auto bf = static_cast<float>(b);
-*/
-	
 	// On efface la surface de rendu
 	const float Couleur[4] = {0.0f, 0.0f, 0.2f, 1.0f}; //  RGBA - Vert pour le moment
 
 	pImmediateContext->ClearRenderTargetView(pRenderTargetView, Couleur);
+	
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	
+	//ImGui::DockSpaceOverViewport();
 
 	// On ré-initialise le tampon de profondeur
 	ID3D11DepthStencilView* pDepthStencilView = pDispositif->GetDepthStencilView();
-	pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	if (pDepthStencilView)
+		pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void CMoteurWindows::EndRenderSceneSpecific()
 {
+	if (!canRender) return;
+	
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
+
+void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
+{
+	if (!pDispositif) return;
+
+	std::cout << "Resize: " << largeur << "x" << hauteur << std::endl;
+
+	canRender = false;
+
+	ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+	pImmediateContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+	ID3D11RenderTargetView** pRenderTargetView = pDispositif->GetRenderTargetViewPtr();
+	(*pRenderTargetView)->Release();
+
+	DXEssayer(pDispositif->GetSwapChain()->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0));
+//ResizeBuffers(1, largeur, hauteur, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+
+	ID3D11Texture2D* pBuffer;
+	DXEssayer(pDispositif->GetSwapChain()->GetBuffer(0, __uuidof( ID3D11Texture2D), (void**) &pBuffer ));
+	DXEssayer(pDispositif->GetD3DDevice()->CreateRenderTargetView(pBuffer, nullptr, pRenderTargetView));
+
+	pBuffer->Release();
+
+	D3D11_VIEWPORT vp;
+	vp.Width = (FLOAT)largeur;
+	vp.Height = (FLOAT)hauteur;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	pImmediateContext->RSSetViewports(1, &vp);
+	
+	pDispositif->GetDepthStencilState()->Release();
+	pDispositif->GetNoDepthStencilState()->Release();
+	pDispositif->GetDepthStencilView()->Release();
+
+	pDispositif->largeurEcran = largeur;
+	pDispositif->hauteurEcran = hauteur;
+
+	pDispositif->InitDepthBuffer();
+	pDispositif->InitDepthState();
+
+	pDispositif->ActiverDepth();
+	//pDispositif->DesactiverDepth();
+
+	pDispositif->InitBlendStates();
+
+	pImmediateContext->RSSetState(pDispositif->GetRasterizerState());
+	
+	pImmediateContext->OMSetRenderTargets(1, pRenderTargetView, pDispositif->GetDepthStencilView());
+
+	/*
+	// Update the camera
+	if (gameHost)
+	{
+		const auto scene = gameHost->GetScene();
+		if (scene)
+		{
+			const auto camera = scene->GetMainCamera();
+			if (camera && camera->IsInitialized()) 
+			{
+				//camera->UpdateInternalMatrices();
+			}
+		}
+	}
+	*/
+
+	PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
+
+	canRender = true;
+}
+
+void CMoteurWindows::ResizeWindow(int largeur, int hauteur)
+{
+	SetWindowPos(hMainWnd, NULL, 0, 0, largeur, hauteur, SWP_NOMOVE);
 }
 
 //  FONCTION : WndProc(HWND, unsigned, WORD, LONG)
@@ -205,6 +294,10 @@ void CMoteurWindows::EndRenderSceneSpecific()
 //
 LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+		return true;
+	
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
@@ -235,6 +328,12 @@ LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
+	case WM_SIZE:
+		if (wParam == SIZE_MINIMIZED)
+			break;
+		std::cout << "== RESIZE " << LOWORD(lParam) << "x" << HIWORD(lParam) << std::endl;
+		CMoteurWindows::GetInstance().Resize(LOWORD(lParam), HIWORD(lParam));
+		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -261,4 +360,11 @@ INT_PTR CALLBACK CMoteurWindows::About(HWND hDlg, UINT message, WPARAM wParam, L
 	return (INT_PTR)FALSE;
 }
 
+void CMoteurWindows::SetThreadName(std::thread& thread, const std::string& name)
+{
+	const std::wstring wName(name.begin(), name.end());
+	if (thread.native_handle() != nullptr) {
+		SetThreadDescription(thread.native_handle(), wName.c_str());
+	}
+}
 } // namespace PM3D

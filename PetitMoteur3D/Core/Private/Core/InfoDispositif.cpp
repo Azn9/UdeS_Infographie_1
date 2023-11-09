@@ -1,5 +1,6 @@
-#include "StdAfx.h"
 #include "Core/Public/Core/InfoDispositif.h"
+
+#include <dxgi.h>
 
 #include "Core/Public/Util/util.h"
 #include <vector>

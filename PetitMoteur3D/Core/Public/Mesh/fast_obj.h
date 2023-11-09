@@ -35,6 +35,8 @@
 #define FAST_OBJ_VERSION        ((FAST_OBJ_VERSION_MAJOR << 8) | FAST_OBJ_VERSION_MINOR)
 
 #include <stdlib.h>
+#include <iostream>
+#include <fstream>
 
 
 typedef struct
@@ -1362,6 +1364,8 @@ void parse_buffer(fastObjData* data, const char* ptr, const char* end, const fas
 
 void fast_obj_destroy(fastObjMesh* m)
 {
+    std::cout << "fast_obj_destroy" << std::endl;
+    
     unsigned int ii;
 
 

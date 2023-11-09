@@ -1,8 +1,10 @@
-﻿#include "stdafx.h"
-#include "Core/Public/Sprite/AfficheurSprite.h"
+﻿#include "Core/Public/Sprite/AfficheurSprite.h"
+
+#include <d3dcompiler.h>
 
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Core/MoteurWindows.h"
+#include "Core/Public/Object/Panneau.h"
 #include "Core/Public/Util/util.h"
 
 namespace PM3D
@@ -126,6 +128,82 @@ void CAfficheurSprite::AjouterSprite(std::string NomTexture, int _x, int _y, int
 
 	// On l’ajoute à notre vecteur
 	tabSprites.push_back(std::move(pSprite));
+}
+
+void CAfficheurSprite::AjouterPanneau(const std::string& NomTexture, const XMFLOAT3& _position, float _dx, float _dy)
+{
+	// Initialisation de la texture
+	CGestionnaireDeTextures& TexturesManager = CMoteurWindows::GetInstance().GetTextureManager();
+
+	const std::wstring ws(NomTexture.begin(), NomTexture.end());
+	auto pPanneau = std::make_unique<CPanneau>();
+
+	pPanneau->pTextureD3D = TexturesManager.GetNewTexture(ws, pDispositif)->GetD3DTexture();
+
+    // Obtenir la dimension de la texture si _dx et _dy sont à 0;
+    if (_dx == 0.0f && _dy == 0.0f)
+    {
+	    ID3D11Resource* pResource;
+	    ID3D11Texture2D *pTextureInterface;
+
+    	pPanneau-> pTextureD3D->GetResource(&pResource);
+    	pResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
+
+    	D3D11_TEXTURE2D_DESC desc;
+	    pTextureInterface->GetDesc(&desc);
+    	
+	    DXRelacher(pResource);
+	    DXRelacher(pTextureInterface);
+
+    	pPanneau->dimension.x = static_cast<float>(desc.Width);
+		pPanneau->dimension.y = static_cast<float>(desc.Height);
+
+    	// Dimension en facteur
+		pPanneau->dimension.x = pPanneau->dimension.x * 2.0f / static_cast<float>(pDispositif->GetLargeur());
+		pPanneau->dimension.y = pPanneau->dimension.y * 2.0f / static_cast<float>(pDispositif->GetHauteur());
+    }
+    else
+    {
+		pPanneau->dimension.x = _dx;
+		pPanneau->dimension.y = _dy;
+    }
+	
+    // Position en coordonnées du monde
+    const XMMATRIX& viewProj = CMoteurWindows::GetInstance().GetMatViewProj();
+    pPanneau->position = _position;
+	pPanneau->matPosDim = XMMatrixScaling(pPanneau->dimension.x, pPanneau->dimension.y, 1.0f) * XMMatrixTranslation(pPanneau->position.x, pPanneau->position.y, pPanneau->position.z) * viewProj;
+	
+    // On l’ajoute à notre vecteur
+    tabSprites.push_back(std ::move(pPanneau));
+}
+
+void CAfficheurSprite::AjouterSpriteTexte(ID3D11ShaderResourceView* pTexture, int _x, int _y)
+{
+	std ::unique_ptr<CSprite> pSprite = std ::make_unique<CSprite>();
+	pSprite-> pTextureD3D = pTexture;
+	// Obtenir la dimension de la texture;
+	ID3D11Resource* pResource;
+	ID3D11Texture2D *pTextureInterface = 0;
+	pSprite-> pTextureD3D->GetResource(&pResource);
+	pResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
+	D3D11_TEXTURE2D_DESC desc;
+	pTextureInterface->GetDesc(&desc);
+	DXRelacher(pResource);
+	DXRelacher(pTextureInterface);
+	const float dx = float(desc.Width);
+	const float dy = float(desc.Height);
+	// Dimension en facteur
+	const float facteurX = dx * 2.0f / pDispositif->GetLargeur();
+	const float facteurY = dy * 2.0f / pDispositif->GetHauteur();
+	// Position en coordonnées logiques, 0,0 pixel = -1,1
+	const float x = float(_x);
+	const float y = float(_y);
+	const float posX = x * 2.0f / pDispositif->GetLargeur() - 1.0f;
+	const float posY = 1.0f - y * 2.0f / pDispositif->GetHauteur();
+	pSprite->matPosDim = XMMatrixScaling(facteurX, facteurY, 1.0f) *
+	XMMatrixTranslation(posX, posY, 0.0f);
+	// On l’ajoute à notre vecteur
+	tabSprites.push_back(std ::move(pSprite));
 }
 
 void CAfficheurSprite::InitEffet()
