@@ -44,7 +44,7 @@ void LoadingSceneComponent::Initialize()
 		"LoadingText",
 		scalePercent,
 		positionPercent,
-		0,
+		0.f,
 		true,
 		true
 	);

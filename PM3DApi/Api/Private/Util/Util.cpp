@@ -83,6 +83,9 @@ PM3D_API::Quaternion Util::DirectionToQuaternion(const DirectX::XMFLOAT3 directi
 
 std::string Util::ws2s(const std::wstring& wstr)
 {
+#pragma warning(push)
+#pragma warning(disable: 4996)
 	static std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 	return converter.to_bytes(wstr);
+#pragma warning(pop)
 }
