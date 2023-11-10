@@ -6,7 +6,7 @@
 PM3D_API::SpriteRenderer::SpriteRenderer(const std::wstring& textureName) : matWVP(XMMatrixIdentity())
 {
     texture = PM3D::CMoteurWindows::GetInstance().GetTextureManager().GetNewTexture(textureName, GameHost::GetInstance()->GetDispositif());
-    shader = std::make_unique<SpriteShader>(L"Sprite1.fx");
+    shader = std::make_unique<SpriteShader>(L"shader/Sprite1.fx");
 
     if (!texture)
         throw std::exception("SpriteRenderer::SpriteRenderer() : texture is null");
@@ -39,7 +39,6 @@ void PM3D_API::SpriteRenderer::Update()
 
 void PM3D_API::SpriteRenderer::UpdateMatrix()
 {
-    const XMMATRIX& viewProj = PM3D::CMoteurWindows::GetInstance().GetMatViewProj();
     const auto pDispositif = GameHost::GetInstance()->GetDispositif();
 
     const auto position = parentObject->GetPosition();
@@ -47,25 +46,17 @@ void PM3D_API::SpriteRenderer::UpdateMatrix()
 
     const auto largeur = static_cast<float>(pDispositif->GetLargeur());
     const auto hauteur = static_cast<float>(pDispositif->GetHauteur());
-
-    std::cout << "Texture size is x=" << textureSizeX << ", y=" << textureSizeY << std::endl;
-    std::cout << "Scale is x=" << scale.x << ", y=" << scale.y << std::endl;
-    std::cout << "Screen size is x=" << largeur << ", y=" << hauteur << std::endl;
-    std::cout << "Position is x=" << position.x << ", y=" << position.y << std::endl;
-
-    // Position is the top left corner, but we display from the bottom left corner
-    //const auto revertedPosition = DirectX::XMFLOAT2(position.x, hauteur - position.y);
     
     // Dimension en facteur
     const float facteurX = scale.x * 2.f / largeur;
     const float facteurY = scale.y * 2.f / hauteur;
 
-    // Position en coordonnées logiques
+    // Position en coordonnÃ©es logiques
     const float posX = position.x * 2.f / largeur - 1.f;
     const float posY = (position.y + scale.y) / hauteur * -2.f + 1.f;
 
-    matWVP = XMMatrixTranslation(posX, posY, 0.0f)
-            * XMMatrixRotationZ(parentObject->GetRotation())
+    matWVP = XMMatrixRotationZ(parentObject->GetRotation())
+            * XMMatrixTranslation(posX, posY, 0.0f)
             * XMMatrixScaling(facteurX, facteurY, 1.0f);
 }
 

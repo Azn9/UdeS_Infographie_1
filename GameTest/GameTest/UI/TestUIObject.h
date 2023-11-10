@@ -10,7 +10,7 @@ public:
         const DirectX::XMFLOAT2& position,
         const bool relativeScale = false,
         const bool relativePosition = false
-    ) : UIObject(name, scale, position, relativeScale, relativePosition)
+    ) : UIObject(name, scale, position, 0, relativeScale, relativePosition)
     {
     }
 

@@ -69,9 +69,9 @@ protected:
 	DirectX::XMFLOAT2 position;
 	DirectX::XMFLOAT2 scale;
 	DirectX::XMFLOAT2 basePosition;
-	DirectX::XMFLOAT2 basePositionComputed;
+	std::atomic<DirectX::XMFLOAT2> basePositionComputed;
 	DirectX::XMFLOAT2 baseScale;
-	DirectX::XMFLOAT2 baseScaleComputed;
+	std::atomic<DirectX::XMFLOAT2> baseScaleComputed;
 	bool relativeScale;
 	bool relativePosition;
 

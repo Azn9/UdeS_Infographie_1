@@ -81,7 +81,12 @@ namespace PM3D_API
 		void UpdateInternalMatrices();
 
 		bool IsInitialized() const { return initialized; }
+
+		void SetClearColor(const DirectX::XMFLOAT3& newClearColor) { clearColor = newClearColor; }
+		const DirectX::XMFLOAT3& GetClearColor() const { return clearColor; }
 	protected:
+		DirectX::XMFLOAT3 clearColor = {0.0f, 0.0f, 0.0f};
+		
 		bool initialized = false;
 		CameraType cameraType;
 

@@ -11,10 +11,9 @@
 #include "Api/Public/Light/AmbiantLight.h"
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/EventSystem/EventSystem.h"
-#include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/UI/TestUIObject.h"
-#include "GameTest/Pine.h"
+#include "GameTest/Objects/Pine.h"
 
 void MainScene::InitializePhysics()
 {
@@ -135,9 +134,9 @@ void MainScene::InitializeUI()
 
     auto testUiObject = std::make_unique<TestUIObject>(
         "TestUIObject",
+        XMFLOAT2(256.f, 256.f),
         XMFLOAT2(0.5f, 0.5f),
-        XMFLOAT2(0.25f, 0.25f),
-        true,
+        false,
         true
     );
     testUiObject->Initialize();

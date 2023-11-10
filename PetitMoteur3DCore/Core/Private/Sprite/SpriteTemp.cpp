@@ -150,7 +150,7 @@ void CSpriteTemp::InitEffet()
 	// Pour l’effet
 	ID3DBlob* pFXBlob = nullptr;
 
-	DXEssayer(D3DCompileFromFile(L"Sprite1.fx", 0, 0, 0,
+	DXEssayer(D3DCompileFromFile(L"shader/Sprite1.fx", 0, 0, 0,
 			"fx_5_0", 0, 0,
 			&pFXBlob, 0),
 		DXE_ERREURCREATION_FX);

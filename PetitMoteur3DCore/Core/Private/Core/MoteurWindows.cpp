@@ -183,28 +183,42 @@ void CMoteurWindows::BeginRenderSceneSpecific()
 	ID3D11RenderTargetView* pRenderTargetView = pDispositif->GetRenderTargetView();
 
 	// On efface la surface de rendu
-	const float Couleur[4] = {0.0f, 0.0f, 0.2f, 1.0f}; //  RGBA - Vert pour le moment
+	float Couleur[4] = {0.0f, 0.0f, 0.2f, 1.0f}; //  RGBA - Vert pour le moment
+
+	if (const auto scene = PM3D_API::GameHost::GetInstance()->GetScene())
+	{
+		if (const auto camera = scene->GetMainCamera())
+		{
+			const auto clearColor = camera->GetClearColor();
+			Couleur[0] = clearColor.x;
+			Couleur[1] = clearColor.y;
+			Couleur[2] = clearColor.z;
+		}
+	}
 
 	pImmediateContext->ClearRenderTargetView(pRenderTargetView, Couleur);
-	
+
+#ifdef _DEBUG
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+#endif
 	
 	//ImGui::DockSpaceOverViewport();
 
 	// On r�-initialise le tampon de profondeur
-	ID3D11DepthStencilView* pDepthStencilView = pDispositif->GetDepthStencilView();
-	if (pDepthStencilView)
+	if (ID3D11DepthStencilView* pDepthStencilView = pDispositif->GetDepthStencilView())
 		pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void CMoteurWindows::EndRenderSceneSpecific()
 {
 	if (!canRender) return;
-	
+
+#ifdef _DEBUG
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+#endif
 }
 
 void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
@@ -295,9 +309,11 @@ void CMoteurWindows::ResizeWindow(int largeur, int hauteur)
 //
 LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+#ifdef _DEBUG
 	extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
 		return true;
+#endif
 	
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
@@ -335,6 +351,8 @@ LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 		std::cout << "== RESIZE " << LOWORD(lParam) << "x" << HIWORD(lParam) << std::endl;
 		CMoteurWindows::GetInstance().Resize(LOWORD(lParam), HIWORD(lParam));
 		break;
+	case WM_SETFOCUS:
+		GetInstance().GestionnaireDeSaisie.Init(hAppInstance, GetInstance().hMainWnd);
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}

@@ -3,11 +3,12 @@
 #include <thread>
 
 #include "MainScene.h"
-#include "GameTest/CustomCube.h"
-#include "GameTest/CustomPlane.h"
-#include "GameTest/Components/CameraMoverComponent.h"
+#include "GameTest/Objects/LoadingScene/CustomCube.h"
+#include "GameTest/Objects/LoadingScene/CustomPlane.h"
 #include "GameTest/Components/LightMoverComponent.h"
+#include "GameTest/Components/LoadingScene/LoadingSceneComponent.h"
 #include "GameTest/Components/SnowMover.h"
+#include "GameTest/Components/LoadingScene/CameraMoverComponent.h"
 
 void LoadingScene::InitializeCamera()
 {
@@ -16,13 +17,14 @@ void LoadingScene::InitializeCamera()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSECTIVE,
-        XMFLOAT3(0.0f, 4.0f, -15.0f),
+        XMFLOAT3(0.0f, 8.0f, -15.0f),
         XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarDist(1000.0f);
     mainCamera->AddComponent(std::make_unique<CameraMoverComponent>());
+    mainCamera->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
     SetMainCamera(std::move(mainCamera));
 }
 
@@ -62,36 +64,18 @@ void LoadingScene::InitializeObjects()
     tree->SetWorldScale({5.0f, 5.0f, 5.0f});
     tree->Initialize();
 
-    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"NewShader.fx");
+    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
     tree->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "tree_pineTallA.obj"));
 
     AddChild(std::move(tree));
-
-    // Load scene in the background
-    std::thread loadingThread([this]()
-    {
-        const auto mainScenePtr = MainScene::GetInstancePtr();
-        mainScenePtr->Initialize();
-        
-        isLoaded = true;
-    });
-    loadingThread.detach();
 }
 
-void LoadingScene::Draw()
+void LoadingScene::InitializeUI()
 {
-    if (!isLoaded)
-    {
-        Scene::Draw();
-        return;
-    }
+    Scene::InitializeUI();
 
-    PM3D_API::GameHost::GetInstance()->SetScene(MainScene::GetInstancePtr());
-    MainScene::GetInstancePtr()->Draw();
+    auto loadingSceneComponent = std::make_unique<LoadingSceneComponent>();
+    const auto loadingSceneComponentPtr = loadingSceneComponent.get();
+    Scene::AddComponent(std::move(loadingSceneComponent));
+    loadingSceneComponentPtr->Initialize();
 }
-
-void LoadingScene::DrawSelf() const
-{
-    
-}
-
