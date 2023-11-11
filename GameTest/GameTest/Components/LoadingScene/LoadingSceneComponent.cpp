@@ -31,7 +31,7 @@ void LoadingSceneComponent::Initialize()
         constexpr auto expectedScreenSize = DirectX::XMFLOAT2(1920.f, 1080.f);
         constexpr auto loadingTextPosition = DirectX::XMFLOAT2(
             216.f,
-            216.f
+            864.f
         );
         constexpr auto positionPercent = DirectX::XMFLOAT2(
             loadingTextPosition.x / expectedScreenSize.x,
@@ -65,7 +65,7 @@ void LoadingSceneComponent::Initialize()
         constexpr auto expectedScreenSize = DirectX::XMFLOAT2(1920.f, 1080.f);
         constexpr auto loadingTextPosition = DirectX::XMFLOAT2(
             1482.f,
-            1070.f
+            10.f
         );
         constexpr auto positionPercent = DirectX::XMFLOAT2(
             loadingTextPosition.x / expectedScreenSize.x,
@@ -100,7 +100,7 @@ void LoadingSceneComponent::Initialize()
         constexpr auto expectedScreenSize = DirectX::XMFLOAT2(1920.f, 1080.f);
         constexpr auto loadingTextPosition = DirectX::XMFLOAT2(
             1452.f,
-            1000.f
+            80.f
         );
         constexpr auto positionPercent = DirectX::XMFLOAT2(
             loadingTextPosition.x / expectedScreenSize.x,

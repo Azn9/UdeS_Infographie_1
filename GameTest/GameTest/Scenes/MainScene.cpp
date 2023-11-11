@@ -34,6 +34,7 @@ void MainScene::InitializeCamera()
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarDist(1000.0f);
     mainCamera->AddComponent(std::make_unique<CameraFollowComponent>());
+    mainCamera->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
     SetMainCamera(std::move(mainCamera));
 }
 

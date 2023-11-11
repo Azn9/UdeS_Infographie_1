@@ -20,17 +20,15 @@ void PauseComponent::Initialize()
 void PauseComponent::Update()
 {
     UIObject::Update();
-
-    /*
+    
     if (alpha < 0.001f && alpha != 0.f)
     {
         alpha = 0.f;
     }
     else
     {
-        alpha = Util::Lerp(alpha, isPaused ? 1.f : 0.f, 10.f * PM3D::Time::GetInstance().GetUpdateDeltaTimeA());
+        alpha = Util::Lerp(alpha, isPaused ? 1.f : 0.f, 20.f * PM3D::Time::GetInstance().GetUpdateDeltaTimeA());
     }
-    */
 
     if (Input::IsKeyPressed(KeyCode::ESCAPE))
     {
@@ -39,15 +37,18 @@ void PauseComponent::Update()
         if (isPaused)
         {
             isPaused = false;
-            alpha = 0.f;
             PM3D::Time::GetInstance().SetTimeScale(1.f);
         } else
         {
             isPaused = true;
-            alpha = 1.f;
             PM3D::Time::GetInstance().SetTimeScale(0.f);
         }
 
         std::cout << "PauseComponent::Update() : isPaused = " << isPaused << std::endl;
+    }
+
+    if (isPaused && Input::IsKeyPressed(KeyCode::R))
+    {
+        // TODO : restart
     }
 }
