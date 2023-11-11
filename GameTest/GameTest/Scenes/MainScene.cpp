@@ -11,10 +11,10 @@
 #include "Api/Public/Light/AmbiantLight.h"
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/EventSystem/EventSystem.h"
-#include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
+#include "GameTest/Components/MainScene/PauseComponent.h"
 #include "GameTest/UI/TestUIObject.h"
-#include "GameTest/Pine.h"
+#include "GameTest/Objects/Pine.h"
 
 void MainScene::InitializePhysics()
 {
@@ -34,6 +34,7 @@ void MainScene::InitializeCamera()
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarDist(1000.0f);
     mainCamera->AddComponent(std::make_unique<CameraFollowComponent>());
+    mainCamera->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
     SetMainCamera(std::move(mainCamera));
 }
 
@@ -133,13 +134,8 @@ void MainScene::InitializeUI()
 {
     Scene::InitializeUI(); // Init the base canvas
 
-    auto testUiObject = std::make_unique<TestUIObject>(
-        "TestUIObject",
-        XMFLOAT2(0.5f, 0.5f),
-        XMFLOAT2(0.25f, 0.25f),
-        true,
-        true
-    );
-    testUiObject->Initialize();
-    AddUiChild(std::move(testUiObject));
+    auto pauseComponent = std::make_unique<PauseComponent>();
+    const auto pauseComponentPtr = pauseComponent.get();
+    AddUiChild(std::move(pauseComponent));
+    pauseComponentPtr->Initialize();
 }

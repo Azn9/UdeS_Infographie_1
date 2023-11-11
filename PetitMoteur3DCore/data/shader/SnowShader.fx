@@ -180,7 +180,7 @@ VS_Sortie MainVS(
     	float noiseV = snoise01(vPos.xz * 2.0f);
 		float pathV = snowRVT.SampleLevel(snowRVTSampler, coordTex, 0).r;
 
-		vPos.y = vPos.y + 2 * noiseV * (1-pathV) - pathV;
+		vPos.y = max(vPos.y, vPos.y + 2 * noiseV * (1-pathV) - pathV);
 		output.noiseValue = noiseV;
 		output.pathValue = pathV;
 	}

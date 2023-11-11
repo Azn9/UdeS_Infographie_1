@@ -45,6 +45,8 @@ PM3D_API::DefaultShader::DefaultShader(
     fileWatcher(fileName, [fileName, this]()
     {
         std::lock_guard<std::mutex> guard{reloadingMutex};
+        if (!initialized)
+            return;
         
         std::cout << "Reloading shader " << Util::ws2s(fileName) << std::endl;
         Destroy();
@@ -56,6 +58,7 @@ PM3D_API::DefaultShader::DefaultShader(
         std::cout << "Shader reloaded!" << std::endl;
     })
 {
+    std::lock_guard<std::mutex> guard{reloadingMutex};
     Initialize(fileName);
 }
 
@@ -236,10 +239,18 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
     sr_desc.Texture2D.MostDetailedMip = 0;
     sr_desc.Texture2D.MipLevels = 1;
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
+
+    initialized = true;
 }
 
 void PM3D_API::DefaultShader::Destroy()
 {
+    std::lock_guard<std::mutex> guard{reloadingMutex};
+    if (!initialized)
+        return;
+
+    initialized = false;
+    
     PM3D::DXRelacher(shaderParametersBuffer);
     PM3D::DXRelacher(effect);
     PM3D::DXRelacher(vertexLayout);

@@ -12,7 +12,7 @@ PM3D_API::UICanvas::UICanvas() : UIObject(
         static_cast<float>(GameHost::GetInstance()->GetDispositif()->largeurEcran),
         static_cast<float>(GameHost::GetInstance()->GetDispositif()->hauteurEcran)
     },
-    {0.f, 0.f}
+    {0.f, 0.f}, 0.f, false, false
 )
 {
     EventSystem::Subscribe([&](const WindowResizeEvent& event)

@@ -12,8 +12,5 @@ public:
     void InitializeCamera() override;
     void InitializeLights() override;
     void InitializeObjects() override;
-    void Draw() override;
-    void DrawSelf() const override;
-private:
-    std::atomic_bool isLoaded{false};
+    void InitializeUI() override;
 };

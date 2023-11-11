@@ -13,7 +13,7 @@ public:
         pSouris = nullptr;
         pJoystick = nullptr;
     }
-    ~CDIManipulateur() = default;
+    ~CDIManipulateur();
     
     void StatutClavier();
     bool ToucheAppuyee(UINT touche);
@@ -21,6 +21,7 @@ public:
     void SaisirEtatSouris();
     const DIMOUSESTATE& EtatSouris() { return mouseState;}
 
+    void Destroy();
     bool Init(HINSTANCE hInstance, HWND hWnd);
 private:
     IDirectInput8* pDirectInput;

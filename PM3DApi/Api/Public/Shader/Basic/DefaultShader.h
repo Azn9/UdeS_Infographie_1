@@ -74,6 +74,7 @@ protected:
 
 	mutable ID3D11Buffer* vertexBuffer;
 	mutable ID3D11Buffer* indexBuffer;
+	bool initialized;
 
 private:
 	struct DefaultShaderParameters

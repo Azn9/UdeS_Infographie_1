@@ -43,6 +43,10 @@ SnowShader::SnowShader(
     fileWatcher(fileName, [fileName, this]()
     {
         std::lock_guard<std::mutex> guard{reloadingMutex};
+        Sleep(150); // To avoid issues
+        
+        if (!initialized)
+            return;
         
         std::cout << "Reloading shader " << Util::ws2s(fileName) << std::endl;
         Destroy();
@@ -234,10 +238,15 @@ void SnowShader::Initialize(const std::wstring& wstring)
     sr_desc.Texture2D.MostDetailedMip = 0;
     sr_desc.Texture2D.MipLevels = 1;
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
+
+    initialized = true;
 }
 
 void SnowShader::Destroy()
 {
+    if (!initialized)
+        return;
+    
     PM3D::DXRelacher(shaderParametersBuffer);
     PM3D::DXRelacher(effect);
     PM3D::DXRelacher(vertexLayout);

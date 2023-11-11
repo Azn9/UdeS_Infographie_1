@@ -63,11 +63,33 @@ public:
 		return &TimeScale;
 	}
 
+	void SetUpdateDeltaTimeA(const float deltaTime)
+	{
+		UpdateDeltaTimeA = deltaTime;
+	}
+
+	void SetPhysicsDeltaTimeA(const float deltaTime)
+	{
+		PhysicsDeltaTimeA = deltaTime;
+	}
+
+	float GetUpdateDeltaTimeA() const
+	{
+		return UpdateDeltaTimeA;
+	}
+
+	float GetPhysicsDeltaTimeA() const
+	{
+		return PhysicsDeltaTimeA;
+	}
+
 private:
 	Horloge clock;
 	
 	float UpdateDeltaTime = 0.0;
 	float PhysicsDeltaTime = 0.0;
+	float UpdateDeltaTimeA = 0.0;
+	float PhysicsDeltaTimeA = 0.0;
 	float TimeScale = 1.0;
 };
 }

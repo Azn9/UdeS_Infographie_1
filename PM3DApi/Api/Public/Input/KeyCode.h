@@ -11,7 +11,8 @@ enum class KeyCode
 	ARROW_DOWN = DIK_DOWN,
 	ESCAPE = DIK_ESCAPE,
 	ENTER = DIK_RETURN,
-	SPACE = DIK_SPACE
+	SPACE = DIK_SPACE,
+	R = DIK_R,
 };
 
 // Used to iterate over all the keycodes
@@ -22,5 +23,6 @@ static constexpr KeyCode KeyCodeValues[] = {
 	KeyCode::ARROW_DOWN,
 	KeyCode::ESCAPE,
 	KeyCode::ENTER,
-	KeyCode::SPACE
+	KeyCode::SPACE,
+	KeyCode::R,
 };

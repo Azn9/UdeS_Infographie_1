@@ -8,6 +8,8 @@
 namespace Util
 {
 	DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t);
+	float Lerp(const float a, const float b, const float t);
+	
 	DirectX::XMFLOAT2 operator+(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b);
 	DirectX::XMFLOAT2 operator-(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b);
 	DirectX::XMFLOAT2 operator*(const DirectX::XMFLOAT2& a, const float& f);
