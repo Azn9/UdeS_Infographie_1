@@ -2,12 +2,12 @@
 #include <DirectXMath.h>
 #include <iostream>
 
-#include "Imgui/imgui.h"
-#include "Component/Component.h"
-#include "GameObject/GameObject.h"
-#include "Component/Basic/Physics/SphereCollider.h"
-#include "EventSystem/EventSystem.h"
-#include "EventSystem/CollisionObstacleEvent.h"
+#include "Core/Imgui/imgui.h"
+#include "Api/Public/Component/Component.h"
+#include "Api/Public/GameObject/GameObject.h"
+#include "Api/Public/Component/Basic/Physics/SphereCollider.h"
+#include "Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/EventSystem/CollisionObstacleEvent.h"
 
 class SizeModifierComponent final : public PM3D_API::Component
 {

@@ -78,6 +78,6 @@ namespace PM3D_API
 
     private:
         std::wstring GetShaderFileName() override { return L"NewShader.fx"; }
-        std::string GetMeshFileName() override { return "DefaultObj/sphere.obj"; }
+        std::string GetMeshFileName() override { return "sphere.obj"; }
     };
 }

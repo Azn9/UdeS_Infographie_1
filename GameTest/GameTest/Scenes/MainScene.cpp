@@ -6,15 +6,22 @@
 
 #include "Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/Component/Basic/Physics/SphereCollider.h"
 #include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Light/AmbiantLight.h"
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/GameObject/Basic/BasicSphere.h"
 #include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/UI/TestUIObject.h"
 #include "GameTest/Pine.h"
+
+#include "GameTest/Heightmap.h"
+#include "GameTest/TimeScaleTest.h"
+#include "GameTest/Components/MovableComponent.h"
+#include "GameTest/Components/SizeModifierComponent.h"
 
 void MainScene::InitializePhysics()
 {
@@ -50,7 +57,7 @@ void MainScene::InitializeLights()
 
 void MainScene::InitializeObjects()
 {
-    /*
+    
     // ============= Add a plane =============
     auto map = std::make_unique<Heightmap>();
     map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
@@ -70,40 +77,36 @@ void MainScene::InitializeObjects()
     meshColliderPtr->Initialize();
 
     // ============= Add a sphere =============
-    auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
+    auto sphere = new PM3D_API::BasicSphere("Sphere");
+    AddChild(std::unique_ptr<PM3D_API::BasicSphere>(sphere));
     sphere->SetWorldPosition(XMFLOAT3(0.0f, -9.5f, 10.0f));
     sphere->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
     sphere->Initialize();
-    const auto spherePtr = sphere.get();
-    AddChild(std::move(sphere));
 
     auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
     const auto sphereRigidbodyPtr = sphereRigidbody.get();
-    spherePtr->AddComponent(std::move(sphereRigidbody));
+    sphere->AddComponent(std::move(sphereRigidbody));
     sphereRigidbodyPtr->Initialize();
 
     auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
     const auto sphereColliderPtr = sphereCollider.get();
-    spherePtr->AddComponent(std::move(sphereCollider));
+    sphere->AddComponent(std::move(sphereCollider));
     sphereColliderPtr->Initialize();
     physx::PxFilterData filterDataSnowball;
     filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
     physx::PxShape* sphereShape = sphereColliderPtr->getShape();
     sphereShape->setSimulationFilterData(filterDataSnowball);
     
-    GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere.get());
+    GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere);
 
     sphere->AddComponent(std::make_unique<SizeModifierComponent>());
 
     sphere->AddComponent(std::make_unique<MovableComponent>());
-
-    AddChild(std::move(sphere));
-
     
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
-    */
+    
 
     // ============= Add a pine =============
     auto pine = std::make_unique<Pine>();
