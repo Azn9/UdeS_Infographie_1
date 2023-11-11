@@ -8,7 +8,7 @@
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Util/util.h"
 
-// Definir l’organisation de notre sommet
+// Definir lâ€™organisation de notre sommet
 D3D11_INPUT_ELEMENT_DESC spriteShaderLayout[] =
 {
     {
@@ -136,7 +136,7 @@ PM3D_API::SpriteShader::SpriteShader(const std::wstring& fileName) : Shader(), v
                         &vertexLayout),
                     DXE_CREATIONLAYOUT);
 
-    // Initialisation des paramètres de sampling de la texture
+    // Initialisation des paramÃ¨tres de sampling de la texture
     D3D11_SAMPLER_DESC samplerDesc;
     samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
     samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -152,7 +152,7 @@ PM3D_API::SpriteShader::SpriteShader(const std::wstring& fileName) : Shader(), v
     samplerDesc.MinLOD = 0;
     samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-    // Création de l’état de sampling
+    // CrÃ©ation de lâ€™Ã©tat de sampling
     pD3DDevice->CreateSamplerState(&samplerDesc, &albedoSampleState);
 }
 

@@ -12,6 +12,7 @@
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "GameTest/Components/CameraFollowComponent.h"
+#include "GameTest/Components/MainScene/PauseComponent.h"
 #include "GameTest/UI/TestUIObject.h"
 #include "GameTest/Objects/Pine.h"
 
@@ -132,13 +133,8 @@ void MainScene::InitializeUI()
 {
     Scene::InitializeUI(); // Init the base canvas
 
-    auto testUiObject = std::make_unique<TestUIObject>(
-        "TestUIObject",
-        XMFLOAT2(256.f, 256.f),
-        XMFLOAT2(0.5f, 0.5f),
-        false,
-        true
-    );
-    testUiObject->Initialize();
-    AddUiChild(std::move(testUiObject));
+    auto pauseComponent = std::make_unique<PauseComponent>();
+    const auto pauseComponentPtr = pauseComponent.get();
+    AddUiChild(std::move(pauseComponent));
+    pauseComponentPtr->Initialize();
 }

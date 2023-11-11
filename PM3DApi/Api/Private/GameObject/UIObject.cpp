@@ -7,32 +7,37 @@
 #include "Api/Public/Util/Util.h"
 #include "Api/Public/GameHost.h"
 #include "Api/Public/GameObject/UICanvas.h"
-#include "Api/Public/Util/Axis.h"
 
 using namespace Util;
 
 namespace PM3D_API
 {
 UIObject::UIObject(
-	std::string name,
+	const std::string& name,
 	const DirectX::XMFLOAT2& scale,
 	const DirectX::XMFLOAT2& position,
 	const float rotation,
 	const bool relativeScale,
 	const bool relativePosition
-) : name(std::move(name))
+) : name(name)
+    , rotation(rotation)
+    , alpha(1.f)
     , basePosition(position)
     , baseScale(scale)
     , relativeScale(relativeScale)
     , relativePosition(relativePosition)
-    , beginDrawSelf(0)
-    , endDrawSelf(0)
-	, rotation(rotation)
+	, beginDrawSelf(0)
+	, endDrawSelf(0)
 {
 	const auto canvas = GameHost::GetInstance()->GetScene()->GetUICanvas();
 
 	if (!canvas)
 	{
+		if (relativePosition || relativeScale)
+		{
+			throw std::exception("Cannot use relative position or scale without a canvas");
+		}
+		
 		this->position = position;
 		this->scale = scale;
 		return;
@@ -44,10 +49,16 @@ UIObject::UIObject(
 			position.x * canvas->GetScale().x,
 			position.y * canvas->GetScale().y
 		};
+
+		std::cout << "UIObject::UIObject() on " << name << " : relative position" << std::endl;
+		std::cout << "position.x = " << this->position.x << ", position.y = " << this->position.y << std::endl;
 	}
 	else
 	{
 		this->position = position;
+
+		std::cout << "UIObject::UIObject() on " << name << " : absolute position" << std::endl;
+		std::cout << "position.x = " << this->position.x << ", position.y = " << this->position.y << std::endl;
 	}
 	this->basePositionComputed = this->position;
 

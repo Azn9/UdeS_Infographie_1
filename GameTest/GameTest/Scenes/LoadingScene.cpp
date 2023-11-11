@@ -51,7 +51,7 @@ void LoadingScene::InitializeObjects()
     AddChild(std::move(plane));
 
     auto cube = std::make_unique<CustomCube>();
-    cube->SetWorldPosition(XMFLOAT3(0, 1.0f, 0.0f));
+    cube->SetWorldPosition(XMFLOAT3(0, 0.6f, 0.0f));
     cube->SetWorldScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
     cube->Initialize();
 

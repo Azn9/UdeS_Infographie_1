@@ -9,7 +9,11 @@
 PM3D_API::FileWatcher::FileWatcher(
     const std::wstring& pathToWatch,
     const std::function<void()>& onChange
-) : running(true), onChange(onChange)
+) : running(true)
+    , path(L"")
+    , fileName(L"")
+    , onChange(onChange)
+    , thread()
 {
     // Split path into directory and filename
     const std::wstring::size_type pos = pathToWatch.find_last_of(L"\\/");

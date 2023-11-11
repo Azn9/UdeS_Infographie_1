@@ -32,13 +32,14 @@ void PM3D::CMoteur::Run()
 					Time::GetInstance().SetUpdateDeltaTime(timeElapsedF * Time::GetInstance().GetTimeScale());
 				}
 
+				Time::GetInstance().SetUpdateDeltaTimeA(timeElapsedF);
+
 				GestionnaireDeSaisie.SaisirEtatSouris();
 				GestionnaireDeSaisie.StatutClavier();
 
 				Input::GetInstance().Tick(GestionnaireDeSaisie);
 
-				if (Time::GetInstance().GetUpdateDeltaTime() != 0)
-					gameHost->Update();
+				gameHost->Update();
 				
 				LastUpdateTime = currentTime;
 			}
@@ -74,6 +75,8 @@ void PM3D::CMoteur::Run()
 				{
 					Time::GetInstance().SetPhysicsDeltaTime(timeElapsedF * Time::GetInstance().GetTimeScale());
 				}
+
+				Time::GetInstance().SetPhysicsDeltaTimeA(timeElapsedF);
 
 				if (Time::GetInstance().GetPhysicsDeltaTime() != 0)
 					gameHost->PhysicsUpdate();

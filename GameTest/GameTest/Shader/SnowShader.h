@@ -91,6 +91,7 @@ protected:
 
 	mutable ID3D11Buffer* vertexBuffer;
 	mutable ID3D11Buffer* indexBuffer;
+	bool initialized;
 
 private:
 	PM3D_API::FileWatcher fileWatcher;

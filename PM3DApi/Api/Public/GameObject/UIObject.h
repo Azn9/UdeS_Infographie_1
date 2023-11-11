@@ -16,7 +16,7 @@ class UIObject
 {
 public:
 	UIObject(
-		std::string name,
+		const std::string& name,
 		const DirectX::XMFLOAT2& scale,
 		const DirectX::XMFLOAT2& position = {0.f, 0.f},
 		const float rotation = 0.f,
@@ -61,10 +61,14 @@ public:
 	virtual void SetRotation(const float newRotation) { rotation = newRotation; }
 
 	void SetCentralRotation(const float newRotation);
+
+	float GetAlpha() const { return alpha; }
+	virtual void SetAlpha(const float newAlpha) { alpha = newAlpha; }
 protected:
 	std::string name = "Unnamed UI Object";
 
 	float rotation;
+	float alpha;
 	
 	DirectX::XMFLOAT2 position;
 	DirectX::XMFLOAT2 scale;

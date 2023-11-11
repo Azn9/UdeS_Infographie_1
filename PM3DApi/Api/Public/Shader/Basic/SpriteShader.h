@@ -48,6 +48,12 @@ public:
 		pCB->SetConstantBuffer(shaderParametersBuffer);
 	}
 
+	struct SpriteShaderParameters
+	{
+		DirectX::XMMATRIX matWorldViewProj;
+		float alpha;
+	};
+
 protected:
 	std::wstring fileName;
 
@@ -62,10 +68,5 @@ protected:
 	mutable ID3D11Buffer* vertexBuffer;
 	mutable ID3D11Buffer* indexBuffer;
 
-private:
-	struct SpriteShaderParameters
-	{
-		DirectX::XMMATRIX matWorldViewProj;
-	};
 };
 }
