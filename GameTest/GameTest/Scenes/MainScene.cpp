@@ -59,6 +59,7 @@ void MainScene::InitializeObjects()
 {
     
     // ============= Add a plane =============
+    {
     auto map = std::make_unique<Heightmap>();
     map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
     map->SetWorldScale(XMFLOAT3(10.f, 10.f, 10.f));
@@ -75,8 +76,10 @@ void MainScene::InitializeObjects()
     const auto meshColliderPtr = meshCollider.get();
     mapPtr->AddComponent(std::move(meshCollider));
     meshColliderPtr->Initialize();
+    }
 
     // ============= Add a sphere =============
+    {
     auto sphere = new PM3D_API::BasicSphere("Sphere");
     AddChild(std::unique_ptr<PM3D_API::BasicSphere>(sphere));
     sphere->SetWorldPosition(XMFLOAT3(0.0f, -9.5f, 10.0f));
@@ -96,18 +99,40 @@ void MainScene::InitializeObjects()
     filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
     physx::PxShape* sphereShape = sphereColliderPtr->getShape();
     sphereShape->setSimulationFilterData(filterDataSnowball);
-    
+
     GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere);
 
     sphere->AddComponent(std::make_unique<SizeModifierComponent>());
 
     sphere->AddComponent(std::make_unique<MovableComponent>());
+    }
     
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
     
+    // ============= Add railings =============
+    {
+    auto railings = std::make_unique<GameObject>("railings");
+    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+    railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railing.obj"));
+    railings->Initialize();
+    const auto railingsPtr = railings.get();
+    AddChild(std::move(railings));
 
+    auto railingsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+    const auto railingsRigidbodyPtr = railingsRigidbody.get();
+    railingsPtr->AddComponent(std::move(railingsRigidbody));
+    railingsRigidbodyPtr->Initialize();
+
+    auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+    const auto meshColliderPtr = meshCollider.get();
+    railingsPtr->AddComponent(std::move(meshCollider));
+    meshColliderPtr->Initialize();
+
+    AddChild(std::move(railings));
+    }
+    
     // ============= Add a pine =============
     auto pine = std::make_unique<Pine>();
     pine->SetWorldPosition(XMFLOAT3(-0.4f, -12.0f, 14.0f));
