@@ -25,7 +25,7 @@ class BillboardRenderer final : public Renderer
 public:
 	explicit BillboardRenderer(
 		const std::wstring& textureName
-	) : Renderer(std::make_unique<SpriteShader>(L"Sprite1.fx"))
+	) : Renderer(std::make_unique<SpriteShader>(L"shader/Sprite1.fx"))
 	    , textureName(textureName)
 	    , alignment(BillboardAlignment::Z)
 	    , texture(nullptr)
@@ -36,7 +36,7 @@ public:
 	BillboardRenderer(
 		const std::wstring& textureName,
 		const DirectX::XMFLOAT3& selfScale
-	) : Renderer(std::make_unique<SpriteShader>(L"Sprite1.fx"))
+	) : Renderer(std::make_unique<SpriteShader>(L"shader/Sprite1.fx"))
 	    , textureName(textureName)
 	    , alignment(BillboardAlignment::Z)
 	    , texture(nullptr)
@@ -47,7 +47,7 @@ public:
 	BillboardRenderer(
 		const std::wstring& textureName,
 		const BillboardAlignment& alignment
-	) : Renderer(std::make_unique<SpriteShader>(L"Sprite1.fx"))
+	) : Renderer(std::make_unique<SpriteShader>(L"shader/Sprite1.fx"))
 	    , textureName(textureName)
 	    , alignment(alignment)
 	    , texture(nullptr)
@@ -59,7 +59,7 @@ public:
 		const std::wstring& textureName,
 		const BillboardAlignment& alignment,
 		const DirectX::XMFLOAT3& selfScale
-	) : Renderer(std::make_unique<SpriteShader>(L"Sprite1.fx"))
+	) : Renderer(std::make_unique<SpriteShader>(L"shader/Sprite1.fx"))
 	    , textureName(textureName)
 	    , alignment(alignment)
 	    , texture(nullptr)

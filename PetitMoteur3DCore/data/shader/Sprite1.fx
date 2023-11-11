@@ -1,6 +1,7 @@
 cbuffer param
 {
     float4x4 matWVP; // la matrice de travail
+    float alpha;
 }
 
 struct VS_Sortie
@@ -29,7 +30,7 @@ float4 Sprite1PS(VS_Sortie vs) : SV_Target
     
     couleurTexture = textureEntree.Sample(SampleState, vs.coordTex);
     
-    return couleurTexture;
+    return float4(couleurTexture.rgb, couleurTexture.a * alpha);
 }
 
 technique11 AfficheSprite

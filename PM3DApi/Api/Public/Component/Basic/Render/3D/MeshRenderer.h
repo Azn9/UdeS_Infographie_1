@@ -57,7 +57,7 @@ protected:
 	bool meshLoaded;
 
 	// Les sous-objets
-	int NombreSubmesh; // Nombre de sous-objets dans le mesh
+	size_t NombreSubmesh; // Nombre de sous-objets dans le mesh
 	std::vector<int> SubmeshMaterialIndex; // Index des matériaux
 	std::vector<int> SubmeshIndex; // Index des sous-objets
 	std::vector<CMaterial> Material; // Vecteur des matériaux

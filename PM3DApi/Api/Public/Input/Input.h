@@ -60,7 +60,11 @@ public:
 	static void AddKeyPressedListener(const std::function<void(KeyCode&)>& listener) { GetInstance().addKeyPressedListener(listener); }
 	static void AddKeyReleasedListener(const std::function<void(KeyCode&)>& listener) { GetInstance().addKeyReleasedListener(listener); }
 
-protected:
+	template <class F>
+	static auto AddKeyPressedListener(F&& listener) -> decltype(AddKeyPressedListener(std::function(std::forward<F>(listener))))
+	{
+		return GetInstance().addKeyPressedListener(std::function(std::forward<F>(listener)));
+	}
 
 private:
 	std::set<KeyCode> currentlyPressedKeys;

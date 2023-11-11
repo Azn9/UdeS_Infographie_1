@@ -44,11 +44,8 @@ target_link_libraries(PetitMoteur3D PRIVATE
 # Post-build command to copy DLLs
 add_custom_command(TARGET PetitMoteur3D POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/dlls" "$<TARGET_FILE_DIR:PetitMoteur3D>"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/PetitMoteur3DCore/data" "$<TARGET_FILE_DIR:PetitMoteur3D>"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/PetitMoteur3DCore/shader" "$<TARGET_FILE_DIR:PetitMoteur3D>"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/PetitMoteur3DCore/DefaultObj" "$<TARGET_FILE_DIR:PetitMoteur3D>"
 )
 
 set_target_properties(PetitMoteur3D PROPERTIES
-  VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:PetitMoteur3D>"
+  VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/PetitMoteur3DCore/data"
 )

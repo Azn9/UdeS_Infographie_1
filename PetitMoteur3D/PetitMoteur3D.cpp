@@ -68,7 +68,7 @@ int APIENTRY _tWinMain(
 
 		size_t numCharacterConverted;
 		mbstowcs_s(&numCharacterConverted, message, E.what(), BufferSize - 1);
-		::MessageBox(nullptr, LPCSTR(message), LPCSTR(L"Erreur"), MB_ICONWARNING);
+		::MessageBox(nullptr, message, L"Erreur", MB_ICONWARNING);
 
 		return (int)99;
 	}
@@ -77,8 +77,8 @@ int APIENTRY _tWinMain(
 	{
 		wchar_t szErrMsg[MAX_LOADSTRING]; // Un message d'erreur selon le code
 
-		::LoadString(hInstance, codeErreur, LPSTR(szErrMsg), MAX_LOADSTRING);
-		::MessageBox(nullptr, LPCSTR(szErrMsg), LPCSTR(L"Erreur"), MB_ICONWARNING);
+		::LoadString(hInstance, codeErreur, szErrMsg, MAX_LOADSTRING);
+		::MessageBox(nullptr, szErrMsg, L"Erreur", MB_ICONWARNING);
 
 		return (int)99; // POURQUOI 99???
 	}
