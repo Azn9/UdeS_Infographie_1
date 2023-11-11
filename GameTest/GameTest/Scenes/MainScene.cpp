@@ -13,7 +13,6 @@
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/GameObject/Basic/BasicSphere.h"
-#include "GameTest/Components/CameraMoverComponent.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/MainScene/PauseComponent.h"
 #include "GameTest/UI/TestUIObject.h"
@@ -62,8 +61,6 @@ void MainScene::InitializeObjects()
     // ============= Add a plane =============
     {
     auto map = std::make_unique<Heightmap>();
-    map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
-    map->SetWorldScale(XMFLOAT3(10.f, 10.f, 10.f));
     map->Initialize();
     const auto mapPtr = map.get();
     AddChild(std::move(map));
@@ -83,7 +80,6 @@ void MainScene::InitializeObjects()
     {
     auto sphere = new PM3D_API::BasicSphere("Sphere");
     AddChild(std::unique_ptr<PM3D_API::BasicSphere>(sphere));
-    sphere->SetWorldPosition(XMFLOAT3(0.0f, -9.5f, 10.0f));
     sphere->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
     sphere->Initialize();
 
@@ -116,7 +112,7 @@ void MainScene::InitializeObjects()
     {
     auto railings = std::make_unique<GameObject>("railings");
     auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
-    railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railing.obj"));
+    railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railings.obj"));
     railings->Initialize();
     const auto railingsPtr = railings.get();
     AddChild(std::move(railings));
@@ -130,8 +126,6 @@ void MainScene::InitializeObjects()
     const auto meshColliderPtr = meshCollider.get();
     railingsPtr->AddComponent(std::move(meshCollider));
     meshColliderPtr->Initialize();
-
-    AddChild(std::move(railings));
     }
     
     // ============= Add a pine =============
