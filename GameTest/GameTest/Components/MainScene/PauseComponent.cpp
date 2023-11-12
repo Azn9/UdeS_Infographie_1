@@ -54,6 +54,7 @@ void PauseComponent::Update()
         // TODO : restart
         PM3D_API::EventSystem::Publish(RestartEvent());
         isPaused = false;
+        PM3D::Time::GetInstance().SetTimeScale(1.f);
         
     }
 }

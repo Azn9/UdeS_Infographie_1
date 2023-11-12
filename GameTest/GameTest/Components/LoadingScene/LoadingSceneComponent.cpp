@@ -151,6 +151,5 @@ void LoadingSceneComponent::Update()
     if (Input::IsKeyPressed(KeyCode::ARROW_DOWN))
     {
         // TODO : menus
-        PM3D_API::EventSystem::Publish(RestartEvent());
     }
 }
