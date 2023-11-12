@@ -6,15 +6,22 @@
 
 #include "Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/Component/Basic/Physics/SphereCollider.h"
 #include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Light/AmbiantLight.h"
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/GameObject/Basic/BasicSphere.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/MainScene/PauseComponent.h"
 #include "GameTest/UI/TestUIObject.h"
 #include "GameTest/Objects/Pine.h"
+
+#include "GameTest/Heightmap.h"
+#include "GameTest/TimeScaleTest.h"
+#include "GameTest/Components/MovableComponent.h"
+#include "GameTest/Components/SizeModifierComponent.h"
 
 void MainScene::InitializePhysics()
 {
@@ -51,11 +58,9 @@ void MainScene::InitializeLights()
 
 void MainScene::InitializeObjects()
 {
-    /*
     // ============= Add a plane =============
+    {
     auto map = std::make_unique<Heightmap>();
-    map->SetWorldPosition(XMFLOAT3(0.0f, -10.0f, 10.0f));
-    map->SetWorldScale(XMFLOAT3(10.f, 10.f, 10.f));
     map->Initialize();
     const auto mapPtr = map.get();
     AddChild(std::move(map));
@@ -69,14 +74,15 @@ void MainScene::InitializeObjects()
     const auto meshColliderPtr = meshCollider.get();
     mapPtr->AddComponent(std::move(meshCollider));
     meshColliderPtr->Initialize();
+    }
 
     // ============= Add a sphere =============
-    auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-    sphere->SetWorldPosition(XMFLOAT3(0.0f, -9.5f, 10.0f));
-    sphere->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-    sphere->Initialize();
-    const auto spherePtr = sphere.get();
+    {
+    auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphre");
+    auto spherePtr = sphere.get();
     AddChild(std::move(sphere));
+    spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
+    spherePtr->Initialize();
 
     auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
     const auto sphereRigidbodyPtr = sphereRigidbody.get();
@@ -91,25 +97,79 @@ void MainScene::InitializeObjects()
     filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
     physx::PxShape* sphereShape = sphereColliderPtr->getShape();
     sphereShape->setSimulationFilterData(filterDataSnowball);
-    
-    GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere.get());
 
-    sphere->AddComponent(std::make_unique<SizeModifierComponent>());
+    GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
 
-    sphere->AddComponent(std::make_unique<MovableComponent>());
+    spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
 
-    AddChild(std::move(sphere));
-
+    spherePtr->AddComponent(std::make_unique<MovableComponent>());
+    }
     
 
     PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
     PM3D::Time::GetInstance().SetTimeScale(0.0f);
-    */
+    
+    // ============= Add railings =============
+    {
+    auto railings = std::make_unique<GameObject>("railings");
+    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+    railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railings.obj"));
+    railings->Initialize();
+    const auto railingsPtr = railings.get();
+    AddChild(std::move(railings));
 
-    // ============= Add a pine =============
+    auto railingsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+    const auto railingsRigidbodyPtr = railingsRigidbody.get();
+    railingsPtr->AddComponent(std::move(railingsRigidbody));
+    railingsRigidbodyPtr->Initialize();
+
+    auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+    const auto meshColliderPtr = meshCollider.get();
+    railingsPtr->AddComponent(std::move(meshCollider));
+    meshColliderPtr->Initialize();
+    }
+    
+    // ============= Add a pines =============
+    {
+        AddPine(XMFLOAT3(-0.05f, -10.56f, -14.89f));
+        AddPine(XMFLOAT3(1.2f, 14.f, -21.f));
+        AddPine(XMFLOAT3(-2.1f, -12.6f, -18.f));
+        AddPine(XMFLOAT3(-3.75f, -14.54f, -21.94f));
+        AddPine(XMFLOAT3(1.2f, -14.1f, -21.f));
+        AddPine(XMFLOAT3(12.87f, -27.54f, -44.46f));
+        AddPine(XMFLOAT3(16.96f, -35.3f, -57.02f));
+        AddPine(XMFLOAT3(14.53f, -31.53f, -51.1f));
+        AddPine(XMFLOAT3(-15.4f, -35.8f, -60.16f));
+        AddPine(XMFLOAT3(-27.11f, -35.67f, -57.92f));
+        AddPine(XMFLOAT3(-22.06f, -21.8f, -35.15f));
+        AddPine(XMFLOAT3(10.83f, -43.02f, -71.44f));
+        AddPine(XMFLOAT3(22.33f, -20.25f, -29.9f));
+        AddPine(XMFLOAT3(-12.64f, -36.24f, -61.14f));
+        AddPine(XMFLOAT3(-10.16f, -35.38f, -59.47f));
+        AddPine(XMFLOAT3(-21.72f, -40.49f, -68.81f));
+        AddPine(XMFLOAT3(2.31f, -32.77f, -54.46f));
+        AddPine(XMFLOAT3(5.0f, -33.96f, -56.48f));
+        AddPine(XMFLOAT3(21.97f, -34.6f, -55.14f));
+    }
+}
+
+
+
+void MainScene::InitializeUI()
+{
+    Scene::InitializeUI(); // Init the base canvas
+
+    auto pauseComponent = std::make_unique<PauseComponent>();
+    const auto pauseComponentPtr = pauseComponent.get();
+    AddUiChild(std::move(pauseComponent));
+    pauseComponentPtr->Initialize();
+}
+
+void MainScene::AddPine(const DirectX::XMFLOAT3& pos)
+{
     auto pine = std::make_unique<Pine>();
-    pine->SetWorldPosition(XMFLOAT3(-0.4f, -12.0f, 14.0f));
-    pine->SetWorldScale(XMFLOAT3(1.5f, 1.5f, 1.5f));
+    pine->SetWorldPosition(pos);
+    pine->SetWorldScale(XMFLOAT3(5.f, 5.f, 5.f));
     pine->SetWorldRotation(XMFLOAT3(0.0f, 0.90f, 0.f));
     pine->Initialize();
     const auto pinePtr = pine.get();
@@ -128,14 +188,4 @@ void MainScene::InitializeObjects()
     filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
     physx::PxShape* treeShape = pineMeshColliderPtr->getShape();
     treeShape->setSimulationFilterData(filterDataObstacle);
-}
-
-void MainScene::InitializeUI()
-{
-    Scene::InitializeUI(); // Init the base canvas
-
-    auto pauseComponent = std::make_unique<PauseComponent>();
-    const auto pauseComponentPtr = pauseComponent.get();
-    AddUiChild(std::move(pauseComponent));
-    pauseComponentPtr->Initialize();
 }
