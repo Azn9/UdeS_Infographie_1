@@ -78,30 +78,31 @@ void MainScene::InitializeObjects()
 
     // ============= Add a sphere =============
     {
-    auto sphere = new PM3D_API::BasicSphere("Sphere");
-    AddChild(std::unique_ptr<PM3D_API::BasicSphere>(sphere));
-    sphere->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-    sphere->Initialize();
+    auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphre");
+    auto spherePtr = sphere.get();
+    AddChild(std::move(sphere));
+    spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
+    spherePtr->Initialize();
 
     auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
     const auto sphereRigidbodyPtr = sphereRigidbody.get();
-    sphere->AddComponent(std::move(sphereRigidbody));
+    spherePtr->AddComponent(std::move(sphereRigidbody));
     sphereRigidbodyPtr->Initialize();
 
     auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
     const auto sphereColliderPtr = sphereCollider.get();
-    sphere->AddComponent(std::move(sphereCollider));
+    spherePtr->AddComponent(std::move(sphereCollider));
     sphereColliderPtr->Initialize();
     physx::PxFilterData filterDataSnowball;
     filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
     physx::PxShape* sphereShape = sphereColliderPtr->getShape();
     sphereShape->setSimulationFilterData(filterDataSnowball);
 
-    GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(sphere);
+    GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
 
-    sphere->AddComponent(std::make_unique<SizeModifierComponent>());
+    spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
 
-    sphere->AddComponent(std::make_unique<MovableComponent>());
+    spherePtr->AddComponent(std::make_unique<MovableComponent>());
     }
     
 
