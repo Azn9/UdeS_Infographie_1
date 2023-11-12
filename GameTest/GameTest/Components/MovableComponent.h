@@ -14,9 +14,9 @@
 class MovableComponent final : public PM3D_API::Component
 {
 public:
-	void MovableComponent()
+	MovableComponent()
 	{
-		PM3D_API::EventSystem::Subscribe([&parentObject](const RestartEvent&)
+		PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
 		{
 			parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
 		});
