@@ -2,8 +2,10 @@
 
 #include "Api/Public/GameHost.h"
 #include "Api/Public/Component/Basic/Render/2D/SpriteRenderer.h"
+#include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/Input/Input.h"
 #include "Core/Public/Util/Time.h"
+#include "GameTest/RestartEvent.h"
 #include "GameTest/Scenes/MainScene.h"
 
 void LoadingSceneComponent::Initialize()
@@ -149,5 +151,6 @@ void LoadingSceneComponent::Update()
     if (Input::IsKeyPressed(KeyCode::ARROW_DOWN))
     {
         // TODO : menus
+        PM3D_API::EventSystem::Publish(RestartEvent());
     }
 }

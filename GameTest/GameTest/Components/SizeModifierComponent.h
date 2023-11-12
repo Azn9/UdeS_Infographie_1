@@ -18,6 +18,12 @@ public:
 			{
 				_collisionHappend = true;
 			});
+
+
+		PM3D_API::EventSystem::Subscribe([&parentObject](const RestartEvent&)
+			{
+				parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
+			});
 	}
 
 	void PhysicsUpdate() override

@@ -1,9 +1,11 @@
 ﻿#include "PauseComponent.h"
 
 #include "Api/Public/Component/Basic/Render/2D/SpriteRenderer.h"
+#include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/Input/Input.h"
 #include "Api/Public/Util/Util.h"
 #include "Core/Public/Util/Time.h"
+#include "GameTest/RestartEvent.h"
 
 void PauseComponent::Initialize()
 {
@@ -50,5 +52,8 @@ void PauseComponent::Update()
     if (isPaused && Input::IsKeyPressed(KeyCode::R))
     {
         // TODO : restart
+        PM3D_API::EventSystem::Publish(RestartEvent());
+        isPaused = false;
+        
     }
 }
