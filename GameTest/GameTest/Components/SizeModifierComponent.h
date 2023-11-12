@@ -22,8 +22,10 @@ public:
 
 		PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
 			{
-				parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
+				physx::PxShape* shape = parentObject->GetComponent<PM3D_API::SphereCollider>()->getShape();
+				shape->setGeometry(physx::PxSphereGeometry(0.2f));
 			});
+		
 	}
 
 	void PhysicsUpdate() override

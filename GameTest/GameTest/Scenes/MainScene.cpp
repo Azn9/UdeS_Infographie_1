@@ -78,7 +78,7 @@ void MainScene::InitializeObjects()
 
     // ============= Add a sphere =============
     {
-    auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphre");
+    auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
     auto spherePtr = sphere.get();
     AddChild(std::move(sphere));
     spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));

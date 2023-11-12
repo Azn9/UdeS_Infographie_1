@@ -18,6 +18,9 @@ public:
 	{
 		PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
 		{
+			physx::PxRigidDynamic* rigidDyn = parentObject->GetComponent<PM3D_API::Rigidbody>()->getRigidDynamic();
+			rigidDyn->setLinearVelocity({0.f,0.f,0.f});
+			rigidDyn->setAngularVelocity({0.f,0.f,0.f});
 			parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
 		});
 	}
@@ -29,11 +32,12 @@ public:
 		
 		if (Input::IsKeyHeld(KeyCode::ARROW_LEFT)) // Ou IsKeyHeld
 		{
-			rigidDynamic->addForce(physx::PxVec3(_speed, 0, 0));
+			
+			rigidDynamic->addForce(physx::PxVec3(-_speed, 0, 0));
 		}
 		if (Input::IsKeyHeld(KeyCode::ARROW_RIGHT)) // Ou IsKeyHeld
 		{
-			rigidDynamic->addForce(physx::PxVec3(-_speed, 0, 0));
+			rigidDynamic->addForce(physx::PxVec3(_speed, 0, 0));
 		}
 
 	}
@@ -45,5 +49,5 @@ public:
 	}
 
 private:
-	int _speed = 500;
+	int _speed = 70;
 };
