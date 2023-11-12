@@ -34,6 +34,7 @@ public:
 		{
 			_resetRequested = false;
 			shape->setGeometry(physx::PxSphereGeometry(0.2f));
+			parentObject->SetWorldScale(DirectX::XMFLOAT3(0.2f,0.2f,0.2f));
 			return;
 		}
 		
@@ -42,9 +43,9 @@ public:
 		if (_collisionHappend)
 		{
 			parentObject->SetWorldScale(DirectX::XMFLOAT3(
-				preScale.x * 0.75f,
-				preScale.y * 0.75f,
-				preScale.z * 0.75f
+				preScale.x * 0.5f,
+				preScale.y * 0.5f,
+				preScale.z * 0.5f
 			));
 			_collisionHappend = false;
 			shape->setGeometry(physx::PxSphereGeometry(preScale.x * .5f));
@@ -67,7 +68,7 @@ public:
 	}
 
 private:
-	float _sizeModificationSpeed = 1.001f;
+	float _sizeModificationSpeed = 1.002f;
 	bool _collisionHappend = false;
 	bool _resetRequested = false;
 };
