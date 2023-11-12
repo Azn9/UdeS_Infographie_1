@@ -12,4 +12,7 @@ public:
 	void InitializeLights() override;
 	void InitializeObjects() override;
 	void InitializeUI() override;
+
+private:
+	void AddPine(const DirectX::XMFLOAT3& pos);
 };

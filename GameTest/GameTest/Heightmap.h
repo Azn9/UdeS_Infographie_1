@@ -8,5 +8,5 @@ public:
 
 private:
     std::wstring GetShaderFileName() override { return L"shader/NewShader.fx"; }
-    std::string GetMeshFileName() override { return "heightMap.obj"; }
+    std::string GetMeshFileName() override { return "Terrain2LOD0.obj"; }
 };

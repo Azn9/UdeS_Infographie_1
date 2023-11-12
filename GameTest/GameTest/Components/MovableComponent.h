@@ -3,13 +3,13 @@
 #include <iostream>
 
 #include "Api/Public/EventSystem/EventSystem.h"
-#include "Imgui/imgui.h"
-#include "Component/Component.h"
-#include "GameObject/GameObject.h"
-#include "Component/Basic/Physics/Rigidbody.h"
 #include "GameTest/RestartEvent.h"
 #include "GameTest/Objects/LoadingScene/CustomCube.h"
-#include "Input/Input.h"
+#include "Core/Imgui/imgui.h"
+#include "Api/Public/Component/Component.h"
+#include "Api/Public/GameObject/GameObject.h"
+#include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/Input/Input.h"
 
 class MovableComponent final : public PM3D_API::Component
 {
