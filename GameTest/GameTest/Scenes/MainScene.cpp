@@ -60,75 +60,72 @@ void MainScene::InitializeObjects()
 {
     // ============= Add a plane =============
     {
-    auto map = std::make_unique<Heightmap>();
-    map->Initialize();
-    const auto mapPtr = map.get();
-    AddChild(std::move(map));
+        auto map = std::make_unique<Heightmap>();
+        map->Initialize();
+        const auto mapPtr = map.get();
+        AddChild(std::move(map));
 
-    auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-    const auto mapRigidbodyPtr = mapRigidbody.get();
-    mapPtr->AddComponent(std::move(mapRigidbody));
-    mapRigidbodyPtr->Initialize();
+        auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+        const auto mapRigidbodyPtr = mapRigidbody.get();
+        mapPtr->AddComponent(std::move(mapRigidbody));
+        mapRigidbodyPtr->Initialize();
 
-    auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
-    const auto meshColliderPtr = meshCollider.get();
-    mapPtr->AddComponent(std::move(meshCollider));
-    meshColliderPtr->Initialize();
+        auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+        const auto meshColliderPtr = meshCollider.get();
+        mapPtr->AddComponent(std::move(meshCollider));
+        meshColliderPtr->Initialize();
     }
 
     // ============= Add a sphere =============
     {
-    auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-    auto spherePtr = sphere.get();
-    AddChild(std::move(sphere));
-    spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-    spherePtr->Initialize();
+        auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
+        const auto spherePtr = sphere.get();
+        AddChild(std::move(sphere));
+        spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
+        spherePtr->Initialize();
 
-    auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-    const auto sphereRigidbodyPtr = sphereRigidbody.get();
-    spherePtr->AddComponent(std::move(sphereRigidbody));
-    sphereRigidbodyPtr->Initialize();
+        auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+        const auto sphereRigidbodyPtr = sphereRigidbody.get();
+        spherePtr->AddComponent(std::move(sphereRigidbody));
+        sphereRigidbodyPtr->Initialize();
 
-    auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
-    const auto sphereColliderPtr = sphereCollider.get();
-    spherePtr->AddComponent(std::move(sphereCollider));
-    sphereColliderPtr->Initialize();
-    physx::PxFilterData filterDataSnowball;
-    filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
-    physx::PxShape* sphereShape = sphereColliderPtr->getShape();
-    sphereShape->setSimulationFilterData(filterDataSnowball);
+        auto sphereCollider = std::make_unique<
+            PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
+        const auto sphereColliderPtr = sphereCollider.get();
+        spherePtr->AddComponent(std::move(sphereCollider));
+        sphereColliderPtr->Initialize();
+        physx::PxFilterData filterDataSnowball;
+        filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
+        physx::PxShape* sphereShape = sphereColliderPtr->getShape();
+        sphereShape->setSimulationFilterData(filterDataSnowball);
 
-    GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
+        GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
 
-    spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
+        spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
 
-    spherePtr->AddComponent(std::make_unique<MovableComponent>());
+        spherePtr->AddComponent(std::make_unique<MovableComponent>());
     }
-    
 
-    PM3D_API::GameHost::GetInstance()->AddDebugRenderer(std::move(std::make_unique<TimeScaleTest>()));
-    PM3D::Time::GetInstance().SetTimeScale(0.0f);
-    
     // ============= Add railings =============
     {
-    auto railings = std::make_unique<GameObject>("railings");
-    auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
-    railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railings.obj"));
-    railings->Initialize();
-    const auto railingsPtr = railings.get();
-    AddChild(std::move(railings));
+        auto railings = std::make_unique<GameObject>("railings");
+        auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+        railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railings.obj"));
+        railings->Initialize();
+        const auto railingsPtr = railings.get();
+        AddChild(std::move(railings));
 
-    auto railingsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-    const auto railingsRigidbodyPtr = railingsRigidbody.get();
-    railingsPtr->AddComponent(std::move(railingsRigidbody));
-    railingsRigidbodyPtr->Initialize();
+        auto railingsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+        const auto railingsRigidbodyPtr = railingsRigidbody.get();
+        railingsPtr->AddComponent(std::move(railingsRigidbody));
+        railingsRigidbodyPtr->Initialize();
 
-    auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
-    const auto meshColliderPtr = meshCollider.get();
-    railingsPtr->AddComponent(std::move(meshCollider));
-    meshColliderPtr->Initialize();
+        auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+        const auto meshColliderPtr = meshCollider.get();
+        railingsPtr->AddComponent(std::move(meshCollider));
+        meshColliderPtr->Initialize();
     }
-    
+
     // ============= Add a pines =============
     {
         AddPine(XMFLOAT3(-0.05f, -10.56f, -14.89f));
@@ -154,7 +151,6 @@ void MainScene::InitializeObjects()
 }
 
 
-
 void MainScene::InitializeUI()
 {
     Scene::InitializeUI(); // Init the base canvas
@@ -176,7 +172,7 @@ void MainScene::AddPine(const DirectX::XMFLOAT3& pos)
     AddChild(std::move(pine));
 
     auto pineRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-    const auto pineRigidbodyPtr = pineRigidbody.get(); 
+    const auto pineRigidbodyPtr = pineRigidbody.get();
     pinePtr->AddComponent(std::move(pineRigidbody));
     pineRigidbodyPtr->Initialize();
 

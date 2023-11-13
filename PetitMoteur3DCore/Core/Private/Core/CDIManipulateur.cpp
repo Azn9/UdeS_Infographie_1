@@ -30,18 +30,27 @@ void CDIManipulateur::Destroy()
     }
 }
 
+void CDIManipulateur::AcquireFocus()
+{
+    if (pSouris)
+        if (pSouris->Acquire() != S_OK)
+            std::cerr << "Erreur lors de l'acquisition de la souris !" << std::endl;
+
+    if (pClavier)
+        if (pClavier->Acquire() != S_OK)
+            std::cerr << "Erreur lors de l'acquisition du clavier !" << std::endl;
+
+    //if (pJoystick) pJoystick->Acquire();
+}
+
 bool CDIManipulateur::Init(HINSTANCE hInstance, HWND hWnd)
 {
     // Un seul objet DirectInput est permis
     if (bDejaInit)
     {
-        if (pSouris) pSouris->Acquire();
-        if (pClavier) pClavier->Acquire();
-        if (pJoystick) pJoystick->Acquire();
-
         return true;
     }
-    
+
     // Objet DirectInput
     PM3D::DXEssayer(DirectInput8Create(hInstance,
                                        DIRECTINPUT_VERSION,
@@ -58,7 +67,7 @@ bool CDIManipulateur::Init(HINSTANCE hInstance, HWND hWnd)
                     ERREUR_CREATION_FORMAT_CLAVIER);
     PM3D::DXEssayer(pClavier->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE));
     auto res = pClavier->Acquire();
-    
+
     if (res != S_OK)
     {
         std::cerr << "Erreur lors de l'acquisition du clavier" << std::endl;
@@ -93,14 +102,14 @@ CDIManipulateur::~CDIManipulateur()
         pClavier = nullptr;
         pSouris = nullptr;
         pDirectInput = nullptr;
-    }  
+    }
 }
 
 
 void CDIManipulateur::StatutClavier()
 {
     if (pClavier)
-        pClavier->GetDeviceState(sizeof(tamponClavier), (void*)& tamponClavier);
+        pClavier->GetDeviceState(sizeof(tamponClavier), (void*)&tamponClavier);
 }
 
 bool CDIManipulateur::ToucheAppuyee(UINT touche)

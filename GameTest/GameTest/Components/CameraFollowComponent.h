@@ -5,14 +5,14 @@
 class CameraFollowComponent final : public PM3D_API::Component
 {
 public:
-	void Update() override
+	void PhysicsUpdate() override
 	{
 		if (!_objectToFollow)
 			return;
 		
 		const auto positionObjectToFollow = _objectToFollow->GetWorldPosition();
 		const auto scaleObjectToFollow = _objectToFollow->GetWorldScale();
-		_distance = 10.f;//scaleObjectToFollow.x * 20.f;
+		_distance = scaleObjectToFollow.x * 20.f;
 
 		const auto rigidbody = _objectToFollow->GetComponent<PM3D_API::Rigidbody>();
 		const auto vel = static_cast<physx::PxRigidDynamic*>(rigidbody->GetActor())->getLinearVelocity();

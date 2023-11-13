@@ -11,7 +11,7 @@
 void LoadingSceneComponent::Initialize()
 {
     // Load scene in the background
-    loadingThread = std::thread([this]()
+    loadingThread = std::thread([this]
     {
         const auto mainScenePtr = MainScene::GetInstancePtr();
         mainScenePtr->Initialize();

@@ -47,11 +47,6 @@ void PM3D_API::SpriteRenderer::UpdateMatrix()
     const auto largeur = static_cast<float>(pDispositif->GetLargeur());
     const auto hauteur = static_cast<float>(pDispositif->GetHauteur());
 
-    std::cout << "SpriteRenderer::UpdateMatrix() on " << parentObject->GetName() << std::endl;
-    std::cout << "position.x = " << position.x << ", position.y = " << position.y << std::endl;
-    std::cout << "scale.x = " << scale.x << ", scale.y = " << scale.y << std::endl;
-    std::cout << "largeur = " << largeur << ", hauteur = " << hauteur << std::endl;
-    
     // Dimension en facteur
     const float facteurX = scale.x * 2.f / largeur;
     const float facteurY = scale.y * 2.f / hauteur;
@@ -59,9 +54,6 @@ void PM3D_API::SpriteRenderer::UpdateMatrix()
     // Position en coordonnées logiques
     const float posX = position.x * 2.f / largeur - 1.f;
     const float posY = 1.f - position.y * 2.f / hauteur;
-
-    std::cout << "facteurX = " << facteurX << ", facteurY = " << facteurY << std::endl;
-    std::cout << "posX = " << posX << ", posY = " << posY << std::endl;
 
     matWVP = XMMatrixScaling(facteurX, facteurY, 1.0f)
             * XMMatrixTranslation(posX, -posY, 0.0f);

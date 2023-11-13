@@ -24,22 +24,20 @@ public:
 			parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
 		});
 	}
-	
-	void Update() override
+
+	void PhysicsUpdate() override
 	{
 		PM3D_API::Rigidbody* rigidBody = parentObject->GetComponent<PM3D_API::Rigidbody>();
 		physx::PxRigidDynamic* rigidDynamic = rigidBody->getRigidDynamic();
 		
 		if (Input::IsKeyHeld(KeyCode::ARROW_LEFT)) // Ou IsKeyHeld
 		{
-			
 			rigidDynamic->addForce(physx::PxVec3(static_cast<float>(-_speed), 0.f, 0.f));
 		}
 		if (Input::IsKeyHeld(KeyCode::ARROW_RIGHT)) // Ou IsKeyHeld
 		{
 			rigidDynamic->addForce(physx::PxVec3(static_cast<float>(_speed), 0.f, 0.f));
 		}
-
 	}
 
 	void DrawDebugInfo() const override

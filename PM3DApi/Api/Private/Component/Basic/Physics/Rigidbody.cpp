@@ -71,8 +71,6 @@ void PM3D_API::Rigidbody::UpdateRenderPos() const
 
 	parentObject->SetWorldPositionViaPhysic({pos.x, pos.y, pos.z});
 	parentObject->SetWorldRotationViaPhysic({rot.x, rot.y, rot.z, rot.w});
-
-	std::cout << "Rigidbody::UpdateRenderPos() on " << parentObject->GetName() << ": " << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
 }
 
 void PM3D_API::Rigidbody::SetTranslationLock(const Axis axis)

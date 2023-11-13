@@ -23,6 +23,7 @@ public:
 
     void Destroy();
     bool Init(HINSTANCE hInstance, HWND hWnd);
+    void AcquireFocus();
 private:
     IDirectInput8* pDirectInput;
     IDirectInputDevice8* pClavier;

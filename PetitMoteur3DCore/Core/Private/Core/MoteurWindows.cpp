@@ -352,7 +352,7 @@ LRESULT CALLBACK CMoteurWindows::WndProc(HWND hWnd, UINT message, WPARAM wParam,
 		CMoteurWindows::GetInstance().Resize(LOWORD(lParam), HIWORD(lParam));
 		break;
 	case WM_SETFOCUS:
-		GetInstance().GestionnaireDeSaisie.Init(hAppInstance, GetInstance().hMainWnd);
+		GetInstance().GestionnaireDeSaisie.AcquireFocus();
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
