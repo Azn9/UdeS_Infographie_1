@@ -33,11 +33,11 @@ public:
 		if (Input::IsKeyHeld(KeyCode::ARROW_LEFT)) // Ou IsKeyHeld
 		{
 			
-			rigidDynamic->addForce(physx::PxVec3(-_speed, 0, 0));
+			rigidDynamic->addForce(physx::PxVec3(static_cast<float>(-_speed), 0.f, 0.f));
 		}
 		if (Input::IsKeyHeld(KeyCode::ARROW_RIGHT)) // Ou IsKeyHeld
 		{
-			rigidDynamic->addForce(physx::PxVec3(_speed, 0, 0));
+			rigidDynamic->addForce(physx::PxVec3(static_cast<float>(_speed), 0.f, 0.f));
 		}
 
 	}

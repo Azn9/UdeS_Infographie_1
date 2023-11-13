@@ -14,3 +14,12 @@ target_include_directories(PM3DApiDefaultImpl PRIVATE
 
 # Link with PM3DApi
 target_link_libraries(PM3DApiDefaultImpl PRIVATE PM3DApi)
+
+set_property(TARGET PM3DApiDefaultImpl PROPERTY
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+)
+
+add_compile_definitions(
+    $<$<CONFIG:Debug>:_ITERATOR_DEBUG_LEVEL=2>
+    $<$<NOT:$<CONFIG:Debug>>:_ITERATOR_DEBUG_LEVEL=0>
+)

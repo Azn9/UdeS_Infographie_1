@@ -24,13 +24,13 @@ link_directories(${CMAKE_SOURCE_DIR}/libs)
 
 # Link libraries
 target_link_libraries(PetitMoteur3D PRIVATE
-    ${CMAKE_SOURCE_DIR}/libs/effects11d.lib
-    ${CMAKE_SOURCE_DIR}/libs/PhysX_64.lib
-    ${CMAKE_SOURCE_DIR}/libs/PhysXCommon_64.lib
-    ${CMAKE_SOURCE_DIR}/libs/PhysXCooking_64.lib
-    ${CMAKE_SOURCE_DIR}/libs/PhysXExtensions_static_64.lib
-    ${CMAKE_SOURCE_DIR}/libs/PhysXFoundation_64.lib
-    ${CMAKE_SOURCE_DIR}/libs/PhysXPvdSDK_static_64.lib
+    debug ${CMAKE_SOURCE_DIR}/libs/debug/effects11d.lib optimized ${CMAKE_SOURCE_DIR}/libs/release/effects11.lib
+    debug ${CMAKE_SOURCE_DIR}/libs/debug/PhysX_64.lib optimized ${CMAKE_SOURCE_DIR}/libs/release/PhysX_64.lib
+    debug ${CMAKE_SOURCE_DIR}/libs/debug/PhysXCommon_64.lib optimized ${CMAKE_SOURCE_DIR}/libs/release/PhysXCommon_64.lib
+    debug ${CMAKE_SOURCE_DIR}/libs/debug/PhysXCooking_64.lib optimized ${CMAKE_SOURCE_DIR}/libs/release/PhysXCooking_64.lib
+    debug ${CMAKE_SOURCE_DIR}/libs/debug/PhysXExtensions_static_64.lib optimized ${CMAKE_SOURCE_DIR}/libs/release/PhysXExtensions_static_64.lib
+    debug ${CMAKE_SOURCE_DIR}/libs/debug/PhysXFoundation_64.lib optimized ${CMAKE_SOURCE_DIR}/libs/release/PhysXFoundation_64.lib
+    debug ${CMAKE_SOURCE_DIR}/libs/debug/PhysXPvdSDK_static_64.lib optimized ${CMAKE_SOURCE_DIR}/libs/release/PhysXPvdSDK_static_64.lib
     dinput8.lib
     dxguid.lib
     d3d11.lib
@@ -48,4 +48,13 @@ add_custom_command(TARGET PetitMoteur3D POST_BUILD
 
 set_target_properties(PetitMoteur3D PROPERTIES
   VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/PetitMoteur3DCore/data"
+)
+
+set_property(TARGET PetitMoteur3D PROPERTY
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+)
+
+add_compile_definitions(
+    $<$<CONFIG:Debug>:_ITERATOR_DEBUG_LEVEL=2>
+    $<$<NOT:$<CONFIG:Debug>>:_ITERATOR_DEBUG_LEVEL=0>
 )

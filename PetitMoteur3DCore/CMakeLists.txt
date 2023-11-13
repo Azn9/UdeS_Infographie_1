@@ -55,3 +55,11 @@ target_link_libraries(PetitMoteur3DCore PRIVATE
     dxgi.lib
     PM3DApi
 )
+set_property(TARGET PetitMoteur3DCore PROPERTY
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+)
+
+add_compile_definitions(
+    $<$<CONFIG:Debug>:_ITERATOR_DEBUG_LEVEL=2>
+    $<$<NOT:$<CONFIG:Debug>>:_ITERATOR_DEBUG_LEVEL=0>
+)

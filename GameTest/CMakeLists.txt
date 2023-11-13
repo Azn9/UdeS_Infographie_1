@@ -55,3 +55,12 @@ target_link_libraries(GameTest PRIVATE
     PM3DApi
     PetitMoteur3DCore
 )
+
+set_property(TARGET GameTest PROPERTY
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+)
+
+add_compile_definitions(
+    $<$<CONFIG:Debug>:_ITERATOR_DEBUG_LEVEL=2>
+    $<$<NOT:$<CONFIG:Debug>>:_ITERATOR_DEBUG_LEVEL=0>
+)
