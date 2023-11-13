@@ -2,6 +2,9 @@
 #include <DirectXMath.h>
 #include <iostream>
 
+#include "Api/Public/EventSystem/EventSystem.h"
+#include "GameTest/RestartEvent.h"
+#include "GameTest/Objects/LoadingScene/CustomCube.h"
 #include "Core/Imgui/imgui.h"
 #include "Api/Public/Component/Component.h"
 #include "Api/Public/GameObject/GameObject.h"
@@ -11,6 +14,17 @@
 class MovableComponent final : public PM3D_API::Component
 {
 public:
+	MovableComponent()
+	{
+		PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
+		{
+			physx::PxRigidDynamic* rigidDyn = parentObject->GetComponent<PM3D_API::Rigidbody>()->getRigidDynamic();
+			rigidDyn->setLinearVelocity({0.f,0.f,0.f});
+			rigidDyn->setAngularVelocity({0.f,0.f,0.f});
+			parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
+		});
+	}
+	
 	void Update() override
 	{
 		PM3D_API::Rigidbody* rigidBody = parentObject->GetComponent<PM3D_API::Rigidbody>();
@@ -18,11 +32,12 @@ public:
 		
 		if (Input::IsKeyHeld(KeyCode::ARROW_LEFT)) // Ou IsKeyHeld
 		{
-			rigidDynamic->addForce(physx::PxVec3(_speed, 0, 0));
+			
+			rigidDynamic->addForce(physx::PxVec3(-_speed, 0, 0));
 		}
 		if (Input::IsKeyHeld(KeyCode::ARROW_RIGHT)) // Ou IsKeyHeld
 		{
-			rigidDynamic->addForce(physx::PxVec3(-_speed, 0, 0));
+			rigidDynamic->addForce(physx::PxVec3(_speed, 0, 0));
 		}
 
 	}
@@ -34,5 +49,5 @@ public:
 	}
 
 private:
-	int _speed = 500;
+	int _speed = 70;
 };
