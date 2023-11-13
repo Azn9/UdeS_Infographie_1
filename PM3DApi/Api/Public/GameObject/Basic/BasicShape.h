@@ -117,7 +117,7 @@ namespace PM3D_API
             ConstructRenderer(std::move(shader));
         }
     
-        void ConstructRenderer(std::unique_ptr<PM3D_API::Shader>&& shader)
+        virtual void ConstructRenderer(std::unique_ptr<PM3D_API::Shader>&& shader)
         {
             auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), GetMeshFileName());
             meshRenderer->Initialize();

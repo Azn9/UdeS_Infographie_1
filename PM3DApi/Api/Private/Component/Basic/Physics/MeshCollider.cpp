@@ -24,7 +24,7 @@ void PM3D_API::MeshCollider::Initialize()
 		throw std::runtime_error("MeshCollider::Initialize - No mesh renderer on the parent object");
 	}
 
-	PM3D::FastobjChargeur* chargeur = static_cast<PM3D::FastobjChargeur*>(meshRenderer->getChargeur());
+	std::shared_ptr<PM3D::FastobjChargeur> chargeur = std::dynamic_pointer_cast<PM3D::FastobjChargeur>(meshRenderer->getChargeur());
 
 	std::vector<XMFLOAT3> verts = chargeur->getPositionArray();
 

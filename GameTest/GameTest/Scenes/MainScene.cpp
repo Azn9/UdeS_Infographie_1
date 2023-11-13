@@ -124,11 +124,6 @@ void MainScene::InitializeObjects()
         const auto meshColliderPtr = meshCollider.get();
         railingsPtr->AddComponent(std::move(meshCollider));
         meshColliderPtr->Initialize();
-
-        physx::PxFilterData filterDataObstacle;
-        filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
-        physx::PxShape* railingShape = meshColliderPtr->getShape();
-        railingShape->setSimulationFilterData(filterDataObstacle);
     }
 
     // ============= Add a pines =============
@@ -168,11 +163,8 @@ void MainScene::InitializeUI()
 
 void MainScene::AddPine(const DirectX::XMFLOAT3& pos)
 {
-    auto pine = std::make_unique<Pine>();
-    pine->SetWorldPosition(pos);
-    pine->SetWorldScale(XMFLOAT3(5.f, 5.f, 5.f));
-    pine->SetWorldRotation(XMFLOAT3(0.0f, 0.90f, 0.f));
-    pine->Initialize();
+    auto pine = pineBuilder.build(pos, XMFLOAT3(5.f, 5.f, 5.f), XMFLOAT3(0.0f, 0.90f, 0.f));
+
     const auto pinePtr = pine.get();
     AddChild(std::move(pine));
 

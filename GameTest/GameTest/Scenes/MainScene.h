@@ -1,6 +1,9 @@
 ﻿#pragma once
 #include "Core/Public/Util/Singleton.h"
 #include "Api/Public/Scene/Scene.h"
+#include "Core/Public/Object/ObjBuilder.h"
+
+class Pine;
 
 class MainScene final : public PM3D_API::Scene, public PM3D::CSingleton<MainScene>
 {
@@ -15,4 +18,5 @@ public:
 
 private:
 	void AddPine(const DirectX::XMFLOAT3& pos);
+	ObjBuilder<Pine> pineBuilder{"tree_pineTallA.obj"};
 };

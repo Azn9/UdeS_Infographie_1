@@ -17,7 +17,7 @@ class MeshRenderer : public Renderer
 {
 public:
 	MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName);
-	MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur);
+	MeshRenderer(std::unique_ptr<Shader>&& shader, std::shared_ptr<PM3D::IChargeur> chargeur);
 
 	~MeshRenderer() override;
 
@@ -47,12 +47,12 @@ public:
 
 	bool IsVisible() const override;
 
-	PM3D::IChargeur* getChargeur() { return chargeur; }
+	std::shared_ptr<PM3D::IChargeur> getChargeur() { return chargeur; }
 
 protected:
 	void LoadMesh();
 
-	PM3D::IChargeur* chargeur;
+	std::shared_ptr<PM3D::IChargeur> chargeur;
 	fastObjMesh* mesh;
 	bool meshLoaded;
 

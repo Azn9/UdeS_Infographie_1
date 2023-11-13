@@ -24,7 +24,9 @@ PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::stri
 	if (meshName.find_last_of(".obj") == std::string::npos)
 		meshName += ".obj";
 
-	chargeur = new PM3D::FastobjChargeur();
+	// chargeur = new PM3D::FastobjChargeur();
+
+	chargeur = std::make_shared<PM3D::FastobjChargeur>();
 
 	PM3D::CParametresChargement params;
 	params.NomChemin = "";
@@ -36,7 +38,7 @@ PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::stri
 	LoadMesh();
 }
 
-PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur) : Renderer(std::move(shader)), chargeur(chargeur)
+PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::shared_ptr<PM3D::IChargeur> chargeur) : Renderer(std::move(shader)), chargeur(chargeur)
 {
 	std::cout << "MeshRenderer::MeshRenderer(chargeur)" << std::endl;
 
@@ -47,8 +49,8 @@ PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::ICh
 PM3D_API::MeshRenderer::~MeshRenderer()
 {
 	std::cout << "MeshRenderer::~MeshRenderer()" << std::endl;
-	
-	delete chargeur; // Will also delete mesh using fastObjDestroy
+	chargeur.reset();
+	//delete chargeur; // Will also delete mesh using fastObjDestroy
 }
 
 void PM3D_API::MeshRenderer::Initialize()
