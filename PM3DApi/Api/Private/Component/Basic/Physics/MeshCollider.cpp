@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "../../../../../../GameTest/GameTest/Components/SnowRenderer.h"
+
 using namespace physx;
 
 void PM3D_API::MeshCollider::Initialize()
@@ -17,14 +19,17 @@ void PM3D_API::MeshCollider::Initialize()
 
 	const auto worldScale = parentObject->GetWorldScale();
 
-	const auto meshRenderer = parentObject->GetComponent<MeshRenderer>();
+	auto meshRenderer = parentObject->GetComponent<MeshRenderer>();
 
 	if (!meshRenderer) 
 	{
-		throw std::runtime_error("MeshCollider::Initialize - No mesh renderer on the parent object");
+		meshRenderer = parentObject->GetComponent<SnowRenderer>();
+
+		if (!meshRenderer)
+			throw std::runtime_error("MeshCollider::Initialize - No mesh renderer on the parent object");
 	}
 
-	PM3D::FastobjChargeur* chargeur = static_cast<PM3D::FastobjChargeur*>(meshRenderer->getChargeur());
+	auto chargeur = static_cast<PM3D::FastobjChargeur*>(meshRenderer->getChargeur());
 
 	std::vector<XMFLOAT3> verts = chargeur->getPositionArray();
 
@@ -77,7 +82,7 @@ void PM3D_API::MeshCollider::Initialize()
 
 	shape = pxPhysics->createShape(PxTriangleMeshGeometry(triangleMesh), *material, true);
 
-	const auto rigidbody = parentObject->GetComponent<Rigidbody>(); // Ne peut pas être null, vérifié dans Collider::Initialize()
+	const auto rigidbody = parentObject->GetComponent<Rigidbody>(); // Ne peut pas Ãªtre null, vÃ©rifiÃ© dans Collider::Initialize()
 
 	const auto actor = rigidbody->GetActor();
 

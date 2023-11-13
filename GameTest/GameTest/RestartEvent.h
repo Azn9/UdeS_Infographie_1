@@ -1,7 +1,7 @@
 #pragma once
-#include "Api/Public/EventSystem/Event.h"
+#include "Api/Public/EventSystem/PhysicEvent.h"
 
-class RestartEvent : public PM3D_API::Event
+class RestartEvent : public PM3D_API::PhysicEvent
 {
 
 };

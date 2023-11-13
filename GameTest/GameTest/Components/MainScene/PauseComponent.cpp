@@ -95,7 +95,7 @@ void PauseComponent::Update()
 
     if (isPaused && Input::IsKeyPressed(KeyCode::R))
     {
-        PM3D_API::EventSystem::Publish(RestartEvent());
+        PM3D_API::EventSystem::PublishPhysicEvent(RestartEvent());
         isPaused = false;
         isEnded = false;
         isWon = false;

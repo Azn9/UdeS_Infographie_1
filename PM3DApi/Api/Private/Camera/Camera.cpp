@@ -170,8 +170,8 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	else // ORTHOGRAPHIC
 	{
 		matProj = DirectX::XMMatrixOrthographicRH(
-			PM3D_API::GameHost::GetInstance()->GetScreenWidth(),
-			PM3D_API::GameHost::GetInstance()->GetScreenHeight(),
+			420,//PM3D_API::GameHost::GetInstance()->GetScreenWidth(),
+			420, //PM3D_API::GameHost::GetInstance()->GetScreenHeight(),
 			nearDist,
 			farDist
 		);

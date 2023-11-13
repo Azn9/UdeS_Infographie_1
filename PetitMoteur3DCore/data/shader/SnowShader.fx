@@ -133,8 +133,8 @@ Texture2D snowRVT;
 SamplerState snowRVTSampler
 {
 	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Clamp;
-	AddressV = Clamp;
+	AddressU = Wrap;
+	AddressV = Wrap;
 };
 
 Texture2D sparkleTexture;
@@ -176,23 +176,41 @@ VS_Sortie MainVS(
     output.binormal = mul(float4(vBiNormal, 0.0f), matWorld);
     output.tangent = mul(float4(vTangent, 0.0f), matWorld);
 
-	if (!isPreCompute) {
-    	float noiseV = snoise01(vPos.xz * 2.0f);
-		float pathV = snowRVT.SampleLevel(snowRVTSampler, coordTex, 0).r;
+	float3 worldPos = mul(vPos, matWorld);
+	// Convert worldPos to coords in texture
+	// Texture size is 2048x2048
+	// Center is at 0 -200
+	// Top is -z
+	// Top left (0 0) is at 200 -400
+	// Bottom right (2047 2047) is at -200 0
+	// If worldPos = 0, -200, then textureCoord = 1024, 1024
 
-		vPos.y = max(vPos.y, vPos.y + 2 * noiseV * (1-pathV) - pathV);
+	#define TEXTURE_SIZE 2048.f
+	#define VIEW_SIZE 420.f
+
+	float ratio = TEXTURE_SIZE / VIEW_SIZE;
+
+	float2 textureCoord = float2(
+		((worldPos.x * ratio) + TEXTURE_SIZE / 2) / TEXTURE_SIZE, 
+		(((worldPos.z + VIEW_SIZE / 2) * ratio) + TEXTURE_SIZE / 2) / TEXTURE_SIZE
+	);
+
+	output.coordTex = textureCoord;
+
+	if (!isPreCompute) {
+    	float noiseV = snoise01(vPos.xz * 3.0f);
+
+		float pathV = snowRVT.SampleLevel(snowRVTSampler, textureCoord, 0).r;
+
+		vPos.y = max(vPos.y, vPos.y + 1 * noiseV * (1-pathV) - pathV);
 		output.noiseValue = noiseV;
 		output.pathValue = pathV;
 	}
 
     output.position = mul(vPos, matWorldViewProj);
-    output.worldPos = mul(vPos, matWorld);
+    output.worldPos = worldPos;
 
-    //output.worldPos = float3(worldPos.x, worldPos.y + noiseV, worldPos.z);
-
-    output.coordTex = coordTex;
-
-    output.cameraVec = vCamera.xyz - output.worldPos;
+    output.cameraVec = vCamera.xyz - worldPos;
     output.cameraDir = dCamera.xyz;
 
 	float4 PosInMaps[MAX_LIGHTS];

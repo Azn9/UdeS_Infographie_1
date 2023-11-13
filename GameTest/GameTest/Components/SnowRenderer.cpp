@@ -7,7 +7,7 @@
 #include "Core/Public/Util/util.h"
 #include "GameTest/Shader/SnowShader.h"
 
-#define TEXTURE_SCALE 512
+#define TEXTURE_SCALE 2048
 
 void SnowRenderer::Initialize()
 {
@@ -83,7 +83,7 @@ void SnowRenderer::DrawRVT() const
 
     // Improvement possible : update fade only every 1/4th frame to save performance
     // Or disable the whole following block if we don't want the snow to fade back
-    {
+    /*{
         context->CopyResource(stagingTexture, snowRVT);
 
         D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -109,7 +109,7 @@ void SnowRenderer::DrawRVT() const
 
         context->Unmap(stagingTexture, 0);
         context->CopyResource(snowRVT, stagingTexture);
-    }
+    }*/
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -133,12 +133,12 @@ void SnowRenderer::DrawRVT() const
     const auto pos = parentObject->GetWorldPosition();
 
     const XMMATRIX viewProj = XMMatrixLookAtRH(
-        XMVectorSet(pos.x, pos.y + 10.0f, pos.z, 1.0f),
-        XMVectorSet(pos.x, pos.y, pos.z, 1.0f),
+        XMVectorSet(pos.x, pos.y + 10.0f, pos.z - 200, 1.0f),
+        XMVectorSet(pos.x, pos.y, pos.z - 200, 1.0f),
         XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f)
     ) * XMMatrixOrthographicRH(
-        20,
-        20,
+        420,
+        420,
         0.1f,
         100.0f
     );
@@ -146,7 +146,7 @@ void SnowRenderer::DrawRVT() const
     const auto parameters = new SnowShader::SnowShaderParameters{
         XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
         XMMatrixTranspose(parentObject->GetMatWorld()),
-        XMVectorSet(pos.x, pos.y + 10.0f, pos.z, 1.0f),
+        XMVectorSet(pos.x, pos.y + 10.0f, pos.z - 200, 1.0f),
         XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f),
         XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f),
         XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f),

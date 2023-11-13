@@ -140,7 +140,7 @@ namespace PM3D_API
         }
 
         template <class T, template_extends<PhysicEvent, T>  = 0>
-        void publish(T&& event)
+        void publishPhysicEvent(T&& event)
         {
             physicsEventsToProcess.push_back(std::make_unique<EventWrapper<T>>(std::forward<T>(event)));
         }
@@ -198,9 +198,9 @@ namespace PM3D_API
         }
 
         template <class T, template_extends<PhysicEvent, T>  = 0>
-        static void Publish(T&& event)
+        static void PublishPhysicEvent(T&& event)
         {
-            GetInstance().publish(std::forward<T>(event));
+            GetInstance().publishPhysicEvent(std::forward<T>(event));
         }
 
         template <class T, template_extends<Event, T>  = 0>
@@ -231,7 +231,7 @@ namespace PM3D_API
 
         long generateId()
         {
-            // Pour éviter que deux threads génèrent le même id
+            // Pour Ã©viter que deux threads gÃ©nÃ¨rent le mÃªme id
             std::lock_guard guard{idMutex};
             return nextId++;
         }

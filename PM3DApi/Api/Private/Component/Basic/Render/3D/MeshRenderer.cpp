@@ -74,8 +74,8 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 	// Frustrum culling
 	if(!IsVisible())
 	{
-		LogEndDrawSelf();
-		return;
+		//LogEndDrawSelf();
+		//return;
 	}
 
 	// Obtenir le contexte

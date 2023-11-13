@@ -22,6 +22,9 @@
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/MovableComponent.h"
 #include "GameTest/Components/SizeModifierComponent.h"
+#include "GameTest/Components/SnowMover.h"
+#include "GameTest/Components/SnowRenderer.h"
+#include "GameTest/Shader/SnowShader.h"
 
 void MainScene::InitializePhysics()
 {
@@ -34,13 +37,15 @@ void MainScene::InitializeCamera()
 {
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
-        PM3D_API::Camera::PERSECTIVE,
-        XMFLOAT3(0.0f, 0.1f, 0.0f),
-        XMVectorSet(0.0f, -5.0f, 15.0f, 1.0f)
+        PM3D_API::Camera::ORTHOGRAPHIC,
+        XMFLOAT3(0.0f, 10.0f, -200.0f),
+        XMVectorSet(0.0f, 0.0f, -200.0f, 1.0f),
+        XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f)
     );
-    mainCamera->SetFieldOfView(45.0f);
+    mainCamera->Initialize();
+    //mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarDist(1000.0f);
-    mainCamera->AddComponent(std::make_unique<CameraFollowComponent>());
+    //mainCamera->AddComponent(std::make_unique<CameraFollowComponent>());
     mainCamera->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
     SetMainCamera(std::move(mainCamera));
 }
@@ -58,12 +63,17 @@ void MainScene::InitializeLights()
 
 void MainScene::InitializeObjects()
 {
-    // ============= Add a plane =============
+    // ============= Add the map =============
     {
-        auto map = std::make_unique<Heightmap>();
+        auto map = std::make_unique<GameObject>("Map");
         map->Initialize();
         const auto mapPtr = map.get();
         AddChild(std::move(map));
+
+        auto shader = std::make_unique<SnowShader>(L"shader/SnowShader.fx");
+        auto renderer = std::make_unique<SnowRenderer>(std::move(shader), "Terrain2LOD0.obj");
+        renderer->Initialize();
+        mapPtr->AddComponent(std::move(renderer));
 
         auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
         const auto mapRigidbodyPtr = mapRigidbody.get();
@@ -89,8 +99,9 @@ void MainScene::InitializeObjects()
         spherePtr->AddComponent(std::move(sphereRigidbody));
         sphereRigidbodyPtr->Initialize();
 
-        auto sphereCollider = std::make_unique<
-            PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
+        auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(
+            PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f)
+        );
         const auto sphereColliderPtr = sphereCollider.get();
         spherePtr->AddComponent(std::move(sphereCollider));
         sphereColliderPtr->Initialize();
@@ -99,11 +110,11 @@ void MainScene::InitializeObjects()
         physx::PxShape* sphereShape = sphereColliderPtr->getShape();
         sphereShape->setSimulationFilterData(filterDataSnowball);
 
-        GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
+        //GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
 
         spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
-
         spherePtr->AddComponent(std::make_unique<MovableComponent>());
+        spherePtr->AddComponent(std::make_unique<SnowMover>());
     }
 
     // ============= Add railings =============
@@ -134,7 +145,7 @@ void MainScene::InitializeObjects()
     // ============= Add a pines =============
     {
         AddPine(XMFLOAT3(-0.05f, -10.56f, -14.89f));
-        AddPine(XMFLOAT3(1.2f, 14.f, -21.f));
+        AddPine(XMFLOAT3(1.2f, -14.f, -21.f));
         AddPine(XMFLOAT3(-2.1f, -12.6f, -18.f));
         AddPine(XMFLOAT3(-3.75f, -14.54f, -21.94f));
         AddPine(XMFLOAT3(1.2f, -14.1f, -21.f));
