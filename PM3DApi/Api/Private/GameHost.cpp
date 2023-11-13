@@ -77,12 +77,13 @@ void PM3D_API::GameHost::Draw()
 	if (scene)
 		scene->Draw();
 
-	// TODO : add debug switch
+#ifdef _DEBUG
 	for (const auto& renderer : debugRenderers)
 	{
 		if (renderer)
 			renderer->Draw();
 	}
+#endif
 }
 
 void PM3D_API::GameHost::DrawUI()

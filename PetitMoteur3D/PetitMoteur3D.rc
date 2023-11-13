@@ -113,7 +113,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_APP_TITLE           "PetitMoteur3D"
+    IDS_APP_TITLE           "Project Snowball"
     DXE_ERREURCREATIONDEVICE "Erreur dans la cr�ation du dispositif"
     DXE_ERREUROBTENTIONBUFFER 
                             "Erreur dans l'obtention du tampon d'arri�re plan"
