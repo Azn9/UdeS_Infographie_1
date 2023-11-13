@@ -6,17 +6,63 @@
 #include "Api/Public/Util/Util.h"
 #include "Core/Public/Util/Time.h"
 #include "GameTest/RestartEvent.h"
+#include "GameTest/Event/GameOverEvent.h"
 
 void PauseComponent::Initialize()
 {
     UIObject::Initialize();
+
+    {
+        auto spriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(L"pause.dds");
+        pauseRenderer = spriteRenderer.get();
+        AddComponent(std::move(spriteRenderer));
+        pauseRenderer->Initialize();
+    }
+
+    {
+        auto spriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(L"lost.dds");
+        looseRenderer = spriteRenderer.get();
+        AddComponent(std::move(spriteRenderer));
+        looseRenderer->Initialize();
+    }
     
-    auto spriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(L"pause.dds");
-    const auto spriteRendererPtr = spriteRenderer.get();
-    AddComponent(std::move(spriteRenderer));
-    spriteRendererPtr->Initialize();
+    {
+        auto spriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(L"win.dds");
+        winRenderer = spriteRenderer.get();
+        AddComponent(std::move(spriteRenderer));
+        winRenderer->Initialize();
+    }
+
+    PM3D_API::EventSystem::Subscribe([this](const GameOverEvent& event)
+    {
+        std::cout << "GameOverEvent received" << std::endl;
+
+        isPaused = true;
+        isEnded = true;
+        isWon = event.IsWon();
+        PM3D::Time::GetInstance().SetTimeScale(0.f);
+    });
 
     std::cout << "PauseComponent::Initialize()" << std::endl;
+}
+
+void PauseComponent::Draw()
+{
+    if (!isPaused && alpha == 0.f) return;
+
+    if (isEnded)
+    {
+        if (isWon)
+        {
+            winRenderer->DrawSelf();
+        } else
+        {
+            looseRenderer->DrawSelf();
+        }
+    } else
+    {
+        pauseRenderer->DrawSelf();
+    }
 }
 
 void PauseComponent::Update()
@@ -34,7 +80,7 @@ void PauseComponent::Update()
 
     if (Input::IsKeyPressed(KeyCode::ESCAPE))
     {
-        std::cout << "PauseComponent::Update() : ESCAPE pressed" << std::endl;
+        if (isEnded) return;
         
         if (isPaused)
         {
@@ -45,16 +91,14 @@ void PauseComponent::Update()
             isPaused = true;
             PM3D::Time::GetInstance().SetTimeScale(0.f);
         }
-
-        std::cout << "PauseComponent::Update() : isPaused = " << isPaused << std::endl;
     }
 
     if (isPaused && Input::IsKeyPressed(KeyCode::R))
     {
-        // TODO : restart
         PM3D_API::EventSystem::Publish(RestartEvent());
         isPaused = false;
+        isEnded = false;
+        isWon = false;
         PM3D::Time::GetInstance().SetTimeScale(1.f);
-        
     }
 }

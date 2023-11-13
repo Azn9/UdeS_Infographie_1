@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Api/Public/Component/Basic/Render/2D/SpriteRenderer.h"
 #include "Api/Public/GameObject/UIObject.h"
 
 class PauseComponent : public PM3D_API::UIObject
@@ -18,7 +19,14 @@ public:
 
     void Initialize() override;
     void Update() override;
+    void Draw() override;
 
 private:
     bool isPaused = false;
+    bool isEnded = false;
+    bool isWon = false;
+
+    PM3D_API::SpriteRenderer* pauseRenderer = nullptr;
+    PM3D_API::SpriteRenderer* looseRenderer = nullptr;
+    PM3D_API::SpriteRenderer* winRenderer = nullptr;
 };

@@ -8,6 +8,7 @@
 #include "Api/Public/Component/Basic/Physics/SphereCollider.h"
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/EventSystem/CollisionObstacleEvent.h"
+#include "GameTest/Event/GameOverEvent.h"
 
 class SizeModifierComponent final : public PM3D_API::Component
 {
@@ -49,6 +50,9 @@ public:
 			));
 			_collisionHappend = false;
 			shape->setGeometry(physx::PxSphereGeometry(preScale.x * .5f));
+
+			if (preScale.x * .5f < 0.1f)
+				PM3D_API::EventSystem::Publish(GameOverEvent(false));
 		}
 		else
 		{

@@ -10,6 +10,7 @@
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "Api/Public/Input/Input.h"
+#include "GameTest/Event/GameOverEvent.h"
 
 class MovableComponent final : public PM3D_API::Component
 {
@@ -23,6 +24,12 @@ public:
 			rigidDyn->setAngularVelocity({0.f,0.f,0.f});
 			parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
 		});
+	}
+
+	void Update() override
+	{
+		if (parentObject->GetWorldPosition().z < -400.f)
+			PM3D_API::EventSystem::Publish(GameOverEvent(true));
 	}
 
 	void PhysicsUpdate() override
