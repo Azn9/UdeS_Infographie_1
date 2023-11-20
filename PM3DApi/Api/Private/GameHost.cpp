@@ -75,7 +75,11 @@ void PM3D_API::GameHost::SetScene(Scene* newScene)
 void PM3D_API::GameHost::Draw()
 {
 	if (scene)
+	{
+		//debutpost
 		scene->Draw();
+		//finpost
+	}
 
 #ifdef _DEBUG
 	for (const auto& renderer : debugRenderers)

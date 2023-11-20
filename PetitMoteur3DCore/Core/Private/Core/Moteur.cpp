@@ -200,13 +200,19 @@ bool PM3D::CMoteur::RenderScene()
 	}
 		
 	const uint64_t start = Time::GetInstance().GetTimeSpecific();
-		
+	
+	pPanneauPE->DebutPostEffect();
+
 	BeginRenderSceneSpecific();
 		
 	gameHost->Draw();
 	gameHost->DrawUI();
 
 	EndRenderSceneSpecific();
+
+	pPanneauPE->Draw();
+
+	pPanneauPE->FinPostEffect();
 
 	const uint64_t end = Time::GetInstance().GetTimeSpecific();
 

@@ -29,7 +29,7 @@ private:
 	bool InitAppInstance();
 	int Show();
 
-	// Les fonctions spécifiques
+	// Les fonctions spÃ©cifiques
 	virtual int InitialisationsSpecific() override;
 	virtual bool RunSpecific() override;
 	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) override;
@@ -41,14 +41,14 @@ private:
 	void Resize(WORD largeur, WORD hauteur) override;
 	void ResizeWindow(int largeur, int hauteur) override;
 	
-	// Fonctions "Callback" -- Doivent être statiques
+	// Fonctions "Callback" -- Doivent Ãªtre statiques
 	static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 	static INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 
-	HACCEL hAccelTable; // handle Windows de la table des accélérateurs
+	HACCEL hAccelTable; // handle Windows de la table des accÃ©lÃ©rateurs
 	static HINSTANCE hAppInstance; // handle Windows de l'instance actuelle de l'application
-	HWND hMainWnd; // handle Windows de la fenêtre principale
-	TCHAR szWindowClass[MAX_LOADSTRING]; // le nom de la classe de fenêtre principale
+	HWND hMainWnd; // handle Windows de la fenÃªtre principale
+	TCHAR szWindowClass[MAX_LOADSTRING]; // le nom de la classe de fenÃªtre principale
 	
 
 	float hue = 0.0f;

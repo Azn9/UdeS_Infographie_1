@@ -12,6 +12,7 @@
 #include "../../Public/Texture/GestionnaireDeTextures.h"
 #include "../../Public/Sprite/AfficheurSprite.h"
 #include "../../Public/Sprite/SpriteTemp.h"
+#include "Core/Public/Object/PanneauPE.h"
 
 namespace PM3D
 {
@@ -130,6 +131,8 @@ protected:
 	CDIManipulateur GestionnaireDeSaisie;
 
 	virtual void SetThreadName(std::thread&, const std::string&) {}
+
+	std::unique_ptr<CPanneauPE> pPanneauPE;
 };
 
 } // namespace PM3D

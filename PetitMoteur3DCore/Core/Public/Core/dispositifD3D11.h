@@ -21,7 +21,7 @@ public:
 	void ActiverDepth() const;
 	void DesactiverDepth() const;
 
-	// Fonction d'accès aux membres protégés
+	// Fonction d'accÃ¨s aux membres protÃ©gÃ©s
 	ID3D11Device* GetD3DDevice() { return pD3DDevice; }
 	ID3D11DeviceContext* GetImmediateContext() { return pImmediateContext; }
 	IDXGISwapChain* GetSwapChain() { return pSwapChain; }
@@ -56,10 +56,10 @@ private:
 	ID3D11DepthStencilState* pDepthStencilState;
 	ID3D11DepthStencilState* pNoDepthStencilState;
 
-	// Variables d'état
+	// Variables d'Ã©tat
 	ID3D11RasterizerState* mSolidCullBackRS;
 
-	// Pour le mélange alpha (transparence)
+	// Pour le mÃ©lange alpha (transparence)
     ID3D11BlendState* alphaBlendEnable;
     ID3D11BlendState* alphaBlendDisable;
 
