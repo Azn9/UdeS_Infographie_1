@@ -59,6 +59,7 @@ SnowShader::SnowShader(
     })
 {
     Initialize(fileName);
+    initialized = true;
 }
 
 SnowShader::~SnowShader()
@@ -238,8 +239,6 @@ void SnowShader::Initialize(const std::wstring& wstring)
     sr_desc.Texture2D.MostDetailedMip = 0;
     sr_desc.Texture2D.MipLevels = 1;
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
-
-    initialized = true;
 }
 
 void SnowShader::Destroy()

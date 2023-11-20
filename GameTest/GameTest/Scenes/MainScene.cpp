@@ -11,11 +11,9 @@
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Light/AmbiantLight.h"
 #include "Api/Public/Util/FilterGroup.h"
-#include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/GameObject/Basic/BasicSphere.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/MainScene/PauseComponent.h"
-#include "GameTest/UI/TestUIObject.h"
 #include "GameTest/Objects/Pine.h"
 
 #include "GameTest/Heightmap.h"
@@ -23,6 +21,7 @@
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/MovableComponent.h"
 #include "GameTest/Components/SizeModifierComponent.h"
+#include "GameTest/Objects/MainScene/Map.h"
 
 void MainScene::InitializePhysics()
 {
@@ -59,55 +58,19 @@ void MainScene::InitializeLights()
 
 void MainScene::InitializeObjects()
 {
-	// ============= Add the map =============
-	{
-		auto map = std::make_unique<Heightmap>();
-		map->Initialize();
-		const auto mapPtr = map.get();
-		AddChild(std::move(map));
-
-		auto mapRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-		const auto mapRigidbodyPtr = mapRigidbody.get();
-		mapPtr->AddComponent(std::move(mapRigidbody));
-		mapRigidbodyPtr->Initialize();
-
-		auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
-		const auto meshColliderPtr = meshCollider.get();
-		mapPtr->AddComponent(std::move(meshCollider));
-		meshColliderPtr->Initialize();
-	}
-
-	// ============= Add the tunnel =============
-	{
-		auto tunnel = std::make_unique<Tunnel>();
-		tunnel->Initialize();
-		const auto tunnelPtr = tunnel.get();
-		AddChild(std::move(tunnel));
-
-		auto tunnelRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-		const auto tunnelRigidbodyPtr = tunnelRigidbody.get();
-		tunnelPtr->AddComponent(std::move(tunnelRigidbody));
-		tunnelRigidbodyPtr->Initialize();
-
-		auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
-		const auto meshColliderPtr = meshCollider.get();
-		tunnelPtr->AddComponent(std::move(meshCollider));
-		meshColliderPtr->Initialize();
-
-		physx::PxFilterData filterDataTunnel;
-		filterDataTunnel.word0 = FilterGroup::eTUNNEL;
-		physx::PxShape* tunnelShape = meshColliderPtr->getShape();
-		tunnelShape->setSimulationFilterData(filterDataTunnel);
-	}
-
-	// ============= Add a sphere =============
-	{
-		auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-		const auto spherePtr = sphere.get();
-		AddChild(std::move(sphere));
-		spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-		spherePtr->SetWorldPosition(XMFLOAT3(0.f, -60.f, 0.f));
-		spherePtr->Initialize();
+    // ============= Add the map =============
+    auto map = std::make_unique<Map>();
+    const auto mapPtr = map.get();
+    AddChild(std::move(map));
+    mapPtr->Initialize();
+    
+    // ============= Add a sphere =============
+    {
+        auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
+        const auto spherePtr = sphere.get();
+        AddChild(std::move(sphere));
+        spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
+        spherePtr->Initialize();
 
 		auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
 		const auto sphereRigidbodyPtr = sphereRigidbody.get();
@@ -145,7 +108,8 @@ void MainScene::InitializeObjects()
 
 	}
 
-	// ============= Add railings =============
+	/*
+    // ============= Add railings =============
 	{
 		auto railings = std::make_unique<GameObject>("railings");
 		auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
@@ -192,6 +156,7 @@ void MainScene::InitializeObjects()
 		AddPine(XMFLOAT3(5.0f, -33.96f, -56.48f));
 		AddPine(XMFLOAT3(21.97f, -34.6f, -55.14f));
 	}
+    */
 }
 
 

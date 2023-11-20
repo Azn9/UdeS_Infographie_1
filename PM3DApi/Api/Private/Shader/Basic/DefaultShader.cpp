@@ -245,7 +245,6 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
 
 void PM3D_API::DefaultShader::Destroy()
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
     if (!initialized)
         return;
 
