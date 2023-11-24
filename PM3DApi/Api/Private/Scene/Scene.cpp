@@ -5,7 +5,7 @@
 PM3D_API::Scene::~Scene()
 {
 	isDeleted = true;
-	
+
 	std::cout << "Scene::~Scene()" << std::endl;
 	children.clear();
 }
@@ -15,9 +15,9 @@ void PM3D_API::Scene::Initialize()
 	std::cout << "Scene::Initialize()" << std::endl;
 
 	scene = this;
-	
+
 	GameObject::Initialize();
-	
+
 	InitializePhysics();
 	InitializeCamera();
 	InitializeLights();
@@ -36,19 +36,16 @@ void PM3D_API::Scene::SetMainCamera(Camera* newMainCamera)
 {
 	// Check if newMainCamera is a child of this scene
 
-	const auto it = std::find_if(
-		children.begin(),
-		children.end(),
-		[newMainCamera](const std::unique_ptr<GameObject>& child) {
+	if (const auto it = std::ranges::find_if(children,
+		[newMainCamera](const std::unique_ptr<GameObject>& child)
+		{
 			return child.get() == newMainCamera;
 		}
-	);
-	
-	if (it == children.end())
+	); it == children.end())
 	{
 		throw std::runtime_error("newMainCamera is not a child of this scene");
 	}
-	
+
 	mainCamera = newMainCamera;
 }
 
@@ -56,7 +53,7 @@ void PM3D_API::Scene::SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newP
 {
 	physicsEnabled = true;
 	physicsResolver = newPhysicsResolver.get();
-	
+
 	GameObject::AddComponent(std::move(newPhysicsResolver));
 }
 
@@ -69,7 +66,7 @@ void PM3D_API::Scene::Update()
 void PM3D_API::Scene::PhysicsUpdate()
 {
 	if (isDeleted) return;
-	
+
 	GameObject::PhysicsUpdate();
 
 	if (physicsEnabled && physicsResolver)
@@ -85,10 +82,17 @@ void PM3D_API::Scene::Draw()
 		lightsNeedUpdate = false;
 }
 
+void PM3D_API::Scene::DrawShadow()
+{
+	if (isDeleted) return;
+	
+	GameObject::DrawShadow();
+}
+
 void PM3D_API::Scene::DrawSelf() const
 {
 	LogBeginDrawSelf();
-	
+
 	if (isDeleted) return;
 	GameObject::DrawSelf();
 

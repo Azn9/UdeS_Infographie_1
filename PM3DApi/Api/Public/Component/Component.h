@@ -14,10 +14,12 @@ public:
 	virtual void Update();
 	virtual void PhysicsUpdate();
 	virtual void DrawSelf() const;
+	virtual void DrawShadowSelf() const;
 	virtual void DrawDebugInfo() const {}
 
 	uint64_t GetBeginDrawSelf() const { return beginDrawSelf; }
 	uint64_t GetEndDrawSelf() const { return endDrawSelf; }
+
 protected:
 	GameObject* parentObject = nullptr;
 

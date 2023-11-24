@@ -84,6 +84,7 @@ public:
 	virtual void Update();
 	virtual void PhysicsUpdate();
 	virtual void Draw();
+	virtual void DrawShadow();
 
 	virtual void AddChild(std::unique_ptr<GameObject>&& child);
 	virtual void AddComponent(std::unique_ptr<Component>&& component);
@@ -200,6 +201,7 @@ protected:
 
 	virtual void UpdateMatrix(bool updatePhysicRepresentation);
 	virtual void DrawSelf() const;
+	virtual void DrawShadowSelf() const;
 
 	void LogBeginDrawSelf() const;
 	void LogEndDrawSelf() const;

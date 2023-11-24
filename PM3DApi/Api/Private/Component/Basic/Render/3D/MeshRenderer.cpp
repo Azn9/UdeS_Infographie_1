@@ -98,9 +98,6 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
 	/*
 	{ // SHADOWS
-		pImmediateContext->OMSetRenderTargets(0, nullptr, shader->GetDepthStencilView());
-		pImmediateContext->ClearDepthStencilView(shader->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-		pDispositif->SetViewportDimension(512,512);
 		const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
 		const auto pPasse = pTechnique->GetPassByIndex(0);
 		pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
@@ -155,10 +152,6 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		shader->DeleteParameters(shaderParameters);
 	}
 	*/
-
-	//ID3D11RenderTargetView* tabRTV[1];
-	//tabRTV[0] = pDispositif->GetRenderTargetView();
-	//pImmediateContext->OMSetRenderTargets(1, tabRTV, pDispositif->GetDepthStencilView());
 
 	pDispositif->ResetViewportDimension();
 
