@@ -42,8 +42,7 @@ public:
 
 	template <typename T,
 		template_extends<GameObject, T> = 0,
-		template_not_extends<Light, T> = 0,
-		template_not_extends<Camera, T> = 0
+		template_not_extends<Light, T> = 0
 	>
 	void AddChild(std::unique_ptr<T>&& child);
 
@@ -88,7 +87,7 @@ void Scene::AddLight(std::unique_ptr<L>&& child)
 	lightsNeedUpdate = true;
 }
 
-template <typename T, template_extends<GameObject, T>, template_not_extends<Light, T>, template_not_extends<Camera, T>>
+template <typename T, template_extends<GameObject, T>, template_not_extends<Light, T>>
 void Scene::AddChild(std::unique_ptr<T>&& child)
 { 
 	std::cout << "Scene::AddChild(GameObject*) added " << child->GetName() << std::endl;

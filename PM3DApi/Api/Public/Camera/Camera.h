@@ -10,7 +10,7 @@ namespace PM3D_API
 	public:
 		enum CameraType
 		{
-			PERSECTIVE,
+			PERSPECTIVE,
 			ORTHOGRAPHIC
 		};
 
