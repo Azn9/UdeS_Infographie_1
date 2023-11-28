@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Api/Private/Light/Shadow/ShadowCaster.h"
 #include "Core/Public/Core/MoteurWindows.h"
 #include "Core/Public/Util/Time.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
@@ -43,7 +44,6 @@ PM3D_API::GameObject::GameObject(
 
 PM3D_API::GameObject::~GameObject()
 {
-	std::cout << "GameObject::~GameObject() on " << name << std::endl;
 	children.clear();
 	components.clear();
 }
@@ -143,20 +143,21 @@ void PM3D_API::GameObject::DrawShadowSelf() const
 	// Do nothing by default
 }
 
-void PM3D_API::GameObject::DrawShadow()
+void PM3D_API::GameObject::DrawShadow(const Camera& camera)
 {
-	DrawShadowSelf();
+	if (HasComponent<ShadowCaster>())
+		DrawShadowSelf();
 
 	for (auto& component : components)
 	{
 		if (const auto componentPtr = component.get())
-			componentPtr->DrawShadowSelf();
+			componentPtr->DrawShadowSelf(camera);
 	}
 
 	for (auto& child: children)
 	{
 		if (const auto childPtr = child.get())
-			childPtr->DrawShadow();
+			childPtr->DrawShadow(camera);
 	}
 }
 

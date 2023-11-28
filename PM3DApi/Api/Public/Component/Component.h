@@ -14,7 +14,7 @@ public:
 	virtual void Update();
 	virtual void PhysicsUpdate();
 	virtual void DrawSelf() const;
-	virtual void DrawShadowSelf() const;
+	virtual void DrawShadowSelf(const class Camera& camera) const;
 	virtual void DrawDebugInfo() const {}
 
 	uint64_t GetBeginDrawSelf() const { return beginDrawSelf; }

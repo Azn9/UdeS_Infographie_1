@@ -23,6 +23,7 @@ public:
 
 	void Initialize() override;
 	void DrawSelf() const override;
+	void DrawShadowSelf(const Camera& camera) const override;
 
 	void DrawDebugInfo() const override
 	{
@@ -46,6 +47,7 @@ public:
 	}
 
 	bool IsVisible() const override;
+	bool IsVisible(const Camera& camera) const override;
 
 	PM3D::IChargeur* getChargeur() { return chargeur; }
 

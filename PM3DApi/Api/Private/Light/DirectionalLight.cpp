@@ -63,32 +63,66 @@ void PM3D_API::DirectionalLight::SetDirection(const DirectX::XMFLOAT3 newDirecti
 
 PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters(GameObject* gameObject) const
 {
-	const auto focusPoint = DirectX::XMVectorSet(
-		worldPosition.x + GetWorldDirection().x,
-		worldPosition.y + GetWorldDirection().y,
-		worldPosition.z + GetWorldDirection().z,
-		1.0f
-	);
-	const auto mVLight = DirectX::XMMatrixLookAtLH(
-		DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
-		focusPoint,
-		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
-	);
+	DirectX::XMMATRIX matWorldViewProj;
 
-	constexpr float nearPlane = 2.0;
-	constexpr float farPlane = 100.0;
+	if (gameObject == nullptr)
+	{
+		matWorldViewProj = DirectX::XMMatrixIdentity();
+	}
+	else
+	{
+		const auto focusPoint = DirectX::XMVectorSet(
+			worldPosition.x + GetWorldDirection().x,
+			worldPosition.y + GetWorldDirection().y,
+			worldPosition.z + GetWorldDirection().z,
+			1.0f
+		);
+		const auto mVLight = DirectX::XMMatrixLookAtRH(
+			DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
+			focusPoint,
+			DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
+		);
 
-	const auto mPLight = DirectX::XMMatrixOrthographicLH(
-		512,
-		512,
-		nearPlane,
-		farPlane
-	);
+		constexpr float nearPlane = 2.0;
+		constexpr float farPlane = 100.0;
 
-	const auto matWorldViewProj = mVLight * mPLight;
+		const auto mPLight = DirectX::XMMatrixOrthographicLH(
+			512,
+			512,
+			nearPlane,
+			farPlane
+		);
+
+		matWorldViewProj = mVLight * mPLight;
+	}
 	
 	return std::move(ShaderLightDefaultParameters{
 		matWorldViewProj,
+		
+		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), // Position
+		DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),
+
+		DirectX::XMVectorSet(0.2f * color.x, 0.2f * color.y, 0.2f * color.z, 1.0f), // Ambient
+		DirectX::XMVectorSet(color.x, color.y, color.z, 1.0f), // Diffuse
+		DirectX::XMVectorSet(0.6f * color.x, 0.6f * color.y, 0.6f * color.z, 1.0f), // Specular
+		
+		intensity, // Specular power
+
+		// Unused here
+		0.0f, // Inner angle
+		0.0f, // Outer angle
+
+		true,
+		1, // Directional
+
+		{0.0f, 0.0f, 0.0f}
+	});
+}
+
+PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters(DirectX::XMMATRIX wvp) const
+{
+	return std::move(ShaderLightDefaultParameters{
+		wvp,
 		
 		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), // Position
 		DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),

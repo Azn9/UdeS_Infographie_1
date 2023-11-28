@@ -1,7 +1,9 @@
 ﻿#include "ShadowtestScene.h"
 
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
 #include "Api/Public/GameObject/Basic/BasicCube.h"
 #include "Api/Public/GameObject/Basic/BasicPlane.h"
+#include "Api/Public/Input/Input.h"
 
 void ShadowtestScene::InitializeCamera()
 {
@@ -23,9 +25,9 @@ void ShadowtestScene::InitializeCamera()
 void ShadowtestScene::InitializeLights()
 {
 	auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
-		   "Directional light",
-		   XMFLOAT3(-1.0f, -1.0f, 0.0f)
-	   );
+		"Directional light",
+		XMFLOAT3(-1.0f, -1.0f, 0.0f)
+	);
 	directionalLight->SetIntensity(1.0f);
 	directionalLight->Initialize();
 	AddLight(std::move(directionalLight));
@@ -50,4 +52,9 @@ void ShadowtestScene::InitializeObjects()
 	tree->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "tree_pineTallA.obj"));
 
 	AddChild(std::move(tree));
+
+	auto shadowProcessor = std::make_unique<ShadowProcessor>();
+	shadowProcessor->Initialize();
+	shadowProcessor->SetScene(this);
+	AddComponent(std::move(shadowProcessor));
 }

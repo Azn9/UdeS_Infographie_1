@@ -33,7 +33,7 @@ void PM3D_API::Component::DrawSelf() const
 	// Do nothing by default
 }
 
-void PM3D_API::Component::DrawShadowSelf() const
+void PM3D_API::Component::DrawShadowSelf(const Camera& camera) const
 {
 	// Do nothing by default
 }

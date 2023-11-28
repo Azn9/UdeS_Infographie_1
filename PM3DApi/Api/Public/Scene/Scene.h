@@ -29,7 +29,7 @@ public:
 	void Update() override;
 	void PhysicsUpdate() override;
 	void Draw() override;
-	void DrawShadow() override;
+	void DrawShadow(const Camera& camera) override;
 
 	virtual void InitializePhysics() {}
 	virtual void InitializeCamera() {}

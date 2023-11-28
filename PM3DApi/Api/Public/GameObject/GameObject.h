@@ -84,7 +84,7 @@ public:
 	virtual void Update();
 	virtual void PhysicsUpdate();
 	virtual void Draw();
-	virtual void DrawShadow();
+	virtual void DrawShadow(const class Camera& camera);
 
 	virtual void AddChild(std::unique_ptr<GameObject>&& child);
 	virtual void AddComponent(std::unique_ptr<Component>&& component);

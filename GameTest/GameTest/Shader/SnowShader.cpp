@@ -539,4 +539,7 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
     ID3DX11EffectShaderResourceVariable* variableTexture;
     variableTexture = effect->GetVariableByName("lights")->AsShaderResource();
     variableTexture->SetResource(lightSRV);
+
+    lightSRV->Release();
+    lightBuffer->Release();
 }

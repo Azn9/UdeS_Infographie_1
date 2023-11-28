@@ -531,4 +531,7 @@ void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context, GameObjec
     ID3DX11EffectShaderResourceVariable* variableTexture;
     variableTexture = effect->GetVariableByName("lights")->AsShaderResource();
     variableTexture->SetResource(lightSRV);
+
+    lightSRV->Release();
+    lightBuffer->Release();
 }

@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
+
 PM3D_API::Scene::~Scene()
 {
 	isDeleted = true;
@@ -76,17 +78,23 @@ void PM3D_API::Scene::PhysicsUpdate()
 void PM3D_API::Scene::Draw()
 {
 	if (isDeleted) return;
+
+	if (const auto shadowProcessor = GetComponent<ShadowProcessor>())
+	{
+		shadowProcessor->ProcessShadow();
+	}
+	
 	GameObject::Draw();
 
 	if (lightsNeedUpdate)
 		lightsNeedUpdate = false;
 }
 
-void PM3D_API::Scene::DrawShadow()
+void PM3D_API::Scene::DrawShadow(const Camera& camera)
 {
 	if (isDeleted) return;
 	
-	GameObject::DrawShadow();
+	GameObject::DrawShadow(camera);
 }
 
 void PM3D_API::Scene::DrawSelf() const

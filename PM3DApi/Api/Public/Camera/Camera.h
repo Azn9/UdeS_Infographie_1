@@ -59,6 +59,8 @@ namespace PM3D_API
 		void SetUpDirection(DirectX::XMVECTOR newUpDirection);
 
 		void SetFieldOfView(float newFieldOfView);
+		void SetViewHeight(float newViewHeight);
+		void SetViewWidth(float newViewWidth);
 		void SetFarDist(float newFarDist);
 		void SetNearDist(float newNearDist);
 
@@ -71,6 +73,8 @@ namespace PM3D_API
 		const Frustrum& getFrustrum() const{return frustrum;}
 
 		float getFieldOfView() const { return fieldOfView; }
+		float getViewHeight() const { return viewHeight; }
+		float getViewWidth() const { return viewWidth; }
 
 		float getNearDist() const { return nearDist; }
 
@@ -95,6 +99,9 @@ namespace PM3D_API
 		DirectX::XMMATRIX matViewProj;
 
 		float fieldOfView = 45.0f;
+		float viewHeight = 512.0f;
+		float viewWidth = 512.0f;
+		
 		float nearDist = 0.05f;
 		float farDist = 400.0f;
 

@@ -62,8 +62,8 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 		worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
 		worldMatrix *= XMMatrixScaling(scale.x, scale.y, 1.0f);
 
-		// Regarde toujours vers la caméra
-		XMMATRIX lookAtMatrix = XMMatrixLookAtLH(
+		// Regarde toujours vers la camï¿½ra
+		XMMATRIX lookAtMatrix = XMMatrixLookAtRH(
 			cameraPosVec,
 			cameraFocusVec,
 			XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
@@ -77,7 +77,7 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 		worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
 		worldMatrix *= XMMatrixScaling(scale.x, scale.y, 1.0f);
 
-		lookAtMatrix = XMMatrixLookAtLH(
+		lookAtMatrix = XMMatrixLookAtRH(
 			cameraPosVec,
 			cameraFocusVec,
 			XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
@@ -90,7 +90,7 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 		worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
 		worldMatrix *= XMMatrixScaling(1.0f, scale.y, scale.z);
 
-		lookAtMatrix = XMMatrixLookAtLH(
+		lookAtMatrix = XMMatrixLookAtRH(
 			cameraPosVec,
 			cameraFocusVec,
 			XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f)
@@ -103,7 +103,7 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 		worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
 		worldMatrix *= XMMatrixScaling(scale.x, scale.y, scale.z);
 
-		lookAtMatrix = XMMatrixLookAtLH(
+		lookAtMatrix = XMMatrixLookAtRH(
 			cameraPosVec,
 			cameraFocusVec,
 			XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
