@@ -15,6 +15,7 @@ ShadowProcessor::~ShadowProcessor()
 {
 	depthStencilView->Release();
 	pDepthTexture->Release();
+	pDepthTextureResourceView->Release();
 }
 
 void ShadowProcessor::Initialize()
@@ -50,6 +51,14 @@ void ShadowProcessor::Initialize()
 		pD3DDevice->CreateDepthStencilView(pDepthTexture, &descDSView, &depthStencilView),
 		DXE_ERREURCREATIONDEPTHSTENCILTARGET
 	);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC sr_desc;
+	ZeroMemory(&sr_desc, sizeof(sr_desc));
+	sr_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	sr_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	sr_desc.Texture2D.MostDetailedMip = 0;
+	sr_desc.Texture2D.MipLevels = 1;
+	PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(pDepthTexture, &sr_desc, &pDepthTextureResourceView));
 }
 
 std::vector<PM3D_API::ShaderLightDefaultParameters> ShadowProcessor::ProcessLights()
@@ -137,11 +146,11 @@ std::vector<PM3D_API::ShaderLightDefaultParameters> ShadowProcessor::ProcessLigh
 			);
 
 			constexpr float nearPlane = 0.2f;
-			constexpr float farPlane = 100.0f;
+			constexpr float farPlane = 20.0f;
 
-			const auto mPLight = DirectX::XMMatrixOrthographicLH(
-				512,
-				512,
+			const auto mPLight = DirectX::XMMatrixOrthographicRH(
+				20,
+				20,
 				nearPlane,
 				farPlane
 			);
@@ -226,8 +235,6 @@ void ShadowProcessor::ProcessShadow()
 		camera.UpdateInternalMatrices();
 
 		scene->DrawShadow(camera);
-
-		
 	}
 
 	pDispositif->ResetViewportDimension();

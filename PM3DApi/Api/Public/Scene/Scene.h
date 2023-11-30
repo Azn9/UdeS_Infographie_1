@@ -7,6 +7,7 @@
 #include "../Light/DirectionalLight.h"
 #include "../Component/Basic/Physics/PhysicsResolver.h"
 #include "../GameObject/UICanvas.h"
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
 
 namespace PM3D_API
 {
@@ -57,6 +58,8 @@ public:
 
 	void SetLightsNeedUpdate(const bool needUpdate) { lightsNeedUpdate = needUpdate; }
 	bool GetLightsNeedUpdate() const { return lightsNeedUpdate; }
+
+	ShadowProcessor* GetShadowProcessor() { return GetComponent<ShadowProcessor>(); }
 
 	void SetMainCamera(Camera* newMainCamera);
 protected:

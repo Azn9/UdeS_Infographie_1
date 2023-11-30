@@ -139,6 +139,12 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 			material.pNormalmapTexture
 		);
 
+		if (const auto effectVariablePtr = shader->GetEffect()->GetVariableByName("shadowTexture"))
+		{
+			ID3DX11EffectShaderResourceVariable* variableTexture = effectVariablePtr->AsShaderResource();
+			variableTexture->SetResource(scene->GetShadowProcessor()->getDepthTextureResourceView());
+		}
+
 		// IMPORTANT pour ajuster les param.
 		shader->GetPass()->Apply(0, pImmediateContext);
 
@@ -174,6 +180,7 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
 	pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// input layout des sommets
+	//pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
 	pImmediateContext->IASetInputLayout(shader->GetVertexLayout());
 
 	// Index buffer
@@ -186,7 +193,6 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
 	
 	const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
 	const auto pPasse = pTechnique->GetPassByIndex(0);
-	pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
 	
 	const XMMATRIX viewProj = camera.GetMatViewProj();
 	
@@ -215,6 +221,7 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
 		}
 
 		// IMPORTANT pour ajuster les param.
+		//pPasse->Apply(0, pImmediateContext);
 		shader->GetPass()->Apply(0, pImmediateContext);
 
 		shader->ApplyShaderParams();

@@ -128,9 +128,13 @@ float4 MainPS(VS_Sortie input) : SV_Target
 			continue;
         }
 
+		float3 ambiantValueF = float3(0, 0, 0);
+		float3 diffuseValueF = float3(0, 0, 0);
+		float3 specularValueF = float3(0, 0, 0);
+
 		if (li.lightType == 0) // ambiant
 		{
-			totalAmbiant += li.ambiant;
+			ambiantValueF = li.ambiant;
 		}
 		else if (li.lightType == 1) // Directionnal
 		{
@@ -144,9 +148,9 @@ float4 MainPS(VS_Sortie input) : SV_Target
 			float puissance = max(EPSILON, Ns * li.specularPower);
 			float specularValue = pow(NdotH, puissance);
 
-			totalAmbiant += li.ambiant;
-			totalDiffuse += li.diffuse.rgb * diff;
-			totalSpecular += li.specular.rgb * specularValue;
+			ambiantValueF = li.ambiant;
+			diffuseValueF = li.diffuse.rgb * diff;
+			specularValueF = li.specular.rgb * specularValue;
 		}
 		else if (li.lightType == 2) // Point
 		{
@@ -170,9 +174,9 @@ float4 MainPS(VS_Sortie input) : SV_Target
             float attenuation = (1 / D) * li.specularPower;
             //float attenuation = (1 / (D * D)) * li.intensity;
 
-            totalAmbiant += li.ambiant * attenuation;
-            totalDiffuse += li.diffuse * diffuseValue * attenuation;
-            totalSpecular += li.specular * specularValue * attenuation;
+            ambiantValueF = li.ambiant * attenuation;
+            diffuseValueF = li.diffuse * diffuseValue * attenuation;
+            specularValueF = li.specular * specularValue * attenuation;
 		}
 		else if (li.lightType == 3) // Spot
 		{
@@ -205,9 +209,9 @@ float4 MainPS(VS_Sortie input) : SV_Target
 				float puissance = max(EPSILON, Ns * li.specularPower);
 				float specularValue = pow(NdotH, puissance);
 
-				totalAmbiant += li.ambiant.xyz * diffuseFalloff;
-				totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff;
-				totalSpecular += li.specular.rgb * specularValue * diffuseFalloff;
+				ambiantValueF = li.ambiant.xyz * diffuseFalloff;
+				diffuseValueF = li.diffuse.rgb * diff * diffuseFalloff;
+				specularValueF = li.specular.rgb * specularValue * diffuseFalloff;
 			}
 
 /*
@@ -235,9 +239,28 @@ float4 MainPS(VS_Sortie input) : SV_Target
 
 		}
 
+		totalAmbiant += ambiantValueF;
+
 		// SHADOWS
+		float4 posInMap = input.PosInMap[i];
+		// validate that x & y are in [-1, 1]
 
+		if (posInMap.x < -1 || posInMap.x > 1 || posInMap.y < -1 || posInMap.y > 1) {
+			continue;
+		}
 
+		// Texture coordinates are 0-512
+		float2 uv = float2((posInMap.x + 1) * 216, (posInMap.y + 1) * 216);
+
+		float depth = shadowTexture.Sample(ShadowMapSampler, uv).r;
+		// near plane is 0.2f, far plane is 20f
+
+		float distance = length(li.position.xyz - input.worldPos) / 25.05f;
+
+		if (distance < depth) { // Not in shadows
+			totalDiffuse += diffuseValueF;
+			totalSpecular += specularValueF;
+		}
 	}
 
 	// Échantillonner la couleur du pixel à partir de la texture

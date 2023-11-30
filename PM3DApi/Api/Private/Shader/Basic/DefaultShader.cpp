@@ -152,7 +152,7 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
 
         const void* vsCodePtr = effectVSDesc2.pBytecode;
         const uint32_t vsCodeLen = effectVSDesc2.BytecodeLength;
-        vertexLayout = nullptr;
+        vertexLayoutShadow = nullptr;
 
         numElements = ARRAYSIZE(layout);
 
@@ -398,12 +398,12 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
         }
     }
 
-    if (depthShaderResourceView)
+/*    if (depthShaderResourceView)
     {
         ID3DX11EffectShaderResourceVariable* pShadowMap = effect->GetVariableByName("shadowTexture")->
                                                                   AsShaderResource();
         pShadowMap->SetResource(depthShaderResourceView);
-    }
+    }*/
 }
 
 void PM3D_API::DefaultShader::DeleteParameters(void* shader_parameters)

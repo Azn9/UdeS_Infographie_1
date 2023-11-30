@@ -28,9 +28,12 @@ void ShadowtestScene::InitializeLights()
 		"Directional light",
 		XMFLOAT3(-1.0f, -1.0f, 0.0f)
 	);
-	directionalLight->SetIntensity(1.0f);
-	directionalLight->Initialize();
+	const auto directionalLightPtr = directionalLight.get();
 	AddLight(std::move(directionalLight));
+
+	directionalLightPtr->SetWorldPosition({10.f, 10.f, 0.f});
+	directionalLightPtr->SetIntensity(1.0f);
+	directionalLightPtr->Initialize();
 }
 
 void ShadowtestScene::InitializeObjects()
