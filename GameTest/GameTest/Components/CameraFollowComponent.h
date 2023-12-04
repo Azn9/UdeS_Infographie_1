@@ -3,15 +3,14 @@
 #include <iostream>
 #include "Api/Public/Input/Input.h"
 
-class CameraFollowComponent final : public PM3D_API::Component
-{
-private:
-	enum cameraType : int {
+enum class CameraType {
 		ThirdPerson = 0,
 		FirstPerson = 1,
 		FirstPersonWTF = 2
 	};
 
+class CameraFollowComponent final : public PM3D_API::Component
+{
 public:
 	void PhysicsUpdate() override
 	{
@@ -20,13 +19,13 @@ public:
 		
 		if (Input::IsKeyPressed(KeyCode::C)) // Ou IsKeyHeld
 		{
-			if (camType == ThirdPerson) 
-				camType = FirstPerson;
-			else if (camType == FirstPerson) 
-				camType = FirstPersonWTF;
-			else if (camType == FirstPersonWTF) {
+			if (camType == CameraType::ThirdPerson)
+				camType = CameraType::FirstPerson;
+			else if (camType == CameraType::FirstPerson)
+				camType = CameraType::FirstPersonWTF;
+			else if (camType == CameraType::FirstPersonWTF) {
 				static_cast<PM3D_API::Camera*>(parentObject)->SetUpDirection({ 0.f,1.f,0.f,0.f });
-				camType = ThirdPerson;
+				camType = CameraType::ThirdPerson;
 			}
 		}
 
@@ -43,7 +42,7 @@ public:
 		DirectX::XMFLOAT3 position;
 		auto camRFP = parentObject->GetChild<PM3D_API::Camera>();
 
-		if (camType == ThirdPerson) 
+		if (camType == CameraType::ThirdPerson)
 		{
 			position = XMFLOAT3(
 				positionObjectToFollow.x - 10 * velNormalized.x,
@@ -51,7 +50,7 @@ public:
 				positionObjectToFollow.z - 10 * velNormalized.z
 			);
 		}
-		else if (camType == FirstPerson)
+		else if (camType == CameraType::FirstPerson)
 		{
 			position = XMFLOAT3(
 				positionObjectToFollow.x,
@@ -59,7 +58,7 @@ public:
 				positionObjectToFollow.z - .5f - scaleObjectToFollow.x
 			);
 		}
-		else if (camType == FirstPersonWTF)
+		else if (camType == CameraType::FirstPersonWTF)
 		{
 			position = XMFLOAT3(
 				positionObjectToFollow.x,
@@ -79,50 +78,42 @@ public:
 
 		parentObject->SetWorldPosition(position);
 		
-		//const auto finalPosition = Util::Lerp(positionObjectToFollow, position, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 1.0f);
-
-
 
 		DirectX::XMFLOAT3 camLookAt;
 
-		if (camType == ThirdPerson)
+		if (camType == CameraType::ThirdPerson)
 		{
 			const float velDivider = 5.f;
-			camLookAt = DirectX::XMFLOAT3(
+			DirectX::XMFLOAT3 camLookAt_Temp = DirectX::XMFLOAT3(
 				0.f + velNormalized.x / velDivider,
 				0.f + velNormalized.y / velDivider,
 				-2.f + velNormalized.z / velDivider);
-			static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(XMFLOAT3(
-				positionObjectToFollow.x + camLookAt.x,
+			camLookAt = DirectX::XMFLOAT3(
+				positionObjectToFollow.x + camLookAt_Temp.x,
 				positionObjectToFollow.y - 1, // + camLookAt.y, 
-				positionObjectToFollow.z + camLookAt.z
-			));
+				positionObjectToFollow.z + camLookAt_Temp.z
+			);
 		}
-		else if (camType == FirstPerson)
+		else if (camType == CameraType::FirstPerson)
 		{
 			const float velDivider = 2.5f;
-			camLookAt = DirectX::XMFLOAT3(
+			DirectX::XMFLOAT3 camLookAt_Temp = DirectX::XMFLOAT3(
 				0.f + velNormalized.x / velDivider,
 				0.f + velNormalized.y / velDivider,
 				-4.f + velNormalized.z / velDivider);
-			static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(XMFLOAT3(
-				positionObjectToFollow.x + camLookAt.x,
+			camLookAt = XMFLOAT3(
+				positionObjectToFollow.x + camLookAt_Temp.x,
 				positionObjectToFollow.y - 1, // + camLookAt.y, 
-				positionObjectToFollow.z + camLookAt.z
-			));
+				positionObjectToFollow.z + camLookAt_Temp.z
+			);
 		}
-		else if (camType == FirstPersonWTF)
+		else if (camType == CameraType::FirstPersonWTF)
 		{
-			const float velDivider = 2.5f;
-			camLookAt = DirectX::XMFLOAT3(
-				0.f + velNormalized.x / velDivider,
-				0.f + velNormalized.y / velDivider,
-				-4.f + velNormalized.z / velDivider);
-			static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(positionObjectToFollow);
+			camLookAt = positionObjectToFollow;
 		}
 
 
-		
+		static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(camLookAt);
 	}
 
 	void DrawDebugInfo() const override
@@ -142,5 +133,5 @@ private:
 	float _distance = 5.0f;
 	float _angle = 45.0f;
 	PM3D_API::GameObject* _objectToFollow{};
-	cameraType camType = ThirdPerson;
+	CameraType camType = CameraType::ThirdPerson;
 };

@@ -80,8 +80,6 @@ void PM3D_API::GameObject::Update()
 		if (!childPtr)
 			continue;
 
-		//childPtr->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
-		//childPtr->SetWorldRotation(GetWorldRotationEuler());
 		childPtr->Update();
 	}
 }
