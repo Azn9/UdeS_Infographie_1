@@ -16,7 +16,7 @@ void LoadingScene::InitializeCamera()
     
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
-        PM3D_API::Camera::PERSECTIVE,
+        PM3D_API::Camera::PERSPECTIVE,
         XMFLOAT3(0.0f, 8.0f, -15.0f),
         XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
