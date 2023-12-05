@@ -20,6 +20,8 @@ namespace PM3D
         XMFLOAT3 m_position;
         XMFLOAT2 m_coordTex;
     };
+
+    
     // Classe : CPanneauPE
     // BUT : Classe pour les post-effects
     class CPanneauPE : public CObjet3D
@@ -35,6 +37,7 @@ namespace PM3D
         static CSommetPanneauPE sommets[6];
         ID3D11Buffer* pVertexBuffer;
         CDispositifD3D11* pDispositif;
+        
         // Pour les effets
         ID3DX11Effect* pEffet;
         ID3DX11EffectTechnique* pTechnique;
@@ -42,6 +45,15 @@ namespace PM3D
         ID3D11InputLayout* pVertexLayout;
         ID3D11SamplerState* pSampleState;
 
+        // Texture de rendu pour effets
+        ID3D11Texture2D* pTextureScene;
+        ID3D11RenderTargetView* pRenderTargetView;
         ID3D11ShaderResourceView* pResourceView;
+        ID3D11Texture2D* pDepthTexture;
+        ID3D11DepthStencilView* pDepthStencilView ;
+
+    protected:
+        ID3D11RenderTargetView* pOldRenderTargetView;
+        ID3D11DepthStencilView* pOldDepthStencilView;
     };
 } // namespace PM3D

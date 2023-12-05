@@ -201,7 +201,7 @@ bool PM3D::CMoteur::RenderScene()
 		
 	const uint64_t start = Time::GetInstance().GetTimeSpecific();
 	
-	pPanneauPE->DebutPostEffect();
+	//pPanneauPE->DebutPostEffect();
 
 	BeginRenderSceneSpecific();
 		
@@ -210,9 +210,9 @@ bool PM3D::CMoteur::RenderScene()
 
 	EndRenderSceneSpecific();
 
-	pPanneauPE->Draw();
+	//pPanneauPE->Draw();
 
-	pPanneauPE->FinPostEffect();
+	//pPanneauPE->FinPostEffect();
 
 	const uint64_t end = Time::GetInstance().GetTimeSpecific();
 
@@ -237,7 +237,7 @@ void PM3D::CMoteur::Cleanup()
 int PM3D::CMoteur::InitScene()
 {
 	InitSceneSpecific();
-		
+	pPanneauPE = std::make_unique<CPanneauPE>(pDispositif);
 	gameHost->InitializeScene();
 
 	return 0;
