@@ -39,9 +39,9 @@ public:
 		if (_resetRequested)
 		{
 			_resetRequested = false;
-			PM3D_API::EventSystem::Publish(InTunnelEvent(false));
 			_inTunnel = false;
 			shape->setGeometry(physx::PxSphereGeometry(0.2f));
+			parentObject->SetWorldPosition(XMFLOAT3(0.f, -60.f, 0.f));
 			parentObject->SetWorldScale(DirectX::XMFLOAT3(0.2f, 0.2f, 0.2f));
 			return;
 		}
