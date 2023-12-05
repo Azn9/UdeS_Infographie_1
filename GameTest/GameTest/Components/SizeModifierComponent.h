@@ -9,6 +9,7 @@
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/EventSystem/CollisionObstacleEvent.h"
 #include "GameTest/Event/GameOverEvent.h"
+#include <Api/Public/EventSystem/InTunnelEvent.h>
 
 class SizeModifierComponent final : public PM3D_API::Component
 {
@@ -25,20 +26,26 @@ public:
 			{
 				_resetRequested = true;
 			});
-		
+
+		PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
+			{
+				_inTunnel = true;
+			});
 	}
 
 	void PhysicsUpdate() override
 	{
 		physx::PxShape* shape = parentObject->GetComponent<PM3D_API::SphereCollider>()->getShape();
-		if(_resetRequested)
+		if (_resetRequested)
 		{
 			_resetRequested = false;
+			PM3D_API::EventSystem::Publish(InTunnelEvent(false));
+			_inTunnel = false;
 			shape->setGeometry(physx::PxSphereGeometry(0.2f));
-			parentObject->SetWorldScale(DirectX::XMFLOAT3(0.2f,0.2f,0.2f));
+			parentObject->SetWorldScale(DirectX::XMFLOAT3(0.2f, 0.2f, 0.2f));
 			return;
 		}
-		
+
 		DirectX::XMFLOAT3 preScale = parentObject->GetWorldScale();
 
 		if (_collisionHappend)
@@ -56,11 +63,19 @@ public:
 		}
 		else
 		{
-			parentObject->SetWorldScale(DirectX::XMFLOAT3(
-				preScale.x * _sizeModificationSpeed,
-				preScale.y * _sizeModificationSpeed,
-				preScale.z * _sizeModificationSpeed
-			));
+			if (preScale.x < 2.f && !_inTunnel) // < 2.f pour les tests, à enlever quand on aura des obstacles
+				parentObject->SetWorldScale(DirectX::XMFLOAT3(
+					preScale.x * _sizeModificationSpeed,
+					preScale.y * _sizeModificationSpeed,
+					preScale.z * _sizeModificationSpeed
+				));
+			else if (_inTunnel)
+				parentObject->SetWorldScale(DirectX::XMFLOAT3(
+					preScale.x * _sizeModificationSpeedDecrease,
+					preScale.y * _sizeModificationSpeedDecrease,
+					preScale.z * _sizeModificationSpeedDecrease
+				));
+
 			shape->setGeometry(physx::PxSphereGeometry(preScale.x * _sizeModificationSpeed));
 		}
 	}
@@ -73,6 +88,8 @@ public:
 
 private:
 	float _sizeModificationSpeed = 1.002f;
+	float _sizeModificationSpeedDecrease = 0.998f;
 	bool _collisionHappend = false;
 	bool _resetRequested = false;
+	bool _inTunnel = false;
 };

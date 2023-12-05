@@ -19,6 +19,7 @@
 #include "GameTest/Objects/Pine.h"
 
 #include "GameTest/Heightmap.h"
+#include "GameTest/Tunnel.h"
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/MovableComponent.h"
 #include "GameTest/Components/SizeModifierComponent.h"
@@ -58,7 +59,7 @@ void MainScene::InitializeLights()
 
 void MainScene::InitializeObjects()
 {
-    // ============= Add a plane =============
+    // ============= Add the map =============
     {
         auto map = std::make_unique<Heightmap>();
         map->Initialize();
@@ -74,6 +75,29 @@ void MainScene::InitializeObjects()
         const auto meshColliderPtr = meshCollider.get();
         mapPtr->AddComponent(std::move(meshCollider));
         meshColliderPtr->Initialize();
+    }
+
+    // ============= Add the tunnel =============
+    {
+        auto tunnel = std::make_unique<Tunnel>();
+        tunnel->Initialize();
+        const auto tunnelPtr = tunnel.get();
+        AddChild(std::move(tunnel));
+
+        auto tunnelRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+        const auto tunnelRigidbodyPtr = tunnelRigidbody.get();
+        tunnelPtr->AddComponent(std::move(tunnelRigidbody));
+        tunnelRigidbodyPtr->Initialize();
+
+        auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+        const auto meshColliderPtr = meshCollider.get();
+        tunnelPtr->AddComponent(std::move(meshCollider));
+        meshColliderPtr->Initialize();
+
+        physx::PxFilterData filterDataTunnel;
+        filterDataTunnel.word0 = FilterGroup::eTUNNEL;
+        physx::PxShape* tunnelShape = meshColliderPtr->getShape();
+        tunnelShape->setSimulationFilterData(filterDataTunnel);
     }
 
     // ============= Add a sphere =============
