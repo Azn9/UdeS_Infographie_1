@@ -28,8 +28,8 @@ public:
 
 	void Update() override
 	{
-		if (parentObject->GetWorldPosition().z < -400.f)
-			PM3D_API::EventSystem::Publish(GameOverEvent(true));
+		/*if (parentObject->GetWorldPosition().z < -400.f)   //temporaire pour les tests
+			PM3D_API::EventSystem::Publish(GameOverEvent(true));*/
 	}
 
 	void PhysicsUpdate() override

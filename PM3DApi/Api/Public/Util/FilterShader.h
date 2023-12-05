@@ -2,6 +2,9 @@
 #include "PxPhysicsAPI.h"
 #include <iostream>
 #include "Api/Public/Util/FilterGroup.h"
+#include "Api/Public/EventSystem/EventSystem.h"
+#include <Api/Public/EventSystem/InTunnelEvent.h>
+
 
 using namespace physx;
 
@@ -24,6 +27,12 @@ PxFilterFlags FilterShader(
 	}
 	if (filterData0.word0 == FilterGroup::eFLOOR || filterData1.word0 == FilterGroup::eFLOOR)
 	{
+		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
+	if (filterData0.word0 == FilterGroup::eTUNNEL || filterData1.word0 == FilterGroup::eTUNNEL)
+	{
+		PM3D_API::EventSystem::Publish(InTunnelEvent(true));
 		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
 		return PxFilterFlag::eDEFAULT;
 	}
