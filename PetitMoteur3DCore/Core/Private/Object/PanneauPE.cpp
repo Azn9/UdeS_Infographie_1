@@ -174,6 +174,9 @@ namespace PM3D
 
     void CPanneauPE::Draw()
     {
+        pCurrentResourceView = pTmpResourceView;
+        pCurrentRenderTargetView = pMainRenderTargetView;
+        
         // Obtenir le contexte
         ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
         // Choisir la topologie des primitives
@@ -185,7 +188,7 @@ namespace PM3D
         pImmediateContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, &stride,
         &offset );
         // Choix de la technique
-        pTechnique = pEffet->GetTechniqueByIndex(1);
+        pTechnique = pEffet->GetTechniqueByIndex(0);
         pPasse = pTechnique->GetPassByIndex(0);
         // input layout des sommets
         pImmediateContext->IASetInputLayout( pVertexLayout );
@@ -196,13 +199,15 @@ namespace PM3D
         variableSampler->SetSampler(0, pSampleState);
         ID3DX11EffectShaderResourceVariable* variableTexture;
         variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
+
+        
         // Activation de la texture
-        variableTexture->SetResource(pTmpResourceView);
+        variableTexture->SetResource(pCurrentResourceView);
 
         // La « constante » distance
         ID3DX11EffectScalarVariable* distance;
         distance = pEffet->GetVariableByName("distance")->AsScalar();
-        distance->SetFloat((float)0.10f);
+        distance->SetFloat(0.10f);
         
         pPasse->Apply(0, pImmediateContext);
         // **** Rendu de l’objet

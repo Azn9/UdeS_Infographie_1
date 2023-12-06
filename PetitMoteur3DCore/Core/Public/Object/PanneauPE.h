@@ -52,7 +52,7 @@ namespace PM3D
         ID3D11RenderTargetView* pMainRenderTargetView;
         ID3D11ShaderResourceView* pMainResourceView;
         
-        ID3D11RenderTargetView* pCurrentTargetView;
+        ID3D11RenderTargetView* pCurrentRenderTargetView;
         ID3D11ShaderResourceView* pCurrentResourceView;
         
         static const int NOMBRE_TECHNIQUES = 2;
