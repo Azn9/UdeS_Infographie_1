@@ -59,7 +59,7 @@ namespace PM3D
         InitEffet(); 
     }
 
-        void CPanneauPE::InitEffet()
+    void CPanneauPE::InitEffet()
     {
         // Compilation et chargement du vertex shader
         ID3D11Device* pD3DDevice = pDispositif->GetD3DDevice();
@@ -222,10 +222,10 @@ namespace PM3D
         pImmediateContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, &stride,
         &offset );
         // Choix de la technique
-        pTechnique = pEffet->GetTechniqueByIndex(0);
+        pTechnique = pEffet->GetTechniqueByIndex(1);
         pPasse = pTechnique->GetPassByIndex(0);
         // input layout des sommets
-        pImmediateContext->IASetInputLayout( pVertexLayout[0] );
+        pImmediateContext->IASetInputLayout( pVertexLayout[1] );
         // Le sampler state
         ID3DX11EffectSamplerVariable* variableSampler;
         variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();

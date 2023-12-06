@@ -94,6 +94,7 @@ void PM3D_API::GameHost::DrawUI()
 {
 	if (!scene) return;
 
+	
 	if (const auto uiCanvas = scene->GetUICanvas())
 		uiCanvas->Draw();
 }

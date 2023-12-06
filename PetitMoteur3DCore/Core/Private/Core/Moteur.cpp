@@ -216,7 +216,13 @@ bool PM3D::CMoteur::RenderScene()
 	pPanneauPE->FinPostEffect();
 	pPanneauPE->Draw();
 
-	gameHost->DrawUI(); 
+	//TODO: retirer la nécessiter de clear (Piste: DepthWriteMask de D3D11_DEPTH_STENCIL_DESC pour que le PP n'écrit
+	//	pas dans le depth stencil)
+	pDispositif->GetImmediateContext()
+		->ClearDepthStencilView(pDispositif->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	
+	gameHost->DrawUI();
+
 	EndRenderSceneSpecific();//End rendering
 
 #ifdef _DEBUG
