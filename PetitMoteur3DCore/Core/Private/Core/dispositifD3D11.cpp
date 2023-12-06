@@ -232,11 +232,11 @@ void CDispositifD3D11::InitDepthBuffer()
 		DXE_ERREURCREATIONDEPTHSTENCILTARGET);
 }
 
-void CDispositifD3D11::InitDepthState()
+void CDispositifD3D11::InitDepthState(const bool& enableDepthWrite)
 {
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 	dsDesc.DepthEnable = true;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthWriteMask = enableDepthWrite ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	dsDesc.StencilEnable = true;
 	dsDesc.StencilReadMask = 0xFF;

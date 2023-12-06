@@ -36,7 +36,7 @@ public:
 	ID3D11RasterizerState** GetRasterizerStatePtr() { return &mSolidCullBackRS; }
 
 	void InitDepthBuffer();
-	void InitDepthState();
+	void InitDepthState(const bool& = true);
 	void InitBlendStates();
 
 	void SetViewportDimension(int largeur, int hauteur);
