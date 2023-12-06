@@ -140,24 +140,24 @@ namespace PM3D
         textureDesc.CPUAccessFlags = 0;
         textureDesc.MiscFlags = 0;
         // Création de la texture
-        pD3DDevice->CreateTexture2D(&textureDesc, nullptr, & pTextureScene);
+        pD3DDevice->CreateTexture2D(&textureDesc, nullptr, & pTmpTexture);
         // VUE - Cible de rendu
         renderTargetViewDesc.Format = textureDesc.Format;
         renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
         renderTargetViewDesc.Texture2D.MipSlice = 0;
         // Création de la vue.
-        pD3DDevice->CreateRenderTargetView(pTextureScene,
+        pD3DDevice->CreateRenderTargetView(pTmpTexture,
         &renderTargetViewDesc,
-        &pRenderTargetView);
+        &pTmpRenderTargetView);
         // VUE – Ressource de shader
         shaderResourceViewDesc.Format = textureDesc.Format;
         shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
         shaderResourceViewDesc.Texture2D.MipLevels = 1;
         // Création de la vue.
-        pD3DDevice->CreateShaderResourceView( pTextureScene,
+        pD3DDevice->CreateShaderResourceView( pTmpTexture,
         &shaderResourceViewDesc,
-        &pResourceView);
+        &pTmpResourceView);
     }
     
     CPanneauPE::~CPanneauPE()
@@ -167,10 +167,9 @@ namespace PM3D
         DXRelacher(pVertexLayout);
         DXRelacher(pVertexBuffer);
         
-        DXRelacher(pResourceView);
-        DXRelacher(pRenderTargetView);
-        DXRelacher(pTextureScene);
-        DXRelacher(pDepthTexture);
+        DXRelacher(pTmpResourceView);
+        DXRelacher(pTmpRenderTargetView);
+        DXRelacher(pTmpTexture);
     }
 
     void CPanneauPE::Draw()
@@ -198,7 +197,7 @@ namespace PM3D
         ID3DX11EffectShaderResourceVariable* variableTexture;
         variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
         // Activation de la texture
-        variableTexture->SetResource(pResourceView);
+        variableTexture->SetResource(pTmpResourceView);
 
         // La « constante » distance
         ID3DX11EffectScalarVariable* distance;
@@ -213,17 +212,17 @@ namespace PM3D
     void CPanneauPE::DebutPostEffect()
     {
         // Prendre en note l’ancienne surface de rendu
-        pOldRenderTargetView = pDispositif->GetRenderTargetView();
+        pMainRenderTargetView = pDispositif->GetRenderTargetView();
         // Utiliser la texture comme surface de rendu et le tampon de profondeur
         // associé
-        pDispositif->SetRenderTargetView(pRenderTargetView);
+        pDispositif->SetRenderTargetView(pTmpRenderTargetView);
     }
 
     void CPanneauPE::FinPostEffect()
     {
         // Restaurer l’ancienne surface de rendu et le tampon de profondeur
         // associé
-        pDispositif->SetRenderTargetView(pOldRenderTargetView);
+        pDispositif->SetRenderTargetView(pMainRenderTargetView);
     }
 
 }

@@ -45,13 +45,15 @@ namespace PM3D
         ID3D11SamplerState* pSampleState;
 
         // Texture de rendu pour effets
-        ID3D11Texture2D* pTextureScene;
-        ID3D11RenderTargetView* pRenderTargetView;
-        ID3D11ShaderResourceView* pResourceView;
-        ID3D11Texture2D* pDepthTexture;
-
-    protected:
-        ID3D11RenderTargetView* pOldRenderTargetView;
+        ID3D11Texture2D* pTmpTexture;
+        ID3D11RenderTargetView* pTmpRenderTargetView;
+        ID3D11ShaderResourceView* pTmpResourceView;
+        
+        ID3D11RenderTargetView* pMainRenderTargetView;
+        ID3D11ShaderResourceView* pMainResourceView;
+        
+        ID3D11RenderTargetView* pCurrentTargetView;
+        ID3D11ShaderResourceView* pCurrentResourceView;
         
         static const int NOMBRE_TECHNIQUES = 2;
         ID3D11InputLayout* pVertexLayout;
