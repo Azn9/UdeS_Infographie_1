@@ -236,8 +236,7 @@ namespace PM3D
     {
         // Restaurer l’ancienne surface de rendu et le tampon de profondeur
         // associé
-        pDispositif->SetRenderTargetView(pOldRenderTargetView,
-        pOldDepthStencilView);
+        pDispositif->SetRenderTargetView(pOldRenderTargetView,pOldDepthStencilView);
     }
 
 }

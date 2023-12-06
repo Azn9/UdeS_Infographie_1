@@ -37,6 +37,8 @@ private:
 	virtual void InitSceneSpecific() override;
 	virtual void BeginRenderSceneSpecific() override;
 	virtual void EndRenderSceneSpecific() override;
+	void BeginRenderDebug() override;
+	void EndRenderDebug() override;
 
 	void Resize(WORD largeur, WORD hauteur) override;
 	void ResizeWindow(int largeur, int hauteur) override;

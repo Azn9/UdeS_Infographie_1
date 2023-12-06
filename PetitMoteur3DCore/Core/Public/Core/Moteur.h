@@ -91,8 +91,10 @@ protected:
 
 	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) = 0;
 	virtual void InitSceneSpecific() = 0;
+	virtual void BeginRenderDebug() = 0;
 	virtual void BeginRenderSceneSpecific() = 0;
 	virtual void EndRenderSceneSpecific() = 0;
+	virtual void EndRenderDebug() = 0;
 
 	// Autres fonctions
 	virtual int InitAnimation();

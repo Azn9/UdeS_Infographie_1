@@ -321,11 +321,7 @@ void CDispositifD3D11::SetRenderTargetView(
 {
 	pRenderTargetView = pRenderTargetView_in;
 	pDepthStencilView = pDepthStencilView_in;
-	ID3D11RenderTargetView* tabRTV[1];
-	tabRTV[0] = pRenderTargetView;
-	pImmediateContext->OMSetRenderTargets( 1,
-	tabRTV,
-	pDepthStencilView);
+	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
 }
 
 } // namespace PM3D

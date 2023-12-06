@@ -200,20 +200,29 @@ bool PM3D::CMoteur::RenderScene()
 	}
 		
 	const uint64_t start = Time::GetInstance().GetTimeSpecific();
+
+#ifdef _DEBUG
+	BeginRenderDebug();
+#endif
 	
-	//pPanneauPE->DebutPostEffect();
+	BeginRenderSceneSpecific();//Begin rendering
+	
+	pPanneauPE->DebutPostEffect();
 
-	BeginRenderSceneSpecific();
-		
+	BeginRenderSceneSpecific();// Begin rendering on the RTV used by PP
 	gameHost->Draw();
-	gameHost->DrawUI();
+	EndRenderSceneSpecific();// Ending rendering on the RTV used by PP
 
-	EndRenderSceneSpecific();
+	pPanneauPE->FinPostEffect();
+	pPanneauPE->Draw();
 
-	//pPanneauPE->Draw();
+	gameHost->DrawUI(); 
+	EndRenderSceneSpecific();//End rendering
 
-	//pPanneauPE->FinPostEffect();
-
+#ifdef _DEBUG
+	EndRenderDebug();
+#endif
+	
 	const uint64_t end = Time::GetInstance().GetTimeSpecific();
 
 	lastFrameTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;

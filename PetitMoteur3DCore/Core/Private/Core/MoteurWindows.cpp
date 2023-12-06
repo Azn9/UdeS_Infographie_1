@@ -197,12 +197,6 @@ void CMoteurWindows::BeginRenderSceneSpecific()
 	}
 
 	pImmediateContext->ClearRenderTargetView(pRenderTargetView, Couleur);
-
-#ifdef _DEBUG
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-#endif
 	
 	//ImGui::DockSpaceOverViewport();
 
@@ -215,10 +209,23 @@ void CMoteurWindows::EndRenderSceneSpecific()
 {
 	if (!canRender) return;
 
-#ifdef _DEBUG
+/*#ifdef _DEBUG
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-#endif
+#endif*/
+}
+
+void CMoteurWindows::BeginRenderDebug()
+{
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+}
+
+void CMoteurWindows::EndRenderDebug()
+{
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
 void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
