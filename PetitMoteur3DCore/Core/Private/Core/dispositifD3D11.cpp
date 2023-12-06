@@ -316,11 +316,17 @@ void CDispositifD3D11::SetNormalRSState()
 }
 
 void CDispositifD3D11::SetRenderTargetView(
-	ID3D11RenderTargetView* pRenderTargetView_in,
-	ID3D11DepthStencilView* pDepthStencilView_in)
+	ID3D11RenderTargetView* pRenderTargetView_in, ID3D11DepthStencilView* pDepthStencilView_in)
 {
 	pRenderTargetView = pRenderTargetView_in;
 	pDepthStencilView = pDepthStencilView_in;
+	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
+}
+
+void CDispositifD3D11::SetRenderTargetView(
+	ID3D11RenderTargetView* pRenderTargetView_in)
+{
+	pRenderTargetView = pRenderTargetView_in;
 	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
 }
 

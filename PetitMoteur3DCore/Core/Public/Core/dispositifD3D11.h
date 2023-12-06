@@ -47,6 +47,8 @@ public:
 		ID3D11RenderTargetView* pRenderTargetView_in,
 		ID3D11DepthStencilView* pDepthStencilView_in);
 
+	void SetRenderTargetView(ID3D11RenderTargetView* pRenderTargetView_in);
+
 private:
 	ID3D11Device* pD3DDevice;
 	ID3D11DeviceContext* pImmediateContext;

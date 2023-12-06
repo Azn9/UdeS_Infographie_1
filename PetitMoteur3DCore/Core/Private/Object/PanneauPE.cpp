@@ -166,33 +166,6 @@ namespace PM3D
         pD3DDevice->CreateShaderResourceView( pTextureScene,
         &shaderResourceViewDesc,
         &pResourceView);
-        // Au tour du tampon de profondeur
-        D3D11_TEXTURE2D_DESC depthTextureDesc;
-        ZeroMemory( &depthTextureDesc, sizeof( depthTextureDesc ) );
-        depthTextureDesc.Width = pDispositif->GetLargeur();
-        depthTextureDesc.Height = pDispositif->GetHauteur();
-        depthTextureDesc.MipLevels = 1;
-        depthTextureDesc.ArraySize = 1;
-        depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        depthTextureDesc.SampleDesc.Count = 1;
-        depthTextureDesc.SampleDesc.Quality = 0;
-        depthTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-        depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-        depthTextureDesc.CPUAccessFlags = 0;
-        depthTextureDesc.MiscFlags = 0;
-        DXEssayer( pD3DDevice->CreateTexture2D( &depthTextureDesc, NULL,
-        &pDepthTexture ),
-        DXE_ERREURCREATIONTEXTURE );
-        // Création de la vue du tampon de profondeur (ou de stencil)
-        D3D11_DEPTH_STENCIL_VIEW_DESC descDSView;
-        ZeroMemory( &descDSView, sizeof( descDSView ) );
-        descDSView.Format = depthTextureDesc.Format;
-        descDSView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-        descDSView.Texture2D.MipSlice = 0;
-        DXEssayer( pD3DDevice->CreateDepthStencilView( pDepthTexture,
-        &descDSView,
-        &pDepthStencilView ),
-        DXE_ERREURCREATIONDEPTHSTENCILTARGET );
     }
     
     CPanneauPE::~CPanneauPE()
@@ -205,7 +178,6 @@ namespace PM3D
         DXRelacher(pResourceView);
         DXRelacher(pRenderTargetView);
         DXRelacher(pTextureScene);
-        DXRelacher(pDepthStencilView);
         DXRelacher(pDepthTexture);
     }
 
@@ -250,18 +222,16 @@ namespace PM3D
     {
         // Prendre en note l’ancienne surface de rendu
         pOldRenderTargetView = pDispositif->GetRenderTargetView();
-        // Prendre en note l’ancienne surface de tampon Z
-        pOldDepthStencilView = pDispositif->GetDepthStencilView();
         // Utiliser la texture comme surface de rendu et le tampon de profondeur
         // associé
-        pDispositif->SetRenderTargetView(pRenderTargetView,pDepthStencilView);
+        pDispositif->SetRenderTargetView(pRenderTargetView);
     }
 
     void CPanneauPE::FinPostEffect()
     {
         // Restaurer l’ancienne surface de rendu et le tampon de profondeur
         // associé
-        pDispositif->SetRenderTargetView(pOldRenderTargetView,pOldDepthStencilView);
+        pDispositif->SetRenderTargetView(pOldRenderTargetView);
     }
 
 }
