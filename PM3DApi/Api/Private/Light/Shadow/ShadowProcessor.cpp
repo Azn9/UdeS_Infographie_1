@@ -30,11 +30,8 @@ void ShadowProcessor::Initialize()
 	depthTextureDesc.ArraySize = 1;
 	depthTextureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 	depthTextureDesc.SampleDesc.Count = 1;
-	depthTextureDesc.SampleDesc.Quality = 0;
 	depthTextureDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthTextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
-	depthTextureDesc.CPUAccessFlags = 0;
-	depthTextureDesc.MiscFlags = 0;
 	
 	PM3D::DXEssayer(
 		pD3DDevice->CreateTexture2D(&depthTextureDesc, nullptr, &pDepthTexture),
@@ -56,7 +53,6 @@ void ShadowProcessor::Initialize()
 	ZeroMemory(&sr_desc, sizeof(sr_desc));
 	sr_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 	sr_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	sr_desc.Texture2D.MostDetailedMip = 0;
 	sr_desc.Texture2D.MipLevels = 1;
 	PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(pDepthTexture, &sr_desc, &pDepthTextureResourceView));
 }
@@ -228,8 +224,8 @@ void ShadowProcessor::ProcessShadow()
 		}
 		else
 		{
-			camera.SetViewHeight(20);
-			camera.SetViewWidth(20);
+			camera.SetViewHeight(10);
+			camera.SetViewWidth(10);
 		}
 
 		camera.UpdateInternalMatrices();

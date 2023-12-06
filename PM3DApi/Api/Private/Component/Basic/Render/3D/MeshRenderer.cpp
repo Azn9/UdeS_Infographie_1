@@ -105,7 +105,7 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 		XMMatrixTranspose(parentObject->GetMatWorld())
 	);
 
-	//pDispositif->SetNormalRSState();
+	pDispositif->SetNormalRSState();
 
 	// Dessiner les sous-objets non-transparents
 	for (unsigned int i = 0; i < mesh->group_count; ++i)
@@ -201,6 +201,10 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
 		XMMatrixTranspose(parentObject->GetMatWorld())
 	);
 
+	pPasse->Apply(0, pImmediateContext);
+	pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
+	shader->ApplyShaderParams();
+
 	for (int i = 0; i < mesh->object_count; ++i)
 	{
 		const auto objGroup = mesh->objects[i];
@@ -220,13 +224,15 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
 			continue;
 		}
 
+		/*
 		// IMPORTANT pour ajuster les param.
-		//pPasse->Apply(0, pImmediateContext);
-		shader->GetPass()->Apply(0, pImmediateContext);
+		pPasse->Apply(0, pImmediateContext);
+		//shader->GetPass()->Apply(0, pImmediateContext);
 
 		shader->ApplyShaderParams();
-		pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
 		
+		
+		*/
 		pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
 	}
 

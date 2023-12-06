@@ -45,9 +45,9 @@ SamplerState SampleState; // l’état de sampling
 Texture2D shadowTexture; // La texture du shadow map
 SamplerState ShadowMapSampler
 {
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Clamp;
-	AddressV = Clamp;
+	//Filter = MIN_MAG_MIP_POINT;
+	AddressU = Wrap;
+	AddressV = Wrap;
 };
 
 Texture2D normalMap;
@@ -92,7 +92,10 @@ VS_Sortie MainVS(
 	for (uint i = 0; i < MAX_LIGHTS; ++i) {
 		Light li = lights[i];
 		
-		if (!li.initialized) continue;
+		if (!li.initialized) {
+			PosInMaps[i] = float4(0, 0, 0, 0);
+			continue;
+		}
 		
 		float4 tempValue = mul(vPos, li.matWorldViewProj);
 		PosInMaps[i] = tempValue;
@@ -213,54 +216,39 @@ float4 MainPS(VS_Sortie input) : SV_Target
 				diffuseValueF = li.diffuse.rgb * diff * diffuseFalloff;
 				specularValueF = li.specular.rgb * specularValue * diffuseFalloff;
 			}
-
-/*
-			float3 toLight = li.position.xyz - input.position.xyz;
-			float3 toEye = input.cameraVec.xyz - input.position.xyz;
-			float distToLight = length(toLight);
-			
-			toLight = normalize(toLight);
-
-			float NDotL = saturate(dot(toLight, N));
-			totalDiffuse += li.diffuse.rgb * NDotL;
-			
-			toEye = normalize(toEye);
-   			float3 HalfWay = normalize(toEye + toLight);
-   			float NDotH = saturate(dot(HalfWay, N));
-			float puissance = max(EPSILON, Ns * li.specularPower);
-   			totalDiffuse += li.specular.rgb * pow(NDotH, puissance);
-
-			float conAtt = saturate((cosAng - SpotCosOuterCone) * SpotCosInnerConeRcp);
-   			conAtt *= conAtt;
-
-			float DistToLightNorm = 1.0 - saturate(DistToLight * SpotLightRangeRcp);
-		    float Attn = DistToLightNorm * DistToLightNorm;
-*/
-
 		}
 
 		totalAmbiant += ambiantValueF;
-
+		totalDiffuse += diffuseValueF;
+		totalSpecular += specularValueF;
+/*
 		// SHADOWS
 		float4 posInMap = input.PosInMap[i];
 		// validate that x & y are in [-1, 1]
 
 		if (posInMap.x < -1 || posInMap.x > 1 || posInMap.y < -1 || posInMap.y > 1) {
+			totalDiffuse += diffuseValueF;
+			totalSpecular += specularValueF;
 			continue;
 		}
 
 		// Texture coordinates are 0-512
-		float2 uv = float2((posInMap.x + 1) * 216, (posInMap.y + 1) * 216);
+		float2 uv = float2((posInMap.x / 2) + 0.5f, (posInMap.y / 2) + 0.5f);
 
-		float depth = shadowTexture.Sample(ShadowMapSampler, uv).r;
+		float4 depth = shadowTexture.Sample(ShadowMapSampler, uv);
+		float depthV = depth.z / depth.w;
+
+		//float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
+
 		// near plane is 0.2f, far plane is 20f
 
 		float distance = length(li.position.xyz - input.worldPos) / 25.05f;
 
-		if (distance < depth) { // Not in shadows
+		if (distance < depthV) { // Not in shadows
 			totalDiffuse += diffuseValueF;
 			totalSpecular += specularValueF;
 		}
+		*/
 	}
 
 	// Échantillonner la couleur du pixel à partir de la texture
@@ -306,7 +294,7 @@ ShadowMapVS_SORTIE MainVS_SM(
 	ShadowMapVS_SORTIE Out;
 	
 	// Calcul des coordonnées
-	Out.Pos = Pos;
+	Out.Pos = mul(Pos, matWorldViewProj);
 
 	float profondeur[MAX_LIGHTS];
 
@@ -329,6 +317,8 @@ ShadowMapVS_SORTIE MainVS_SM(
 RasterizerState rsCullFront
 {
 	CullMode = Front;
+	FillMode = Solid;
+	DepthClipEnable = true;
 };
 
 technique11 ShadowMap

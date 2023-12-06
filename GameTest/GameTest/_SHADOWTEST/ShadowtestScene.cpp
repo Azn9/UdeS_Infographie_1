@@ -3,7 +3,7 @@
 #include "Api/Private/Light/Shadow/ShadowProcessor.h"
 #include "Api/Public/GameObject/Basic/BasicCube.h"
 #include "Api/Public/GameObject/Basic/BasicPlane.h"
-#include "Api/Public/Input/Input.h"
+#include "GameTest/Components/LoadingScene/CameraMoverComponent.h"
 
 void ShadowtestScene::InitializeCamera()
 {
@@ -18,6 +18,8 @@ void ShadowtestScene::InitializeCamera()
 	camera->SetFieldOfView(45.f);
 	camera->SetNearDist(0.1f);
 	camera->SetFarDist(100.f);
+
+	camera->AddComponent(std::make_unique<CameraMoverComponent>());
 
 	SetMainCamera(std::move(camera));
 }

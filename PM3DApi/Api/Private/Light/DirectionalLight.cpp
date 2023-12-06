@@ -57,25 +57,29 @@ void PM3D_API::DirectionalLight::SetDirection(const DirectX::XMFLOAT3 newDirecti
 
 PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters(GameObject*) const
 {
-    const auto focusPoint = DirectX::XMVectorSet(
-        worldPosition.x,
-        worldPosition.y,
-        worldPosition.z,
+    const auto worldPosition = GetWorldPosition();
+    const auto worldDirection = GetWorldDirection();
+
+    const auto position = DirectX::XMVectorSet(
+        worldPosition.x - 10 * worldDirection.x,
+        worldPosition.y - 10 * worldDirection.y,
+        worldPosition.z - 10 * worldDirection.z,
         1.0f
     );
+    const auto focusPoint = DirectX::XMVectorSet(
+                worldPosition.x,
+                worldPosition.y,
+                worldPosition.z,
+                1.0f
+            );
     const auto mVLight = DirectX::XMMatrixLookAtRH(
-        DirectX::XMVectorSet(
-            worldPosition.x - 10.f * GetWorldDirection().x,
-            worldPosition.y - 10.f * GetWorldDirection().y,
-            worldPosition.z - 10.f * GetWorldDirection().z,
-            1.0f
-        ),
+        position,
         focusPoint,
-        DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
+        DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
 
     constexpr float nearPlane = 0.05f;
-    constexpr float farPlane = 25.0;
+    constexpr float farPlane = 25.0f;
 
     const auto mPLight = DirectX::XMMatrixOrthographicRH(
         20,
@@ -84,10 +88,11 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
         farPlane
     );
 
-    DirectX::XMMATRIX matWorldViewProj = mVLight * mPLight;
+    //const DirectX::XMMATRIX matWorld = DirectX::XMMatrixInverse(nullptr, mVLight);
+    const DirectX::XMMATRIX mvp = matWorld * mVLight * mPLight;
 
     return std::move(ShaderLightDefaultParameters{
-        matWorldViewProj,
+        XMMatrixTranspose(mvp),
 
         DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
         DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),
