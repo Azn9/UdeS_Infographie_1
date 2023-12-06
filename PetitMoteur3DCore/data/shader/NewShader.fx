@@ -219,9 +219,9 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		}
 
 		totalAmbiant += ambiantValueF;
-		totalDiffuse += diffuseValueF;
-		totalSpecular += specularValueF;
-/*
+//		totalDiffuse += diffuseValueF;
+			//totalSpecular += specularValueF;
+
 		// SHADOWS
 		float4 posInMap = input.PosInMap[i];
 		// validate that x & y are in [-1, 1]
@@ -232,23 +232,23 @@ float4 MainPS(VS_Sortie input) : SV_Target
 			continue;
 		}
 
-		// Texture coordinates are 0-512
+		// Texture coordinates are 0-1
 		float2 uv = float2((posInMap.x / 2) + 0.5f, (posInMap.y / 2) + 0.5f);
 
-		float4 depth = shadowTexture.Sample(ShadowMapSampler, uv);
-		float depthV = depth.z / depth.w;
+		//float4 depth = shadowTexture.Sample(ShadowMapSampler, uv);
+		//float depthV = depth.z / depth.w;
 
-		//float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
+		float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
 
-		// near plane is 0.2f, far plane is 20f
+		// near plane is 0.05f, far plane is 25f
 
-		float distance = length(li.position.xyz - input.worldPos) / 25.05f;
+		float distance = length(li.position.xyz - input.worldPos) / 24.95f;
 
-		if (distance < depthV) { // Not in shadows
+		if (distance < depthV /* TODO +- biais */) { // Not in shadows
 			totalDiffuse += diffuseValueF;
 			totalSpecular += specularValueF;
 		}
-		*/
+		
 	}
 
 	// Échantillonner la couleur du pixel à partir de la texture

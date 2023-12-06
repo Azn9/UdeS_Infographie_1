@@ -55,7 +55,7 @@ void PM3D_API::DirectionalLight::SetDirection(const DirectX::XMFLOAT3 newDirecti
     SetLocalRotation(Util::DirectionToQuaternion(direction));
 }
 
-PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters(GameObject*) const
+PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLightDefaultParameters(GameObject* go) const
 {
     const auto worldPosition = GetWorldPosition();
     const auto worldDirection = GetWorldDirection();
@@ -82,17 +82,16 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
     constexpr float farPlane = 25.0f;
 
     const auto mPLight = DirectX::XMMatrixOrthographicRH(
-        20,
-        20,
+        10,
+        10,
         nearPlane,
         farPlane
     );
 
-    //const DirectX::XMMATRIX matWorld = DirectX::XMMatrixInverse(nullptr, mVLight);
-    const DirectX::XMMATRIX mvp = matWorld * mVLight * mPLight;
+    const DirectX::XMMATRIX vp = mVLight * mPLight;
 
     return std::move(ShaderLightDefaultParameters{
-        XMMatrixTranspose(mvp),
+        DirectX::XMMatrixTranspose(go->GetMatWorld() * vp),
 
         DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
         DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),
