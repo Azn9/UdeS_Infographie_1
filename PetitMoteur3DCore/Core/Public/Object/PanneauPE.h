@@ -54,6 +54,6 @@ namespace PM3D
         ID3D11RenderTargetView* pOldRenderTargetView;
         
         static const int NOMBRE_TECHNIQUES = 2;
-        ID3D11InputLayout* pVertexLayout[NOMBRE_TECHNIQUES];
+        ID3D11InputLayout* pVertexLayout;
     };
 } // namespace PM3D

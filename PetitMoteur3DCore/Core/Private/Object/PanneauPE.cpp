@@ -63,6 +63,7 @@ namespace PM3D
     {
         // Compilation et chargement du vertex shader
         ID3D11Device* pD3DDevice = pDispositif->GetD3DDevice();
+        
         // Pour l’effet
         ID3DBlob* pFXBlob = nullptr;
         DXEssayer( D3DCompileFromFile( L"shader/PostEffect.fx", 0, 0, 0, 
@@ -75,6 +76,7 @@ namespace PM3D
         pFXBlob->Release();
         pTechnique = pEffet->GetTechniqueByIndex(0); 
         pPasse = pTechnique->GetPassByIndex(0);
+        
         // Créer l’organisation des sommets pour le VS de notre effet
         D3DX11_PASS_SHADER_DESC effectVSDesc;
         D3DX11_EFFECT_SHADER_DESC effectVSDesc2;
@@ -83,22 +85,12 @@ namespace PM3D
         &effectVSDesc2);
         const void *vsCodePtr = effectVSDesc2.pBytecode;
         unsigned vsCodeLen = effectVSDesc2.BytecodeLength;
-        pVertexLayout[0] = nullptr;
+        pVertexLayout = nullptr;
         DXEssayer( pD3DDevice->CreateInputLayout( CSommetPanneauPE::layout, 
         CSommetPanneauPE::numElements, 
         vsCodePtr, 
         vsCodeLen, 
-        &pVertexLayout[0] ),
-        DXE_CREATIONLAYOUT);
-
-        const void *vsCodePtr2 = effectVSDesc2.pBytecode;
-        vsCodeLen = effectVSDesc2.BytecodeLength;
-        pVertexLayout[1] = NULL;
-        DXEssayer( pD3DDevice->CreateInputLayout( CSommetPanneauPE::layout,
-        CSommetPanneauPE::numElements,
-        vsCodePtr2,
-        vsCodeLen,
-        &pVertexLayout[1] ),
+        &pVertexLayout ),
         DXE_CREATIONLAYOUT);
 
         pTechnique = pEffet->GetTechniqueByIndex(1);
@@ -172,7 +164,7 @@ namespace PM3D
     {
         DXRelacher(pSampleState);
         DXRelacher(pEffet);
-        for (int i = 0;i< NOMBRE_TECHNIQUES; i++) DXRelacher(pVertexLayout[i]);
+        DXRelacher(pVertexLayout);
         DXRelacher(pVertexBuffer);
         
         DXRelacher(pResourceView);
@@ -197,7 +189,7 @@ namespace PM3D
         pTechnique = pEffet->GetTechniqueByIndex(1);
         pPasse = pTechnique->GetPassByIndex(0);
         // input layout des sommets
-        pImmediateContext->IASetInputLayout( pVertexLayout[1] );
+        pImmediateContext->IASetInputLayout( pVertexLayout );
         // Le sampler state
         ID3DX11EffectSamplerVariable* variableSampler;
         variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
