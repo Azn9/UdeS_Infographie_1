@@ -42,7 +42,6 @@ namespace PM3D
         ID3DX11Effect* pEffet;
         ID3DX11EffectTechnique* pTechnique;
         ID3DX11EffectPass* pPasse;
-        ID3D11InputLayout* pVertexLayout;
         ID3D11SamplerState* pSampleState;
 
         // Texture de rendu pour effets
@@ -55,5 +54,8 @@ namespace PM3D
     protected:
         ID3D11RenderTargetView* pOldRenderTargetView;
         ID3D11DepthStencilView* pOldDepthStencilView;
+        
+        static const int NOMBRE_TECHNIQUES = 2;
+        ID3D11InputLayout* pVertexLayout[NOMBRE_TECHNIQUES];
     };
 } // namespace PM3D

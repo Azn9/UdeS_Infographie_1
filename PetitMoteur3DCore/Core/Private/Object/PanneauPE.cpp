@@ -4,6 +4,8 @@
 #include "Core/Public/Core/dispositifD3D11.h"
 #include <d3dcompiler.h>
 
+#include "Core/Public/Object/Panneau.h"
+
 namespace PM3D
 {
     // Definir l’organisation de notre sommet
@@ -81,13 +83,30 @@ namespace PM3D
         &effectVSDesc2);
         const void *vsCodePtr = effectVSDesc2.pBytecode;
         unsigned vsCodeLen = effectVSDesc2.BytecodeLength;
-        pVertexLayout = nullptr;
+        pVertexLayout[0] = nullptr;
         DXEssayer( pD3DDevice->CreateInputLayout( CSommetPanneauPE::layout, 
         CSommetPanneauPE::numElements, 
         vsCodePtr, 
         vsCodeLen, 
-        &pVertexLayout ),
+        &pVertexLayout[0] ),
         DXE_CREATIONLAYOUT);
+
+        const void *vsCodePtr2 = effectVSDesc2.pBytecode;
+        vsCodeLen = effectVSDesc2.BytecodeLength;
+        pVertexLayout[1] = NULL;
+        DXEssayer( pD3DDevice->CreateInputLayout( CSommetPanneauPE::layout,
+        CSommetPanneauPE::numElements,
+        vsCodePtr2,
+        vsCodeLen,
+        &pVertexLayout[1] ),
+        DXE_CREATIONLAYOUT);
+
+        pTechnique = pEffet->GetTechniqueByIndex(1);
+        pPasse = pTechnique->GetPassByIndex(0);
+        pPasse->GetVertexShaderDesc(&effectVSDesc);
+        effectVSDesc.pShaderVariable->GetShaderDesc(effectVSDesc.ShaderIndex,
+        &effectVSDesc2);
+        
         // Initialisation des paramètres de sampling de la texture
         // Pas nécessaire d’être compliqué puisque l’affichage sera
         // en 1 pour 1 et à plat
@@ -180,7 +199,7 @@ namespace PM3D
     {
         DXRelacher(pSampleState);
         DXRelacher(pEffet);
-        DXRelacher(pVertexLayout);
+        for (int i = 0;i< NOMBRE_TECHNIQUES; i++) DXRelacher(pVertexLayout[i]);
         DXRelacher(pVertexBuffer);
         
         DXRelacher(pResourceView);
@@ -206,7 +225,7 @@ namespace PM3D
         pTechnique = pEffet->GetTechniqueByIndex(0);
         pPasse = pTechnique->GetPassByIndex(0);
         // input layout des sommets
-        pImmediateContext->IASetInputLayout( pVertexLayout );
+        pImmediateContext->IASetInputLayout( pVertexLayout[0] );
         // Le sampler state
         ID3DX11EffectSamplerVariable* variableSampler;
         variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
@@ -216,6 +235,12 @@ namespace PM3D
         variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
         // Activation de la texture
         variableTexture->SetResource(pResourceView);
+
+        // La « constante » distance
+        ID3DX11EffectScalarVariable* distance;
+        distance = pEffet->GetVariableByName("distance")->AsScalar();
+        distance->SetFloat((float)0.10f);
+        
         pPasse->Apply(0, pImmediateContext);
         // **** Rendu de l’objet
         pImmediateContext->Draw( 6, 0 );
