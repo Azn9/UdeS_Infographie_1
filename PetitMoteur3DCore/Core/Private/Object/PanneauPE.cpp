@@ -92,12 +92,6 @@ namespace PM3D
         vsCodeLen, 
         &pVertexLayout ),
         DXE_CREATIONLAYOUT);
-
-        pTechnique = pEffet->GetTechniqueByIndex(1);
-        pPasse = pTechnique->GetPassByIndex(0);
-        pPasse->GetVertexShaderDesc(&effectVSDesc);
-        effectVSDesc.pShaderVariable->GetShaderDesc(effectVSDesc.ShaderIndex,
-        &effectVSDesc2);
         
         // Initialisation des paramètres de sampling de la texture
         // Pas nécessaire d’être compliqué puisque l’affichage sera
@@ -158,6 +152,13 @@ namespace PM3D
         pD3DDevice->CreateShaderResourceView( pTmpTexture,
         &shaderResourceViewDesc,
         &pTmpResourceView);
+
+        pMainRenderTargetView = pDispositif->GetRenderTargetView();
+        
+        //New stuff
+        ID3D11Resource* mainRessource;
+        pMainRenderTargetView->GetResource(&mainRessource);
+        pD3DDevice->CreateShaderResourceView(mainRessource, &shaderResourceViewDesc, &pMainResourceView);
     }
     
     CPanneauPE::~CPanneauPE()
@@ -168,6 +169,7 @@ namespace PM3D
         DXRelacher(pVertexBuffer);
         
         DXRelacher(pTmpResourceView);
+        DXRelacher(pMainResourceView);
         DXRelacher(pTmpRenderTargetView);
         DXRelacher(pTmpTexture);
     }
@@ -177,47 +179,57 @@ namespace PM3D
         pCurrentResourceView = pTmpResourceView;
         pCurrentRenderTargetView = pMainRenderTargetView;
         
-        // Obtenir le contexte
-        ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
-        // Choisir la topologie des primitives
-        pImmediateContext->IASetPrimitiveTopology(
-        D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-        // Source des sommets
-        UINT stride = sizeof( CSommetPanneauPE );
-        UINT offset = 0;
-        pImmediateContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, &stride,
-        &offset );
-        // Choix de la technique
-        pTechnique = pEffet->GetTechniqueByIndex(0);
-        pPasse = pTechnique->GetPassByIndex(0);
-        // input layout des sommets
-        pImmediateContext->IASetInputLayout( pVertexLayout );
-        // Le sampler state
-        ID3DX11EffectSamplerVariable* variableSampler;
-        variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
 
-        variableSampler->SetSampler(0, pSampleState);
-        ID3DX11EffectShaderResourceVariable* variableTexture;
-        variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
+        for (int i = 0; i < NOMBRE_TECHNIQUES; ++i)
+        {
+            // Obtenir le contexte
+            ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+            // Choisir la topologie des primitives
+            pImmediateContext->IASetPrimitiveTopology(
+            D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+            // Source des sommets
+            UINT stride = sizeof( CSommetPanneauPE );
+            UINT offset = 0;
+            pImmediateContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, &stride,
+            &offset );
+
+            // input layout des sommets
+            pImmediateContext->IASetInputLayout( pVertexLayout );
+            
+            // Choix de la technique
+            pTechnique = pEffet->GetTechniqueByIndex(i);
+            pPasse = pTechnique->GetPassByIndex(0);
+
+            // Le sampler state
+            ID3DX11EffectSamplerVariable* variableSampler;
+            variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
+
+            variableSampler->SetSampler(0, pSampleState);
+            ID3DX11EffectShaderResourceVariable* variableTexture;
+            variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
 
         
-        // Activation de la texture
-        variableTexture->SetResource(pCurrentResourceView);
+            // Activation de la texture
+            variableTexture->SetResource(pCurrentResourceView);
 
-        // La « constante » distance
-        ID3DX11EffectScalarVariable* distance;
-        distance = pEffet->GetVariableByName("distance")->AsScalar();
-        distance->SetFloat(0.10f);
+            // La « constante » distance
+            ID3DX11EffectScalarVariable* distance;
+            distance = pEffet->GetVariableByName("distance")->AsScalar();
+            distance->SetFloat(0.10f);
         
-        pPasse->Apply(0, pImmediateContext);
-        // **** Rendu de l’objet
-        pImmediateContext->Draw( 6, 0 );
+            pPasse->Apply(0, pImmediateContext);
+            // **** Rendu de l’objet
+            pImmediateContext->Draw( 6, 0 );
+
+        }
+        
+        
     }
 
     void CPanneauPE::DebutPostEffect()
     {
         // Prendre en note l’ancienne surface de rendu
-        pMainRenderTargetView = pDispositif->GetRenderTargetView();
+        //pMainRenderTargetView = pDispositif->GetRenderTargetView();
         // Utiliser la texture comme surface de rendu et le tampon de profondeur
         // associé
         pDispositif->SetRenderTargetView(pTmpRenderTargetView);
