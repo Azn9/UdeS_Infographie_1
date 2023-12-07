@@ -149,16 +149,15 @@ namespace PM3D
         shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
         shaderResourceViewDesc.Texture2D.MipLevels = 1;
         // Création de la vue.
-        pD3DDevice->CreateShaderResourceView( pTmpTexture,
-        &shaderResourceViewDesc,
-        &pTmpResourceView);
+        pD3DDevice->CreateShaderResourceView(pTmpTexture, &shaderResourceViewDesc, &pTmpResourceView);
 
         pMainRenderTargetView = pDispositif->GetRenderTargetView();
         
-        //New stuff
+        //Creation de mainSRV
         ID3D11Resource* mainRessource;
         pMainRenderTargetView->GetResource(&mainRessource);
-        pD3DDevice->CreateShaderResourceView(mainRessource, &shaderResourceViewDesc, &pMainResourceView);
+        HRESULT result = pD3DDevice->CreateShaderResourceView(mainRessource, &shaderResourceViewDesc, &pMainResourceView);
+        
     }
     
     CPanneauPE::~CPanneauPE()
@@ -178,10 +177,12 @@ namespace PM3D
     {
         pCurrentResourceView = pTmpResourceView;
         pCurrentRenderTargetView = pMainRenderTargetView;
-        
 
         for (int i = 0; i < NOMBRE_TECHNIQUES; ++i)
         {
+            pCurrentResourceView = ((i % 0 == 0) ? pTmpResourceView : pMainResourceView);
+            pCurrentRenderTargetView = ((i % 0 == 0) ? pMainRenderTargetView : pTmpRenderTargetView);
+            
             // Obtenir le contexte
             ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
             // Choisir la topologie des primitives
