@@ -18,8 +18,7 @@ public:
 	void ActiverMelangeAlpha() const;
     void DesactiverMelangeAlpha() const;
 
-	void ActiverDepth() const;
-	void DesactiverDepth() const;
+	void SetDepthState(const bool& depthTest, const bool& depthWrite) const;
 
 	// Fonction d'accès aux membres protégés
 	ID3D11Device* GetD3DDevice() { return pD3DDevice; }
@@ -29,14 +28,14 @@ public:
 	ID3D11DepthStencilView* GetDepthStencilView() { return pDepthStencilView; }
 	ID3D11RasterizerState* GetRasterizerState() { return mSolidCullBackRS; }
 	ID3D11DepthStencilState* GetDepthStencilState() { return pDepthStencilState; }
-	ID3D11DepthStencilState* GetNoDepthStencilState() { return pNoDepthStencilState; }
+	ID3D11DepthStencilState* GetNoDepthStencilState() { return pNoDepthTestDepthStencilState; }
 	
 	ID3D11DepthStencilView** GetDepthStencilViewPtr() { return &pDepthStencilView; }
 	ID3D11RenderTargetView** GetRenderTargetViewPtr() { return &pRenderTargetView; }
 	ID3D11RasterizerState** GetRasterizerStatePtr() { return &mSolidCullBackRS; }
 
 	void InitDepthBuffer();
-	void InitDepthState(const bool& = true);
+	void InitDepthState();
 	void InitBlendStates();
 
 	void SetViewportDimension(int largeur, int hauteur);
@@ -60,7 +59,8 @@ private:
 	ID3D11DepthStencilView* pDepthStencilView;
 	
 	ID3D11DepthStencilState* pDepthStencilState;
-	ID3D11DepthStencilState* pNoDepthStencilState;
+	ID3D11DepthStencilState* pNoDepthTestDepthStencilState;
+	ID3D11DepthStencilState* pNoDepthTestAndWriteTestDepthStencilState;
 
 	// Variables d'état
 	ID3D11RasterizerState* mSolidCullBackRS;

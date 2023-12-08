@@ -16,7 +16,8 @@ CDispositifD3D11::~CDispositifD3D11()
 	DXRelacher(pDepthTexture);
 	DXRelacher(pDepthStencilView);
 	DXRelacher(pDepthStencilState);
-	DXRelacher(pNoDepthStencilState);
+	DXRelacher(pNoDepthTestDepthStencilState);
+	DXRelacher(pNoDepthTestAndWriteTestDepthStencilState);
 
 	if (pImmediateContext)
 	{
@@ -151,7 +152,7 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT
 
 	InitDepthState();
 	//DesactiverDepth();
-	ActiverDepth();
+	SetDepthState(true, true);
 
 	InitBlendStates();
 
@@ -194,14 +195,23 @@ void CDispositifD3D11::DesactiverMelangeAlpha() const
 	pImmediateContext->OMSetBlendState(alphaBlendDisable, nullptr, 0xffffffff);
 }
 
-void CDispositifD3D11::ActiverDepth() const
+void CDispositifD3D11::SetDepthState(const bool& depthTest, const bool& depthWrite) const
 {
-	pImmediateContext->OMSetDepthStencilState(pDepthStencilState, 1);
-}
-
-void CDispositifD3D11::DesactiverDepth() const
-{
-	pImmediateContext->OMSetDepthStencilState(pNoDepthStencilState, 1);
+	if(depthWrite && depthTest) {
+		pImmediateContext->OMSetDepthStencilState(pDepthStencilState, 1);
+	}
+	else if (depthWrite && !depthTest)
+	{
+		pImmediateContext->OMSetDepthStencilState(pNoDepthTestDepthStencilState, 1);
+	}
+	else if (!depthWrite && !depthTest)
+	{
+		pImmediateContext->OMSetDepthStencilState(pNoDepthTestAndWriteTestDepthStencilState, 1);
+	}
+	else
+	{
+		throw "Non supporté";
+	}
 }
 
 void CDispositifD3D11::InitDepthBuffer()
@@ -232,11 +242,11 @@ void CDispositifD3D11::InitDepthBuffer()
 		DXE_ERREURCREATIONDEPTHSTENCILTARGET);
 }
 
-void CDispositifD3D11::InitDepthState(const bool& enableDepthWrite)
+void CDispositifD3D11::InitDepthState()
 {
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 	dsDesc.DepthEnable = true;
-	dsDesc.DepthWriteMask = enableDepthWrite ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 	dsDesc.StencilEnable = true;
 	dsDesc.StencilReadMask = 0xFF;
@@ -256,7 +266,12 @@ void CDispositifD3D11::InitDepthState(const bool& enableDepthWrite)
 	D3D11_DEPTH_STENCIL_DESC dsDescCopy = dsDesc;
 	dsDescCopy.DepthEnable = false;
 
-	pD3DDevice->CreateDepthStencilState(&dsDescCopy, &pNoDepthStencilState);
+	pD3DDevice->CreateDepthStencilState(&dsDescCopy, &pNoDepthTestDepthStencilState);
+
+	D3D11_DEPTH_STENCIL_DESC dsDescCopy2 = dsDescCopy;
+	dsDescCopy.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
+	pD3DDevice->CreateDepthStencilState(&dsDescCopy2, &pNoDepthTestAndWriteTestDepthStencilState);
 }
 
 void CDispositifD3D11::InitBlendStates()

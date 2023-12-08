@@ -125,7 +125,7 @@ namespace PM3D
         // Cette texture sera utilisée comme cible de rendu et
         // comme ressource de shader
         textureDesc.Width = pDispositif->GetLargeur();
-        textureDesc.Height = pDispositif->GetHauteur();;
+        textureDesc.Height = pDispositif->GetHauteur();
         textureDesc.MipLevels = 1;
         textureDesc.ArraySize = 1;
         textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -187,15 +187,17 @@ namespace PM3D
 
     void CPanneauPE::Draw()
     {
-        pCurrentResourceView = pTmpResourceView;
-        pCurrentRenderTargetView = pMainRenderTargetView;
-
+        ID3D11DepthStencilState* oldDepthState = pDispositif->GetDepthStencilState();
+        pDispositif->SetDepthState(false, false); //on désactive les tests et l'écriture sur la profondeur
+        
         for (int i = 0; i < NOMBRE_TECHNIQUES; ++i)
         {
-            pCurrentResourceView = (i % 0 == 0) ? pTmpResourceView : pTmp2ResourceView;
+            pCurrentResourceView = (i % 2 == 0) ? pTmpResourceView : pTmp2ResourceView;
             pCurrentRenderTargetView =
                 (i == NOMBRE_TECHNIQUES - 1) ? pMainRenderTargetView : //C'est la dérnière passe, on écrit sur la swap
-                (i % 0 == 0) ? pTmp2RenderTargetView : pTmpRenderTargetView;
+                (i % 2 == 0) ? pTmp2RenderTargetView : pTmpRenderTargetView;
+
+            pDispositif->SetRenderTargetView(pCurrentRenderTargetView);
             
             // Obtenir le contexte
             ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
@@ -222,7 +224,6 @@ namespace PM3D
             variableSampler->SetSampler(0, pSampleState);
             ID3DX11EffectShaderResourceVariable* variableTexture;
             variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
-
         
             // Activation de la texture
             variableTexture->SetResource(pCurrentResourceView);
@@ -237,6 +238,8 @@ namespace PM3D
             pImmediateContext->Draw( 6, 0 );
 
         }
+
+        pDispositif->SetDepthState(true, true);
     }
 
     void CPanneauPE::DebutPostEffect()
@@ -252,7 +255,7 @@ namespace PM3D
     {
         // Restaurer l’ancienne surface de rendu et le tampon de profondeur
         // associé
-        pDispositif->SetRenderTargetView(pMainRenderTargetView);
+        pDispositif->SetRenderTargetView(pMainRenderTargetView); // devrait être set correctement, mais au cas où
     }
 
 }
