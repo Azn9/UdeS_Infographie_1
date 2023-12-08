@@ -74,7 +74,8 @@ namespace PM3D
          pFXBlob->GetBufferPointer(), pFXBlob->GetBufferSize(), 0, 
         pD3DDevice, &pEffet);
         pFXBlob->Release();
-        pTechnique = pEffet->GetTechniqueByIndex(0); 
+        
+        pTechnique = pEffet->GetTechniqueByIndex(0); //On suppose qu'on aurait le même vs à chaque technique (NulVS)
         pPasse = pTechnique->GetPassByIndex(0);
         
         // Créer l’organisation des sommets pour le VS de notre effet
@@ -114,10 +115,11 @@ namespace PM3D
         pD3DDevice->CreateSamplerState(&samplerDesc, &pSampleState);
         
 
-        // *********************** POUR LE POST EFFECT **************************
+        // *********************** VUES POUR LE POST EFFECT **************************
         D3D11_TEXTURE2D_DESC textureDesc;
         D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
         D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+        
         // Description de la texture
         ZeroMemory(&textureDesc, sizeof(textureDesc));
         // Cette texture sera utilisée comme cible de rendu et
@@ -133,31 +135,39 @@ namespace PM3D
         D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE;
         textureDesc.CPUAccessFlags = 0;
         textureDesc.MiscFlags = 0;
-        // Création de la texture
-        pD3DDevice->CreateTexture2D(&textureDesc, nullptr, & pTmpTexture);
+        
         // VUE - Cible de rendu
         renderTargetViewDesc.Format = textureDesc.Format;
         renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
         renderTargetViewDesc.Texture2D.MipSlice = 0;
-        // Création de la vue.
-        pD3DDevice->CreateRenderTargetView(pTmpTexture,
-        &renderTargetViewDesc,
-        &pTmpRenderTargetView);
+        
         // VUE – Ressource de shader
         shaderResourceViewDesc.Format = textureDesc.Format;
         shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
         shaderResourceViewDesc.Texture2D.MipLevels = 1;
-        // Création de la vue.
-        pD3DDevice->CreateShaderResourceView(pTmpTexture, &shaderResourceViewDesc, &pTmpResourceView);
 
-        pMainRenderTargetView = pDispositif->GetRenderTargetView();
+        // Création de la texture 1
+        pD3DDevice->CreateTexture2D(&textureDesc, nullptr, & pTmpTexture);
+
+        // Création de la texture 2
+        pD3DDevice->CreateTexture2D(&textureDesc, nullptr, & pTmp2Texture);
+
+        // Création de la RTV 1
+        pD3DDevice->CreateRenderTargetView(pTmpTexture,
+        &renderTargetViewDesc,
+        &pTmpRenderTargetView);
         
-        //Creation de mainSRV
-        ID3D11Resource* mainRessource;
-        pMainRenderTargetView->GetResource(&mainRessource);
-        HRESULT result = pD3DDevice->CreateShaderResourceView(mainRessource, &shaderResourceViewDesc, &pMainResourceView);
+        // Création de la RTV 2
+        pD3DDevice->CreateRenderTargetView(pTmp2Texture,
+        &renderTargetViewDesc,
+        &pTmp2RenderTargetView);
         
+        // Création de la SRV 1
+        pD3DDevice->CreateShaderResourceView(pTmpTexture, &shaderResourceViewDesc, &pTmpResourceView);
+        
+        // Création de la SRV 2
+        pD3DDevice->CreateShaderResourceView(pTmp2Texture, &shaderResourceViewDesc, &pTmp2ResourceView);
     }
     
     CPanneauPE::~CPanneauPE()
@@ -168,9 +178,11 @@ namespace PM3D
         DXRelacher(pVertexBuffer);
         
         DXRelacher(pTmpResourceView);
-        DXRelacher(pMainResourceView);
+        DXRelacher(pTmp2ResourceView);
         DXRelacher(pTmpRenderTargetView);
+        DXRelacher(pTmp2RenderTargetView);
         DXRelacher(pTmpTexture);
+        DXRelacher(pTmp2Texture);
     }
 
     void CPanneauPE::Draw()
@@ -180,8 +192,10 @@ namespace PM3D
 
         for (int i = 0; i < NOMBRE_TECHNIQUES; ++i)
         {
-            pCurrentResourceView = ((i % 0 == 0) ? pTmpResourceView : pMainResourceView);
-            pCurrentRenderTargetView = ((i % 0 == 0) ? pMainRenderTargetView : pTmpRenderTargetView);
+            pCurrentResourceView = (i % 0 == 0) ? pTmpResourceView : pTmp2ResourceView;
+            pCurrentRenderTargetView =
+                (i == NOMBRE_TECHNIQUES - 1) ? pMainRenderTargetView : //C'est la dérnière passe, on écrit sur la swap
+                (i % 0 == 0) ? pTmp2RenderTargetView : pTmpRenderTargetView;
             
             // Obtenir le contexte
             ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
@@ -223,14 +237,12 @@ namespace PM3D
             pImmediateContext->Draw( 6, 0 );
 
         }
-        
-        
     }
 
     void CPanneauPE::DebutPostEffect()
     {
         // Prendre en note l’ancienne surface de rendu
-        //pMainRenderTargetView = pDispositif->GetRenderTargetView();
+        pMainRenderTargetView = pDispositif->GetRenderTargetView();
         // Utiliser la texture comme surface de rendu et le tampon de profondeur
         // associé
         pDispositif->SetRenderTargetView(pTmpRenderTargetView);
