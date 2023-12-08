@@ -233,7 +233,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		}
 
 		// Texture coordinates are 0-1
-		float2 uv = float2((posInMap.x / 2) + 0.5f, (posInMap.y / 2) + 0.5f);
+		float2 uv = float2((posInMap.x / 2) + 0.5f, (-posInMap.y / 2) + 0.5f);
 
 		//float4 depth = shadowTexture.Sample(ShadowMapSampler, uv);
 		//float depthV = depth.z / depth.w;
@@ -242,9 +242,9 @@ float4 MainPS(VS_Sortie input) : SV_Target
 
 		// near plane is 0.05f, far plane is 25f
 
-		float distance = length(li.position.xyz - input.worldPos) / 24.95f;
+		float distance = length(li.position.xyz - input.worldPos) / 24.95f - 5.2655f;
 
-		if (distance < depthV /* TODO +- biais */) { // Not in shadows
+		if (distance < depthV/* TODO +- biais */) { // Not in shadows
 			totalDiffuse += diffuseValueF;
 			totalSpecular += specularValueF;
 		}

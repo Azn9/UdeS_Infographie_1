@@ -10,7 +10,7 @@ void ShadowtestScene::InitializeCamera()
 	auto camera = std::make_unique<PM3D_API::Camera>(
 		"Camera",
 		PM3D_API::Camera::CameraType::PERSECTIVE,
-		DirectX::XMFLOAT3(0.0f, 5.0f, -10.0f),
+		DirectX::XMFLOAT3(10.0f, 10.0f, 10.0f),
 		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
 	);
@@ -19,7 +19,7 @@ void ShadowtestScene::InitializeCamera()
 	camera->SetNearDist(0.1f);
 	camera->SetFarDist(100.f);
 
-	camera->AddComponent(std::make_unique<CameraMoverComponent>());
+	//camera->AddComponent(std::make_unique<CameraMoverComponent>());
 
 	SetMainCamera(std::move(camera));
 }
@@ -28,12 +28,12 @@ void ShadowtestScene::InitializeLights()
 {
 	auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
 		"Directional light",
-		XMFLOAT3(-1.0f, -1.0f, 0.0f)
+		XMFLOAT3(-1.0f/sqrt(2.f), -1.0f / sqrt(2.f), 0.0f) // TODO : normalize
 	);
 	const auto directionalLightPtr = directionalLight.get();
 	AddLight(std::move(directionalLight));
 
-	//directionalLightPtr->SetWorldPosition({10.f, 10.f, 0.f});
+	directionalLightPtr->SetWorldPosition({100.f, 100.f, 0.f});
 	directionalLightPtr->SetIntensity(1.0f);
 	directionalLightPtr->Initialize();
 }
@@ -51,6 +51,7 @@ void ShadowtestScene::InitializeObjects()
 
 	auto tree = std::make_unique<GameObject>("tree");
 	tree->SetWorldScale({5.0f, 5.0f, 5.0f});
+	//tree->SetWorldRotation({ 45.f,0.f,45.f });
 	tree->Initialize();
 
 	auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
