@@ -58,7 +58,7 @@ namespace PM3D
         ID3D11RenderTargetView* pCurrentRenderTargetView;
         ID3D11ShaderResourceView* pCurrentResourceView;
         
-        static const int NOMBRE_TECHNIQUES = 2;
+        static const int NOMBRE_TECHNIQUES = 3;
         ID3D11InputLayout* pVertexLayout;
     };
 } // namespace PM3D

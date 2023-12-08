@@ -229,9 +229,18 @@ namespace PM3D
             variableTexture->SetResource(pCurrentResourceView);
 
             // La « constante » distance
-            ID3DX11EffectScalarVariable* distance;
-            distance = pEffet->GetVariableByName("distance")->AsScalar();
-            distance->SetFloat(0.10f);
+            ID3DX11EffectScalarVariable* scalarVar;
+            scalarVar = pEffet->GetVariableByName("distance")->AsScalar();
+            scalarVar->SetFloat(0.10f);
+
+            scalarVar = pEffet->GetVariableByName("vignettePower")->AsScalar();
+            scalarVar->SetFloat(2.5f);
+
+            ID3DX11EffectVectorVariable* vectorVar;
+            vectorVar = pEffet->GetVariableByName("vignetteColor")->AsVector();
+            const float* color = new float[4](0.0f, 0.2f, 0.3f, 0.8f);
+            vectorVar->SetFloatVector(color);
+            delete color;
         
             pPasse->Apply(0, pImmediateContext);
             // **** Rendu de l’objet
