@@ -198,14 +198,14 @@ void ShadowProcessor::ProcessShadow()
 
 		const auto orthographic = lightType == static_cast<int>(PM3D_API::LightType::DIRECTIONAL);
 		const auto cameraPosition = DirectX::XMFLOAT3{
-			position.m128_f32[0] - 10.f * direction.m128_f32[0],
-			position.m128_f32[1] - 10.f * direction.m128_f32[1],
-			position.m128_f32[2] - 10.f * direction.m128_f32[2]
-		};
-		const auto cameraFocusPoint = DirectX::XMVectorSet(
 			position.m128_f32[0],
 			position.m128_f32[1],
-			position.m128_f32[2],
+			position.m128_f32[2]
+		};
+		const auto cameraFocusPoint = DirectX::XMVectorSet(
+			0.f,
+			0.f,
+			0.f,
 			1.0f
 		);
 

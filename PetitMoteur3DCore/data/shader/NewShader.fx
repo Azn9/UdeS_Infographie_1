@@ -226,7 +226,8 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		float4 posInMap = input.PosInMap[i];
 		// validate that x & y are in [-1, 1]
 
-		if (posInMap.x < -1 || posInMap.x > 1 || posInMap.y < -1 || posInMap.y > 1) {
+        if (posInMap.x <= -1 || posInMap.x >= 0.9982 || posInMap.y <= -1 || posInMap.y >= 0.998)
+        {
 			totalDiffuse += diffuseValueF;
 			totalSpecular += specularValueF;
 			continue;
@@ -241,10 +242,25 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
 
 		// near plane is 0.05f, far plane is 25f
+		
+		// clacul of the distance to the plan (ortho)
+        float vectorX = input.worldPos.x - li.position.x;
+        float vectorY = input.worldPos.y - li.position.y;
+        float vectorZ = input.worldPos.z - li.position.z;
 
-		float distance = length(li.position.xyz - input.worldPos) / 24.95f - 5.2655f;
+		// Calcul du produit scalaire entre le vecteur et la normale du plan
+        float dotProduct = vectorX * li.direction.x + vectorY * li.direction.y + vectorZ * li.direction.z;
 
-		if (distance < depthV/* TODO +- biais */) { // Not in shadows
+		// Calcul de la magnitude de la normale pour obtenir la distance (distance signée)
+        float normalMagnitude = sqrt(li.direction.x * li.direction.x + li.direction.y * li.direction.y + li.direction.z * li.direction.z);
+        float distance = dotProduct / normalMagnitude / 25.f;
+		
+		
+		
+		
+		//float distance = length(li.position.xyz - input.worldPos) / 24.95f;
+
+		if (distance <= depthV /* TODO +- biais */) { // Not in shadows
 			totalDiffuse += diffuseValueF;
 			totalSpecular += specularValueF;
 		}

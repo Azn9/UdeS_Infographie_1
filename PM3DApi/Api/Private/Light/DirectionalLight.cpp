@@ -118,8 +118,8 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
 {
     return std::move(ShaderLightDefaultParameters{
         wvp,
-
-        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f), // Position
+        
+        DirectX::XMVectorSet(GetWorldPosition().x, GetWorldPosition().y, GetWorldPosition().z, 1.0f), // Position
         DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),
 
         DirectX::XMVectorSet(0.2f * color.x, 0.2f * color.y, 0.2f * color.z, 1.0f), // Ambient
