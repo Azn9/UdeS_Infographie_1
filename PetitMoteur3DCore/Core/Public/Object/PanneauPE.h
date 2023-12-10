@@ -1,8 +1,9 @@
 #pragma once
 #include <cvt/wstring>
 #include <string>
-#include <variant>
 #include <set>
+
+#include "Core/Public/Util/util.h"
 
 #include "objet3d.h"
 
@@ -36,8 +37,6 @@ namespace PM3D
     class CPanneauPE : public CObjet3D
     {
     public:
-        using ShaderParam = std::variant
-            <float, XMFLOAT4, XMVECTOR, ID3D11SamplerState*, ID3D11ShaderResourceView*>;
         explicit CPanneauPE(CDispositifD3D11* pDispositif_in);
         virtual ~CPanneauPE();
         virtual void Draw() override;
@@ -45,8 +44,15 @@ namespace PM3D
         void FinPostEffect();
         
         template<is_shader_param T>
-        void SetShaderVariableValue(const std::string& name, const T& param);
+        void SetShaderVariableValue(const std::string& name, const T& param)
+        {
+            DXEssayer(SetShaderVar(name, param));
+        }
+        
+        void enableAllPostEffects();
         std::set<int>& getEnabledPostEffects();
+
+        const D3DX11_EFFECT_DESC* getEffectDesc() const;
         
     private:
         void InitEffet();
@@ -74,8 +80,9 @@ namespace PM3D
         ID3D11RenderTargetView* pCurrentRenderTargetView;
         ID3D11ShaderResourceView* pCurrentResourceView;
 
-        int techniqueCount;
+        D3DX11_EFFECT_DESC* pEffectDesc;
         std::set<int> pEnabledTechniques;
+        
         ID3D11InputLayout* pVertexLayout;
 
         //Fonctions pour enregistrer les variables de shader

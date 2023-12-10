@@ -124,8 +124,10 @@ int PM3D::CMoteur::Initialisations()
 	pDispositif = CreationDispositifSpecific(CDS_FENETRE);
 
 	std::cout << "2C" << std::endl;
-	
+
+	pPanneauPE = std::make_unique<CPanneauPE>(pDispositif);
 	gameHost->SetDispositif(pDispositif);
+	gameHost->SetPostEffectPlane(pPanneauPE.get());
 
 	std::cout << "2D" << std::endl;
 
@@ -252,7 +254,6 @@ void PM3D::CMoteur::Cleanup()
 int PM3D::CMoteur::InitScene()
 {
 	InitSceneSpecific();
-	pPanneauPE = std::make_unique<CPanneauPE>(pDispositif);
 	gameHost->InitializeScene();
 
 	return 0;

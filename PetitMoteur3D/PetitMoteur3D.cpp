@@ -51,6 +51,8 @@ int APIENTRY _tWinMain(
 		// Initialisation du moteur
 		rMoteur.Initialisations();
 
+		gameHost->InitializePostProcessParam();
+
 		std::cout << "F" << std::endl;
 
 		// Boucle d'application

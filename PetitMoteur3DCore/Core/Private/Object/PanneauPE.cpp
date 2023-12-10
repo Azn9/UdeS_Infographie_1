@@ -1,9 +1,7 @@
 #include "Core/Public/Object/PanneauPE.h"
-#include "Core/Public/Util/util.h"
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Core/dispositifD3D11.h"
 #include <d3dcompiler.h>
-#include <ranges>
 
 #include "Core/Public/Object/Panneau.h"
 
@@ -60,9 +58,23 @@ namespace PM3D
         InitEffet(); 
     }
 
+    void CPanneauPE::enableAllPostEffects()
+    {
+        int count = pEffectDesc->Techniques;
+        for (int i = 0; i < count; ++i)
+        {
+            pEnabledTechniques.insert(i);       
+        }
+    }
+
     std::set<int>& CPanneauPE::getEnabledPostEffects()
     {
         return pEnabledTechniques;
+    }
+
+    const D3DX11_EFFECT_DESC* CPanneauPE::getEffectDesc() const
+    {
+        return pEffectDesc;
     }
 
     void CPanneauPE::InitEffet()
@@ -175,24 +187,19 @@ namespace PM3D
         // Création de la SRV 2
         pD3DDevice->CreateShaderResourceView(pTmp2Texture, &shaderResourceViewDesc, &pTmp2ResourceView);
 
-        //On set le nombre de techniques dans le fichier
-        D3DX11_EFFECT_DESC* desc = new D3DX11_EFFECT_DESC{};
-        pEffet->GetDesc(desc);
-        techniqueCount = static_cast<int>(desc->Techniques);
+        pEffectDesc = new D3DX11_EFFECT_DESC{};
+        pEffet->GetDesc(pEffectDesc);
 
         // Le sampler state
         ID3DX11EffectSamplerVariable* variableSampler;
         variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
         variableSampler->SetSampler(0, pSampleState);
         
-        //TODO: enlever
-        for (int i = 0; i < 3; ++i)
-        {
-            pEnabledTechniques.insert(i);
-        }
-        DXEssayer(SetShaderVar("distance", 0.1f));
-        DXEssayer(SetShaderVar("vignettePower", 2.5f));
-        DXEssayer(SetShaderVar("vignetteColor", XMFLOAT4{0.0f, 0.2f, 0.3f, 0.8f}));
+        
+        SetShaderVariableValue("distance", 0.1f);
+        SetShaderVariableValue("vignettePower", 2.5f);
+        SetShaderVariableValue("vignetteColor", XMFLOAT4{0.0f, 0.2f, 0.3f, 0.8f});
+        
     }
     
     CPanneauPE::~CPanneauPE()
@@ -212,6 +219,9 @@ namespace PM3D
 
     void CPanneauPE::Draw()
     {
+        if(pEnabledTechniques.empty())
+            return;
+        
         ID3D11DepthStencilState* oldDepthState = pDispositif->GetDepthStencilState();
         pDispositif->SetDepthState(false, false); //on désactive les tests et l'écriture sur la profondeur
 
@@ -260,6 +270,9 @@ namespace PM3D
 
     void CPanneauPE::DebutPostEffect()
     {
+        if(pEnabledTechniques.empty())
+            return;
+        
         // Prendre en note l’ancienne surface de rendu
         pMainRenderTargetView = pDispositif->GetRenderTargetView();
         // Utiliser la texture comme surface de rendu et le tampon de profondeur
@@ -269,15 +282,11 @@ namespace PM3D
 
     void CPanneauPE::FinPostEffect()
     {
+        if(pEnabledTechniques.empty())
+            return;
         // Restaurer l’ancienne surface de rendu et le tampon de profondeur
         // associé
         pDispositif->SetRenderTargetView(pMainRenderTargetView); // devrait être set correctement, mais au cas où
-    }
-
-    template<is_shader_param T>
-    void CPanneauPE::SetShaderVariableValue(const std::string& name, const T& param)
-    {
-        DXEssayer(SetShaderVar(name, param));
     }
 
     HRESULT CPanneauPE::SetShaderVar(const std::string& name, const float& f) const
