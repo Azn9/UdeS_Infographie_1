@@ -123,7 +123,7 @@ std::vector<PM3D_API::ShaderLightDefaultParameters> ShadowProcessor::ProcessLigh
 
 	std::vector<PM3D_API::ShaderLightDefaultParameters> shaderLightsParameters{};
 	std::ranges::for_each(finalLights, [&shaderLightsParameters](PM3D_API::Light* light)
-	{
+		{
 		if (light->GetType() == PM3D_API::LightType::DIRECTIONAL)
 		{
 			const auto& cameraPlayer = PM3D_API::GameHost::GetInstance()->GetScene()->GetMainCamera();
@@ -131,20 +131,26 @@ std::vector<PM3D_API::ShaderLightDefaultParameters> ShadowProcessor::ProcessLigh
 			const auto lightDirection = light->GetWorldDirection();
 
 			const auto positionCameraPlayer = cameraPlayer->GetWorldPosition();
-			const auto directionCameraPlayer = cameraPlayer->GetWorldDirection();
+			const auto focusPointCameraPlayer = cameraPlayer->GetFocusPoint();
 			const auto nearDistCameraPlayer = cameraPlayer->getNearDist();
 			const auto farDistCameraPlayer = cameraPlayer->getFarDist();
 
-			/*const auto focusPoint = DirectX::XMVectorSet(
-				positionCameraPlayer.x + directionCameraPlayer.x * SHADOW_MAP_SIZE / 2.f,
-				positionCameraPlayer.y + directionCameraPlayer.y * SHADOW_MAP_SIZE / 2.f,
-				positionCameraPlayer.z + directionCameraPlayer.z * SHADOW_MAP_SIZE / 2.f,
-				1.0f
-			);*/
+			auto directionCameraPlayer = DirectX::XMFLOAT3(
+				focusPointCameraPlayer.m128_f32[0] - positionCameraPlayer.x,
+				focusPointCameraPlayer.m128_f32[1] - positionCameraPlayer.y,
+				focusPointCameraPlayer.m128_f32[2] - positionCameraPlayer.z
+			);
+
+			const auto normDirection = sqrt(directionCameraPlayer.x * directionCameraPlayer.x + directionCameraPlayer.y * directionCameraPlayer.y + directionCameraPlayer.z * directionCameraPlayer.z);
+
+			directionCameraPlayer.x = directionCameraPlayer.x / normDirection;
+			directionCameraPlayer.y = directionCameraPlayer.y / normDirection;
+			directionCameraPlayer.z = directionCameraPlayer.z / normDirection;
+
 			const auto focusPoint = DirectX::XMVectorSet(
-				positionCameraPlayer.x,
-				positionCameraPlayer.y,
-				positionCameraPlayer.z,
+				positionCameraPlayer.x + directionCameraPlayer.x * viewHeightDirectionnalLight / 2.f,
+				positionCameraPlayer.y + directionCameraPlayer.y * viewHeightDirectionnalLight / 2.f,
+				positionCameraPlayer.z + directionCameraPlayer.z * viewHeightDirectionnalLight / 2.f,
 				1.0f
 			);
 
