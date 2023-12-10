@@ -236,12 +236,8 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		// Texture coordinates are 0-1
 		float2 uv = float2((posInMap.x / 2) + 0.5f, (-posInMap.y / 2) + 0.5f);
 
-		//float4 depth = shadowTexture.Sample(ShadowMapSampler, uv);
-		//float depthV = depth.z / depth.w;
-
 		float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
-
-		// near plane is 0.05f, far plane is 25f
+		
 		
 		// clacul of the distance to the plan (ortho)
         float vectorX = input.worldPos.x - li.position.x;
@@ -253,17 +249,13 @@ float4 MainPS(VS_Sortie input) : SV_Target
 
 		// Calcul de la magnitude de la normale pour obtenir la distance (distance signée)
         float normalMagnitude = sqrt(li.direction.x * li.direction.x + li.direction.y * li.direction.y + li.direction.z * li.direction.z);
-        float distance = dotProduct / normalMagnitude / 25.f;
-		
-		
-		
-		
-		//float distance = length(li.position.xyz - input.worldPos) / 24.95f;
+        float distance = dotProduct / normalMagnitude / 500.f; // 500.f = far dist of the shadowmap camera
 
-		if (distance <= depthV /* TODO +- biais */) { // Not in shadows
-			totalDiffuse += diffuseValueF;
-			totalSpecular += specularValueF;
-		}
+        if (distance <= depthV) // Not in shadows
+        {
+            totalDiffuse += diffuseValueF;
+            totalSpecular += specularValueF;
+        }
 		
 	}
 

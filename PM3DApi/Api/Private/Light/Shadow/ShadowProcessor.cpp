@@ -8,7 +8,7 @@
 
 enum
 {
-	SHADOW_MAP_SIZE = 512
+	SHADOW_MAP_SIZE = 1024
 };
 
 ShadowProcessor::~ShadowProcessor()
@@ -122,31 +122,52 @@ std::vector<PM3D_API::ShaderLightDefaultParameters> ShadowProcessor::ProcessLigh
 	}
 
 	std::vector<PM3D_API::ShaderLightDefaultParameters> shaderLightsParameters{};
-	std::ranges::for_each(finalLights, [&shaderLightsParameters](const PM3D_API::Light* light)
+	std::ranges::for_each(finalLights, [&shaderLightsParameters](PM3D_API::Light* light)
 	{
 		if (light->GetType() == PM3D_API::LightType::DIRECTIONAL)
 		{
-			const auto worldPosition = light->GetWorldPosition();
-			const auto worldDirection = light->GetWorldDirection();
+			const auto& cameraPlayer = PM3D_API::GameHost::GetInstance()->GetScene()->GetMainCamera();
 
+			const auto lightDirection = light->GetWorldDirection();
+
+			const auto positionCameraPlayer = cameraPlayer->GetWorldPosition();
+			const auto directionCameraPlayer = cameraPlayer->GetWorldDirection();
+			const auto nearDistCameraPlayer = cameraPlayer->getNearDist();
+			const auto farDistCameraPlayer = cameraPlayer->getFarDist();
+
+			/*const auto focusPoint = DirectX::XMVectorSet(
+				positionCameraPlayer.x + directionCameraPlayer.x * SHADOW_MAP_SIZE / 2.f,
+				positionCameraPlayer.y + directionCameraPlayer.y * SHADOW_MAP_SIZE / 2.f,
+				positionCameraPlayer.z + directionCameraPlayer.z * SHADOW_MAP_SIZE / 2.f,
+				1.0f
+			);*/
 			const auto focusPoint = DirectX::XMVectorSet(
-				worldPosition.x + worldDirection.x,
-				worldPosition.y + worldDirection.y,
-				worldPosition.z + worldDirection.z,
+				positionCameraPlayer.x,
+				positionCameraPlayer.y,
+				positionCameraPlayer.z,
 				1.0f
 			);
+
+			const auto worldPosition = DirectX::XMFLOAT3(
+				focusPoint.m128_f32[0] - 100.f * lightDirection.x,
+				focusPoint.m128_f32[1] - 100.f * lightDirection.y,
+				focusPoint.m128_f32[2] - 100.f * lightDirection.z
+			);
+
+			light->SetWorldPosition(worldPosition);
+
 			const auto mVLight = DirectX::XMMatrixLookAtRH(
-				DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),
-				focusPoint,
-				DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
+				DirectX::XMVectorSet(worldPosition.x, worldPosition.y, worldPosition.z, 1.0f),	// position
+				focusPoint,																		// lookAt
+				DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)									// upvector
 			);
 
 			constexpr float nearPlane = 0.2f;
-			constexpr float farPlane = 20.0f;
+			constexpr float farPlane = 500.0f;
 
 			const auto mPLight = DirectX::XMMatrixOrthographicRH(
-				20,
-				20,
+				viewWidthDirectionnalLight,
+				viewHeightDirectionnalLight,
 				nearPlane,
 				farPlane
 			);
@@ -181,9 +202,9 @@ void ShadowProcessor::ProcessShadow()
 	const auto pDispositif = PM3D_API::GameHost::GetInstance()->GetDispositif();
 	const auto pImmediateContext = pDispositif->GetImmediateContext();
 
-	const auto lightParameters = ProcessLights();
+	auto lightParameters = ProcessLights();
 
-	for (const auto& [matWorldViewProj, position, direction, ambient, diffuse, specular, specularPower, innerAngle, outerAngle,
+	for (auto& [matWorldViewProj, position, direction, ambient, diffuse, specular, specularPower, innerAngle, outerAngle,
 		     initialized, lightType, padding] : lightParameters)
 	{
 		if (!initialized)
@@ -197,17 +218,25 @@ void ShadowProcessor::ProcessShadow()
 		pDispositif->SetViewportDimension(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
 
 		const auto orthographic = lightType == static_cast<int>(PM3D_API::LightType::DIRECTIONAL);
+
 		const auto cameraPosition = DirectX::XMFLOAT3{
 			position.m128_f32[0],
 			position.m128_f32[1],
 			position.m128_f32[2]
 		};
+
 		const auto cameraFocusPoint = DirectX::XMVectorSet(
-			0.f,
-			0.f,
-			0.f,
+			position.m128_f32[0] + direction.m128_f32[0],
+			position.m128_f32[1] + direction.m128_f32[1],
+			position.m128_f32[2] + direction.m128_f32[2],
 			1.0f
 		);
+		/*const auto cameraFocusPoint = DirectX::XMVectorSet(
+			positionCameraPlayer.x,
+			positionCameraPlayer.y,
+			positionCameraPlayer.z,
+			1.0f
+		);*/
 
 		auto camera = PM3D_API::Camera(
 			"Temp camera",
@@ -216,7 +245,8 @@ void ShadowProcessor::ProcessShadow()
 			cameraFocusPoint,
 			{0, 1, 0, 0}
 		);
-		camera.SetFarDist(25.f);
+
+		camera.SetFarDist(500.f);
 
 		if (!orthographic)
 		{
@@ -224,8 +254,8 @@ void ShadowProcessor::ProcessShadow()
 		}
 		else
 		{
-			camera.SetViewHeight(10);
-			camera.SetViewWidth(10);
+			camera.SetViewHeight(viewHeightDirectionnalLight); // change the field of view of the orthographic camera
+			camera.SetViewWidth(viewWidthDirectionnalLight);
 		}
 
 		camera.UpdateInternalMatrices();

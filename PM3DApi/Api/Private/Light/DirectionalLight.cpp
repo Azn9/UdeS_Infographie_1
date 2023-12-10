@@ -1,5 +1,5 @@
 ﻿#include "Api/Public/Light/DirectionalLight.h"
-
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
 #include <iostream>
 
 #include "Api/Public/Util/Util.h"
@@ -78,12 +78,12 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
         DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
     );
 
-    constexpr float nearPlane = 0.05f;
-    constexpr float farPlane = 25.0f;
-
+    constexpr float nearPlane = 0.02f;
+    constexpr float farPlane = 500.0f;
+    
     const auto mPLight = DirectX::XMMatrixOrthographicRH(
-        10,
-        10,
+        ShadowProcessor::viewWidthDirectionnalLight,
+        ShadowProcessor::viewHeightDirectionnalLight,
         nearPlane,
         farPlane
     );

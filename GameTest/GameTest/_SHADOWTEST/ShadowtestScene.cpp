@@ -33,7 +33,6 @@ void ShadowtestScene::InitializeLights()
 	const auto directionalLightPtr = directionalLight.get();
 	AddLight(std::move(directionalLight));
 
-	directionalLightPtr->SetWorldPosition({10.f, 10.f, 0.f});
 	directionalLightPtr->SetIntensity(1.0f);
 	directionalLightPtr->Initialize();
 }
