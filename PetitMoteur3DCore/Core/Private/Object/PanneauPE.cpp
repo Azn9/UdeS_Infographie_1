@@ -168,6 +168,12 @@ namespace PM3D
         
         // Création de la SRV 2
         pD3DDevice->CreateShaderResourceView(pTmp2Texture, &shaderResourceViewDesc, &pTmp2ResourceView);
+
+
+        //var todo enlever
+        AddShaderVariableValue("distance", 0.1f);
+        AddShaderVariableValue("vignettePower", 2.5f);
+        AddShaderVariableValue("vignetteColor", XMFLOAT4{0.0f, 0.2f, 0.3f, 0.8f});
     }
     
     CPanneauPE::~CPanneauPE()
@@ -189,6 +195,26 @@ namespace PM3D
     {
         ID3D11DepthStencilState* oldDepthState = pDispositif->GetDepthStencilState();
         pDispositif->SetDepthState(false, false); //on désactive les tests et l'écriture sur la profondeur
+
+        // Obtenir le contexte
+        ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+        // Choisir la topologie des primitives
+        pImmediateContext->IASetPrimitiveTopology(
+        D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+        // Source des sommets
+        UINT stride = sizeof( CSommetPanneauPE );
+        UINT offset = 0;
+        pImmediateContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, &stride,
+        &offset );
+
+        // input layout des sommets
+        pImmediateContext->IASetInputLayout( pVertexLayout );
+
+        // Set des variables de shader utilisateur
+        for (auto [name, val] : pPersistentShaderVars)
+        {
+            DXEssayer(std::visit(SetVariableVisitor{name, pEffet}, val));
+        }
         
         for (int i = 0; i < NOMBRE_TECHNIQUES; ++i)
         {
@@ -199,48 +225,21 @@ namespace PM3D
 
             pDispositif->SetRenderTargetView(pCurrentRenderTargetView);
             
-            // Obtenir le contexte
-            ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
-            // Choisir la topologie des primitives
-            pImmediateContext->IASetPrimitiveTopology(
-            D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-            // Source des sommets
-            UINT stride = sizeof( CSommetPanneauPE );
-            UINT offset = 0;
-            pImmediateContext->IASetVertexBuffers( 0, 1, &pVertexBuffer, &stride,
-            &offset );
-
-            // input layout des sommets
-            pImmediateContext->IASetInputLayout( pVertexLayout );
-            
             // Choix de la technique
             pTechnique = pEffet->GetTechniqueByIndex(i);
             pPasse = pTechnique->GetPassByIndex(0);
 
+           
+
             // Le sampler state
             ID3DX11EffectSamplerVariable* variableSampler;
             variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
-
             variableSampler->SetSampler(0, pSampleState);
+
+            // La texture de la scène
             ID3DX11EffectShaderResourceVariable* variableTexture;
             variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
-        
-            // Activation de la texture
             variableTexture->SetResource(pCurrentResourceView);
-
-            // La « constante » distance
-            ID3DX11EffectScalarVariable* scalarVar;
-            scalarVar = pEffet->GetVariableByName("distance")->AsScalar();
-            scalarVar->SetFloat(0.10f);
-
-            scalarVar = pEffet->GetVariableByName("vignettePower")->AsScalar();
-            scalarVar->SetFloat(2.5f);
-
-            ID3DX11EffectVectorVariable* vectorVar;
-            vectorVar = pEffet->GetVariableByName("vignetteColor")->AsVector();
-            const float* color = new float[4](0.0f, 0.2f, 0.3f, 0.8f);
-            vectorVar->SetFloatVector(color);
-            delete color;
         
             pPasse->Apply(0, pImmediateContext);
             // **** Rendu de l’objet
@@ -265,6 +264,44 @@ namespace PM3D
         // Restaurer l’ancienne surface de rendu et le tampon de profondeur
         // associé
         pDispositif->SetRenderTargetView(pMainRenderTargetView); // devrait être set correctement, mais au cas où
+    }
+
+    template<is_shader_param T>
+    void CPanneauPE::AddShaderVariableValue(const std::string& name, const T& param)
+    {
+        pPersistentShaderVars[name] = param;
+    }
+
+    HRESULT CPanneauPE::SetVariableVisitor::operator()(const float& f) const
+    {
+        ID3DX11EffectScalarVariable* var = effect->GetVariableByName(name.c_str())->AsScalar();
+        return var->SetFloat(f);
+    }
+    /*HRESULT CPanneauPE::SetVariableVisitor::operator()(const XMFLOAT3& fs) const
+    {
+        ID3DX11EffectVectorVariable* var = nullptr        const float fs2[3] = {fs.x, fs.y, fs.z};
+        return var->SetFloatVector(fs2);
+    }*/
+    HRESULT CPanneauPE::SetVariableVisitor::operator()(const XMFLOAT4& fs) const
+    {
+        ID3DX11EffectVectorVariable* var = effect->GetVariableByName(name.c_str())->AsVector();
+        const float fs2[4] = {fs.x, fs.y, fs.z, fs.w};
+        return var->SetFloatVector(fs2);
+    }
+    HRESULT CPanneauPE::SetVariableVisitor::operator()(const XMVECTOR& fs) const
+    {
+        ID3DX11EffectVectorVariable* var = effect->GetVariableByName(name.c_str())->AsVector();
+        return var->SetFloatVector(fs.m128_f32);
+    }
+    HRESULT CPanneauPE::SetVariableVisitor::operator()(ID3D11SamplerState* s) const
+    {
+        ID3DX11EffectSamplerVariable* var = effect->GetVariableByName(name.c_str())->AsSampler();
+        return var->SetSampler(0, s);
+    }
+    HRESULT CPanneauPE::SetVariableVisitor::operator()(ID3D11ShaderResourceView* s) const
+    {
+        ID3DX11EffectShaderResourceVariable* var = effect->GetVariableByName(name.c_str())->AsShaderResource();
+        return var->SetResource(s);
     }
 
 }
