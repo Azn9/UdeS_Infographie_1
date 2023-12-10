@@ -78,7 +78,14 @@ namespace PM3D
 
         std::map<std::string, ShaderParam> pPersistentShaderVars;
 
-        struct SetVariableVisitor
+
+        HRESULT SetShaderVar(const std::string& name, const float& f) const;
+        HRESULT SetShaderVar(const std::string& name, const XMFLOAT4& fs) const;
+        HRESULT SetShaderVar(const std::string& name, const XMVECTOR& fs) const;
+        HRESULT SetShaderVar(const std::string& name, ID3D11SamplerState* s) const;
+        HRESULT SetShaderVar(const std::string& name, ID3D11ShaderResourceView* s) const;
+        
+        /*struct SetVariableVisitor
         {
             const std::string name;
             ID3DX11Effect* effect;
@@ -90,6 +97,6 @@ namespace PM3D
             HRESULT operator()(const XMVECTOR& fs) const;
             HRESULT operator()(ID3D11SamplerState* s) const;
             HRESULT operator()(ID3D11ShaderResourceView* s) const;
-        };
+        };*/
     };
 } // namespace PM3D

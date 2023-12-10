@@ -171,9 +171,9 @@ namespace PM3D
 
 
         //var todo enlever
-        AddShaderVariableValue("distance", 0.1f);
-        AddShaderVariableValue("vignettePower", 2.5f);
-        AddShaderVariableValue("vignetteColor", XMFLOAT4{0.0f, 0.2f, 0.3f, 0.8f});
+        DXEssayer(SetShaderVar("distance", 0.1f));
+        DXEssayer(SetShaderVar("vignettePower", 2.5f));
+        DXEssayer(SetShaderVar("vignetteColor", XMFLOAT4{0.0f, 0.2f, 0.3f, 0.8f}));
     }
     
     CPanneauPE::~CPanneauPE()
@@ -211,10 +211,10 @@ namespace PM3D
         pImmediateContext->IASetInputLayout( pVertexLayout );
 
         // Set des variables de shader utilisateur
-        for (auto [name, val] : pPersistentShaderVars)
+        /*for (auto [name, val] : pPersistentShaderVars)
         {
             DXEssayer(std::visit(SetVariableVisitor{name, pEffet}, val));
-        }
+        }*/
         
         for (int i = 0; i < NOMBRE_TECHNIQUES; ++i)
         {
@@ -228,8 +228,6 @@ namespace PM3D
             // Choix de la technique
             pTechnique = pEffet->GetTechniqueByIndex(i);
             pPasse = pTechnique->GetPassByIndex(0);
-
-           
 
             // Le sampler state
             ID3DX11EffectSamplerVariable* variableSampler;
@@ -269,12 +267,12 @@ namespace PM3D
     template<is_shader_param T>
     void CPanneauPE::AddShaderVariableValue(const std::string& name, const T& param)
     {
-        pPersistentShaderVars[name] = param;
+        DXEssayer(SetShaderVar(name, param));
     }
 
-    HRESULT CPanneauPE::SetVariableVisitor::operator()(const float& f) const
+    HRESULT CPanneauPE::SetShaderVar(const std::string& name, const float& f) const
     {
-        ID3DX11EffectScalarVariable* var = effect->GetVariableByName(name.c_str())->AsScalar();
+        ID3DX11EffectScalarVariable* var = pEffet->GetVariableByName(name.c_str())->AsScalar();
         return var->SetFloat(f);
     }
     /*HRESULT CPanneauPE::SetVariableVisitor::operator()(const XMFLOAT3& fs) const
@@ -282,25 +280,25 @@ namespace PM3D
         ID3DX11EffectVectorVariable* var = nullptr        const float fs2[3] = {fs.x, fs.y, fs.z};
         return var->SetFloatVector(fs2);
     }*/
-    HRESULT CPanneauPE::SetVariableVisitor::operator()(const XMFLOAT4& fs) const
+    HRESULT CPanneauPE::SetShaderVar(const std::string& name, const XMFLOAT4& fs) const
     {
-        ID3DX11EffectVectorVariable* var = effect->GetVariableByName(name.c_str())->AsVector();
+        ID3DX11EffectVectorVariable* var = pEffet->GetVariableByName(name.c_str())->AsVector();
         const float fs2[4] = {fs.x, fs.y, fs.z, fs.w};
         return var->SetFloatVector(fs2);
     }
-    HRESULT CPanneauPE::SetVariableVisitor::operator()(const XMVECTOR& fs) const
+    HRESULT CPanneauPE::SetShaderVar(const std::string& name, const XMVECTOR& fs) const
     {
-        ID3DX11EffectVectorVariable* var = effect->GetVariableByName(name.c_str())->AsVector();
+        ID3DX11EffectVectorVariable* var = pEffet->GetVariableByName(name.c_str())->AsVector();
         return var->SetFloatVector(fs.m128_f32);
     }
-    HRESULT CPanneauPE::SetVariableVisitor::operator()(ID3D11SamplerState* s) const
+    HRESULT CPanneauPE::SetShaderVar(const std::string& name, ID3D11SamplerState* s) const
     {
-        ID3DX11EffectSamplerVariable* var = effect->GetVariableByName(name.c_str())->AsSampler();
+        ID3DX11EffectSamplerVariable* var = pEffet->GetVariableByName(name.c_str())->AsSampler();
         return var->SetSampler(0, s);
     }
-    HRESULT CPanneauPE::SetVariableVisitor::operator()(ID3D11ShaderResourceView* s) const
+    HRESULT CPanneauPE::SetShaderVar(const std::string& name, ID3D11ShaderResourceView* s) const
     {
-        ID3DX11EffectShaderResourceVariable* var = effect->GetVariableByName(name.c_str())->AsShaderResource();
+        ID3DX11EffectShaderResourceVariable* var = pEffet->GetVariableByName(name.c_str())->AsShaderResource();
         return var->SetResource(s);
     }
 
