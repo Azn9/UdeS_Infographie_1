@@ -18,13 +18,10 @@ namespace PM3D
     
     UINT CSommetPanneauPE::numElements = ARRAYSIZE(layout);
     
-    CSommetPanneauPE CPanneauPE::sommets[6] = { //TODO: utiliser un triangle à la place
+    CSommetPanneauPE CPanneauPE::sommets[3] = {
         CSommetPanneauPE(XMFLOAT3(-1.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f)),
-        CSommetPanneauPE(XMFLOAT3(-1.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f)),
-        CSommetPanneauPE(XMFLOAT3( 1.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f)),
-        CSommetPanneauPE(XMFLOAT3(-1.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f)),
-        CSommetPanneauPE(XMFLOAT3( 1.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f)),
-        CSommetPanneauPE(XMFLOAT3( 1.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f)) 
+        CSommetPanneauPE(XMFLOAT3(-1.0f, 3.0f, 0.0f), XMFLOAT2(0.0f, -1.0f)),
+        CSommetPanneauPE(XMFLOAT3( 3.0f, -1.0f, 0.0f), XMFLOAT2(2.0f, 1.0f))
         };
 
 

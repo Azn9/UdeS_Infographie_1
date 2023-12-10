@@ -56,7 +56,7 @@ namespace PM3D
         
     private:
         void InitEffet();
-        static CSommetPanneauPE sommets[6];
+        static CSommetPanneauPE sommets[3];
         ID3D11Buffer* pVertexBuffer;
         CDispositifD3D11* pDispositif;
         
