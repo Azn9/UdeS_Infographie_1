@@ -209,12 +209,6 @@ namespace PM3D
 
         // input layout des sommets
         pImmediateContext->IASetInputLayout( pVertexLayout );
-
-        // Set des variables de shader utilisateur
-        /*for (auto [name, val] : pPersistentShaderVars)
-        {
-            DXEssayer(std::visit(SetVariableVisitor{name, pEffet}, val));
-        }*/
         
         for (int i = 0; i < NOMBRE_TECHNIQUES; ++i)
         {

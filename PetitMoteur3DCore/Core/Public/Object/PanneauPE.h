@@ -1,8 +1,8 @@
 #pragma once
-#include <map>
 #include <cvt/wstring>
 #include <string>
 #include <variant>
+#include <set>
 
 #include "objet3d.h"
 
@@ -73,11 +73,8 @@ namespace PM3D
         ID3D11RenderTargetView* pCurrentRenderTargetView;
         ID3D11ShaderResourceView* pCurrentResourceView;
         
-        static const int NOMBRE_TECHNIQUES = 3;
+        std::set<int> pEnabledTechnique;
         ID3D11InputLayout* pVertexLayout;
-
-        std::map<std::string, ShaderParam> pPersistentShaderVars;
-
 
         HRESULT SetShaderVar(const std::string& name, const float& f) const;
         HRESULT SetShaderVar(const std::string& name, const XMFLOAT4& fs) const;
@@ -85,18 +82,5 @@ namespace PM3D
         HRESULT SetShaderVar(const std::string& name, ID3D11SamplerState* s) const;
         HRESULT SetShaderVar(const std::string& name, ID3D11ShaderResourceView* s) const;
         
-        /*struct SetVariableVisitor
-        {
-            const std::string name;
-            ID3DX11Effect* effect;
-            //SetVariableVisitor() = delete;
-            SetVariableVisitor(const std::string& name, ID3DX11Effect* effect) : name(name), effect(effect) {}
-            
-            HRESULT operator()(const float& f) const;
-            HRESULT operator()(const XMFLOAT4& fs) const;
-            HRESULT operator()(const XMVECTOR& fs) const;
-            HRESULT operator()(ID3D11SamplerState* s) const;
-            HRESULT operator()(ID3D11ShaderResourceView* s) const;
-        };*/
     };
 } // namespace PM3D
