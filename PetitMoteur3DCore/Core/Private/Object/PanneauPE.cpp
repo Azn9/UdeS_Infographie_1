@@ -3,6 +3,7 @@
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Core/dispositifD3D11.h"
 #include <d3dcompiler.h>
+#include <ranges>
 
 #include "Core/Public/Object/Panneau.h"
 
@@ -57,6 +58,11 @@ namespace PM3D
         DXE_CREATIONVERTEXBUFFER);
         // Initialisation de l’effet 
         InitEffet(); 
+    }
+
+    std::set<int>& CPanneauPE::getEnabledPostEffects()
+    {
+        return pEnabledTechniques;
     }
 
     void CPanneauPE::InitEffet()
@@ -169,8 +175,21 @@ namespace PM3D
         // Création de la SRV 2
         pD3DDevice->CreateShaderResourceView(pTmp2Texture, &shaderResourceViewDesc, &pTmp2ResourceView);
 
+        //On set le nombre de techniques dans le fichier
+        D3DX11_EFFECT_DESC* desc = new D3DX11_EFFECT_DESC{};
+        pEffet->GetDesc(desc);
+        techniqueCount = static_cast<int>(desc->Techniques);
 
-        //var todo enlever
+        // Le sampler state
+        ID3DX11EffectSamplerVariable* variableSampler;
+        variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
+        variableSampler->SetSampler(0, pSampleState);
+        
+        //TODO: enlever
+        for (int i = 0; i < 3; ++i)
+        {
+            pEnabledTechniques.insert(i);
+        }
         DXEssayer(SetShaderVar("distance", 0.1f));
         DXEssayer(SetShaderVar("vignettePower", 2.5f));
         DXEssayer(SetShaderVar("vignetteColor", XMFLOAT4{0.0f, 0.2f, 0.3f, 0.8f}));
@@ -209,24 +228,20 @@ namespace PM3D
 
         // input layout des sommets
         pImmediateContext->IASetInputLayout( pVertexLayout );
-        
-        for (int i = 0; i < NOMBRE_TECHNIQUES; ++i)
+
+        int i{0};
+        for (int techniqueIndex : pEnabledTechniques)
         {
             pCurrentResourceView = (i % 2 == 0) ? pTmpResourceView : pTmp2ResourceView;
             pCurrentRenderTargetView =
-                (i == NOMBRE_TECHNIQUES - 1) ? pMainRenderTargetView : //C'est la dérnière passe, on écrit sur la swap
+                (i == pEnabledTechniques.size() - 1) ? pMainRenderTargetView : //C'est la dérnière passe, on écrit sur la swap
                 (i % 2 == 0) ? pTmp2RenderTargetView : pTmpRenderTargetView;
 
             pDispositif->SetRenderTargetView(pCurrentRenderTargetView);
             
             // Choix de la technique
-            pTechnique = pEffet->GetTechniqueByIndex(i);
+            pTechnique = pEffet->GetTechniqueByIndex(techniqueIndex);
             pPasse = pTechnique->GetPassByIndex(0);
-
-            // Le sampler state
-            ID3DX11EffectSamplerVariable* variableSampler;
-            variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
-            variableSampler->SetSampler(0, pSampleState);
 
             // La texture de la scène
             ID3DX11EffectShaderResourceVariable* variableTexture;
@@ -236,7 +251,8 @@ namespace PM3D
             pPasse->Apply(0, pImmediateContext);
             // **** Rendu de l’objet
             pImmediateContext->Draw( 6, 0 );
-
+            
+            ++i;
         }
 
         pDispositif->SetDepthState(true, true);
@@ -259,7 +275,7 @@ namespace PM3D
     }
 
     template<is_shader_param T>
-    void CPanneauPE::AddShaderVariableValue(const std::string& name, const T& param)
+    void CPanneauPE::SetShaderVariableValue(const std::string& name, const T& param)
     {
         DXEssayer(SetShaderVar(name, param));
     }
@@ -269,11 +285,12 @@ namespace PM3D
         ID3DX11EffectScalarVariable* var = pEffet->GetVariableByName(name.c_str())->AsScalar();
         return var->SetFloat(f);
     }
-    /*HRESULT CPanneauPE::SetVariableVisitor::operator()(const XMFLOAT3& fs) const
+    HRESULT CPanneauPE::SetShaderVar(const std::string& name, const XMFLOAT3& fs) const
     {
-        ID3DX11EffectVectorVariable* var = nullptr        const float fs2[3] = {fs.x, fs.y, fs.z};
+        ID3DX11EffectVectorVariable* var = pEffet->GetVariableByName(name.c_str())->AsVector();
+        float fs2[3] = {fs.x, fs.y, fs.z};
         return var->SetFloatVector(fs2);
-    }*/
+    }
     HRESULT CPanneauPE::SetShaderVar(const std::string& name, const XMFLOAT4& fs) const
     {
         ID3DX11EffectVectorVariable* var = pEffet->GetVariableByName(name.c_str())->AsVector();

@@ -12,7 +12,7 @@ namespace PM3D
 {
     template<class T>
     concept is_shader_param = std::_Is_any_of_v
-        <T, float, XMFLOAT4, XMVECTOR, ID3D11SamplerState*, ID3D11ShaderResourceView*>;
+        <T, float, XMFLOAT3, XMFLOAT4, XMVECTOR, ID3D11SamplerState*, ID3D11ShaderResourceView*>;
     
     class CDispositifD3D11;
     class CSommetPanneauPE
@@ -45,7 +45,8 @@ namespace PM3D
         void FinPostEffect();
         
         template<is_shader_param T>
-        void AddShaderVariableValue(const std::string& name, const T& param);
+        void SetShaderVariableValue(const std::string& name, const T& param);
+        std::set<int>& getEnabledPostEffects();
         
     private:
         void InitEffet();
@@ -72,12 +73,15 @@ namespace PM3D
         
         ID3D11RenderTargetView* pCurrentRenderTargetView;
         ID3D11ShaderResourceView* pCurrentResourceView;
-        
-        std::set<int> pEnabledTechnique;
+
+        int techniqueCount;
+        std::set<int> pEnabledTechniques;
         ID3D11InputLayout* pVertexLayout;
 
+        //Fonctions pour enregistrer les variables de shader
         HRESULT SetShaderVar(const std::string& name, const float& f) const;
         HRESULT SetShaderVar(const std::string& name, const XMFLOAT4& fs) const;
+        HRESULT SetShaderVar(const std::string& name, const XMFLOAT3& fs) const;
         HRESULT SetShaderVar(const std::string& name, const XMVECTOR& fs) const;
         HRESULT SetShaderVar(const std::string& name, ID3D11SamplerState* s) const;
         HRESULT SetShaderVar(const std::string& name, ID3D11ShaderResourceView* s) const;
