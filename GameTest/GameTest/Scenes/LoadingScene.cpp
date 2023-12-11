@@ -10,6 +10,8 @@
 #include "GameTest/Components/SnowMover.h"
 #include "GameTest/Components/LoadingScene/CameraMoverComponent.h"
 
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
+
 void LoadingScene::InitializeCamera()
 {
     std::cout << "LoadingScene::InitializeCamera()" << std::endl;
@@ -68,6 +70,11 @@ void LoadingScene::InitializeObjects()
     tree->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "tree_pineTallA.obj"));
 
     AddChild(std::move(tree));
+
+    auto shadowProcessor = std::make_unique<ShadowProcessor>();
+    shadowProcessor->Initialize();
+    shadowProcessor->SetScene(this);
+    AddComponent(std::move(shadowProcessor));
 }
 
 void LoadingScene::InitializeUI()

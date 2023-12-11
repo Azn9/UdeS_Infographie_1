@@ -24,6 +24,8 @@
 #include "GameTest/Components/MovableComponent.h"
 #include "GameTest/Components/SizeModifierComponent.h"
 
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
+
 void MainScene::InitializePhysics()
 {
 	auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
@@ -146,7 +148,7 @@ void MainScene::InitializeObjects()
 	}
 
 	// ============= Add railings =============
-	{
+	/*{
 		auto railings = std::make_unique<GameObject>("railings");
 		auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
 		railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railings.obj"));
@@ -168,30 +170,15 @@ void MainScene::InitializeObjects()
 		filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
 		physx::PxShape* railingShape = meshColliderPtr->getShape();
 		railingShape->setSimulationFilterData(filterDataObstacle);
-	}
+	}*/
 
 	// ============= Add a pines =============
-	{
-		AddPine(XMFLOAT3(-0.05f, -10.56f, -14.89f));
-		AddPine(XMFLOAT3(1.2f, 14.f, -21.f));
-		AddPine(XMFLOAT3(-2.1f, -12.6f, -18.f));
-		AddPine(XMFLOAT3(-3.75f, -14.54f, -21.94f));
-		AddPine(XMFLOAT3(1.2f, -14.1f, -21.f));
-		AddPine(XMFLOAT3(12.87f, -27.54f, -44.46f));
-		AddPine(XMFLOAT3(16.96f, -35.3f, -57.02f));
-		AddPine(XMFLOAT3(14.53f, -31.53f, -51.1f));
-		AddPine(XMFLOAT3(-15.4f, -35.8f, -60.16f));
-		AddPine(XMFLOAT3(-27.11f, -35.67f, -57.92f));
-		AddPine(XMFLOAT3(-22.06f, -21.8f, -35.15f));
-		AddPine(XMFLOAT3(10.83f, -43.02f, -71.44f));
-		AddPine(XMFLOAT3(22.33f, -20.25f, -29.9f));
-		AddPine(XMFLOAT3(-12.64f, -36.24f, -61.14f));
-		AddPine(XMFLOAT3(-10.16f, -35.38f, -59.47f));
-		AddPine(XMFLOAT3(-21.72f, -40.49f, -68.81f));
-		AddPine(XMFLOAT3(2.31f, -32.77f, -54.46f));
-		AddPine(XMFLOAT3(5.0f, -33.96f, -56.48f));
-		AddPine(XMFLOAT3(21.97f, -34.6f, -55.14f));
-	}
+
+
+	auto shadowProcessor = std::make_unique<ShadowProcessor>();
+	shadowProcessor->Initialize();
+	shadowProcessor->SetScene(this);
+	AddComponent(std::move(shadowProcessor));
 }
 
 

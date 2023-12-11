@@ -8,7 +8,7 @@
 
 enum
 {
-	SHADOW_MAP_SIZE = 1024
+	SHADOW_MAP_SIZE = 512
 };
 
 ShadowProcessor::~ShadowProcessor()
@@ -246,7 +246,7 @@ void ShadowProcessor::ProcessShadow()
 
 		auto camera = PM3D_API::Camera(
 			"Temp camera",
-			orthographic ? PM3D_API::Camera::ORTHOGRAPHIC : PM3D_API::Camera::PERSECTIVE,
+			orthographic ? PM3D_API::Camera::ORTHOGRAPHIC : PM3D_API::Camera::CameraType::PERSPECTIVE,
 			cameraPosition,
 			cameraFocusPoint,
 			{0, 1, 0, 0}

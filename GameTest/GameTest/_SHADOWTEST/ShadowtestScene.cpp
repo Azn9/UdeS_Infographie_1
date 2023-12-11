@@ -9,7 +9,7 @@ void ShadowtestScene::InitializeCamera()
 {
 	auto camera = std::make_unique<PM3D_API::Camera>(
 		"Camera",
-		PM3D_API::Camera::CameraType::PERSECTIVE,
+		PM3D_API::Camera::CameraType::PERSPECTIVE,
 		DirectX::XMFLOAT3(10.0f, 10.0f, 10.0f),
 		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
 		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)
