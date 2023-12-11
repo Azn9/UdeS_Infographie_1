@@ -1,7 +1,13 @@
 #pragma once
 #include <DirectXMath.h>
 #include <iostream>
+#include "Core/Imgui/imgui.h"
 #include "Api/Public/Input/Input.h"
+#include "Api/Public/EventSystem/EventSystem.h"
+#include <Api/Public/EventSystem/InTunnelEvent.h>
+#include "GameTest/Event/GameOverEvent.h"
+
+#include "GameTest/RestartEvent.h"
 
 enum class CameraType {
 		ThirdPerson = 0,
@@ -12,11 +18,27 @@ enum class CameraType {
 class CameraFollowComponent final : public PM3D_API::Component
 {
 public:
+	CameraFollowComponent() {
+		PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
+			{
+				_inTunnel = true;
+			});
+		PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
+			{
+				_resetRequested = true;
+			});
+	}
+
 	void PhysicsUpdate() override
 	{
 		if (!_objectToFollow)
 			return;
 		
+		if (_resetRequested) {
+			_resetRequested = false;
+			_inTunnel = false;
+		}
+
 		if (Input::IsKeyPressed(KeyCode::C)) // Ou IsKeyHeld
 		{
 			if (camType == CameraType::ThirdPerson)
@@ -42,7 +64,16 @@ public:
 		DirectX::XMFLOAT3 position;
 		auto camRFP = parentObject->GetChild<PM3D_API::Camera>();
 
-		if (camType == CameraType::ThirdPerson)
+		if (_inTunnel) {
+			position = XMFLOAT3(
+				positionObjectToFollow.x - 10 * velNormalized.x,
+				positionObjectToFollow.y + 10.0f,
+				positionObjectToFollow.z - 10 * velNormalized.z
+			);
+			position = Util::Lerp(parentObject->GetWorldPosition(), position, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 3.0f);
+			static_cast<PM3D_API::Camera*>(parentObject)->SetUpDirection({ 0.f,1.f,0.f,0.f });
+		}
+		else if (camType == CameraType::ThirdPerson)
 		{
 			position = XMFLOAT3(
 				positionObjectToFollow.x - 10 * velNormalized.x,
@@ -81,7 +112,12 @@ public:
 
 		DirectX::XMFLOAT3 camLookAt;
 
-		if (camType == CameraType::ThirdPerson)
+		if (_inTunnel) {
+			
+			camLookAt = XMFLOAT3(50, -1200, -4500);
+			camLookAt = Util::Lerp(_currentLookAt, camLookAt, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 0.3f);
+		}
+		else if (camType == CameraType::ThirdPerson)
 		{
 			const float velDivider = 5.f;
 			DirectX::XMFLOAT3 camLookAt_Temp = DirectX::XMFLOAT3(
@@ -114,6 +150,7 @@ public:
 
 
 		static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(camLookAt);
+		_currentLookAt = camLookAt;
 	}
 
 	void DrawDebugInfo() const override
@@ -134,4 +171,7 @@ private:
 	float _angle = 45.0f;
 	PM3D_API::GameObject* _objectToFollow{};
 	CameraType camType = CameraType::ThirdPerson;
+	bool _inTunnel = false;
+	bool _resetRequested = false;
+	XMFLOAT3 _currentLookAt{};
 };
