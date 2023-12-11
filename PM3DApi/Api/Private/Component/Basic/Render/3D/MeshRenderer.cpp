@@ -214,7 +214,7 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
         const unsigned indexStart = objGroup.index_offset;
 
         unsigned int indexDrawAmount;
-        if (mesh->object_count > 1 && i + 1 < mesh->object_count)
+        if (mesh->group_count > 1 && i + 1 < mesh->group_count)
         {
             indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
         }
