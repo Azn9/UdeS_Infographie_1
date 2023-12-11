@@ -28,6 +28,7 @@
 #include <Api/Public/Component/Basic/Physics/SkierCollider.h>
 #include <GameTest/Objects/Right_Ski.h>
 #include <GameTest/Objects/Left_ski.h>
+#include <GameTest/Components/JointsBreakerComponent.h>
 
 
 void MainScene::InitializePhysics()
@@ -197,11 +198,14 @@ void MainScene::InitializeObjects()
 			PM3D_API::SkierCollider>(PxGetPhysics().createMaterial(0.f, 0.f, 1.f));
 		const auto lskiColliderPtr = lskiCollider.get();
 		lskiPtr->AddComponent(std::move(lskiCollider));
+
 		lskiColliderPtr->Initialize();
 		physx::PxFilterData filterDataSkier;
 		filterDataSkier.word0 = FilterGroup::eSKIER;
 		physx::PxShape* lskiShape = lskiColliderPtr->getShape();
 		lskiShape->setSimulationFilterData(filterDataSkier);
+		
+
 
 		// skier
 		auto skier = std::make_unique<Skier>();
@@ -267,7 +271,6 @@ void MainScene::InitializeObjects()
 		jointSkier->setMotion(physx::PxD6Axis::eY, physx::PxD6Motion::eLIMITED);
 		jointSkier->setDistanceLimit(physx::PxJointLinearLimit(0.2f));
 		
-
 	}
 
 	// ============= Add railings =============
