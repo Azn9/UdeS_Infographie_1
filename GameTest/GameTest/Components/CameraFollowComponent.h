@@ -80,6 +80,8 @@ public:
 				positionObjectToFollow.y + 10.0f,
 				positionObjectToFollow.z - 10 * velNormalized.z
 			);
+			position = Util::Lerp(parentObject->GetWorldPosition(), position, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 3.0f);
+
 		}
 		else if (camType == CameraType::FirstPerson)
 		{
@@ -93,8 +95,8 @@ public:
 		{
 			position = XMFLOAT3(
 				positionObjectToFollow.x,
-				positionObjectToFollow.y + cos(_angle) * (scaleObjectToFollow.x * 0.5f) ,
-				positionObjectToFollow.z - sin(_angle) * (scaleObjectToFollow.x * 0.5f)
+				positionObjectToFollow.y + cos(_angle) * (scaleObjectToFollow.x * 0.35f) ,
+				positionObjectToFollow.z - sin(_angle) * (scaleObjectToFollow.x * 0.35f)
 			);
 
 			if (positionObjectToFollow.z - sin(_angle) * (scaleObjectToFollow.x * 0.5f) <= positionObjectToFollow.z)
@@ -104,9 +106,10 @@ public:
 
 			const float velMean = sqrtf((vel.x * vel.x) + (vel.y * vel.y) + (vel.z * vel.z));
 
-			_angle += max(velMean / 500.f, 0.05f);
+			_angle += max(velMean / 250.f, 0.05f);
 		}
 
+		
 		parentObject->SetWorldPosition(position);
 		
 
