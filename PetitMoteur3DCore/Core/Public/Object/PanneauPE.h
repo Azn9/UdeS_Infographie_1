@@ -40,8 +40,8 @@ namespace PM3D
         explicit CPanneauPE(CDispositifD3D11* pDispositif_in);
         virtual ~CPanneauPE();
         virtual void Draw() override;
-        void DebutPostEffect();
-        void FinPostEffect();
+        void BeginDrawToPostEffect();
+        void EndDrawToPostEffect();
         
         template<is_shader_param T>
         void SetShaderVariableValue(const std::string& name, const T& param)
@@ -79,7 +79,8 @@ namespace PM3D
         // Textures de rendu pour effets
         ID3D11Texture2D* pTmpTexture;
         ID3D11Texture2D* pTmp2Texture;
-        ID3D11Texture2D* pTmpDepthTexture;
+        //ID3D11Texture2D* pTmpDepthTexture;
+        ID3D11ShaderResourceView* pMainDepthStencilShaderRessourceView;
         ID3D11RenderTargetView* pTmpRenderTargetView;
         ID3D11ShaderResourceView* pTmpResourceView;
 
@@ -87,6 +88,7 @@ namespace PM3D
         ID3D11ShaderResourceView* pTmp2ResourceView;
         
         ID3D11RenderTargetView* pMainRenderTargetView;
+        ID3D11DepthStencilView* pMainDepthStencilView;
         
         ID3D11RenderTargetView* pCurrentRenderTargetView;
         ID3D11ShaderResourceView* pCurrentResourceView;

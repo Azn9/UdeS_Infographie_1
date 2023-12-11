@@ -18,6 +18,6 @@ void GameTest::InitializePostProcessParam() const
 	postEffectPlane->enableAllPostEffects();
 	
 	postEffectPlane->SetShaderVariableValue("distance", 0.1f);
-	postEffectPlane->SetShaderVariableValue("vignettePower", 2.5f);
-	postEffectPlane->SetShaderVariableValue("vignetteColor", XMFLOAT4{0.0f, 0.2f, 0.3f, 0.8f});
+	postEffectPlane->SetShaderVariableValue("vignettePower", 4.f);
+	postEffectPlane->SetShaderVariableValue("vignetteColor", XMFLOAT4{0.0f, 0.0f, 0.f, 0.8f});
 }

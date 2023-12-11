@@ -215,7 +215,6 @@ namespace PM3D
         ID3DX11EffectSamplerVariable* variableSampler;
         variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
         variableSampler->SetSampler(0, pSampleState);
-        
     }
     
     CPanneauPE::~CPanneauPE()
@@ -237,6 +236,10 @@ namespace PM3D
     {
         if(pEnabledTechniques.empty())
             return;
+
+        ID3DX11EffectShaderResourceVariable* variableTexture;
+        variableTexture = pEffet->GetVariableByName("depthTexture")->AsShaderResource();
+        variableTexture->SetResource(pMainDepthStencilShaderRessourceView);
         
         ID3D11DepthStencilState* oldDepthState = pDispositif->GetDepthStencilState();
         pDispositif->SetDepthState(false, false); //on désactive les tests et l'écriture sur la profondeur
@@ -263,7 +266,7 @@ namespace PM3D
                 (i == pEnabledTechniques.size() - 1) ? pMainRenderTargetView : //C'est la dérnière passe, on écrit sur la swap
                 (i % 2 == 0) ? pTmp2RenderTargetView : pTmpRenderTargetView;
 
-            pDispositif->SetRenderTargetView(pCurrentRenderTargetView);
+            pDispositif->SetRenderTargetView(pCurrentRenderTargetView, nullptr);
             
             // Choix de la technique
             pTechnique = pEffet->GetTechniqueByIndex(techniqueIndex);
@@ -276,33 +279,37 @@ namespace PM3D
         
             pPasse->Apply(0, pImmediateContext);
             // **** Rendu de l’objet
-            pImmediateContext->Draw( 6, 0 );
+            pImmediateContext->Draw( 3, 0 );
             
             ++i;
         }
-
-        pDispositif->SetDepthState(true, true);
     }
 
-    void CPanneauPE::DebutPostEffect()
+    void CPanneauPE::BeginDrawToPostEffect()
     {
         if(pEnabledTechniques.empty())
             return;
         
         // Prendre en note l’ancienne surface de rendu
         pMainRenderTargetView = pDispositif->GetRenderTargetView();
+        pMainDepthStencilView = pDispositif->GetDepthStencilView();
+        pMainDepthStencilShaderRessourceView = pDispositif->GetDepthShaderRessourceView();
         // Utiliser la texture comme surface de rendu et le tampon de profondeur
         // associé
-        pDispositif->SetRenderTargetView(pTmpRenderTargetView);
+        pDispositif->SetRenderTargetView(pTmpRenderTargetView, pMainDepthStencilView);
     }
 
-    void CPanneauPE::FinPostEffect()
+    void CPanneauPE::EndDrawToPostEffect()
     {
         if(pEnabledTechniques.empty())
             return;
-        // Restaurer l’ancienne surface de rendu et le tampon de profondeur
-        // associé
-        pDispositif->SetRenderTargetView(pMainRenderTargetView); // devrait être set correctement, mais au cas où
+
+        ID3DX11EffectShaderResourceVariable* variableTexture;
+        variableTexture = pEffet->GetVariableByName("depthTexture")->AsShaderResource();
+        variableTexture->SetResource(nullptr);
+
+        pDispositif->SetRenderTargetView(pMainRenderTargetView, pMainDepthStencilView);
+        pDispositif->SetDepthState(true, true);
     }
 
     HRESULT CPanneauPE::SetShaderVar(const std::string& name, const float& f) const

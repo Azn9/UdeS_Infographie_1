@@ -26,6 +26,7 @@ public:
 	IDXGISwapChain* GetSwapChain() { return pSwapChain; }
 	ID3D11RenderTargetView* GetRenderTargetView() { return pRenderTargetView; }
 	ID3D11DepthStencilView* GetDepthStencilView() { return pDepthStencilView; }
+	ID3D11ShaderResourceView* GetDepthShaderRessourceView() { return pDepthShaderRessourceView;}
 	ID3D11RasterizerState* GetRasterizerState() { return mSolidCullBackRS; }
 	ID3D11DepthStencilState* GetDepthStencilState() { return pDepthStencilState; }
 	ID3D11DepthStencilState* GetNoDepthStencilState() { return pNoDepthTestDepthStencilState; }
@@ -42,11 +43,7 @@ public:
 	void ResetViewportDimension();
 	void SetNormalRSState();
 
-	void SetRenderTargetView(
-		ID3D11RenderTargetView* pRenderTargetView_in,
-		ID3D11DepthStencilView* pDepthStencilView_in);
-
-	void SetRenderTargetView(ID3D11RenderTargetView* pRenderTargetView_in);
+	void SetRenderTargetView(ID3D11RenderTargetView* pRenderTargetView_in, ID3D11DepthStencilView* depthView);
 
 private:
 	ID3D11Device* pD3DDevice;
@@ -57,6 +54,7 @@ private:
 	// Pour le tampon de profondeur
 	ID3D11Texture2D* pDepthTexture;
 	ID3D11DepthStencilView* pDepthStencilView;
+	ID3D11ShaderResourceView* pDepthShaderRessourceView;
 	
 	ID3D11DepthStencilState* pDepthStencilState;
 	ID3D11DepthStencilState* pNoDepthTestDepthStencilState;

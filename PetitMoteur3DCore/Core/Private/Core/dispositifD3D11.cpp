@@ -16,6 +16,7 @@ CDispositifD3D11::~CDispositifD3D11()
 	DXRelacher(pDepthTexture);
 	DXRelacher(pDepthStencilView);
 	DXRelacher(pDepthStencilState);
+	DXRelacher(pDepthShaderRessourceView);
 	DXRelacher(pNoDepthTestDepthStencilState);
 	DXRelacher(pNoDepthTestAndWriteTestDepthStencilState);
 
@@ -207,6 +208,7 @@ void CDispositifD3D11::SetDepthState(const bool& depthTest, const bool& depthWri
 	else if (!depthWrite && !depthTest)
 	{
 		pImmediateContext->OMSetDepthStencilState(pNoDepthTestAndWriteTestDepthStencilState, 1);
+		//pImmediateContext->OM
 	}
 	else
 	{
@@ -222,11 +224,11 @@ void CDispositifD3D11::InitDepthBuffer()
 	depthTextureDesc.Height = hauteurEcran;
 	depthTextureDesc.MipLevels = 1;
 	depthTextureDesc.ArraySize = 1;
-	depthTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthTextureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 	depthTextureDesc.SampleDesc.Count = 1;
 	depthTextureDesc.SampleDesc.Quality = 0;
 	depthTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthTextureDesc.CPUAccessFlags = 0;
 	depthTextureDesc.MiscFlags = 0;
 
@@ -235,11 +237,19 @@ void CDispositifD3D11::InitDepthBuffer()
 	// Cr�ation de la vue du tampon de profondeur (ou de stencil)
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSView;
 	ZeroMemory(&descDSView, sizeof(descDSView));
-	descDSView.Format = depthTextureDesc.Format;
+	descDSView.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	descDSView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSView.Texture2D.MipSlice = 0;
 	DXEssayer(pD3DDevice->CreateDepthStencilView(pDepthTexture, &descDSView, &pDepthStencilView),
 		DXE_ERREURCREATIONDEPTHSTENCILTARGET);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC sr_desc;
+	ZeroMemory(&sr_desc, sizeof(sr_desc));
+	sr_desc.Format                    = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	sr_desc.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURE2D;
+	sr_desc.Texture2D.MostDetailedMip = 0;
+	sr_desc.Texture2D.MipLevels       = -1;
+	DXEssayer(pD3DDevice->CreateShaderResourceView(pDepthTexture, &sr_desc, &pDepthShaderRessourceView));
 }
 
 void CDispositifD3D11::InitDepthState()
@@ -330,18 +340,10 @@ void CDispositifD3D11::SetNormalRSState()
 	pImmediateContext->RSSetState(mSolidCullBackRS);
 }
 
-void CDispositifD3D11::SetRenderTargetView(
-	ID3D11RenderTargetView* pRenderTargetView_in, ID3D11DepthStencilView* pDepthStencilView_in)
+void CDispositifD3D11::SetRenderTargetView(ID3D11RenderTargetView* pRenderTargetView_in, ID3D11DepthStencilView* depthView)
 {
 	pRenderTargetView = pRenderTargetView_in;
-	pDepthStencilView = pDepthStencilView_in;
-	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
-}
-
-void CDispositifD3D11::SetRenderTargetView(
-	ID3D11RenderTargetView* pRenderTargetView_in)
-{
-	pRenderTargetView = pRenderTargetView_in;
+	pDepthStencilView = depthView;
 	pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
 }
 

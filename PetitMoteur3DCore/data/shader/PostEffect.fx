@@ -4,7 +4,7 @@ struct VS_Sortie
     float2 CoordTex : TEXCOORD0;
 };
 
-
+Texture2D depthTexture; // la texture
 Texture2D textureEntree; // la texture
 SamplerState SampleState; // l’état de sampling
 
@@ -31,17 +31,19 @@ VS_Sortie NulVS(float4 Pos : POSITION, float2 CoordTex : TEXCOORD0 )
 
 
 //-----------------------------------------------------
-// Pixel Shader « Nul »
+// Pixel Shader « Test »
 //-----------------------------------------------------
-float4 NulPS( VS_Sortie vs) : SV_Target
+float4 TestPS( VS_Sortie vs) : SV_Target
 {
     float4 couleur;
-    couleur = textureEntree.Sample(SampleState, vs.CoordTex);
+    couleur = depthTexture.Sample(SampleState, vs.CoordTex).r;
     //couleur.r = 0.5;
     return couleur;
 }
 
-
+//-----------------------------------------------------
+// Pixel Shader « RadialBlur »
+//-----------------------------------------------------
 float4 RadialBlurPS(VS_Sortie vs) : SV_Target
 {
     float4 couleur;
@@ -74,6 +76,9 @@ float4 RadialBlurPS(VS_Sortie vs) : SV_Target
     return couleur;
 }
 
+//-----------------------------------------------------
+// Pixel Shader « Vignette »
+//-----------------------------------------------------
 float4 VignettePS(VS_Sortie vs) : SV_Target
 {
     float2 texCoord = vs.CoordTex;
@@ -89,18 +94,18 @@ float4 VignettePS(VS_Sortie vs) : SV_Target
     return couleur;
 }
 
-/*
-technique11 Nul
+
+/*technique11 Test
 {
     pass p0
     {
         VertexShader = compile vs_5_0 NulVS();
-        PixelShader = compile ps_5_0 NulPS();
+        PixelShader = compile ps_5_0 TestPS();
         SetGeometryShader(NULL);
     }
 };*/
 
-technique11 RadialBlur
+/*technique11 RadialBlur
 {
     pass p0
     {
@@ -108,7 +113,7 @@ technique11 RadialBlur
         PixelShader = compile ps_5_0 RadialBlurPS();
         SetGeometryShader(NULL);
     }
-};
+};*/
 
 technique11 Vignette
 {

@@ -209,19 +209,14 @@ bool PM3D::CMoteur::RenderScene()
 	
 	BeginRenderSceneSpecific();//Begin rendering
 	
-	pPanneauPE->DebutPostEffect();
+	pPanneauPE->BeginDrawToPostEffect();
 
 	BeginRenderSceneSpecific();// Begin rendering on the RTV used by PP
 	gameHost->Draw();
 	EndRenderSceneSpecific();// Ending rendering on the RTV used by PP
 
-	pPanneauPE->FinPostEffect();
 	pPanneauPE->Draw();
-
-	//TODO: retirer la nécessiter de clear (Piste: DepthWriteMask de D3D11_DEPTH_STENCIL_DESC pour que le PP n'écrit
-	//	pas dans le depth stencil)
-	pDispositif->GetImmediateContext()
-		->ClearDepthStencilView(pDispositif->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	pPanneauPE->EndDrawToPostEffect();
 	
 	gameHost->DrawUI();
 
