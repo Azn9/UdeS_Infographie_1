@@ -243,7 +243,7 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 	(*pRenderTargetView)->Release();
 
 	DXEssayer(pDispositif->GetSwapChain()->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0));
-//ResizeBuffers(1, largeur, hauteur, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+	//ResizeBuffers(1, largeur, hauteur, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 
 	ID3D11Texture2D* pBuffer;
 	DXEssayer(pDispositif->GetSwapChain()->GetBuffer(0, __uuidof( ID3D11Texture2D), (void**) &pBuffer ));
@@ -294,6 +294,8 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 		}
 	}
 	*/
+
+	pPanneauPE->Resize(largeur, hauteur);
 
 	PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
 

@@ -74,6 +74,78 @@ namespace PM3D
         return pEffectDesc;
     }
 
+    void CPanneauPE::Resize(const unsigned& width, const unsigned& height)
+    {
+        DXRelacher(pTmpResourceView);
+        DXRelacher(pTmp2ResourceView);
+        DXRelacher(pTmpRenderTargetView);
+        DXRelacher(pTmp2RenderTargetView);
+        DXRelacher(pTmpTexture);
+        DXRelacher(pTmp2Texture);
+        
+        pTextureDesc.Width = width;
+        pTextureDesc.Height = height;
+
+        CreateTexturesAndViews();
+    }
+
+    void CPanneauPE::CreateDescriptions()
+    {
+        // Description de la texture
+        ZeroMemory(&pTextureDesc, sizeof(pTextureDesc));
+        // Cette texture sera utilisée comme cible de rendu et
+        // comme ressource de shader
+        pTextureDesc.Width = pDispositif->GetLargeur();
+        pTextureDesc.Height = pDispositif->GetHauteur();
+        pTextureDesc.MipLevels = 1;
+        pTextureDesc.ArraySize = 1;
+        pTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        pTextureDesc.SampleDesc.Count = 1;
+        pTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+        pTextureDesc.BindFlags =
+            D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE;
+        pTextureDesc.CPUAccessFlags = 0;
+        pTextureDesc.MiscFlags = 0;
+        
+        // VUE - Cible de rendu
+        pRenderTargetViewDesc.Format = pTextureDesc.Format;
+        pRenderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        pRenderTargetViewDesc.Texture2D.MipSlice = 0;
+        
+        // VUE – Ressource de shader
+        pShaderResourceViewDesc.Format = pTextureDesc.Format;
+        pShaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        pShaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+        pShaderResourceViewDesc.Texture2D.MipLevels = 1;
+    }
+
+    void CPanneauPE::CreateTexturesAndViews()
+    {
+        ID3D11Device* pD3DDevice = pDispositif->GetD3DDevice();
+        
+        // Création de la texture 1
+        pD3DDevice->CreateTexture2D(&pTextureDesc, nullptr, & pTmpTexture);
+
+        // Création de la texture 2
+        pD3DDevice->CreateTexture2D(&pTextureDesc, nullptr, & pTmp2Texture);
+
+        // Création de la RTV 1
+        pD3DDevice->CreateRenderTargetView(pTmpTexture,
+                                           &pRenderTargetViewDesc,
+                                           &pTmpRenderTargetView);
+        
+        // Création de la RTV 2
+        pD3DDevice->CreateRenderTargetView(pTmp2Texture,
+                                           &pRenderTargetViewDesc,
+                                           &pTmp2RenderTargetView);
+        
+        // Création de la SRV 1
+        pD3DDevice->CreateShaderResourceView(pTmpTexture, &pShaderResourceViewDesc, &pTmpResourceView);
+        
+        // Création de la SRV 2
+        pD3DDevice->CreateShaderResourceView(pTmp2Texture, &pShaderResourceViewDesc, &pTmp2ResourceView);
+    }
+
     void CPanneauPE::InitEffet()
     {
         // Compilation et chargement du vertex shader
@@ -131,58 +203,10 @@ namespace PM3D
         
 
         // *********************** VUES POUR LE POST EFFECT **************************
-        D3D11_TEXTURE2D_DESC textureDesc;
-        D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-        D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
         
-        // Description de la texture
-        ZeroMemory(&textureDesc, sizeof(textureDesc));
-        // Cette texture sera utilisée comme cible de rendu et
-        // comme ressource de shader
-        textureDesc.Width = pDispositif->GetLargeur();
-        textureDesc.Height = pDispositif->GetHauteur();
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags =
-        D3D11_BIND_RENDER_TARGET|D3D11_BIND_SHADER_RESOURCE;
-        textureDesc.CPUAccessFlags = 0;
-        textureDesc.MiscFlags = 0;
-        
-        // VUE - Cible de rendu
-        renderTargetViewDesc.Format = textureDesc.Format;
-        renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-        renderTargetViewDesc.Texture2D.MipSlice = 0;
-        
-        // VUE – Ressource de shader
-        shaderResourceViewDesc.Format = textureDesc.Format;
-        shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-        shaderResourceViewDesc.Texture2D.MipLevels = 1;
+        CreateDescriptions();
 
-        // Création de la texture 1
-        pD3DDevice->CreateTexture2D(&textureDesc, nullptr, & pTmpTexture);
-
-        // Création de la texture 2
-        pD3DDevice->CreateTexture2D(&textureDesc, nullptr, & pTmp2Texture);
-
-        // Création de la RTV 1
-        pD3DDevice->CreateRenderTargetView(pTmpTexture,
-        &renderTargetViewDesc,
-        &pTmpRenderTargetView);
-        
-        // Création de la RTV 2
-        pD3DDevice->CreateRenderTargetView(pTmp2Texture,
-        &renderTargetViewDesc,
-        &pTmp2RenderTargetView);
-        
-        // Création de la SRV 1
-        pD3DDevice->CreateShaderResourceView(pTmpTexture, &shaderResourceViewDesc, &pTmpResourceView);
-        
-        // Création de la SRV 2
-        pD3DDevice->CreateShaderResourceView(pTmp2Texture, &shaderResourceViewDesc, &pTmp2ResourceView);
+        CreateTexturesAndViews();
 
         pEffectDesc = new D3DX11_EFFECT_DESC{};
         pEffet->GetDesc(pEffectDesc);
@@ -191,11 +215,6 @@ namespace PM3D
         ID3DX11EffectSamplerVariable* variableSampler;
         variableSampler = pEffet->GetVariableByName("SampleState")->AsSampler();
         variableSampler->SetSampler(0, pSampleState);
-        
-        
-        SetShaderVariableValue("distance", 0.1f);
-        SetShaderVariableValue("vignettePower", 2.5f);
-        SetShaderVariableValue("vignetteColor", XMFLOAT4{0.0f, 0.2f, 0.3f, 0.8f});
         
     }
     

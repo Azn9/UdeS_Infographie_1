@@ -53,8 +53,13 @@ namespace PM3D
         std::set<int>& getEnabledPostEffects();
 
         const D3DX11_EFFECT_DESC* getEffectDesc() const;
-        
+
+        void Resize(const unsigned& width, const unsigned& height);
+        void CreateDescriptions();
+        void CreateTexturesAndViews();
+
     private:
+        
         void InitEffet();
         static CSommetPanneauPE sommets[3];
         ID3D11Buffer* pVertexBuffer;
@@ -66,7 +71,12 @@ namespace PM3D
         ID3DX11EffectPass* pPasse;
         ID3D11SamplerState* pSampleState;
 
-        // Texture de rendu pour effets
+        //Descriptions des texture et vues
+        D3D11_TEXTURE2D_DESC pTextureDesc;
+        D3D11_RENDER_TARGET_VIEW_DESC pRenderTargetViewDesc;
+        D3D11_SHADER_RESOURCE_VIEW_DESC pShaderResourceViewDesc;
+        
+        // Textures de rendu pour effets
         ID3D11Texture2D* pTmpTexture;
         ID3D11Texture2D* pTmp2Texture;
         ID3D11RenderTargetView* pTmpRenderTargetView;
