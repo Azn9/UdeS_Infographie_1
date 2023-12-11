@@ -317,6 +317,13 @@ namespace PM3D
         ID3DX11EffectScalarVariable* var = pEffet->GetVariableByName(name.c_str())->AsScalar();
         return var->SetFloat(f);
     }
+
+    HRESULT CPanneauPE::SetShaderVar(const std::string& name, const int& i) const
+    {
+        ID3DX11EffectScalarVariable* var = pEffet->GetVariableByName(name.c_str())->AsScalar();
+        return var->SetInt(i);
+    }
+
     HRESULT CPanneauPE::SetShaderVar(const std::string& name, const XMFLOAT3& fs) const
     {
         ID3DX11EffectVectorVariable* var = pEffet->GetVariableByName(name.c_str())->AsVector();

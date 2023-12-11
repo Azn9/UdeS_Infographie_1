@@ -13,7 +13,7 @@ namespace PM3D
 {
     template<class T>
     concept is_shader_param = std::_Is_any_of_v
-        <T, float, XMFLOAT3, XMFLOAT4, XMVECTOR, ID3D11SamplerState*, ID3D11ShaderResourceView*>;
+        <T, float, int, XMFLOAT3, XMFLOAT4, XMVECTOR, ID3D11SamplerState*, ID3D11ShaderResourceView*>;
     
     class CDispositifD3D11;
     class CSommetPanneauPE
@@ -100,6 +100,7 @@ namespace PM3D
 
         //Fonctions pour enregistrer les variables de shader
         HRESULT SetShaderVar(const std::string& name, const float& f) const;
+        HRESULT SetShaderVar(const std::string& name, const int& i) const;
         HRESULT SetShaderVar(const std::string& name, const XMFLOAT4& fs) const;
         HRESULT SetShaderVar(const std::string& name, const XMFLOAT3& fs) const;
         HRESULT SetShaderVar(const std::string& name, const XMVECTOR& fs) const;

@@ -12,11 +12,16 @@ SamplerState SampleState; // l’état de sampling
 float farPlaneDistance;
 
 //Radial
-float distance;
+float radialDistance;
 
 //Vignette
 float vignettePower;
 float4 vignetteColor;
+
+//Depth of field 
+int blurSampleDist;
+float startSharpDist;
+float endSharpDist;
 
 //---------------------------------------------------------
 // Vertex Shader « Nul »
@@ -36,10 +41,43 @@ VS_Sortie NulVS(float4 Pos : POSITION, float2 CoordTex : TEXCOORD0 )
 float4 TestPS( VS_Sortie vs) : SV_Target
 {
     float4 couleur;
-    couleur = depthTexture.Sample(SampleState, vs.CoordTex).r;
+    couleur = textureEntree.Sample(SampleState, vs.CoordTex);
     //couleur.r = 0.5;
     return couleur;
 }
+
+
+//-----------------------------------------------------
+// Pixel Shader « BoxBlur »
+//-----------------------------------------------------
+float4 BoxBlur(float2 coordTex)
+{   
+    float2 dimensions;
+    textureEntree.GetDimensions(dimensions.x, dimensions.y);
+    float2 normalisedPixelSize = 1.0 / dimensions;
+    
+    float4 couleur = float4(0.0, 0.0, 0.0, 0.0);
+    for(int y = -blurSampleDist; y <= blurSampleDist; ++y)
+    {
+        for(int x = -blurSampleDist; x <= blurSampleDist; ++x)
+        {
+            float2 sampleCoord = float2(coordTex.x + normalisedPixelSize.x * x, coordTex.y + normalisedPixelSize.y * y);
+            float4 sampl = textureEntree.Sample(SampleState, sampleCoord);
+            couleur += sampl;
+        }
+    }
+    
+    int sampleLengthHeight = blurSampleDist * 2 + 1;
+    return couleur / (sampleLengthHeight * sampleLengthHeight);
+}
+/*
+float4 DepthOfField(VS_Sortie vs) : SV_Target
+{   
+    float4 blurredColor = BoxBlur(vs.CoordTex);
+    float4 color = textureEntree.Sample(SampleState, tc);
+
+    float distance = 
+}*/
 
 //-----------------------------------------------------
 // Pixel Shader « RadialBlur »
@@ -57,8 +95,8 @@ float4 RadialBlurPS(VS_Sortie vs) : SV_Target
     dx = sqrt(x*x); // Distance du centre
     dy = sqrt(y*y); // Distance du centre
 
-    dx = x * (distance*dx); // Le dégradé (blur) est en fonction de la
-    dy = y * (distance*dy); // distance du centre et de la variable distance.
+    dx = x * (radialDistance*dx); // Le dégradé (blur) est en fonction de la
+    dy = y * (radialDistance*dy); // distance du centre et de la variable distance.
 
     x = x - (dx*10); // Vous pouvez jouer avec le nombre d’itérations
     y = y - (dy*10);
@@ -95,7 +133,7 @@ float4 VignettePS(VS_Sortie vs) : SV_Target
 }
 
 
-/*technique11 Test
+technique11 Test
 {
     pass p0
     {
@@ -103,7 +141,7 @@ float4 VignettePS(VS_Sortie vs) : SV_Target
         PixelShader = compile ps_5_0 TestPS();
         SetGeometryShader(NULL);
     }
-};*/
+};
 
 /*technique11 RadialBlur
 {
@@ -114,6 +152,7 @@ float4 VignettePS(VS_Sortie vs) : SV_Target
         SetGeometryShader(NULL);
     }
 };*/
+
 
 technique11 Vignette
 {
