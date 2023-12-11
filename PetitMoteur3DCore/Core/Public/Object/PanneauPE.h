@@ -79,6 +79,7 @@ namespace PM3D
         // Textures de rendu pour effets
         ID3D11Texture2D* pTmpTexture;
         ID3D11Texture2D* pTmp2Texture;
+        ID3D11Texture2D* pTmpDepthTexture;
         ID3D11RenderTargetView* pTmpRenderTargetView;
         ID3D11ShaderResourceView* pTmpResourceView;
 

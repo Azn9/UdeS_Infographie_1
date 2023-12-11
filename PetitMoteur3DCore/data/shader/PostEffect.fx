@@ -8,6 +8,9 @@ struct VS_Sortie
 Texture2D textureEntree; // la texture
 SamplerState SampleState; // l’état de sampling
 
+//general
+float farPlaneDistance;
+
 //Radial
 float distance;
 
@@ -33,9 +36,8 @@ VS_Sortie NulVS(float4 Pos : POSITION, float2 CoordTex : TEXCOORD0 )
 float4 NulPS( VS_Sortie vs) : SV_Target
 {
     float4 couleur;
-    //couleur = float4(1.0,0.0,0.0,1.0);
     couleur = textureEntree.Sample(SampleState, vs.CoordTex);
-    couleur.r = 0.5;
+    //couleur.r = 0.5;
     return couleur;
 }
 
@@ -77,16 +79,17 @@ float4 VignettePS(VS_Sortie vs) : SV_Target
     float2 texCoord = vs.CoordTex;
     float4 ct = textureEntree.Sample(SampleState, texCoord);
 
-    float dist = length(texCoord - float2(0.5,0.5)) * 2.0f;
+    float dist = length(texCoord - float2(0.5,0.5)) * (2.0f / sqrt(2));
 
     float t = pow(dist, vignettePower) * vignetteColor.a; // Parce que linéaire c'est pas très beau
+    t = min(t, 1.0);
 
     float4 couleur = ct * (1.0-t) + float4(vignetteColor.rgb, 1.0) * t;
 
     return couleur;
 }
 
-
+/*
 technique11 Nul
 {
     pass p0
@@ -95,7 +98,7 @@ technique11 Nul
         PixelShader = compile ps_5_0 NulPS();
         SetGeometryShader(NULL);
     }
-};
+};*/
 
 technique11 RadialBlur
 {

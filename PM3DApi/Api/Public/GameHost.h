@@ -22,7 +22,7 @@ namespace PM3D_API
         PM3D::CDispositifD3D11* GetDispositif() const { return dispositif; }
         void SetDispositif(PM3D::CDispositifD3D11* dispositif);
 
-        PM3D::CDispositifD3D11* GetPostEffectPlane() const { return dispositif; }
+        PM3D::CPanneauPE* GetPostEffectPlane() const { return postEffectPlane; }
         void SetPostEffectPlane(PM3D::CPanneauPE* plane) { postEffectPlane = plane; }
         
         float GetAspectRatio() const;

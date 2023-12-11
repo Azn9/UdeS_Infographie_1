@@ -12,6 +12,7 @@
 void PM3D_API::Camera::Initialize()
 {
 	//PM3D_API::EventSystem::Subscribe([](const PM3D_API::WindowResizeEvent& event) {});
+	GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("farPlaneDistance", farDist);
 }
 
 using namespace Util;
@@ -95,6 +96,7 @@ void PM3D_API::Camera::SetFarDist(const float newfarDist)
 {
 	farDist = newfarDist;
 	UpdateInternalMatrices();
+	GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("farPlaneDistance", farDist);
 }
 
 void PM3D_API::Camera::DrawDebugInfo() const
