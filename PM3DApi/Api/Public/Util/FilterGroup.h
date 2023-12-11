@@ -8,6 +8,6 @@ struct FilterGroup
 		eOBSTACLE = (1 << 1),
 		eSNOWBALL = (1 << 2),
 		eTUNNEL = (1 << 3),
-		eSKIER = (1 <<4)
+		eSKIER = (1 << 4)
 	};
 };

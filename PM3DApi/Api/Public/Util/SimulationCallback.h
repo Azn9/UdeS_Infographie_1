@@ -20,8 +20,11 @@ public:
     void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {
         for (PxU32 i = 0; i < nbPairs; i++) {
             const PxContactPair modifyPair = pairs[i];
-            PxShape* shape = modifyPair.shapes[0];
-            if (shape->getSimulationFilterData().word0 == FilterGroup::eSNOWBALL)
+            PxShape* shape0 = modifyPair.shapes[0];
+            PxShape* shape1 = modifyPair.shapes[1];
+            auto test = shape0->getSimulationFilterData().word0;
+            auto test2 = shape1->getSimulationFilterData().word0;
+            if (shape0->getSimulationFilterData().word0 == FilterGroup::eSNOWBALL || shape1->getSimulationFilterData().word0 == FilterGroup::eSNOWBALL)
             {
                 PM3D_API::EventSystem::Publish(CollisionObstacleEvent{});
             }

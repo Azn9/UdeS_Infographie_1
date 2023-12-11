@@ -246,9 +246,9 @@ void MainScene::InitializeObjects()
 		//rskiRigidbodyPtr->getRigidDynamic()->setLinearVelocity(physx::PxVec3(0.f, 0.f, -2.f));
 		//lskiRigidbodyPtr->getRigidDynamic()->setLinearVelocity(physx::PxVec3(0.f, 0.f, -2.f));
 		//skierRigidbodyPtr->getRigidDynamic()->setLinearVelocity(physx::PxVec3(0.f, 0.f, -2.f));
-		rskiRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
-		lskiRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
-		skierRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
+		//rskiRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
+		//lskiRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
+		//skierRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
 
 
 	
@@ -297,7 +297,7 @@ void MainScene::InitializeObjects()
 
 	// ============= Add a pines =============
 	{
-		AddPine(XMFLOAT3(-0.05f, -10.56f, -14.89f));
+		AddPine(XMFLOAT3(0.f, -80.f, -10.f));
 		AddPine(XMFLOAT3(1.2f, 14.f, -21.f));
 		AddPine(XMFLOAT3(-2.1f, -12.6f, -18.f));
 		AddPine(XMFLOAT3(-3.75f, -14.54f, -21.94f));
