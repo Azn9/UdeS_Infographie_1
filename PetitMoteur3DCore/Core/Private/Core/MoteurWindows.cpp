@@ -9,6 +9,7 @@
 #include "../../Imgui/imgui.h"
 #include "../../Imgui/imgui_impl_win32.h"
 #include "../../Imgui/imgui_impl_dx11.h"
+#include "Api/Public/Util/Sound/SoundManager.h"
 #include "Core/Public/Util/util.h"
 
 namespace PM3D
@@ -107,6 +108,12 @@ int CMoteurWindows::InitialisationsSpecific()
 
 	// Initialisation de DirectInput
 	GestionnaireDeSaisie.Init(hAppInstance, hMainWnd);
+
+	auto result = SoundManager::GetInstance().Initialize(hMainWnd);
+	if (!result)
+	{
+		MessageBox(hMainWnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+	}
 
 	return 0;
 }
@@ -271,22 +278,6 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 	pImmediateContext->RSSetState(pDispositif->GetRasterizerState());
 	
 	pImmediateContext->OMSetRenderTargets(1, pRenderTargetView, pDispositif->GetDepthStencilView());
-
-	/*
-	// Update the camera
-	if (gameHost)
-	{
-		const auto scene = gameHost->GetScene();
-		if (scene)
-		{
-			const auto camera = scene->GetMainCamera();
-			if (camera && camera->IsInitialized()) 
-			{
-				//camera->UpdateInternalMatrices();
-			}
-		}
-	}
-	*/
 
 	PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
 

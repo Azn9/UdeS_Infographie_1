@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "MainScene.h"
+#include "Api/Public/Util/Sound/SoundManager.h"
 #include "GameTest/Objects/LoadingScene/CustomCube.h"
 #include "GameTest/Objects/LoadingScene/CustomPlane.h"
 #include "GameTest/Components/LightMoverComponent.h"
@@ -13,7 +14,7 @@
 void LoadingScene::InitializeCamera()
 {
     std::cout << "LoadingScene::InitializeCamera()" << std::endl;
-    
+
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSPECTIVE,
@@ -31,11 +32,11 @@ void LoadingScene::InitializeCamera()
 void LoadingScene::InitializeLights()
 {
     std::cout << "LoadingScene::InitializeLights()" << std::endl;
-    
+
     auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
-       "Directional light",
-       XMFLOAT3(-1.0f, -1.0f, 0.0f)
-   );
+        "Directional light",
+        XMFLOAT3(-1.0f, -1.0f, 0.0f)
+    );
     directionalLight->SetIntensity(1.0f);
     directionalLight->Initialize();
     AddLight(std::move(directionalLight));
@@ -57,7 +58,7 @@ void LoadingScene::InitializeObjects()
 
     cube->AddComponent(std::make_unique<LightMoverComponent>(0.f));
     cube->AddComponent(std::make_unique<SnowMover>());
-    
+
     AddChild(std::move(cube));
 
     auto tree = std::make_unique<GameObject>("tree");
@@ -78,4 +79,10 @@ void LoadingScene::InitializeUI()
     const auto loadingSceneComponentPtr = loadingSceneComponent.get();
     Scene::AddComponent(std::move(loadingSceneComponent));
     loadingSceneComponentPtr->Initialize();
+
+    const auto musicSound = SoundManager::GetInstance().loadSound("sounds/music/music.wav");
+    if (const auto res = SoundManager::GetInstance().playSound(musicSound); !res)
+    {
+        std::cerr << "Failed to play music" << std::endl;
+    }
 }

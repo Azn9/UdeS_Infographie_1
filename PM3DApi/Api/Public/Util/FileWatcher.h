@@ -9,14 +9,15 @@ namespace PM3D_API
     {
     public:
         explicit FileWatcher(const std::wstring& pathToWatch, const std::function<void()>& onChange);
+        void Run();
         ~FileWatcher();
-        
+
     private:
         void Start();
 
         bool running;
-        std::wstring path;
-        std::wstring fileName;
+        std::wstring path = L"";
+        std::wstring fileName = L"";
         std::function<void()> onChange;
         std::thread thread;
     };
