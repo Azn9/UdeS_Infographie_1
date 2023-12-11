@@ -141,9 +141,9 @@ void PM3D_API::Camera::DrawDebugInfo() const
 	//frustrum.DrawDebugInfo();
 
 	ImGui::Text("Type");
-	ImGui::SameLine(100); ImGui::Text(cameraType == PERSECTIVE ? "Perspective" : "Orthographic");
+	ImGui::SameLine(100); ImGui::Text(cameraType == PERSPECTIVE ? "Perspective" : "Orthographic");
 
-	if (cameraType == PERSECTIVE)
+	if (cameraType == PERSPECTIVE)
 	{
 		ImGui::Text("Field of view");
 		ImGui::SameLine(100); ImGui::Text(std::to_string(fieldOfView).c_str());
@@ -168,7 +168,7 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	
 	frustrum.SetPlanes(*this);
 	
-	if (cameraType == PERSECTIVE)
+	if (cameraType == PERSPECTIVE)
 	{
 		const auto aspectRatio = PM3D_API::GameHost::GetInstance()->GetAspectRatio();
 		

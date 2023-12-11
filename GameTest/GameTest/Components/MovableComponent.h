@@ -11,6 +11,7 @@
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "Api/Public/Input/Input.h"
 #include "GameTest/Event/GameOverEvent.h"
+#include <Api/Public/EventSystem/InTunnelEvent.h>
 
 class MovableComponent final : public PM3D_API::Component
 {
@@ -23,13 +24,18 @@ public:
 			rigidDyn->setLinearVelocity({0.f,0.f,0.f});
 			rigidDyn->setAngularVelocity({0.f,0.f,0.f});
 			parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
+			_inTunnel = false;
 		});
+		PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
+			{
+				_inTunnel = true;
+			});
 	}
 
 	void Update() override
 	{
-		if (parentObject->GetWorldPosition().z < -400.f)
-			PM3D_API::EventSystem::Publish(GameOverEvent(true));
+		/*if (parentObject->GetWorldPosition().z < -400.f)   //temporaire pour les tests
+			PM3D_API::EventSystem::Publish(GameOverEvent(true));*/
 	}
 
 	void PhysicsUpdate() override
@@ -45,6 +51,10 @@ public:
 		{
 			rigidDynamic->addForce(physx::PxVec3(static_cast<float>(_speed), 0.f, 0.f));
 		}
+		if (Input::IsKeyHeld(KeyCode::ARROW_UP) && !_inTunnel)
+		{
+			rigidDynamic->addForce(physx::PxVec3(0.f, 0.f, -static_cast<float>(_speed*2)));
+		}
 	}
 
 	void DrawDebugInfo() const override
@@ -55,4 +65,5 @@ public:
 
 private:
 	int _speed = 70;
+	bool _inTunnel = false;
 };
