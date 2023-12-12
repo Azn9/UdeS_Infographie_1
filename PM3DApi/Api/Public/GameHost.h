@@ -2,6 +2,7 @@
 
 #include "Core/Public/Core/dispositifD3D11.h"
 #include "Core/Public/Object/PanneauPE.h"
+#include "Core/Public/Texture/Texture.h"
 #include "Debug/DebugRenderer.h"
 #include "Scene/Scene.h"
 

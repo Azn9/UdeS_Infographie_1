@@ -10,6 +10,7 @@ class CTexture
 {
 public:
 	CTexture(const std::wstring& filename, CDispositifD3D11* pDispositif);
+	//CTexture(const std::span<std::wstring>& filenames, CDispositifD3D11* pDispositif);
 	~CTexture();
 
 	const std::wstring& GetFilename() const { return m_Filename; }

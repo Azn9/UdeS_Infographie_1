@@ -4,6 +4,7 @@
 #include <d3dcompiler.h>
 #include <iostream>
 
+#include "Core/Public/Core/MoteurWindows.h"
 #include "Core/Public/Object/Panneau.h"
 
 namespace PM3D
@@ -69,6 +70,22 @@ namespace PM3D
     {
         return pEnabledTechniques;
     }
+
+    /*void CPanneauPE::SetTexturesShaderVariables(const std::string& name, const std::span<std::wstring>& filenames)
+    {
+        CGestionnaireDeTextures& gestionnaire = CMoteurWindows::GetInstance().GetTextureManager();
+
+        for (auto filename : filenames)
+        {
+            
+        }
+        CTexture* texture = gestionnaire.GetTexture(fileName);
+        if(texture == nullptr)
+            texture = gestionnaire.GetNewTexture(fileName, pDispositif);
+            
+        SetShaderVariableValue(name, texture->GetD3DTexture());
+        
+    }*/
 
     const D3DX11_EFFECT_DESC* CPanneauPE::getEffectDesc() const
     {

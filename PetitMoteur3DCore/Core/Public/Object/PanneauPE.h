@@ -2,6 +2,7 @@
 #include <cvt/wstring>
 #include <string>
 #include <set>
+#include <span>
 
 #include "Core/Public/Util/util.h"
 
@@ -48,6 +49,8 @@ namespace PM3D
         {
             DXEssayer(SetShaderVar(name, param));
         }
+
+        //void SetTexturesShaderVariables(const std::string& name, const std::span<std::wstring>& filenames);
         
         void enableAllPostEffects();
         std::set<int>& getEnabledPostEffects();

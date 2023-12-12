@@ -1,5 +1,6 @@
 ﻿#include "GameTest.h"
 
+#include "Core/Public/Texture/Texture.h"
 #include "Scenes/LoadingScene.h"
 
 PM3D_API::GameHost* PM3D_API::GameHost::GetInstance()
@@ -15,6 +16,7 @@ void GameTest::Initialize()
 
 void GameTest::InitializePostProcessParam() const
 {
+	
 	postEffectPlane->enableAllPostEffects();
 
 	postEffectPlane->SetShaderVariableValue("startBlurDist", 100.0f);

@@ -48,4 +48,5 @@ CTexture* CGestionnaireDeTextures::GetTexture(const std::wstring& filename) cons
 	}
 	return pTexture;
 }
+	
 }
