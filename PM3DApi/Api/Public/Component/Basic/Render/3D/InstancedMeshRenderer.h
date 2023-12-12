@@ -61,6 +61,8 @@ namespace PM3D_API
 
         PM3D::IChargeur* getChargeur() const { return chargeur; }
 
+        const std::vector<PM3D_API::MapImporter::InstanceObject>& getInstances() const { return instances; }
+
     protected:
         struct DrawInstance
         {

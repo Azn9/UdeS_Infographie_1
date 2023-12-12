@@ -1,5 +1,6 @@
 #include "Map.h"
 
+#include "Api/Public/Component/Basic/Physics/InstancedMeshCollider.h"
 #include "Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "Api/Public/Component/Basic/Render/3D/InstancedMeshRenderer.h"
@@ -50,11 +51,16 @@ void Map::Initialize()
         );
         const auto rendererPtr = renderer.get();
         const auto gameObjectPtr = gameObject.get();
+
         AddChild(std::move(gameObject));
-        gameObjectPtr->AddComponent(std::move(renderer));
-        rendererPtr->Initialize();
         gameObjectPtr->Initialize();
 
-        // TODO : colliders
+        gameObjectPtr->AddComponent(std::move(renderer));
+        rendererPtr->Initialize();
+
+        auto instancedMeshCollider = std::make_unique<PM3D_API::InstancedMeshCollider>(scene->GetPhysicsResolver()->GetDefaultMaterial());
+        const auto instancedMeshColliderPtr = instancedMeshCollider.get();
+        gameObjectPtr->AddComponent(std::move(instancedMeshCollider));
+        instancedMeshColliderPtr->Initialize();
     }
 }
