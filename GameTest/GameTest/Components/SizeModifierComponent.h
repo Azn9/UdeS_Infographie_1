@@ -78,6 +78,14 @@ public:
 
 			shape->setGeometry(physx::PxSphereGeometry(preScale.x * _sizeModificationSpeed));
 		}
+		physx::PxFilterData filterDataSnowBall = shape->getSimulationFilterData();
+		if (parentObject->GetWorldScale().x >= 0.9f)
+			filterDataSnowBall.word2 = BuriablePenguin::eCanBury;
+		else
+			filterDataSnowBall.word2 = BuriablePenguin::eCannotBury;
+		shape->setSimulationFilterData(filterDataSnowBall);
+
+
 	}
 
 	void DrawDebugInfo() const override

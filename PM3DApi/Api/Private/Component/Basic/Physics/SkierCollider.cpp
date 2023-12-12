@@ -10,7 +10,7 @@ void PM3D_API::SkierCollider::Initialize()
 	const auto pxPhysics = parentObject->GetScene()->GetPhysicsResolver()->GetPhysics();
 
 	const auto worldScale = parentObject->GetWorldScale();
-	shape = pxPhysics->createShape(physx::PxSphereGeometry{ 1.f }, *material, true);
+	shape = pxPhysics->createShape(physx::PxSphereGeometry{ 0.6f }, *material, true);
 	const auto rigidbody = parentObject->GetComponent<Rigidbody>(); // Ne peut pas être null, vérifié dans Collider::Initialize()
 
 	const auto actor = rigidbody->GetActor();

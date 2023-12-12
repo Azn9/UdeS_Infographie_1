@@ -198,10 +198,12 @@ void MainScene::InitializeObjects()
 			PM3D_API::SkierCollider>(PxGetPhysics().createMaterial(0.f, 0.f, 1.f));
 		const auto lskiColliderPtr = lskiCollider.get();
 		lskiPtr->AddComponent(std::move(lskiCollider));
+		lskiPtr->AddComponent(std::move(std::make_unique<JointsBreakerComponent>()));
 
 		lskiColliderPtr->Initialize();
 		physx::PxFilterData filterDataSkier;
 		filterDataSkier.word0 = FilterGroup::eSKIER;
+		filterDataSkier.word1 = physx::PxU32(i);
 		physx::PxShape* lskiShape = lskiColliderPtr->getShape();
 		lskiShape->setSimulationFilterData(filterDataSkier);
 		

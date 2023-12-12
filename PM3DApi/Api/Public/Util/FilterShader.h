@@ -27,7 +27,17 @@ PxFilterFlags FilterShader(
 	}
 	if ((filterData0.word0 == FilterGroup::eSNOWBALL && filterData1.word0 == FilterGroup::eSKIER) || (filterData1.word0 == FilterGroup::eSNOWBALL && filterData0.word0 == FilterGroup::eSKIER))
 	{
-		pairFlags = PxPairFlag::eTRIGGER_DEFAULT | PxPairFlag::eCONTACT_DEFAULT;
+		if (filterData0.word0 == FilterGroup::eSNOWBALL)
+			if (filterData0.word2 == BuriablePenguin::eCanBury)
+				pairFlags = PxPairFlag::eTRIGGER_DEFAULT ;
+			else
+				pairFlags = PxPairFlag::eTRIGGER_DEFAULT | PxPairFlag::eCONTACT_DEFAULT;
+		else 
+			if (filterData1.word2 == BuriablePenguin::eCanBury)
+				pairFlags = PxPairFlag::eTRIGGER_DEFAULT;
+			else
+				pairFlags = PxPairFlag::eTRIGGER_DEFAULT | PxPairFlag::eCONTACT_DEFAULT;
+
 		return PxFilterFlag::eDEFAULT;
 	}
 	if (filterData0.word0 == FilterGroup::eFLOOR || filterData1.word0 == FilterGroup::eFLOOR)

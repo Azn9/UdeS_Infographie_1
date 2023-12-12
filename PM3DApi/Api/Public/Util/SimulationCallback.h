@@ -33,12 +33,18 @@ public:
 			if ((shape0->getSimulationFilterData().word0 == FilterGroup::eSNOWBALL && shape1->getSimulationFilterData().word0 == FilterGroup::eSKIER)
 				|| shape1->getSimulationFilterData().word0 == FilterGroup::eSNOWBALL && shape0->getSimulationFilterData().word0 == FilterGroup::eSKIER)
 			{
-				physx::PxConstraint* joint1;
-				physx::PxU32 nbWritten;
-				if (shape0->getSimulationFilterData().word0 == FilterGroup::eSKIER)  nbWritten = shape0->getActor()->getConstraints(&joint1, 1, 0);
-				else if (shape1->getSimulationFilterData().word0 == FilterGroup::eSKIER)  nbWritten = shape1->getActor()->getConstraints(&joint1, 1, 0);
-				if (nbWritten != 0) 
-					joint1->release();
+				if (shape0->getSimulationFilterData().word0 == FilterGroup::eSKIER) {
+					if(shape1->getSimulationFilterData().word2 == BuriablePenguin::eCanBury)
+						PM3D_API::EventSystem::Publish(CollisionSkierEvent{ shape0->getSimulationFilterData().word1 });
+					else 
+						PM3D_API::EventSystem::Publish(CollisionObstacleEvent{});
+				}
+				else if (shape1->getSimulationFilterData().word0 == FilterGroup::eSKIER){
+					if (shape0->getSimulationFilterData().word2 == BuriablePenguin::eCanBury)
+						PM3D_API::EventSystem::Publish(CollisionSkierEvent{ shape0->getSimulationFilterData().word1 });
+					else
+						PM3D_API::EventSystem::Publish(CollisionObstacleEvent{});
+				}
 			}
 		}
 

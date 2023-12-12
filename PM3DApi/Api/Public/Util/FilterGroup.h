@@ -11,3 +11,12 @@ struct FilterGroup
 		eSKIER = (1 << 4)
 	};
 };
+
+struct BuriablePenguin
+{
+	enum Enum
+	{
+		eCanBury = 0,
+		eCannotBury = (1 << 1)
+	};
+};
