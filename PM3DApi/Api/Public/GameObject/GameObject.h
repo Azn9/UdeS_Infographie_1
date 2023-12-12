@@ -106,6 +106,22 @@ public:
 		return nullptr;
 	}
 
+	template <typename T, template_extends<GameObject, T> = 0>
+	T* GetChild()
+	{
+		for (const auto& child : children)
+		{
+			if (!child) continue;
+
+			if (typeid(*child.get()) == typeid(T))
+			{
+				return static_cast<T*>(child.get());
+			}
+		}
+
+		return nullptr;
+	}
+
 	template <typename T, template_extends<Component, T> = 0>
 	bool HasComponent() const
 	{
@@ -178,6 +194,9 @@ public:
 	std::unique_ptr<GameObject> DetachFromParent();
 	void SetParent(GameObject* newParent);
 	
+	void SetScene(Scene* newScene) { scene = newScene; }
+	GameObject* GetParent() const { return parent; }
+
 protected:
 	std::string name = "Unnamed GameObject";
 	
@@ -205,7 +224,6 @@ protected:
 	void LogEndDrawSelf() const;
 private:
 	friend class Scene;
-	void SetScene(Scene* newScene) { scene = newScene; }
 
 	mutable int64_t beginDrawSelf;
 	mutable int64_t endDrawSelf;
