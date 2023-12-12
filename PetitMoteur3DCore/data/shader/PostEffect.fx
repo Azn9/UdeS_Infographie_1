@@ -4,12 +4,15 @@ struct VS_Sortie
     float2 CoordTex : TEXCOORD0;
 };
 
-Texture2D depthTexture; // la texture
+float4x4 matInvProj;
+
+Texture2D depthTexture; // la texture profondeur
 Texture2D textureEntree; // la texture
 SamplerState SampleState; // l’état de sampling
 
 //general
-float farPlaneDistance;
+float far;
+float near;
 
 //Radial
 float radialDistance;
@@ -70,14 +73,18 @@ float4 BoxBlur(float2 coordTex)
     int sampleLengthHeight = blurSampleDist * 2 + 1;
     return couleur / (sampleLengthHeight * sampleLengthHeight);
 }
-/*
-float4 DepthOfField(VS_Sortie vs) : SV_Target
-{   
-    float4 blurredColor = BoxBlur(vs.CoordTex);
-    float4 color = textureEntree.Sample(SampleState, tc);
 
-    float distance = 
-}*/
+float4 DepthOfFieldPS(VS_Sortie vs) : SV_Target
+{
+    /*float4 blurredColor = BoxBlur(vs.CoordTex);
+    float4 color = textureEntree.Sample(SampleState, tc);
+    */
+    
+    float depth = depthTexture.Sample(SampleState, vs.CoordTex).r;
+    float linearDepth = (2.0f * near) / (far + near - depth * (far - near));
+
+    return float4(linearDepth,linearDepth,linearDepth,1.0);
+}
 
 //-----------------------------------------------------
 // Pixel Shader « RadialBlur »
@@ -152,6 +159,16 @@ technique11 Test
         SetGeometryShader(NULL);
     }
 };*/
+
+technique11 DepthOfField
+{
+    pass p0
+    {
+        VertexShader = compile vs_5_0 NulVS();
+        PixelShader = compile ps_5_0 DepthOfFieldPS();
+        SetGeometryShader(NULL);
+    }
+};
 
 
 technique11 Vignette

@@ -35,15 +35,14 @@ namespace PM3D_API
 			const DirectX::XMFLOAT3 worldPosition,
 			const DirectX::XMVECTOR focusPoint,
 			const DirectX::XMVECTOR upDirection = {0.f,1.f,0.f,0.f}
-		) : GameObject(
+		) : Camera(
 				"Main camera",
+				cameraType,
 				worldPosition,
 				{0.0f, 0.0f, 0.0f},
 				{1.0f, 1.0f, 1.0f}
-			), cameraType(cameraType), focusPoint(focusPoint), upDirection(upDirection)
-		{
-			SetFocusPoint(focusPoint); // Recalculate rotation
-		}
+			)
+		{}
 
 		void Initialize() override;
 
@@ -61,6 +60,8 @@ namespace PM3D_API
 		void SetFieldOfView(float newFieldOfView);
 		void SetFarDist(float newFarDist);
 		void SetNearDist(float newNearDist);
+
+		void UpdatePostProcessShaderParam() const;
 
 		const DirectX::XMMATRIX& GetMatView() const { return matView; }
 		const DirectX::XMMATRIX& GetMatProj() const { return matProj; }

@@ -351,6 +351,12 @@ namespace PM3D
         ID3DX11EffectShaderResourceVariable* var = pEffet->GetVariableByName(name.c_str())->AsShaderResource();
         return var->SetResource(s);
     }
-
+    HRESULT CPanneauPE::SetShaderVar(const std::string& name, const XMMATRIX& m) const
+    {
+        ID3DX11EffectMatrixVariable* var = pEffet->GetVariableByName(name.c_str())->AsMatrix();
+        XMFLOAT4X4 mat;
+        XMStoreFloat4x4(&mat, m);
+        return var->SetMatrix(&mat._11);
+    }
 }
 
