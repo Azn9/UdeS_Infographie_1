@@ -7,11 +7,11 @@
 
 namespace PM3D_API
 {
-    class DefaultShader final : public Shader
+    class DefaultShaderInstanced final : public Shader
     {
     public:
-        explicit DefaultShader(const std::wstring& fileName);
-        ~DefaultShader() override;
+        explicit DefaultShaderInstanced(const std::wstring& fileName);
+        ~DefaultShaderInstanced() override;
 
         void Initialize(const std::wstring& wstring);
         void Destroy();
@@ -77,11 +77,8 @@ namespace PM3D_API
         bool initialized;
 
     private:
-        struct DefaultShaderParameters
+        struct DefaultShaderInstancedParameters
         {
-            DirectX::XMMATRIX matWorldViewProj;
-            DirectX::XMMATRIX matWorld;
-
             DirectX::XMVECTOR cameraPos;
             DirectX::XMVECTOR cameraDir;
 
