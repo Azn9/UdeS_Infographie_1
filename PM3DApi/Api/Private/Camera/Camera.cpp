@@ -193,7 +193,8 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 
 	XMMATRIX invProj = XMMatrixInverse(nullptr, matProj);
 
-	UpdatePostProcessShaderParam();
+	if(scene != nullptr)
+		UpdatePostProcessShaderParam();
 }
 
 void PM3D_API::Camera::SetUpDirection(DirectX::XMVECTOR newUpDirection)
