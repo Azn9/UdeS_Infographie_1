@@ -282,6 +282,8 @@ bool PM3D_API::InstancedMeshRenderer::IsVisible() const
 
 void PM3D_API::InstancedMeshRenderer::LoadMesh()
 {
+    mesh = static_cast<fastObjMesh*>(chargeur->GetMesh());
+
     ID3D11Device* pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
 
     // 1. SOMMETS a) Créations des sommets dans un tableau temporaire
@@ -366,21 +368,26 @@ void PM3D_API::InstancedMeshRenderer::LoadMesh()
     }
 
     // 4c) Trouver l’index du materiau pour chaque sous-ensemble
-    SubmeshMaterialIndex.reserve(chargeur->GetNombreSubset());
-    for (int32_t i = 0; i < chargeur->GetNombreSubset(); ++i)
+    SubmeshMaterialIndex.reserve(mesh->group_count);
+    for (int32_t i = 0; i < mesh->group_count; ++i)
     {
+        const auto group = mesh->groups[i];
+        SubmeshMaterialIndex.push_back(mesh->face_materials[group.face_offset]);
+
+        /*
         int32_t index;
         for (index = 0; index < Material.size(); ++index)
         {
             const auto materialName = Material[index].NomMateriau;
-            if (materialName == "" || materialName == chargeur->GetMaterialName(i))
+            if (materialName == chargeur->GetMaterialName(i))
                 break;
         }
         if (index >= Material.size()) index = 0; // valeur de défaut
         SubmeshMaterialIndex.push_back(index);
+        */
     }
 
-    std::reverse(SubmeshMaterialIndex.begin(), SubmeshMaterialIndex.end());
+    //std::reverse(SubmeshMaterialIndex.begin(), SubmeshMaterialIndex.end());
 
     // 4d) Chargement des textures
     PM3D::CGestionnaireDeTextures& TexturesManager = PM3D::CMoteurWindows::GetInstance().GetTextureManager();
@@ -413,6 +420,5 @@ void PM3D_API::InstancedMeshRenderer::LoadMesh()
         }
     }
 
-    mesh = static_cast<fastObjMesh*>(chargeur->GetMesh());
     meshLoaded = true;
 }
