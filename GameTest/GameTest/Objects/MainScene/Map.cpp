@@ -33,7 +33,6 @@ void Map::Initialize()
 
     if (!mapImporter.IsParseSuccessful()) return;
 
-    int treeId = 0;
     for (const auto& [name, chargeur, objects] : mapImporter.GetParsedObjects())
     {
         if (!chargeur)
@@ -47,7 +46,7 @@ void Map::Initialize()
         auto renderer = std::make_unique<PM3D_API::InstancedMeshRenderer>(
             std::move(shader),
             chargeur,
-            objects
+            std::move(objects)
         );
         const auto rendererPtr = renderer.get();
         const auto gameObjectPtr = gameObject.get();

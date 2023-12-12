@@ -104,7 +104,6 @@ void MainScene::InitializeObjects()
     }
 }
 
-
 void MainScene::InitializeUI()
 {
     Scene::InitializeUI(); // Init the base canvas
@@ -113,29 +112,4 @@ void MainScene::InitializeUI()
     const auto pauseComponentPtr = pauseComponent.get();
     AddUiChild(std::move(pauseComponent));
     pauseComponentPtr->Initialize();
-}
-
-void MainScene::AddPine(const DirectX::XMFLOAT3& pos)
-{
-    auto pine = std::make_unique<Pine>();
-    pine->SetWorldPosition(pos);
-    pine->SetWorldScale(XMFLOAT3(5.f, 5.f, 5.f));
-    pine->SetWorldRotation(XMFLOAT3(0.0f, 0.90f, 0.f));
-    pine->Initialize();
-    const auto pinePtr = pine.get();
-    AddChild(std::move(pine));
-
-    auto pineRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-    const auto pineRigidbodyPtr = pineRigidbody.get();
-    pinePtr->AddComponent(std::move(pineRigidbody));
-    pineRigidbodyPtr->Initialize();
-
-    auto pineMeshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
-    const auto pineMeshColliderPtr = pineMeshCollider.get();
-    pinePtr->AddComponent(std::move(pineMeshCollider));
-    pineMeshColliderPtr->Initialize();
-    physx::PxFilterData filterDataObstacle;
-    filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
-    physx::PxShape* treeShape = pineMeshColliderPtr->getShape();
-    treeShape->setSimulationFilterData(filterDataObstacle);
 }

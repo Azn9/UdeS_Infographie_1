@@ -55,6 +55,21 @@ namespace PM3D_API
 
         void ApplyShaderParams() const override;
 
+        ID3D11Buffer* GetVertexBuffer() override
+        {
+            return vertexBuffer;
+        }
+
+        ID3D11Buffer* GetInstanceBuffer() override
+        {
+            return nullptr;
+        }
+
+        ID3D11Buffer** GetInstanceBufferPtr() override
+        {
+            return nullptr;
+        }
+
     protected:
         std::wstring fileName;
 

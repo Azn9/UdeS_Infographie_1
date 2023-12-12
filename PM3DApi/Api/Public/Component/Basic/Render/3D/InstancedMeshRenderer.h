@@ -18,16 +18,17 @@ namespace PM3D_API
     public:
         InstancedMeshRenderer(std::unique_ptr<Shader>&& shader,
                               std::string meshName,
-                              const std::vector<MapImporter::InstanceObject>& instances);
+                              const std::vector<MapImporter::InstanceObject>&& instances);
 
         InstancedMeshRenderer(std::unique_ptr<Shader>&& shader,
                               PM3D::IChargeur* chargeur,
-                              const std::vector<MapImporter::InstanceObject>& instances);
+                              const std::vector<MapImporter::InstanceObject>&& instances);
 
         ~InstancedMeshRenderer() override;
 
         void Initialize() override;
         void DrawSelf() const override;
+        bool IsVisible(const XMFLOAT3 position, const XMFLOAT3 scale) const;
 
         void DrawDebugInfo() const override
         {

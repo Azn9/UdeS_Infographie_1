@@ -19,7 +19,7 @@
 PM3D_API::InstancedMeshRenderer::InstancedMeshRenderer(
     std::unique_ptr<Shader>&& shader,
     std::string meshName,
-    const std::vector<MapImporter::InstanceObject>& instances
+    const std::vector<MapImporter::InstanceObject>&& instances
 ) : Renderer(std::move(shader)), instances(instances)
 {
     std::cout << "InstancedMeshRenderer::InstancedMeshRenderer(" << meshName << ")" << std::endl;
@@ -42,7 +42,7 @@ PM3D_API::InstancedMeshRenderer::InstancedMeshRenderer(
 PM3D_API::InstancedMeshRenderer::InstancedMeshRenderer(
     std::unique_ptr<Shader>&& shader,
     PM3D::IChargeur* chargeur,
-    const std::vector<PM3D_API::MapImporter::InstanceObject>& instances
+    const std::vector<PM3D_API::MapImporter::InstanceObject>&& instances
 ) : Renderer(std::move(shader)), chargeur(chargeur), instances(instances)
 {
     std::cout << "InstancedMeshRenderer::InstancedMeshRenderer(chargeur)" << std::endl;
@@ -90,6 +90,7 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
 
     // Obtenir le contexte
     const auto pDispositif = GameHost::GetInstance()->GetDispositif();
+    const auto pD3DDevice = pDispositif->GetD3DDevice();
     ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
 
     // Choisir la topologie des primitives
@@ -102,9 +103,19 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
     pImmediateContext->IASetIndexBuffer(shader->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
     // Vertex buffer
-    constexpr UINT stride = sizeof(CSommetMesh);
-    constexpr UINT offset = 0;
-    pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
+    UINT strides[2];
+    strides[0] = sizeof(CSommetMesh);
+    strides[1] = sizeof(UINT);
+
+    UINT offsets[2];
+    offsets[0] = 0;
+    offsets[1] = 0;
+
+    ID3D11Buffer* buffers[2];
+    buffers[0] = shader->GetVertexBuffer();
+    buffers[1] = shader->GetInstanceBuffer();
+
+    pImmediateContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
 
     pDispositif->ResetViewportDimension();
 
@@ -114,15 +125,21 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
 
     const auto shaderParameters = shader->PrepareParameters(XMMATRIX(), XMMATRIX());
 
-    const auto instancesCount = instances.size();
+    auto drawInstances = std::vector<DrawInstance>();
+    auto instancesIndexes = std::vector<UINT>();
 
-    auto drawInstances = std::vector<DrawInstance>(instancesCount);
-
-    for (const auto& instance : instances)
+    for (size_t i = 0; i < instances.size(); ++i)
     {
+        const auto& instance = instances[i];
+
         const auto position = instance.position;
         const auto rotation = instance.rotation;
         const auto scale = instance.scale;
+
+        if (!IsVisible(position, scale))
+        {
+            continue;
+        }
 
         const auto matWorld = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
             DirectX::XMMatrixRotationQuaternion(Quaternion(rotation).ToXMVector()) *
@@ -134,6 +151,35 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
             DirectX::XMMatrixTranspose(matWorldViewProj),
             DirectX::XMMatrixTranspose(matWorld)
         });
+        instancesIndexes.emplace_back(static_cast<UINT>(i));
+    }
+
+    const auto instancesCount = drawInstances.size();
+
+    if (instancesCount == 0)
+    {
+        LogEndDrawSelf();
+        return;
+    }
+
+    {
+        if (shader->GetInstanceBuffer())
+        {
+            shader->GetInstanceBuffer()->Release();
+        }
+
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_IMMUTABLE;
+        bd.ByteWidth = sizeof(UINT) * instancesCount;
+
+        bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        bd.CPUAccessFlags = 0;
+        D3D11_SUBRESOURCE_DATA InitData;
+        ZeroMemory(&InitData, sizeof(InitData));
+        InitData.pSysMem = instancesIndexes.data();
+        PM3D::DXEssayer(pD3DDevice->CreateBuffer(&bd, &InitData, shader->GetInstanceBufferPtr()),
+                        DXE_CREATIONINDEXBUFFER);
     }
 
     D3D11_BUFFER_DESC instancesBufferDesc;
@@ -149,7 +195,6 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
     initData.pSysMem = drawInstances.data();
 
     ID3D11Buffer* instancesBuffer = nullptr;
-    const auto pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
     PM3D::DXEssayer(pD3DDevice->CreateBuffer(&instancesBufferDesc, &initData, &instancesBuffer));
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -214,6 +259,15 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
     resource_view->Release();
 
     LogEndDrawSelf();
+}
+
+bool PM3D_API::InstancedMeshRenderer::IsVisible(const XMFLOAT3 position, const XMFLOAT3 scale) const
+{
+    const Camera* camera = parentObject->GetScene()->GetMainCamera();
+    const float maxScale = max(max(scale.x, scale.y), scale.z);
+    const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&position);
+    const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera->GetMatView());
+    return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
 }
 
 bool PM3D_API::InstancedMeshRenderer::IsVisible() const

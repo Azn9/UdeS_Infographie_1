@@ -204,7 +204,7 @@ void SnowRenderer::DrawRVT() const
 
     if (shaderLightsParameters.empty())
     {
-        std::cerr << "No snow mover found" << std::endl;
+        //std::cerr << "No snow mover found" << std::endl;
     }
 
     for (int i = 0; i < 10 - static_cast<int>(shaderLightsParameters.size()); ++i)

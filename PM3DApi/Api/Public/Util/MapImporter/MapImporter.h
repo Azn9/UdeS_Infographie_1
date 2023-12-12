@@ -16,20 +16,25 @@ namespace PM3D_API
             XMFLOAT3 rotation;
             XMFLOAT3 scale;
 
+            InstanceObject(const XMFLOAT3 position, const XMFLOAT3 rotation, const XMFLOAT3 scale)
+                : position(position), rotation(rotation), scale(scale)
+            {
+            }
+
             explicit InstanceObject(const json& j)
             {
                 const auto& position = j["position"];
                 this->position = {
                     position["x"].get<float>(),
-                    position["y"].get<float>(),
-                    position["z"].get<float>()
+                    position["z"].get<float>(),
+                    position["y"].get<float>()
                 };
 
                 const auto& rotation = j["rotation"];
                 this->rotation = {
                     rotation["x"].get<float>(),
-                    rotation["y"].get<float>(),
-                    rotation["z"].get<float>()
+                    rotation["z"].get<float>(),
+                    rotation["y"].get<float>()
                 };
 
                 const auto& scale = j["scale"];
