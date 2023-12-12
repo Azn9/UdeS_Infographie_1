@@ -58,9 +58,103 @@ void Map::Initialize()
         gameObjectPtr->AddComponent(std::move(renderer));
         rendererPtr->Initialize();
 
-        auto instancedMeshCollider = std::make_unique<PM3D_API::InstancedMeshCollider>(scene->GetPhysicsResolver()->GetDefaultMaterial());
+        auto instancedMeshCollider = std::make_unique<PM3D_API::InstancedMeshCollider>(
+            scene->GetPhysicsResolver()->GetDefaultMaterial());
         const auto instancedMeshColliderPtr = instancedMeshCollider.get();
         gameObjectPtr->AddComponent(std::move(instancedMeshCollider));
         instancedMeshColliderPtr->Initialize();
     }
+
+    // =========================================
+    // LANDSCAPE 0
+    // =========================================
+
+    auto landscapeWithTunnel = std::make_unique<GameObject>(
+        "LandscapeWithTunnel"
+    );
+    auto landscapeWithTunnelMeshRenderer = std::make_unique<PM3D_API::MeshRenderer>(
+        std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx"),
+        "Map/landscape0.obj"
+    );
+
+    const auto landscapeWithTunnelPtr = landscapeWithTunnel.get();
+    AddChild(std::move(landscapeWithTunnel));
+
+    const auto landscapeWithTunnelMeshRendererPtr = landscapeWithTunnelMeshRenderer.get();
+    landscapeWithTunnelPtr->AddComponent(std::move(landscapeWithTunnelMeshRenderer));
+
+    landscapeWithTunnelPtr->Initialize();
+    landscapeWithTunnelMeshRendererPtr->Initialize();
+
+    // =========================================
+    // LANDSCAPE 1
+    // =========================================
+
+    auto landscape1 = std::make_unique<GameObject>(
+        "Landscape1"
+    );
+    auto landscape1MeshRenderer = std::make_unique<PM3D_API::MeshRenderer>(
+        std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx"),
+        "Map/landscape1.obj"
+    );
+
+    const auto landscape1Ptr = landscape1.get();
+    AddChild(std::move(landscape1));
+
+    const auto landscape1MeshRendererPtr = landscape1MeshRenderer.get();
+    landscape1Ptr->AddComponent(std::move(landscape1MeshRenderer));
+
+    landscape1Ptr->Initialize();
+    landscape1MeshRendererPtr->Initialize();
+
+    // =========================================
+    // LANDSCAPE 2
+    // =========================================
+
+    auto landscape2 = std::make_unique<GameObject>(
+        "Landscape2"
+    );
+    auto landscape2MeshRenderer = std::make_unique<PM3D_API::MeshRenderer>(
+        std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx"),
+        "Map/landscape2.obj"
+    );
+
+    const auto landscape2Ptr = landscape2.get();
+    AddChild(std::move(landscape2));
+
+    const auto landscape2MeshRendererPtr = landscape2MeshRenderer.get();
+    landscape2Ptr->AddComponent(std::move(landscape2MeshRenderer));
+
+    landscape2Ptr->Initialize();
+    landscape2MeshRendererPtr->Initialize();
+
+    // =========================================
+    // TUNNEL
+    // =========================================
+
+    auto tunnelObj = std::make_unique<GameObject>(
+        "Tunnel"
+    );
+    const auto tunnelObjPtr = tunnelObj.get();
+    AddChild(std::move(tunnelObj));
+
+    auto tunnelRenderer = std::make_unique<PM3D_API::MeshRenderer>(
+        std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx"),
+        "Map/tunnel.obj"
+    );
+    const auto tunnelRendererPtr = tunnelRenderer.get();
+    tunnelObjPtr->AddComponent(std::move(tunnelRenderer));
+    tunnelRendererPtr->Initialize();
+
+    auto tunnelRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+    const auto tunnelRigidbodyPtr = tunnelRigidbody.get();
+    tunnelObjPtr->AddComponent(std::move(tunnelRigidbody));
+    tunnelRigidbodyPtr->Initialize();
+
+    auto tunnelMeshCollider = std::make_unique<PM3D_API::MeshCollider>(
+        parent->GetScene()->GetPhysicsResolver()->GetDefaultMaterial()
+    );
+    const auto tunnelMeshColliderPtr = tunnelMeshCollider.get();
+    tunnelObjPtr->AddComponent(std::move(tunnelMeshCollider));
+    tunnelMeshColliderPtr->Initialize();
 }
