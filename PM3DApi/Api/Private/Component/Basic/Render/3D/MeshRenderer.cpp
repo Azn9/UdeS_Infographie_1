@@ -118,7 +118,14 @@ void PM3D_API::MeshRenderer::DrawSelf() const
         unsigned int indexDrawAmount;
         if (mesh->group_count > 1 && i + 1 < mesh->group_count)
         {
-            indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
+            if (i + 1 < mesh->group_count)
+            {
+                indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+            }
+            else
+            {
+                indexDrawAmount = mesh->index_count - indexStart;
+            }
         }
         else
         {
@@ -214,9 +221,16 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
         const unsigned indexStart = objGroup.index_offset;
 
         unsigned int indexDrawAmount;
-        if (mesh->group_count > 1 && i + 1 < mesh->group_count)
+        if (mesh->group_count > 1)
         {
-            indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+            if (i + 1 < mesh->group_count)
+            {
+                indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+            }
+            else
+            {
+                indexDrawAmount = mesh->index_count - indexStart;
+            }
         }
         else
         {
