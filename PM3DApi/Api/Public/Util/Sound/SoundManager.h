@@ -21,6 +21,9 @@ public:
 
     IDirectSound8* getDirectSound() const { return directSound; }
 
+    bool LoadAndPlay(const std::string& filename) const;
+    void StopAllSounds();
+
     struct WaveHeaderType
     {
         char chunkId[4];
@@ -42,4 +45,6 @@ private:
     bool initialized = false;
     IDirectSound8* directSound;
     IDirectSoundBuffer* primaryBuffer;
+
+    IDirectSoundBuffer8* secondaryBuffer1;
 };

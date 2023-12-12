@@ -80,9 +80,10 @@ void LoadingScene::InitializeUI()
     Scene::AddComponent(std::move(loadingSceneComponent));
     loadingSceneComponentPtr->Initialize();
 
-    const auto musicSound = SoundManager::GetInstance().loadSound("sounds/music/music.wav");
-    if (const auto res = SoundManager::GetInstance().playSound(musicSound); !res)
+    auto res = SoundManager::GetInstance().LoadAndPlay("sounds/music/music.wav");
+    if (!res)
     {
         std::cerr << "Failed to play music" << std::endl;
     }
 }
+
