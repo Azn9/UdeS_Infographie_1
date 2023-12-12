@@ -2,6 +2,7 @@
 #include "Core/Public/Util/resource.h"
 #include "Core/Public/Core/dispositifD3D11.h"
 #include <d3dcompiler.h>
+#include <iostream>
 
 #include "Core/Public/Object/Panneau.h"
 
@@ -153,10 +154,22 @@ namespace PM3D
         
         // Pour l’effet
         ID3DBlob* pFXBlob = nullptr;
-        DXEssayer( D3DCompileFromFile( L"shader/PostEffect.fx", 0, 0, 0, 
+        ID3DBlob* errorBlob = nullptr;
+        HRESULT result = D3DCompileFromFile( L"shader/PostEffect.fx", 0, 0, 0, 
         "fx_5_0", 0, 0, 
-        &pFXBlob, 0),
-        DXE_ERREURCREATION_FX);
+        &pFXBlob, &errorBlob);
+
+        if (FAILED(result))
+        {
+            if (errorBlob)
+            {
+                char* errorMessage = static_cast<char*>(errorBlob->GetBufferPointer());
+                std::cerr << "Shader compilation failed with errors:\n" << errorMessage << std::endl;
+                errorBlob->Release();
+            }
+        }
+
+        DXEssayer(result, DXE_ERREURCREATION_FX);
         D3DX11CreateEffectFromMemory( 
          pFXBlob->GetBufferPointer(), pFXBlob->GetBufferSize(), 0, 
         pD3DDevice, &pEffet);

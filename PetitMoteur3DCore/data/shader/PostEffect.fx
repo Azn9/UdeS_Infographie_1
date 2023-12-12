@@ -4,27 +4,29 @@ struct VS_Sortie
     float2 CoordTex : TEXCOORD0;
 };
 
-float4x4 matInvProj;
+cbuffer param {
+    float4x4 matInvProj;
+
+    //general
+    float far;
+    float near;
+
+    //Radial
+    float radialDistance;
+
+    //Vignette
+    float vignettePower;
+    float4 vignetteColor;
+
+    //Depth of field 
+    int blurKernelHalfSize;
+    float startBlurDist;
+    float endBlurDist;
+}
 
 Texture2D depthTexture; // la texture profondeur
 Texture2D textureEntree; // la texture
 SamplerState SampleState; // l’état de sampling
-
-//general
-float far;
-float near;
-
-//Radial
-float radialDistance;
-
-//Vignette
-float vignettePower;
-float4 vignetteColor;
-
-//Depth of field 
-int blurSampleDist;
-float startSharpDist;
-float endSharpDist;
 
 //---------------------------------------------------------
 // Vertex Shader « Nul »
@@ -60,9 +62,9 @@ float4 BoxBlur(float2 coordTex)
     float2 normalisedPixelSize = 1.0 / dimensions;
     
     float4 couleur = float4(0.0, 0.0, 0.0, 0.0);
-    for(int y = -blurSampleDist; y <= blurSampleDist; ++y)
+    for(int y = -blurKernelHalfSize; y <= blurKernelHalfSize; ++y)
     {
-        for(int x = -blurSampleDist; x <= blurSampleDist; ++x)
+        for(int x = -blurKernelHalfSize; x <= blurKernelHalfSize; ++x)
         {
             float2 sampleCoord = float2(coordTex.x + normalisedPixelSize.x * x, coordTex.y + normalisedPixelSize.y * y);
             float4 sampl = textureEntree.Sample(SampleState, sampleCoord);
@@ -70,20 +72,31 @@ float4 BoxBlur(float2 coordTex)
         }
     }
     
-    int sampleLengthHeight = blurSampleDist * 2 + 1;
+    int sampleLengthHeight = blurKernelHalfSize * 2 + 1;
     return couleur / (sampleLengthHeight * sampleLengthHeight);
+}
+
+float4 BoxBlurPS(VS_Sortie vs) : SV_Target
+{   
+    return BoxBlur(vs.CoordTex);
 }
 
 float4 DepthOfFieldPS(VS_Sortie vs) : SV_Target
 {
-    /*float4 blurredColor = BoxBlur(vs.CoordTex);
-    float4 color = textureEntree.Sample(SampleState, tc);
-    */
+    float t;
+    float4 blurredColor;
+    float4 color = textureEntree.Sample(SampleState, vs.CoordTex);
     
     float depth = depthTexture.Sample(SampleState, vs.CoordTex).r;
     float linearDepth = (2.0f * near) / (far + near - depth * (far - near));
+    float dist = linearDepth * (far - near) + near;
 
-    return float4(linearDepth,linearDepth,linearDepth,1.0);
+    t = smoothstep(startBlurDist, endBlurDist, dist);
+    blurredColor = BoxBlur(vs.CoordTex);
+    
+    color = lerp(color, blurredColor, t);
+    
+    return color;
 }
 
 //-----------------------------------------------------
@@ -139,7 +152,7 @@ float4 VignettePS(VS_Sortie vs) : SV_Target
     return couleur;
 }
 
-
+/*
 technique11 Test
 {
     pass p0
@@ -148,7 +161,7 @@ technique11 Test
         PixelShader = compile ps_5_0 TestPS();
         SetGeometryShader(NULL);
     }
-};
+};*/
 
 /*technique11 RadialBlur
 {
@@ -156,6 +169,17 @@ technique11 Test
     {
         VertexShader = compile vs_5_0 NulVS();
         PixelShader = compile ps_5_0 RadialBlurPS();
+        SetGeometryShader(NULL);
+    }
+};*/
+
+/*
+technique11 BoxBlurTech
+{
+    pass p0
+    {
+        VertexShader = compile vs_5_0 NulVS();
+        PixelShader = compile ps_5_0 BoxBlurPS();
         SetGeometryShader(NULL);
     }
 };*/
