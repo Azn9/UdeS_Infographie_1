@@ -13,8 +13,8 @@ namespace PM3D_API
 class ShadowProcessor : public PM3D_API::Component
 {
 public:
-	const static int viewHeightDirectionnalLight = 10;
-	const static int viewWidthDirectionnalLight = 10;
+	const static int viewHeightDirectionnalLight = 300;
+	const static int viewWidthDirectionnalLight = 300;
 
 	ShadowProcessor() = default;
 	~ShadowProcessor() override;

@@ -8,7 +8,7 @@
 
 enum
 {
-	SHADOW_MAP_SIZE = 512
+	SHADOW_MAP_SIZE = 2048
 };
 
 ShadowProcessor::~ShadowProcessor()
@@ -148,16 +148,16 @@ std::vector<PM3D_API::ShaderLightDefaultParameters> ShadowProcessor::ProcessLigh
 			directionCameraPlayer.z = directionCameraPlayer.z / normDirection;
 
 			const auto focusPoint = DirectX::XMVectorSet(
-				positionCameraPlayer.x + directionCameraPlayer.x * viewHeightDirectionnalLight / 2.f,
-				positionCameraPlayer.y + directionCameraPlayer.y * viewHeightDirectionnalLight / 2.f,
-				positionCameraPlayer.z + directionCameraPlayer.z * viewHeightDirectionnalLight / 2.f,
+				positionCameraPlayer.x + directionCameraPlayer.x * viewHeightDirectionnalLight / 3.f,
+				positionCameraPlayer.y + directionCameraPlayer.y * viewHeightDirectionnalLight / 3.f,
+				positionCameraPlayer.z + directionCameraPlayer.z * viewHeightDirectionnalLight / 3.f,
 				1.0f
 			);
 
 			const auto worldPosition = DirectX::XMFLOAT3(
-				focusPoint.m128_f32[0] - 100.f * lightDirection.x,
-				focusPoint.m128_f32[1] - 100.f * lightDirection.y,
-				focusPoint.m128_f32[2] - 100.f * lightDirection.z
+				focusPoint.m128_f32[0] - 200.f * lightDirection.x,
+				focusPoint.m128_f32[1] - 200.f * lightDirection.y,
+				focusPoint.m128_f32[2] - 200.f * lightDirection.z
 			);
 
 			light->SetWorldPosition(worldPosition);
