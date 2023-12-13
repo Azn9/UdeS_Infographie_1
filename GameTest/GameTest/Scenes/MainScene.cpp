@@ -22,6 +22,7 @@
 #include "GameTest/TimeScaleTest.h"
 #include "GameTest/Components/MovableComponent.h"
 #include "GameTest/Components/SizeModifierComponent.h"
+#include "GameTest/UI/GameUI.h"
 
 void MainScene::InitializePhysics()
 {
@@ -122,7 +123,7 @@ void MainScene::InitializeObjects()
     // ============= Add a sphere =============
     {
         auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-        const auto spherePtr = sphere.get();
+        spherePtr = sphere.get();
         AddChild(std::move(sphere));
         spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
         spherePtr->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
@@ -220,6 +221,11 @@ void MainScene::InitializeUI()
     const auto pauseComponentPtr = pauseComponent.get();
     AddUiChild(std::move(pauseComponent));
     pauseComponentPtr->Initialize();
+
+    auto gameUI = std::make_unique<GameUI>();
+    const auto gameUIPtr = gameUI.get();
+    AddUiChild(std::move(gameUI));
+    gameUIPtr->Initialize();
 }
 
 void MainScene::AddPine(const DirectX::XMFLOAT3& pos)
