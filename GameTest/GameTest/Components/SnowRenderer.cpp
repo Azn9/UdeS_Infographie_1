@@ -79,8 +79,6 @@ void SnowRenderer::DrawRVT() const
     const auto dispositif = PM3D_API::GameHost::GetInstance()->GetDispositif();
     const auto context = dispositif->GetImmediateContext();
 
-    dispositif->ActiverMelangeAlpha();
-
     // Improvement possible : update fade only every 1/4th frame to save performance
     // Or disable the whole following block if we don't want the snow to fade back
     {
@@ -262,6 +260,4 @@ void SnowRenderer::DrawRVT() const
     
     tabRTV[0] = dispositif->GetRenderTargetView();
     context->OMSetRenderTargets(1, tabRTV, dispositif->GetDepthStencilView());
-
-    dispositif->DesactiverMelangeAlpha();
 }

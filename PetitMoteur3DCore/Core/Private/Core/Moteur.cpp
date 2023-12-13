@@ -5,234 +5,226 @@
 
 void PM3D::CMoteur::Run()
 {
-	// Update thread
-	std::thread updateThread([=]
-	{
-		while (running)
-		{
-			const int64_t currentTime = Time::GetInstance().GetTimeSpecific();
+    // Update thread
+    std::thread updateThread([=]
+    {
+        while (running)
+        {
+            const int64_t currentTime = Time::GetInstance().GetTimeSpecific();
 
-			if (LastUpdateTime == 0)
-			{
-				LastUpdateTime = currentTime;
-				continue;
-			}
-				
-			const double timeElapsed = Time::GetInstance().GetTimeIntervalsInSec(LastUpdateTime, currentTime);
+            if (LastUpdateTime == 0)
+            {
+                LastUpdateTime = currentTime;
+                continue;
+            }
 
-			if (timeElapsed > EcartTemps || shouldStepOneFrameUpdate)
-			{
-				const auto timeElapsedF = static_cast<float>(timeElapsed);
-				if (shouldStepOneFrameUpdate != false)
-				{
-					Time::GetInstance().SetUpdateDeltaTime(timeElapsedF);
-					shouldStepOneFrameUpdate = false;
-				} else
-				{
-					Time::GetInstance().SetUpdateDeltaTime(timeElapsedF * Time::GetInstance().GetTimeScale());
-				}
+            const double timeElapsed = Time::GetInstance().GetTimeIntervalsInSec(LastUpdateTime, currentTime);
 
-				Time::GetInstance().SetUpdateDeltaTimeA(timeElapsedF);
+            if (timeElapsed > EcartTemps || shouldStepOneFrameUpdate)
+            {
+                const auto timeElapsedF = static_cast<float>(timeElapsed);
+                if (shouldStepOneFrameUpdate != false)
+                {
+                    Time::GetInstance().SetUpdateDeltaTime(timeElapsedF);
+                    shouldStepOneFrameUpdate = false;
+                }
+                else
+                {
+                    Time::GetInstance().SetUpdateDeltaTime(timeElapsedF * Time::GetInstance().GetTimeScale());
+                }
 
-				GestionnaireDeSaisie.SaisirEtatSouris();
-				GestionnaireDeSaisie.StatutClavier();
+                Time::GetInstance().SetUpdateDeltaTimeA(timeElapsedF);
 
-				Input::GetInstance().Tick(GestionnaireDeSaisie);
+                GestionnaireDeSaisie.SaisirEtatSouris();
+                GestionnaireDeSaisie.StatutClavier();
 
-				gameHost->Update();
-				
-				LastUpdateTime = currentTime;
-			}
-		}
-	});
-	SetThreadName(updateThread, "UpdateThread");
-	updateThread.detach();
+                Input::GetInstance().Tick(GestionnaireDeSaisie);
 
-	// PhysicsUpdate thread
-	std::thread physicsUpdateThread([=]
-	{
-		while (running)
-		{
-			const int64_t currentTime = Time::GetInstance().GetTimeSpecific();
+                gameHost->Update();
 
-			if (LastFixedUpdateTime == 0)
-			{
-				LastFixedUpdateTime = currentTime;
-				continue;
-			}
-				
-			const double timeElapsed = Time::GetInstance().GetTimeIntervalsInSec(LastFixedUpdateTime, currentTime);
+                LastUpdateTime = currentTime;
+            }
+        }
+    });
+    SetThreadName(updateThread, "UpdateThread");
+    updateThread.detach();
 
-			if (timeElapsed > FixedEcartTemps || shouldStepOneFramePhysics)
-			{
-				const auto timeElapsedF = static_cast<float>(timeElapsed);
-				if (shouldStepOneFramePhysics != false)
-				{
-					shouldStepOneFramePhysics = false;
-						
-					Time::GetInstance().SetPhysicsDeltaTime(timeElapsedF);
-				} else
-				{
-					Time::GetInstance().SetPhysicsDeltaTime(timeElapsedF * Time::GetInstance().GetTimeScale());
-				}
+    // PhysicsUpdate thread
+    std::thread physicsUpdateThread([=]
+    {
+        while (running)
+        {
+            const int64_t currentTime = Time::GetInstance().GetTimeSpecific();
 
-				Time::GetInstance().SetPhysicsDeltaTimeA(timeElapsedF);
+            if (LastFixedUpdateTime == 0)
+            {
+                LastFixedUpdateTime = currentTime;
+                continue;
+            }
 
-				if (Time::GetInstance().GetPhysicsDeltaTime() != 0)
-					gameHost->PhysicsUpdate();
-				
-				LastFixedUpdateTime = currentTime;
-			}
-		}
-	});
-	SetThreadName(physicsUpdateThread, "PhysicsThread");
-	physicsUpdateThread.detach();
+            const double timeElapsed = Time::GetInstance().GetTimeIntervalsInSec(LastFixedUpdateTime, currentTime);
 
-	while (this->running)
-	{
-		// Propre ? la plateforme - (Conditions d'arr?t, interface, messages)
-		if (!RunSpecific())
-		{
-			this->running = false;
-		}
-			
-		if (!canRender) continue;
-				
-		if (!Animation())
-		{
-			this->running = false;
-		}
-	}
+            if (timeElapsed > FixedEcartTemps || shouldStepOneFramePhysics)
+            {
+                const auto timeElapsedF = static_cast<float>(timeElapsed);
+                if (shouldStepOneFramePhysics != false)
+                {
+                    shouldStepOneFramePhysics = false;
+
+                    Time::GetInstance().SetPhysicsDeltaTime(timeElapsedF);
+                }
+                else
+                {
+                    Time::GetInstance().SetPhysicsDeltaTime(timeElapsedF * Time::GetInstance().GetTimeScale());
+                }
+
+                Time::GetInstance().SetPhysicsDeltaTimeA(timeElapsedF);
+
+                if (Time::GetInstance().GetPhysicsDeltaTime() != 0)
+                    gameHost->PhysicsUpdate();
+
+                LastFixedUpdateTime = currentTime;
+            }
+        }
+    });
+    SetThreadName(physicsUpdateThread, "PhysicsThread");
+    physicsUpdateThread.detach();
+
+    while (this->running)
+    {
+        // Propre ? la plateforme - (Conditions d'arr?t, interface, messages)
+        if (!RunSpecific())
+        {
+            this->running = false;
+        }
+
+        if (!canRender) continue;
+
+        if (!Animation())
+        {
+            this->running = false;
+        }
+
+        if (wantExit) this->running = false;
+    }
 }
 
 void PM3D::CMoteur::StepOneFrame()
 {
-	shouldStepOneFrameUpdate = true;
-	shouldStepOneFramePhysics = true;
+    shouldStepOneFrameUpdate = true;
+    shouldStepOneFramePhysics = true;
 }
 
 int PM3D::CMoteur::Initialisations()
 {
-	std::cout << "2A" << std::endl;
-	
-	// Propre ? la plateforme
-	InitialisationsSpecific();
+    // Propre ? la plateforme
+    InitialisationsSpecific();
 
-	std::cout << "2B" << std::endl;
+    // * Initialisation du dispositif de rendu
+    pDispositif = CreationDispositifSpecific(CDS_FENETRE);
 
-	// * Initialisation du dispositif de rendu
-	pDispositif = CreationDispositifSpecific(CDS_FENETRE);
+    gameHost->SetDispositif(pDispositif);
 
-	std::cout << "2C" << std::endl;
-	
-	gameHost->SetDispositif(pDispositif);
+    //Resize(1280, 720);
+    //ResizeWindow(1280, 720);
 
-	std::cout << "2D" << std::endl;
+    // * Initialisation de la sc?ne
+    InitScene();
 
-	//Resize(1280, 720);
-	//ResizeWindow(1280, 720);
+    // * Initialisation des param?tres de l'animation et 
+    //   pr?paration de la premi?re image
+    InitAnimation();
 
-	// * Initialisation de la sc?ne
-	InitScene();
-	
-	std::cout << "2E" << std::endl;
-
-	// * Initialisation des param?tres de l'animation et 
-	//   pr?paration de la premi?re image
-	InitAnimation();
-
-	std::cout << "2F" << std::endl;
-
-	return 0;
+    return 0;
 }
 
 bool PM3D::CMoteur::Animation()
 {
-	// m?thode pour lire l'heure et calculer le 
-	// temps ?coul?
-	const int64_t TempsCompteurCourant = Time::GetInstance().GetTimeSpecific();
-	const double TempsEcoule = Time::GetInstance().GetTimeIntervalsInSec(TempsCompteurPrecedent, TempsCompteurCourant);
+    // m?thode pour lire l'heure et calculer le 
+    // temps ?coul?
+    const int64_t TempsCompteurCourant = Time::GetInstance().GetTimeSpecific();
+    const double TempsEcoule = Time::GetInstance().GetTimeIntervalsInSec(TempsCompteurPrecedent, TempsCompteurCourant);
 
-	// Est-il temps de rendre l'image?
-	if (TempsEcoule > EcartTemps)
-	{
-		uint64_t start = Time::GetInstance().GetTimeSpecific();
+    // Est-il temps de rendre l'image?
+    if (TempsEcoule > EcartTemps)
+    {
+        uint64_t start = Time::GetInstance().GetTimeSpecific();
 
-		if (canRender)
-		{
-			// Affichage optimis?
-			pDispositif->Present(); // On enlevera ?//? plus tard
+        if (canRender)
+        {
+            // Affichage optimis?
+            pDispositif->Present(); // On enlevera ?//? plus tard
 
-			const uint64_t end = Time::GetInstance().GetTimeSpecific();
-			presentTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
+            const uint64_t end = Time::GetInstance().GetTimeSpecific();
+            presentTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
 
-			// On rend l'image sur la surface de travail
-			// (tampon d'arri?re plan)
-			RenderScene();
-		}
+            // On rend l'image sur la surface de travail
+            // (tampon d'arri?re plan)
+            RenderScene();
+        }
 
-		// Calcul du temps du prochain affichage
-		TempsCompteurPrecedent = TempsCompteurCourant;
-	}
+        // Calcul du temps du prochain affichage
+        TempsCompteurPrecedent = TempsCompteurCourant;
+    }
 
-	return true;
+    return true;
 }
 
 int PM3D::CMoteur::InitAnimation()
 {
-	TempsSuivant = Time::GetInstance().GetTimeSpecific();
-	TempsCompteurPrecedent = TempsSuivant;
+    TempsSuivant = Time::GetInstance().GetTimeSpecific();
+    TempsCompteurPrecedent = TempsSuivant;
 
-	// premi?re Image
-	//RenderScene();
+    // premi?re Image
+    //RenderScene();
 
-	canRender = true;
+    canRender = true;
 
-	return true;
+    return true;
 }
 
 bool PM3D::CMoteur::RenderScene()
 {
-	if (!canRender)
-	{
-		ImGui::EndFrame();
-		return true;
-	}
-		
-	const uint64_t start = Time::GetInstance().GetTimeSpecific();
-		
-	BeginRenderSceneSpecific();
-		
-	gameHost->Draw();
-	gameHost->DrawUI();
+    if (!canRender)
+    {
+        ImGui::EndFrame();
+        return true;
+    }
 
-	EndRenderSceneSpecific();
+    const uint64_t start = Time::GetInstance().GetTimeSpecific();
 
-	const uint64_t end = Time::GetInstance().GetTimeSpecific();
+    BeginRenderSceneSpecific();
 
-	lastFrameTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
-		
-	return true;
+    gameHost->Draw();
+    gameHost->DrawUI();
+
+    EndRenderSceneSpecific();
+
+    const uint64_t end = Time::GetInstance().GetTimeSpecific();
+
+    lastFrameTime = Time::GetInstance().GetTimeIntervalsInSec(start, end) * 1000.0;
+
+    return true;
 }
 
 void PM3D::CMoteur::Cleanup()
 {
-	// d?truire les objets
-	ListeScene.clear();
+    // d?truire les objets
+    ListeScene.clear();
 
-	// D?truire le dispositif
-	if (pDispositif)
-	{
-		delete pDispositif;
-		pDispositif = nullptr;
-	}
+    // D?truire le dispositif
+    if (pDispositif)
+    {
+        delete pDispositif;
+        pDispositif = nullptr;
+    }
 }
 
 int PM3D::CMoteur::InitScene()
 {
-	InitSceneSpecific();
-		
-	gameHost->InitializeScene();
+    InitSceneSpecific();
 
-	return 0;
+    gameHost->InitializeScene();
+
+    return 0;
 }

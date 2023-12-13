@@ -74,11 +74,6 @@ void SoundManager::Shutdown()
     }
 }
 
-Sound SoundManager::loadSound(const std::string& filename) const
-{
-    return Sound(this, filename.c_str());
-}
-
 bool SoundManager::playSound(const Sound& sound) const
 {
     if (!initialized || !sound.initialized)
@@ -115,7 +110,7 @@ bool SoundManager::playSound(const Sound& sound) const
     return true;
 }
 
-bool SoundManager::LoadAndPlay(const std::string& filename) const
+bool SoundManager::loadSound(const std::string& filename, IDirectSoundBuffer8** buffer) const
 {
     int error;
     FILE* filePtr;
@@ -220,7 +215,7 @@ bool SoundManager::LoadAndPlay(const std::string& filename) const
     }
 
     // Test the buffer format against the direct sound 8 interface and create the secondary buffer.
-    result = tempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (void**)&secondaryBuffer1);
+    result = tempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (void**)&*buffer);
     if (FAILED(result))
     {
         return false;
@@ -255,7 +250,7 @@ bool SoundManager::LoadAndPlay(const std::string& filename) const
     }
 
     // Lock the secondary buffer to write wave data into it.
-    result = secondaryBuffer1->Lock(0, waveFileHeader.dataSize, (void**)&bufferPtr, (DWORD*)&bufferSize, NULL, 0, 0);
+    result = (*buffer)->Lock(0, waveFileHeader.dataSize, (void**)&bufferPtr, (DWORD*)&bufferSize, NULL, 0, 0);
     if (FAILED(result))
     {
         return false;
@@ -265,7 +260,7 @@ bool SoundManager::LoadAndPlay(const std::string& filename) const
     memcpy(bufferPtr, waveData, waveFileHeader.dataSize);
 
     // Unlock the secondary buffer after the data has been written to it.
-    result = secondaryBuffer1->Unlock((void*)bufferPtr, bufferSize, NULL, 0);
+    result = (*buffer)->Unlock((void*)bufferPtr, bufferSize, NULL, 0);
     if (FAILED(result))
     {
         return false;
@@ -275,22 +270,27 @@ bool SoundManager::LoadAndPlay(const std::string& filename) const
     delete [] waveData;
     waveData = 0;
 
+    return true;
+}
+
+bool SoundManager::Play(IDirectSoundBuffer8* buffer)
+{
     // Set position at the beginning of the sound buffer.
-    result = secondaryBuffer1->SetCurrentPosition(0);
+    auto result = buffer->SetCurrentPosition(0);
     if (FAILED(result))
     {
         return false;
     }
 
     // Set volume of the buffer to 100%.
-    result = secondaryBuffer1->SetVolume(DSBVOLUME_MAX);
+    result = buffer->SetVolume(DSBVOLUME_MAX);
     if (FAILED(result))
     {
         return false;
     }
 
     // Play the contents of the secondary sound buffer.
-    result = secondaryBuffer1->Play(0, 0, 0);
+    result = buffer->Play(0, 0, 0);
     if (FAILED(result))
     {
         return false;
@@ -301,6 +301,6 @@ bool SoundManager::LoadAndPlay(const std::string& filename) const
 
 void SoundManager::StopAllSounds()
 {
-    secondaryBuffer1->Stop();
-    secondaryBuffer1->Release();
+    uiRollover1Buffer->Stop();
+    uiClick1Buffer->Stop();
 }

@@ -14,14 +14,14 @@ public:
     bool Initialize(HWND);
     void Shutdown();
 
-    [[nodiscard]] Sound loadSound(const std::string& filename) const;
+    [[nodiscard]] bool loadSound(const std::string& filename, IDirectSoundBuffer8** buffer) const;
+    bool Play(IDirectSoundBuffer8* buffer);
     bool playSound(const Sound& sound) const;
 
     [[nodiscard]] bool isInitialized() const { return initialized; }
 
     IDirectSound8* getDirectSound() const { return directSound; }
 
-    bool LoadAndPlay(const std::string& filename) const;
     void StopAllSounds();
 
     struct WaveHeaderType
@@ -41,10 +41,11 @@ public:
         unsigned long dataSize;
     };
 
+    IDirectSoundBuffer8* uiClick1Buffer;
+    IDirectSoundBuffer8* uiRollover1Buffer;
+
 private:
     bool initialized = false;
     IDirectSound8* directSound;
     IDirectSoundBuffer* primaryBuffer;
-
-    IDirectSoundBuffer8* secondaryBuffer1;
 };

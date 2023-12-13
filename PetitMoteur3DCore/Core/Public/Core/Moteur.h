@@ -15,121 +15,124 @@
 
 namespace PM3D
 {
-const int IMAGESPARSECONDE = 60;
-const int PHYSICS_PER_SECOND = 60;
-const double EcartTemps = 1.0 / static_cast<double>(IMAGESPARSECONDE);
-const double FixedEcartTemps = 1.0 / static_cast<double>(PHYSICS_PER_SECOND);
+    const int IMAGESPARSECONDE = 60;
+    const int PHYSICS_PER_SECOND = 60;
+    const double EcartTemps = 1.0 / static_cast<double>(IMAGESPARSECONDE);
+    const double FixedEcartTemps = 1.0 / static_cast<double>(PHYSICS_PER_SECOND);
 
-//
-//   TEMPLATE�: CMoteur
-//
-//   BUT�: Template servant � construire un objet Moteur qui implantera les
-//         aspects "g�n�riques" du moteur de jeu
-//
-//   COMMENTAIRES�:
-//
-//        Comme plusieurs de nos objets repr�senteront des �l�ments uniques 
-//        du syst�me (ex: le moteur lui-m�me, le lien vers 
-//        le dispositif Direct3D), l'utilisation d'un singleton 
-//        nous simplifiera plusieurs aspects.
-//
-class CMoteur
-{
-public:
-	CMoteur() = default;
-	virtual ~CMoteur()
-	{
-		CMoteur::Cleanup();
-	}
-	
-	virtual void Run();
+    //
+    //   TEMPLATE�: CMoteur
+    //
+    //   BUT�: Template servant � construire un objet Moteur qui implantera les
+    //         aspects "g�n�riques" du moteur de jeu
+    //
+    //   COMMENTAIRES�:
+    //
+    //        Comme plusieurs de nos objets repr�senteront des �l�ments uniques 
+    //        du syst�me (ex: le moteur lui-m�me, le lien vers 
+    //        le dispositif Direct3D), l'utilisation d'un singleton 
+    //        nous simplifiera plusieurs aspects.
+    //
+    class CMoteur
+    {
+    public:
+        CMoteur() = default;
 
-	std::atomic_bool shouldStepOneFrameUpdate = false;
-	std::atomic_bool shouldStepOneFramePhysics = false;
+        virtual ~CMoteur()
+        {
+            CMoteur::Cleanup();
+        }
 
-	void StepOneFrame();
+        virtual void Run();
 
-	virtual void Resize(WORD largeur, WORD hauteur) = 0;
-	virtual void ResizeWindow(int largeur, int hauteur) = 0;
-	
-	virtual int Initialisations();
+        std::atomic_bool shouldStepOneFrameUpdate = false;
+        std::atomic_bool shouldStepOneFramePhysics = false;
+        bool wantExit = false;
 
-	virtual bool Animation();
+        void StepOneFrame();
 
-	void SetGameHost(PM3D_API::GameHost* newGameHost)
-	{
-		this->gameHost = newGameHost;
-	}
+        virtual void Resize(WORD largeur, WORD hauteur) = 0;
+        virtual void ResizeWindow(int largeur, int hauteur) = 0;
 
-	const XMMATRIX& GetMatView() const { return m_MatView; }
-	const XMMATRIX& GetMatProj() const { return m_MatProj; }
-	const XMMATRIX& GetMatViewProj() const { return m_MatViewProj; }
+        virtual int Initialisations();
 
-	CGestionnaireDeTextures& GetTextureManager() { return TexturesManager; }
-	CDIManipulateur& GetGestionnaireDeSaisie() {return GestionnaireDeSaisie;}
+        virtual bool Animation();
 
-	virtual double GetLastFrameTime() const
-	{
-		return lastFrameTime;
-	}
+        void SetGameHost(PM3D_API::GameHost* newGameHost)
+        {
+            this->gameHost = newGameHost;
+        }
 
-	virtual double GetPresentTime() const
-	{
-		return presentTime;
-	}
-protected:
+        const XMMATRIX& GetMatView() const { return m_MatView; }
+        const XMMATRIX& GetMatProj() const { return m_MatProj; }
+        const XMMATRIX& GetMatViewProj() const { return m_MatViewProj; }
 
-	bool canRender = false;
-	bool running = true;
-	double lastFrameTime = 0.0;
-	double presentTime = 0.0;
+        CGestionnaireDeTextures& GetTextureManager() { return TexturesManager; }
+        CDIManipulateur& GetGestionnaireDeSaisie() { return GestionnaireDeSaisie; }
 
-	// Sp�cifiques - Doivent �tre implant�s
-	virtual bool RunSpecific() = 0;
-	virtual int InitialisationsSpecific() = 0;
+        virtual double GetLastFrameTime() const
+        {
+            return lastFrameTime;
+        }
 
-	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) = 0;
-	virtual void InitSceneSpecific() = 0;
-	virtual void BeginRenderSceneSpecific() = 0;
-	virtual void EndRenderSceneSpecific() = 0;
+        virtual double GetPresentTime() const
+        {
+            return presentTime;
+        }
 
-	// Autres fonctions
-	virtual int InitAnimation();
+    protected:
+        bool canRender = false;
+        bool running = true;
+        double lastFrameTime = 0.0;
+        double presentTime = 0.0;
 
-	// Fonctions de rendu et de pr�sentation de la sc�ne
-	virtual bool RenderScene();
+        // Sp�cifiques - Doivent �tre implant�s
+        virtual bool RunSpecific() = 0;
+        virtual int InitialisationsSpecific() = 0;
 
-	virtual void Cleanup();
+        virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) = 0;
+        virtual void InitSceneSpecific() = 0;
+        virtual void BeginRenderSceneSpecific() = 0;
+        virtual void EndRenderSceneSpecific() = 0;
 
-	virtual int InitScene();
+        // Autres fonctions
+        virtual int InitAnimation();
 
-protected:
-	PM3D_API::GameHost* gameHost;
+        // Fonctions de rendu et de pr�sentation de la sc�ne
+        virtual bool RenderScene();
 
-	// Variables pour le temps de l'animation
-	int64_t TempsSuivant;
-	int64_t TempsCompteurPrecedent;
+        virtual void Cleanup();
 
-	int64_t LastUpdateTime;
-	int64_t LastFixedUpdateTime;
+        virtual int InitScene();
 
-	// Le dispositif de rendu
-	CDispositifD3D11* pDispositif;
+    protected:
+        PM3D_API::GameHost* gameHost;
 
-	// La seule sc�ne
-	std::vector<std::unique_ptr<CObjet3D>> ListeScene;
+        // Variables pour le temps de l'animation
+        int64_t TempsSuivant;
+        int64_t TempsCompteurPrecedent;
 
-	// Les matrices
-	XMMATRIX m_MatView;
-	XMMATRIX m_MatProj;
-	XMMATRIX m_MatViewProj;
+        int64_t LastUpdateTime;
+        int64_t LastFixedUpdateTime;
 
-	// Le gestionnaire de texture
-	CGestionnaireDeTextures TexturesManager;
+        // Le dispositif de rendu
+        CDispositifD3D11* pDispositif;
 
-	CDIManipulateur GestionnaireDeSaisie;
+        // La seule sc�ne
+        std::vector<std::unique_ptr<CObjet3D>> ListeScene;
 
-	virtual void SetThreadName(std::thread&, const std::string&) {}
-};
+        // Les matrices
+        XMMATRIX m_MatView;
+        XMMATRIX m_MatProj;
+        XMMATRIX m_MatViewProj;
 
+        // Le gestionnaire de texture
+        CGestionnaireDeTextures TexturesManager;
+
+        CDIManipulateur GestionnaireDeSaisie;
+
+        virtual void SetThreadName(std::thread&, const std::string&)
+        {
+        }
+    };
 } // namespace PM3D
