@@ -30,6 +30,7 @@
 #include <GameTest/Objects/Left_ski.h>
 #include <GameTest/Components/JointsBreakerComponent.h>
 #include <GameTest/Components/ToggleOnSkierComponent.h>
+#include <GameTest/Components/SkierDeleter.h>
 
 
 void MainScene::InitializePhysics()
@@ -259,6 +260,7 @@ void MainScene::AddSkier(DirectX::XMFLOAT3 position, physx::PxU32 id, int checkp
 	rskiPtr->SetWorldPosition(position);
 	rskiPtr->Initialize();
 	rskiPtr->AddComponent(std::move(std::make_unique<ToggleOnSkierComponent>(checkpoint)));
+	rskiPtr->AddComponent(std::move(std::make_unique<SkierDeleter>()));
 
 	auto rskiRigidbody = std::make_unique<PM3D_API::Rigidbody>();
 	const auto rskiRigidbodyPtr = rskiRigidbody.get();
@@ -291,6 +293,7 @@ void MainScene::AddSkier(DirectX::XMFLOAT3 position, physx::PxU32 id, int checkp
 	lskiPtr->AddComponent(std::move(lskiCollider));
 	lskiPtr->AddComponent(std::move(std::make_unique<JointsBreakerComponent>()));
 	lskiPtr->AddComponent(std::move(std::make_unique<ToggleOnSkierComponent>(checkpoint)));
+	lskiPtr->AddComponent(std::move(std::make_unique<SkierDeleter>()));
 
 	lskiColliderPtr->Initialize();
 	physx::PxFilterData filterDataSkier;
@@ -309,6 +312,7 @@ void MainScene::AddSkier(DirectX::XMFLOAT3 position, physx::PxU32 id, int checkp
 	skierPtr->SetWorldPosition(position);
 	skierPtr->Initialize();
 	skierPtr->AddComponent(std::move(std::make_unique<ToggleOnSkierComponent>(checkpoint)));
+	skierPtr->AddComponent(std::move(std::make_unique<SkierDeleter>()));
 	auto skierRigidbody = std::make_unique<PM3D_API::Rigidbody>();
 	const auto skierRigidbodyPtr = skierRigidbody.get();
 	skierPtr->AddComponent(std::move(skierRigidbody));

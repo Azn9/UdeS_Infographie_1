@@ -25,8 +25,7 @@ public:
 	{
 		if (_resetRequested) {
 			auto pt = parentObject->DetachFromParent();
-			physx::PxRigidDynamic* rigidDyn = pt->GetComponent<PM3D_API::Rigidbody>()->getRigidDynamic();
-			rigidDyn->release();
+			pt.release();
 			_resetRequested = false;
 		}
 	}
