@@ -4,6 +4,7 @@
 #include "Api/Public/GameObject/Basic/BasicCube.h"
 #include "Api/Public/GameObject/Basic/BasicPlane.h"
 #include "GameTest/Components/LoadingScene/CameraMoverComponent.h"
+#include "Api/Public/Light/PointLight.h"
 
 void ShadowtestScene::InitializeCamera()
 {
@@ -19,22 +20,33 @@ void ShadowtestScene::InitializeCamera()
 	camera->SetNearDist(0.1f);
 	camera->SetFarDist(100.f);
 
-	camera->AddComponent(std::make_unique<CameraMoverComponent>());
+	//camera->AddComponent(std::make_unique<CameraMoverComponent>());
 
 	SetMainCamera(std::move(camera));
 }
 
 void ShadowtestScene::InitializeLights()
 {
-	auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
-		"Directional light",
-		XMFLOAT3(-1.0f, -1.0f, 0.f) // TODO : normalize
+	auto pointLight = std::make_unique<PM3D_API::PointLight>(
+		"Point light",
+		XMFLOAT3(0.f, 10.f, 10.f),
+		XMFLOAT3(1.f, 1.f, 1.f)
 	);
-	const auto directionalLightPtr = directionalLight.get();
-	AddLight(std::move(directionalLight));
+	const auto pointLightPtr = pointLight.get();
+	AddLight(std::move(pointLight));
 
-	directionalLightPtr->SetIntensity(1.0f);
-	directionalLightPtr->Initialize();
+	pointLightPtr->SetIntensity(5.f);
+	pointLightPtr->Initialize();
+
+	/*auto directionnalLight = std::make_unique<PM3D_API::DirectionalLight>(
+		"Directionnal light",
+		XMFLOAT3(-1.f, -1.f, -1.f)
+	);
+	const auto directionnalLightPtr = directionnalLight.get();
+	AddLight(std::move(directionnalLight));
+
+	directionnalLightPtr->SetIntensity(1.f);
+	directionnalLightPtr->Initialize();*/
 }
 
 void ShadowtestScene::InitializeObjects()
@@ -81,7 +93,7 @@ void ShadowtestScene::InitializeObjects()
 	tree7->Initialize();
 	auto tree8 = std::make_unique<GameObject>("tree");
 	tree8->SetWorldScale({ 5.0f, 5.0f, 5.0f });
-	tree7->SetWorldPosition({ -0.5f, 0.f, -3.f });
+	tree8->SetWorldPosition({ -0.5f, 0.f, -3.f });
 	tree8->Initialize();
 
 	auto shader1 = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
@@ -101,7 +113,7 @@ void ShadowtestScene::InitializeObjects()
 	auto shader8 = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
 	tree8->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader8), "tree_pineTallA.obj"));
 
-	AddChild(std::move(tree1));
+	//AddChild(std::move(tree1));
 	AddChild(std::move(tree2));
 	AddChild(std::move(tree3));
 	AddChild(std::move(tree4));

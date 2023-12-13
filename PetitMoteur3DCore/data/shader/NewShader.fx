@@ -238,20 +238,33 @@ float4 MainPS(VS_Sortie input) : SV_Target
 
 		float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
 		
+        float distance;
 		
-		// clacul of the distance to the plan (ortho)
-        float vectorX = input.worldPos.x - li.position.x;
-        float vectorY = input.worldPos.y - li.position.y;
-        float vectorZ = input.worldPos.z - li.position.z;
+        if (li.lightType == 1) // directionnal
+        {
+			// clacul of the distance to the plan (ortho)
+			float vectorX = input.worldPos.x - li.position.x;
+			float vectorY = input.worldPos.y - li.position.y;
+			float vectorZ = input.worldPos.z - li.position.z;
+			
+			// Calcul du produit scalaire entre le vecteur et la normale du plan
+			float dotProduct = vectorX * li.direction.x + vectorY * li.direction.y + vectorZ * li.direction.z;
 
-		// Calcul du produit scalaire entre le vecteur et la normale du plan
-        float dotProduct = vectorX * li.direction.x + vectorY * li.direction.y + vectorZ * li.direction.z;
+			// Calcul de la magnitude de la normale pour obtenir la distance (distance signée)
+			float normalMagnitude = sqrt(li.direction.x * li.direction.x + li.direction.y * li.direction.y + li.direction.z * li.direction.z);
+			distance = dotProduct / normalMagnitude / 500.f; // 500.f = far dist of the shadowmap camera
+        }
+        else
+        { 
+			// clacul of the distance to the light (perspective)
+            float vectorX = input.worldPos.x - li.position.x;
+            float vectorY = input.worldPos.y - li.position.y;
+            float vectorZ = input.worldPos.z - li.position.z;
+            distance = sqrt(vectorX * vectorX + vectorY * vectorY + vectorZ * vectorZ) / 50.f;
+        }
+		
 
-		// Calcul de la magnitude de la normale pour obtenir la distance (distance signée)
-        float normalMagnitude = sqrt(li.direction.x * li.direction.x + li.direction.y * li.direction.y + li.direction.z * li.direction.z);
-        float distance = dotProduct / normalMagnitude / 500.f; // 500.f = far dist of the shadowmap camera
-
-        if (distance <= depthV) // Not in shadows
+        if (depthV <= .999f) // Not in shadows
         {
             totalDiffuse += diffuseValueF;
             totalSpecular += specularValueF;

@@ -132,32 +132,6 @@ void MainScene::InitializeObjects()
 
 		spherePtr->AddComponent(std::make_unique<MovableComponent>());
 	}
-
-	// ============= Add railings =============
-	/*{
-		auto railings = std::make_unique<GameObject>("railings");
-		auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
-		railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railings.obj"));
-		railings->Initialize();
-		const auto railingsPtr = railings.get();
-		AddChild(std::move(railings));
-
-		auto railingsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-		const auto railingsRigidbodyPtr = railingsRigidbody.get();
-		railingsPtr->AddComponent(std::move(railingsRigidbody));
-		railingsRigidbodyPtr->Initialize();
-
-		auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
-		const auto meshColliderPtr = meshCollider.get();
-		railingsPtr->AddComponent(std::move(meshCollider));
-		meshColliderPtr->Initialize();
-
-		physx::PxFilterData filterDataObstacle;
-		filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
-		physx::PxShape* railingShape = meshColliderPtr->getShape();
-		railingShape->setSimulationFilterData(filterDataObstacle);
-	}*/
-
 	// ============= Add a pines =============
 
 

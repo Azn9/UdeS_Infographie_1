@@ -225,42 +225,65 @@ void ShadowProcessor::ProcessShadow()
 
 		const auto orthographic = lightType == static_cast<int>(PM3D_API::LightType::DIRECTIONAL);
 
-		const auto cameraPosition = DirectX::XMFLOAT3{
+		auto cameraPosition = DirectX::XMFLOAT3{
 			position.m128_f32[0],
 			position.m128_f32[1],
 			position.m128_f32[2]
 		};
 
-		const auto cameraFocusPoint = DirectX::XMVectorSet(
-			position.m128_f32[0] + direction.m128_f32[0],
-			position.m128_f32[1] + direction.m128_f32[1],
-			position.m128_f32[2] + direction.m128_f32[2],
-			1.0f
-		);
-		/*const auto cameraFocusPoint = DirectX::XMVectorSet(
-			positionCameraPlayer.x,
-			positionCameraPlayer.y,
-			positionCameraPlayer.z,
-			1.0f
-		);*/
+		DirectX::XMVECTOR cameraFocusPoint;
+
+		if (lightType == 1) // directionnal
+		{
+			cameraFocusPoint = DirectX::XMVectorSet(
+				position.m128_f32[0] + direction.m128_f32[0],
+				position.m128_f32[1] + direction.m128_f32[1],
+				position.m128_f32[2] + direction.m128_f32[2],
+				1.0f
+			);
+		}
+		else if (lightType == 2) // point
+		{
+			cameraFocusPoint = DirectX::XMVectorSet(
+				0.f,
+				0.f,
+				0.f,
+				1.0f
+			);
+		}
+		else {
+			cameraFocusPoint = DirectX::XMVectorSet(
+				position.m128_f32[0],
+				position.m128_f32[1],
+				position.m128_f32[2],
+				1.0f
+			);
+		}
+
 
 		auto camera = PM3D_API::Camera(
 			"Temp camera",
-			orthographic ? PM3D_API::Camera::ORTHOGRAPHIC : PM3D_API::Camera::CameraType::PERSPECTIVE,
+			orthographic ? PM3D_API::Camera::ORTHOGRAPHIC : PM3D_API::Camera::PERSPECTIVE,
 			cameraPosition,
 			cameraFocusPoint,
 			{0, 1, 0, 0}
 		);
 
 		camera.SetFarDist(500.f);
+		camera.SetNearDist(0.02f);
 
 		if (!orthographic)
 		{
-			camera.SetFieldOfView(90); // TODO
+			camera.SetFarDist(50.f);
+			camera.SetNearDist(0.02f);
+			camera.SetViewHeight(viewHeightDirectionnalLight);
+			camera.SetViewWidth(viewWidthDirectionnalLight);
+			camera.SetFieldOfView(45.f);
+			camera.SetClearColor(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 		}
 		else
 		{
-			camera.SetViewHeight(viewHeightDirectionnalLight); // change the field of view of the orthographic camera
+			camera.SetViewHeight(viewHeightDirectionnalLight);
 			camera.SetViewWidth(viewWidthDirectionnalLight);
 		}
 
