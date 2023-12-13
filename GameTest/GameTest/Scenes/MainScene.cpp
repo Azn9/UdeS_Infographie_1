@@ -158,6 +158,11 @@ void MainScene::InitializeObjects()
 		AddSkier(XMFLOAT3(-10.f + 5.f * i, -60.f, -5.f), i, 1);
 		
 	}
+	for (int i = 0; i < 10; ++i)
+	{
+		AddSkier(XMFLOAT3(-10.f + 5.f * i, -200.f, -305.f), i, 2);
+
+	}
 
 	// ============= Add railings =============
 	{

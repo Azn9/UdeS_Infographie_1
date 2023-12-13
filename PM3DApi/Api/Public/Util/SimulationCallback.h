@@ -46,6 +46,13 @@ public:
 						PM3D_API::EventSystem::Publish(CollisionObstacleEvent{});
 				}
 			}
+			if ((shape0->getSimulationFilterData().word0 == FilterGroup::eOBSTACLE && shape1->getSimulationFilterData().word0 == FilterGroup::eSKIER)
+				|| shape1->getSimulationFilterData().word0 == FilterGroup::eOBSTACLE && shape0->getSimulationFilterData().word0 == FilterGroup::eSKIER) {
+				if (shape0->getSimulationFilterData().word0 == FilterGroup::eSKIER)
+					PM3D_API::EventSystem::Publish(CollisionSkierEvent{ shape0->getSimulationFilterData().word1 });
+				else
+					PM3D_API::EventSystem::Publish(CollisionSkierEvent{ shape1->getSimulationFilterData().word1 });
+			}
 		}
 
 	}

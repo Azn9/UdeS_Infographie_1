@@ -37,7 +37,7 @@ public:
 	{
 		if (parentObject->GetWorldPosition().z < -0.f)
 			PM3D_API::EventSystem::Publish(CheckpointEvent_1(true));
-		if (parentObject->GetWorldPosition().z < -400.f)
+		if (parentObject->GetWorldPosition().z < -250.f)
 			PM3D_API::EventSystem::Publish(CheckpointEvent_2(true));
 		if (parentObject->GetWorldPosition().z < -800.f)
 			PM3D_API::EventSystem::Publish(CheckpointEvent_3(true));
