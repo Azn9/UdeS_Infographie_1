@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Api/Public/Component/Basic/Render/3D/InstancedMeshRenderer.h"
+#include "Api/Public/Util/FilterGroup.h"
 
 using namespace physx;
 
@@ -83,6 +84,10 @@ void PM3D_API::InstancedMeshCollider::Initialize()
         PxTriangleMesh* triangleMesh = PxCreateTriangleMesh(params, meshDesc, pxPhysics->getPhysicsInsertionCallback());
 
         const auto shape = pxPhysics->createShape(PxTriangleMeshGeometry(triangleMesh), *material, true);
+
+        PxFilterData filterData;
+        filterData.word0 = FilterGroup::eOBSTACLE;
+        shape->setSimulationFilterData(filterData);
 
         const auto quaternionRotation = Quaternion(rotation);
 
