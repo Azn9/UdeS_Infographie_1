@@ -199,6 +199,8 @@ CMaterial PM3D::FastobjChargeur::GetMaterial(int _i) const
 
 const std::string& PM3D::FastobjChargeur::GetMaterialName(int i) const
 {
+	if (i >= materialName.size())
+		return materialName[0];
 	return materialName[i];
 }
 

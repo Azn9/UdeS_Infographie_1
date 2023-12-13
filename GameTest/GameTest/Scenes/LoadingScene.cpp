@@ -75,10 +75,6 @@ void LoadingScene::InitializeUI()
 {
     Scene::InitializeUI();
 
-    auto loadingSceneComponent = std::make_unique<LoadingSceneComponent>();
-    const auto loadingSceneComponentPtr = loadingSceneComponent.get();
-    Scene::AddComponent(std::move(loadingSceneComponent));
-    loadingSceneComponentPtr->Initialize();
 
     /*auto res = SoundManager::GetInstance().LoadAndPlay("sounds/music/music.wav");
     if (!res)

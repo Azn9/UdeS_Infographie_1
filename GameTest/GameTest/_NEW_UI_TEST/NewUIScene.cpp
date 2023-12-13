@@ -1,7 +1,12 @@
 ﻿#include "NewUIScene.h"
 
+#include "Api/Public/Component/Basic/Render/2D/TextRenderer.h"
+#include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
+#include "Api/Public/Shader/Basic/DefaultShader.h"
 #include "Api/Public/UI/Button.h"
+#include "Api/Public/Util/Font/FontLoader.h"
 #include "Api/Public/Util/Sound/SoundManager.h"
+#include "GameTest/Objects/LoadingScene/CustomPlane.h"
 #include "GameTest/UI/FadeWhiteComponent.h"
 #include "GameTest/UI/Menus/MainMenuUI.h"
 
@@ -12,8 +17,8 @@ void NewUIScene::InitializeCamera()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSPECTIVE,
-        XMFLOAT3(0.0f, 8.0f, -15.0f),
-        XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
+        XMFLOAT3(-2.0f, -50.0f, 50.0f),
+        XMVectorSet(6.0f, -50.0f, 66.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
@@ -35,7 +40,15 @@ void NewUIScene::InitializeLights()
 
 void NewUIScene::InitializeObjects()
 {
-    // Nothing to do
+    auto ground = std::make_unique<CustomPlane>();
+    ground->Initialize();
+    AddChild(std::move(ground));
+
+    auto objects = std::make_unique<GameObject>("Objects");
+    objects->Initialize();
+    auto objectsShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+    objects->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
+    AddChild(std::move(objects));
 }
 
 void NewUIScene::InitializeUI()

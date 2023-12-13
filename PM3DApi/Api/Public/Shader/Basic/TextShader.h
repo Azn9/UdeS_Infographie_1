@@ -3,11 +3,11 @@
 
 namespace PM3D_API
 {
-    class SpriteShader final : public Shader
+    class TextShader final : public Shader
     {
     public:
-        explicit SpriteShader(const std::wstring& fileName);
-        ~SpriteShader() override;
+        explicit TextShader(const std::wstring& fileName);
+        ~TextShader() override;
 
         ID3D11Buffer* GetShaderParametersBuffer() const override { return shaderParametersBuffer; }
         ID3DX11EffectPass* GetPass() const override { return passe; }
@@ -49,9 +49,11 @@ namespace PM3D_API
             pCB->SetConstantBuffer(shaderParametersBuffer);
         }
 
-        struct SpriteShaderParameters
+        struct TextShaderParameters
         {
             DirectX::XMMATRIX matWorldViewProj;
+            DirectX::XMFLOAT2 uvStart;
+            DirectX::XMFLOAT2 uvEnd;
             float alpha;
         };
 

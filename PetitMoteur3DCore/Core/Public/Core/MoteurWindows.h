@@ -25,6 +25,11 @@ namespace PM3D
         //	return lastFrameTime;
         //}
 
+        void SetCursorDefault() override;
+        void SetCursorHidden() override;
+        void SetCursorDisabled() override;
+        void SetCursorClick() override;
+
     private:
         ATOM MyRegisterClass(HINSTANCE hInstance);
         bool InitAppInstance();

@@ -1,7 +1,9 @@
 ﻿#include "Button.h"
 
 #include "Api/Public/Component/Basic/Render/2D/SpriteRenderer.h"
+#include "Api/Public/Component/Basic/Render/2D/TextRenderer.h"
 #include "Api/Public/Util/Sound/SoundManager.h"
+#include "Core/Public/Core/MoteurWindows.h"
 
 void Button::Initialize()
 {
@@ -22,38 +24,93 @@ void Button::Initialize()
 
     if (text == "") return;
 
-    // TODO : create text
+    auto textRenderer = std::make_unique<PM3D_API::TextRenderer>(
+        fontLoader,
+        text,
+        positionOffset,
+        DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
+        scale
+    );
+    textRendererPtr = textRenderer.get();
+    AddComponent(std::move(textRenderer));
+    textRendererPtr->Initialize();
 }
 
 void Button::OnHoverEnter()
 {
+    if (alpha == 0) return;
+
     SoundManager::GetInstance().Play(SoundManager::GetInstance().uiRollover1Buffer);
+    PM3D::CMoteurWindows::GetInstance().SetCursorClick();
+}
+
+void Button::OnHoverExit()
+{
+    if (alpha == 0) return;
+
+    PM3D::CMoteurWindows::GetInstance().SetCursorDefault();
 }
 
 void Button::OnClickPressed()
 {
+    if (alpha == 0) return;
+
+    if (textRendererPtr)
+    {
+        textRendererPtr->SetPositionOffset(DirectX::XMFLOAT2(
+            textRendererPtr->GetPositionOffset().x,
+            textRendererPtr->GetPositionOffset().y - 5
+        ));
+        textRendererPtr->RefreshData();
+    }
     SoundManager::GetInstance().Play(SoundManager::GetInstance().uiClick1Buffer);
+
     callback();
+}
+
+void Button::OnClickReleased()
+{
+    if (alpha == 0) return;
+
+    if (textRendererPtr)
+    {
+        textRendererPtr->SetPositionOffset(DirectX::XMFLOAT2(
+            textRendererPtr->GetPositionOffset().x,
+            textRendererPtr->GetPositionOffset().y + 5
+        ));
+        textRendererPtr->RefreshData();
+    }
 }
 
 void Button::Draw()
 {
-    if (text != "")
-    {
-        // TODO : draw text
-    }
+    if (alpha == 0) return;
 
     if (isClicked)
     {
         pressedSpriteRendererPtr->DrawSelf();
-        return;
     }
-
-    if (isHovered)
+    else if (isHovered)
     {
         hoverSpriteRendererPtr->DrawSelf();
-        return;
+    }
+    else
+    {
+        spriteRendererPtr->DrawSelf();
     }
 
-    spriteRendererPtr->DrawSelf();
+    if (text != "" && textRendererPtr)
+    {
+        textRendererPtr->DrawSelf();
+    }
+}
+
+void Button::SetAlpha(const float newAlpha)
+{
+    UIObject::SetAlpha(newAlpha);
+
+    if (textRendererPtr)
+    {
+        textRendererPtr->RefreshData();
+    }
 }

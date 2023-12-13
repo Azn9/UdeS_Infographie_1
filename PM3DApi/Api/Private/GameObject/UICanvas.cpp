@@ -6,7 +6,7 @@
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/EventSystem/Basic/WindowResizeEvent.h"
 
-struct MouseClickEvent;
+class MouseClickEvent;
 
 PM3D_API::UICanvas::UICanvas() : UIObject(
     "Canvas",

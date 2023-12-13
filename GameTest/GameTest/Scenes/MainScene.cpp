@@ -35,8 +35,9 @@ void MainScene::InitializeCamera()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSPECTIVE,
-        XMFLOAT3(0.0f, 0.1f, 0.0f),
-        XMVectorSet(0.0f, -5.0f, 15.0f, 1.0f)
+        XMFLOAT3(-2.0f, -50.0f, 50.0f),
+        XMVectorSet(-2.0f, -50.0f, 80.0f, 1.0f),
+        XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
     mainCamera->SetFarDist(1000.0f);
@@ -58,6 +59,25 @@ void MainScene::InitializeLights()
 
 void MainScene::InitializeObjects()
 {
+    // ============= Base elements from the loading scene =====
+    auto objects = std::make_unique<GameObject>("Objects");
+    objects->Initialize();
+    const auto objectsPtr = objects.get();
+    auto objectsShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+    objects->AddComponent(
+        std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
+    AddChild(std::move(objects));
+
+    auto objectsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+    const auto objectsRigidbodyPtr = objectsRigidbody.get();
+    objectsPtr->AddComponent(std::move(objectsRigidbody));
+    objectsRigidbodyPtr->Initialize();
+
+    auto objectsMeshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+    const auto objectsMeshColliderPtr = objectsMeshCollider.get();
+    objectsPtr->AddComponent(std::move(objectsMeshCollider));
+    objectsMeshColliderPtr->Initialize();
+
     // ============= Add the map =============
     {
         auto map = std::make_unique<Heightmap>();
@@ -105,7 +125,7 @@ void MainScene::InitializeObjects()
         const auto spherePtr = sphere.get();
         AddChild(std::move(sphere));
         spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-        spherePtr->SetWorldPosition(XMFLOAT3(0.f, -60.f, 0.f));
+        spherePtr->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
         spherePtr->Initialize();
 
         auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();

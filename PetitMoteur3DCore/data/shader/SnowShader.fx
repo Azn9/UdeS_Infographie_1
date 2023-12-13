@@ -379,7 +379,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
 	}
 	else
 	{
-		#define sparkleScale 5.0f
+		#define sparkleScale 30.0f
 		#define sparkleCutoffValue 0.99f
 
 		// Sample sparkle texture

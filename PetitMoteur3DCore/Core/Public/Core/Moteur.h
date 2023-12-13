@@ -80,6 +80,24 @@ namespace PM3D
             return presentTime;
         }
 
+        virtual void SetCursorDefault()
+        {
+        }
+
+        virtual void SetCursorHidden()
+        {
+        }
+
+        virtual void SetCursorDisabled()
+        {
+        }
+
+        virtual void SetCursorClick()
+        {
+        }
+
+        HCURSOR currentCursor = nullptr;
+
     protected:
         bool canRender = false;
         bool running = true;

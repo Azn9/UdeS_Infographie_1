@@ -74,6 +74,8 @@ namespace PM3D
     //
     bool CMoteurWindows::InitAppInstance()
     {
+        currentCursor = LoadCursor(nullptr, IDC_ARROW);
+
         TCHAR szTitle[MAX_LOADSTRING]; // Le texte de la barre de titre
 
         // Initialise les cha�nes globales
@@ -365,6 +367,9 @@ namespace PM3D
         case WM_RBUTTONUP:
             Input::GetInstance().SetMouseRightPressed(false);
             break;
+        case WM_SETCURSOR:
+            SetCursor(GetInstance().currentCursor);
+            break;
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
@@ -378,5 +383,28 @@ namespace PM3D
         {
             SetThreadDescription(thread.native_handle(), wName.c_str());
         }
+    }
+
+    void CMoteurWindows::SetCursorDefault()
+    {
+        currentCursor = LoadCursor(nullptr, IDC_ARROW);
+        SetCursor(currentCursor);
+    }
+
+    void CMoteurWindows::SetCursorHidden()
+    {
+        // TODO
+    }
+
+    void CMoteurWindows::SetCursorDisabled()
+    {
+        currentCursor = LoadCursor(nullptr, IDC_NO);
+        SetCursor(currentCursor);
+    }
+
+    void CMoteurWindows::SetCursorClick()
+    {
+        currentCursor = LoadCursor(nullptr, IDC_HAND);
+        SetCursor(currentCursor);
     }
 } // namespace PM3D
