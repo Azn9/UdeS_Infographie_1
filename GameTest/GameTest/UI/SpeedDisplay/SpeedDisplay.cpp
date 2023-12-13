@@ -1,12 +1,34 @@
 ﻿#include "SpeedDisplay.h"
 
+#include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/GameObject/UICanvas.h"
 #include "Core/Public/Core/MoteurWindows.h"
+#include "GameTest/RestartEvent.h"
 #include "GameTest/Components/SizeModifierComponent.h"
+#include "GameTest/Event/GameOverEvent.h"
+#include "GameTest/Event/GameStartEvent.h"
+#include "GameTest/Event/PauseEvent.h"
 #include "GameTest/Scenes/MainScene.h"
 
 void SpeedDisplay::Initialize()
 {
+    PM3D_API::EventSystem::Subscribe([&](const PauseEvent& event)
+    {
+        alpha = event.paused ? 0.f : 1.f;
+    });
+    PM3D_API::EventSystem::Subscribe([&](const GameStartEvent&)
+    {
+        alpha = 1.f;
+    });
+    PM3D_API::EventSystem::Subscribe([&](const RestartEvent&)
+    {
+        alpha = 1.f;
+    });
+    PM3D_API::EventSystem::Subscribe([&](const GameOverEvent&)
+    {
+        alpha = 0.f;
+    });
+
     const auto sphere = static_cast<MainScene*>(canvas->GetScene())->GetShpere();
     sizeModifierComponent = sphere->GetComponent<SizeModifierComponent>();
 

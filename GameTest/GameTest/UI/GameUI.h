@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Api/Public/GameObject/UIObject.h"
+#include "GameTest/Components/MainScene/PauseComponent.h"
 
 class GameUI final : public PM3D_API::UIObject
 {
@@ -17,4 +18,5 @@ public:
 
     void Initialize() override;
     void Update() override;
+    std::unique_ptr<PauseComponent>::pointer pauseComponentPtr = nullptr;
 };

@@ -217,11 +217,6 @@ void MainScene::InitializeUI()
 {
     Scene::InitializeUI(); // Init the base canvas
 
-    auto pauseComponent = std::make_unique<PauseComponent>();
-    const auto pauseComponentPtr = pauseComponent.get();
-    AddUiChild(std::move(pauseComponent));
-    pauseComponentPtr->Initialize();
-
     auto gameUI = std::make_unique<GameUI>();
     const auto gameUIPtr = gameUI.get();
     AddUiChild(std::move(gameUI));

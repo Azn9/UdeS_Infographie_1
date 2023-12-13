@@ -7,6 +7,7 @@
 #include "Core/Public/Util/Time.h"
 #include "GameTest/RestartEvent.h"
 #include "GameTest/Event/GameOverEvent.h"
+#include "GameTest/Event/PauseEvent.h"
 
 void PauseComponent::Initialize()
 {
@@ -25,7 +26,7 @@ void PauseComponent::Initialize()
         AddComponent(std::move(spriteRenderer));
         looseRenderer->Initialize();
     }
-    
+
     {
         auto spriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(L"win.dds");
         winRenderer = spriteRenderer.get();
@@ -55,20 +56,38 @@ void PauseComponent::Draw()
         if (isWon)
         {
             winRenderer->DrawSelf();
-        } else
+        }
+        else
         {
             looseRenderer->DrawSelf();
         }
-    } else
+    }
+    else
     {
         pauseRenderer->DrawSelf();
     }
 }
 
+void PauseComponent::TogglePause()
+{
+    if (isPaused)
+    {
+        isPaused = false;
+        PM3D::Time::GetInstance().SetTimeScale(1.f);
+    }
+    else
+    {
+        isPaused = true;
+        PM3D::Time::GetInstance().SetTimeScale(0.f);
+    }
+
+    PM3D_API::EventSystem::Publish(PauseEvent(isPaused));
+}
+
 void PauseComponent::Update()
 {
     UIObject::Update();
-    
+
     if (alpha < 0.001f && alpha != 0.f)
     {
         alpha = 0.f;
@@ -81,16 +100,8 @@ void PauseComponent::Update()
     if (Input::IsKeyPressed(KeyCode::ESCAPE))
     {
         if (isEnded) return;
-        
-        if (isPaused)
-        {
-            isPaused = false;
-            PM3D::Time::GetInstance().SetTimeScale(1.f);
-        } else
-        {
-            isPaused = true;
-            PM3D::Time::GetInstance().SetTimeScale(0.f);
-        }
+
+        TogglePause();
     }
 
     if (isPaused && Input::IsKeyPressed(KeyCode::R))

@@ -6,6 +6,7 @@
 #include "GameTest/RestartEvent.h"
 #include "GameTest/Event/GameOverEvent.h"
 #include "GameTest/Event/GameStartEvent.h"
+#include "GameTest/Event/PauseEvent.h"
 
 void TimerDisplay::Initialize()
 {
@@ -14,6 +15,7 @@ void TimerDisplay::Initialize()
         std::cout << "GameStartEvent" << std::endl;
         startTime = PM3D::Time::GetInstance().GetTimeSpecific();
         isRunning = true;
+        alpha = 1.f;
     });
 
     PM3D_API::EventSystem::GetInstance().Subscribe([&](const RestartEvent&)
@@ -21,6 +23,7 @@ void TimerDisplay::Initialize()
         std::cout << "RestartEvent" << std::endl;
         startTime = PM3D::Time::GetInstance().GetTimeSpecific();
         isRunning = true;
+        alpha = 1.f;
     });
 
     PM3D_API::EventSystem::GetInstance().Subscribe([&](const GameOverEvent&)
@@ -28,6 +31,21 @@ void TimerDisplay::Initialize()
         std::cout << "GameOverEvent" << std::endl;
         endTime = PM3D::Time::GetInstance().GetTimeSpecific();
         isRunning = false;
+        alpha = 0.f;
+    });
+
+    PM3D_API::EventSystem::GetInstance().Subscribe([&](const PauseEvent& event)
+    {
+        if (event.paused)
+        {
+            isRunning = false;
+            alpha = 0.f;
+        }
+        else
+        {
+            isRunning = true;
+            alpha = 1.f;
+        }
     });
 
     auto fontLoader = PM3D_API::FontLoader(
