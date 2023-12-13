@@ -64,20 +64,20 @@ struct VS_Sortie
 	float3 worldPos  : TEXCOORD5;
 	float3 cameraDir : TEXCOORD6;
 	float4 PosInMap[MAX_LIGHTS] : TEXCOORD7;
-	float fogRatio;
+	float1 fogRatio : FOG;
 };
 
 cbuffer truc {
 float clearDistance = 10;
 float fogDistance = 100;
-}
+};
 
 VS_Sortie MainVS(
     float4 vPos      : POSITION, 
     float3 vNormal   : NORMAL, 
     float3 vBiNormal : BINORMAL,
     float3 vTangent  : TANGENT,
-    float2 coordTex  : TEXCOORD,
+    float2 coordTex  : TEXCOORD
 ) {
     VS_Sortie output;
 
