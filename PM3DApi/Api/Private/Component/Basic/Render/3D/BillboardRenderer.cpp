@@ -19,7 +19,7 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 {
 	LogBeginDrawSelf();
 
-	const auto pTexture = texture->GetD3DTexture();
+	const auto pTexture = texture->GetD3DTextureSRV();
 
 	// Obtenir le contexte
 	const auto pDispositif = GameHost::GetInstance()->GetDispositif();
@@ -62,7 +62,7 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 		worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
 		worldMatrix *= XMMatrixScaling(scale.x, scale.y, 1.0f);
 
-		// Regarde toujours vers la caméra
+		// Regarde toujours vers la camÃ©ra
 		XMMATRIX lookAtMatrix = XMMatrixLookAtLH(
 			cameraPosVec,
 			cameraFocusVec,

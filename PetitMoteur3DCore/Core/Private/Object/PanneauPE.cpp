@@ -71,21 +71,17 @@ namespace PM3D
         return pEnabledTechniques;
     }
 
-    /*void CPanneauPE::SetTexturesShaderVariables(const std::string& name, const std::span<std::wstring>& filenames)
+    void CPanneauPE::SetTexturesShaderVariables(const std::string& name, const std::vector<std::wstring>& filenames)
     {
         CGestionnaireDeTextures& gestionnaire = CMoteurWindows::GetInstance().GetTextureManager();
 
-        for (auto filename : filenames)
-        {
-            
-        }
-        CTexture* texture = gestionnaire.GetTexture(fileName);
+        std::wstring wname = Util::s2ws(name);
+        CTexture* texture = gestionnaire.GetTexture(wname);
         if(texture == nullptr)
-            texture = gestionnaire.GetNewTexture(fileName, pDispositif);
+            texture = gestionnaire.GetNewTextureArray(wname, filenames, pDispositif);
             
-        SetShaderVariableValue(name, texture->GetD3DTexture());
-        
-    }*/
+        SetShaderVariableValue(name, texture->GetD3DTextureSRV());
+    }
 
     const D3DX11_EFFECT_DESC* CPanneauPE::getEffectDesc() const
     {

@@ -340,7 +340,7 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		if (Material[i].albedoTextureFileName.length() > 0)
 		{
 			const std::wstring ws(Material[i].albedoTextureFileName.begin(), Material[i].albedoTextureFileName.end());
-			Material[i].pAlbedoTexture = TexturesManager.GetNewTexture(ws.c_str(), GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
+			Material[i].pAlbedoTexture = TexturesManager.GetNewTexture(ws.c_str(), GameHost::GetInstance()->GetDispositif())->GetD3DTextureSRV();
 		} else
 		{
 			std::cout << "MeshRenderer::LoadMesh: Material[" << i << "].albedoTextureFileName is empty" << std::endl;
@@ -349,7 +349,7 @@ void PM3D_API::MeshRenderer::LoadMesh()
 		if (Material[i].normalmapTextureFileName.length() > 0)
 		{
 			const std::wstring ws(Material[i].normalmapTextureFileName.begin(), Material[i].normalmapTextureFileName.end());
-			Material[i].pNormalmapTexture = TexturesManager.GetNewTexture(ws.c_str(), GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
+			Material[i].pNormalmapTexture = TexturesManager.GetNewTexture(ws.c_str(), GameHost::GetInstance()->GetDispositif())->GetD3DTextureSRV();
 		} else
 		{
 			std::cout << "MeshRenderer::LoadMesh: Material[" << i << "].normalmapTextureFileName is empty" << std::endl;

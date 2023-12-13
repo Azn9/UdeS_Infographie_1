@@ -7,6 +7,8 @@ struct VS_Sortie
 cbuffer param {
     float4x4 matInvProj;
 
+    float time;
+
     //general
     float far;
     float near;
@@ -22,7 +24,12 @@ cbuffer param {
     int blurKernelHalfSize;
     float startBlurDist;
     float endBlurDist;
+
+    //speed lines
+    uint speedLinesFrameLength;
 }
+
+Texture2DArray speedlines;
 
 Texture2D depthTexture; // la texture profondeur
 Texture2D textureEntree; // la texture
@@ -45,10 +52,18 @@ VS_Sortie NulVS(float4 Pos : POSITION, float2 CoordTex : TEXCOORD0 )
 //-----------------------------------------------------
 float4 TestPS( VS_Sortie vs) : SV_Target
 {
-    float4 couleur;
-    couleur = textureEntree.Sample(SampleState, vs.CoordTex);
-    //couleur.r = 0.5;
-    return couleur;
+    float4 couleur = textureEntree.Sample(SampleState, vs.CoordTex);
+
+    float width, height, elements;
+    speedlines.GetDimensions(width, height, elements);
+
+    uint frame = (int(time) / speedLinesFrameLength);
+    uint actualFrame = frame % int(elements);
+
+    float speedTexSample = speedlines.Sample(SampleState, float3(vs.CoordTex, actualFrame)).r;
+
+    float4 blanc = float4(1.0,1.0,1.0,1.0);
+    return lerp(couleur, blanc, speedTexSample);
 }
 
 
@@ -152,7 +167,7 @@ float4 VignettePS(VS_Sortie vs) : SV_Target
     return couleur;
 }
 
-/*
+
 technique11 Test
 {
     pass p0
@@ -161,7 +176,7 @@ technique11 Test
         PixelShader = compile ps_5_0 TestPS();
         SetGeometryShader(NULL);
     }
-};*/
+};
 
 /*technique11 RadialBlur
 {
@@ -184,6 +199,7 @@ technique11 BoxBlurTech
     }
 };*/
 
+/*
 technique11 DepthOfField
 {
     pass p0
@@ -203,4 +219,4 @@ technique11 Vignette
         PixelShader = compile ps_5_0 VignettePS();
         SetGeometryShader(NULL);
     }
-};
+};*/

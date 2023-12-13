@@ -35,12 +35,31 @@ CTexture* CGestionnaireDeTextures::GetNewTexture(
 	return pTexture;
 }
 
+CTexture* CGestionnaireDeTextures::GetNewTextureArray(const std::wstring& name,
+	const std::vector<std::wstring>& filenames,
+	CDispositifD3D11* pDispositif)
+{
+	
+	// On vérifie si la texture est déjà dans notre liste
+	CTexture* pTexture = GetTexture(name);
+	// Si non, on la crée
+	if (!pTexture)
+	{
+		auto texture = std::make_unique<CTexture>(name, filenames, pDispositif);
+		pTexture = texture.get();
+		// Puis, il est ajouté à la scène
+		ListeTextures.push_back(std::move(texture));
+	}
+	assert(pTexture);
+	return pTexture;
+}
+
 CTexture* CGestionnaireDeTextures::GetTexture(const std::wstring& filename) const
 {
 	CTexture* pTexture = nullptr;
 	for (auto& texture : ListeTextures)
 	{
-		if (texture->GetFilename() == filename)
+		if (texture->GetName() == filename)
 		{
 			pTexture = texture.get();
 			break;

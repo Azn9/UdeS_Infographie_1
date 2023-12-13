@@ -1,5 +1,6 @@
 ﻿#include "GameTest.h"
 
+#include "Core/Public/Core/Moteur.h"
 #include "Core/Public/Texture/Texture.h"
 #include "Scenes/LoadingScene.h"
 
@@ -19,6 +20,12 @@ void GameTest::InitializePostProcessParam() const
 	
 	postEffectPlane->enableAllPostEffects();
 
+	postEffectPlane->SetShaderVariableValue("speedLinesFrameLength", 1);
+	postEffectPlane->SetTexturesShaderVariables("speedlines", std::vector<std::wstring>{
+		L"SpeedLines01.dds", L"Speedlines02.dds", L"Speedlines03.dds",
+		L"SpeedLines04.dds", L"Speedlines05.dds", L"Speedlines06.dds",
+		L"SpeedLines07.dds", L"Speedlines08.dds", L"Speedlines09.dds",
+		L"SpeedLines10.dds",});
 	postEffectPlane->SetShaderVariableValue("startBlurDist", 100.0f);
 	postEffectPlane->SetShaderVariableValue("endBlurDist", 150.0f);
 	postEffectPlane->SetShaderVariableValue("blurKernelHalfSize", 2);

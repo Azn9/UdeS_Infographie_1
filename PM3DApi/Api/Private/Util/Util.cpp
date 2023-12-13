@@ -98,3 +98,9 @@ std::string Util::ws2s(const std::wstring& wstr)
     return converter.to_bytes(wstr);
 #pragma warning(pop)
 }
+
+std::wstring Util::s2ws(const std::string& str)
+{
+    std::wstring wstr = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(str);
+    return wstr;
+}

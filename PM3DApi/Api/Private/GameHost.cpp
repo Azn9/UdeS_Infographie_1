@@ -5,6 +5,7 @@
 #include "Api/Public/Debug/FPSDebugRenderer.h"
 #include "Api/Public/Debug/SceneHierarchyDebugRenderer.h"
 #include "Api/Public/EventSystem/EventSystem.h"
+#include "Core/Public/Util/Time.h"
 
 PM3D_API::GameHost::~GameHost()
 {
@@ -74,11 +75,12 @@ void PM3D_API::GameHost::SetScene(Scene* newScene)
 
 void PM3D_API::GameHost::Draw()
 {
+	int64_t timeMs = PM3D::Time::GetInstance().GetCurrentTimeMs();
+	postEffectPlane->SetShaderVariableValue("time", static_cast<int>(timeMs));
+	
 	if (scene)
 	{
-		//debutpost
 		scene->Draw();
-		//finpost
 	}
 
 #ifdef _DEBUG
