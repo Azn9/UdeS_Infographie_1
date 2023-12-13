@@ -274,8 +274,6 @@ void SnowRenderer::DrawRVT() const
     tabRTV[0] = dispositif->GetRenderTargetView();
     context->OMSetRenderTargets(1, tabRTV, dispositif->GetDepthStencilView());
 
-    dispositif->DesactiverMelangeAlpha();
-
     // Release resources
     lightSRV->Release();
     lightBuffer->Release();

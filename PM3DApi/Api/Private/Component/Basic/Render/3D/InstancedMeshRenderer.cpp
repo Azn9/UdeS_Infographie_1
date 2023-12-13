@@ -171,7 +171,7 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
         D3D11_BUFFER_DESC bd;
         ZeroMemory(&bd, sizeof(bd));
         bd.Usage = D3D11_USAGE_IMMUTABLE;
-        bd.ByteWidth = sizeof(UINT) * instancesCount;
+        bd.ByteWidth = sizeof(UINT) * static_cast<UINT>(instancesCount);
 
         bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
         bd.CPUAccessFlags = 0;
@@ -369,7 +369,7 @@ void PM3D_API::InstancedMeshRenderer::LoadMesh()
 
     // 4c) Trouver l’index du materiau pour chaque sous-ensemble
     SubmeshMaterialIndex.reserve(mesh->group_count);
-    for (int32_t i = 0; i < mesh->group_count; ++i)
+    for (unsigned i = 0; i < mesh->group_count; ++i)
     {
         const auto group = mesh->groups[i];
         SubmeshMaterialIndex.push_back(mesh->face_materials[group.face_offset]);
