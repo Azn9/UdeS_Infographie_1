@@ -7,7 +7,8 @@ struct VS_Sortie
 cbuffer param {
     float4x4 matInvProj;
 
-    float time;
+    int time;
+    float velocity;
 
     //general
     float far;
@@ -15,6 +16,8 @@ cbuffer param {
 
     //Radial
     float radialDistance;
+    float startVelocityRadial;
+    float endVelocityRadial;
 
     //Vignette
     float vignettePower;
@@ -27,6 +30,8 @@ cbuffer param {
 
     //speed lines
     uint speedLinesFrameLength;
+    float startVelocityLineSpeed;
+    float endVelocityLineSpeed;
 }
 
 Texture2DArray speedlines;
@@ -48,9 +53,9 @@ VS_Sortie NulVS(float4 Pos : POSITION, float2 CoordTex : TEXCOORD0 )
 
 
 //-----------------------------------------------------
-// Pixel Shader « Test »
+// Pixel Shader « Speedline »
 //-----------------------------------------------------
-float4 TestPS( VS_Sortie vs) : SV_Target
+float4 SpeedlinePS( VS_Sortie vs) : SV_Target
 {
     float4 couleur = textureEntree.Sample(SampleState, vs.CoordTex);
 
@@ -63,12 +68,14 @@ float4 TestPS( VS_Sortie vs) : SV_Target
     float speedTexSample = speedlines.Sample(SampleState, float3(vs.CoordTex, actualFrame)).r;
 
     float4 blanc = float4(1.0,1.0,1.0,1.0);
-    return lerp(couleur, blanc, speedTexSample);
+
+    float t = smoothstep(startVelocityLineSpeed, endVelocityLineSpeed, velocity);
+    return lerp(couleur, blanc, speedTexSample * t);
 }
 
 
 //-----------------------------------------------------
-// Pixel Shader « BoxBlur »
+// Pixel Shader « DepthOfField »
 //-----------------------------------------------------
 float4 BoxBlur(float2 coordTex)
 {   
@@ -91,6 +98,7 @@ float4 BoxBlur(float2 coordTex)
     return couleur / (sampleLengthHeight * sampleLengthHeight);
 }
 
+//for testing
 float4 BoxBlurPS(VS_Sortie vs) : SV_Target
 {   
     return BoxBlur(vs.CoordTex);
@@ -127,8 +135,8 @@ float4 RadialBlurPS(VS_Sortie vs) : SV_Target
     couleur = 0;
     float x = tc.x*2 - 1.0;
     float y = tc.y*2 - 1.0;
-    dx = sqrt(x*x); // Distance du centre
-    dy = sqrt(y*y); // Distance du centre
+    dx = x; // Distance du centre
+    dy = y; // Distance du centre
 
     dx = x * (radialDistance*dx); // Le dégradé (blur) est en fonction de la
     dy = y * (radialDistance*dy); // distance du centre et de la variable distance.
@@ -137,16 +145,20 @@ float4 RadialBlurPS(VS_Sortie vs) : SV_Target
     y = y - (dy*10);
     tc.x = (x+1.0)/2.0;
     tc.y = (y+1.0)/2.0;
+
     for (int i = 0; i<10; i++) // Vous pouvez jouer avec le nombred’itérations
     {
-    ct = textureEntree.Sample(SampleState, tc);
-    couleur = couleur * 0.6 + ct * 0.4; // Vous pouvez « jouer » avec les%
-    x = x + dx;
-    y = y + dy;
-    tc.x = (x+1.0)/2.0;
-    tc.y = (y+1.0)/2.0;
+        ct = textureEntree.Sample(SampleState, tc);
+        couleur = couleur * 0.6 + ct * 0.4; // Vous pouvez « jouer » avec les%
+        x = x + dx;
+        y = y + dy;
+        tc.x = (x+1.0)/2.0;
+        tc.y = (y+1.0)/2.0;
     }
-    return couleur;
+
+    float t = smoothstep(startVelocityRadial, endVelocityRadial, velocity);
+
+    return lerp(ct, couleur, t);
 }
 
 //-----------------------------------------------------
@@ -168,17 +180,17 @@ float4 VignettePS(VS_Sortie vs) : SV_Target
 }
 
 
-technique11 Test
+technique11 DepthOfField
 {
     pass p0
     {
         VertexShader = compile vs_5_0 NulVS();
-        PixelShader = compile ps_5_0 TestPS();
+        PixelShader = compile ps_5_0 DepthOfFieldPS();
         SetGeometryShader(NULL);
     }
 };
 
-/*technique11 RadialBlur
+technique11 RadialBlur
 {
     pass p0
     {
@@ -186,7 +198,19 @@ technique11 Test
         PixelShader = compile ps_5_0 RadialBlurPS();
         SetGeometryShader(NULL);
     }
-};*/
+};
+
+technique11 SpeedLine
+{
+    pass p0
+    {
+        VertexShader = compile vs_5_0 NulVS();
+        PixelShader = compile ps_5_0 SpeedlinePS();
+        SetGeometryShader(NULL);
+    }
+};
+
+
 
 /*
 technique11 BoxBlurTech
@@ -199,16 +223,6 @@ technique11 BoxBlurTech
     }
 };*/
 
-/*
-technique11 DepthOfField
-{
-    pass p0
-    {
-        VertexShader = compile vs_5_0 NulVS();
-        PixelShader = compile ps_5_0 DepthOfFieldPS();
-        SetGeometryShader(NULL);
-    }
-};
 
 
 technique11 Vignette
@@ -219,4 +233,4 @@ technique11 Vignette
         PixelShader = compile ps_5_0 VignettePS();
         SetGeometryShader(NULL);
     }
-};*/
+};
