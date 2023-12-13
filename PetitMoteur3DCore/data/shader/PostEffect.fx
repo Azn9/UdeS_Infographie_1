@@ -135,8 +135,8 @@ float4 RadialBlurPS(VS_Sortie vs) : SV_Target
     couleur = 0;
     float x = tc.x*2 - 1.0;
     float y = tc.y*2 - 1.0;
-    dx = x; // Distance du centre
-    dy = y; // Distance du centre
+    dx = sqrt(x*x); // Distance du centre
+    dy = sqrt(y*y); // Distance du centre
 
     dx = x * (radialDistance*dx); // Le dégradé (blur) est en fonction de la
     dy = y * (radialDistance*dy); // distance du centre et de la variable distance.
