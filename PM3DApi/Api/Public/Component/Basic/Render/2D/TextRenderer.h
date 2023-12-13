@@ -18,7 +18,12 @@ namespace PM3D_API
             const float scale = 1.0f
         );
 
-        void SetText(const std::string& text) { this->text = text; }
+        void SetText(const std::string& text)
+        {
+            this->text = text;
+            RefreshData();
+        }
+
         void SetScale(const float scale) { this->scale = scale; }
         DirectX::XMFLOAT2 GetPositionOffset() const { return positionOffset; }
         void SetPositionOffset(const DirectX::XMFLOAT2& positionOffset) { this->positionOffset = positionOffset; }

@@ -1,11 +1,15 @@
 ﻿#include "MainMenuUI.h"
 
 #include "Api/Public/Component/Basic/Render/2D/TextRenderer.h"
+#include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/UI/Button.h"
 #include "Api/Public/UI/DisabledButton.h"
 #include "Core/Public/Core/Moteur.h"
 #include "Core/Public/Core/MoteurWindows.h"
+#include "GameTest/RestartEvent.h"
 #include "GameTest/Components/LoadingScene/LoadingSceneComponent.h"
+#include "GameTest/Event/GameOverEvent.h"
+#include "GameTest/Event/GameStartEvent.h"
 
 void MainMenuUI::Initialize()
 {

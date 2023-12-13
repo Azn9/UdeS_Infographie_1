@@ -1,5 +1,6 @@
 ﻿#include "GameUI.h"
 
+#include "TimerDisplay.h"
 #include "Api/Public/UI/Button.h"
 #include "SpeedDisplay/SpeedDisplay.h"
 
@@ -28,6 +29,11 @@ void GameUI::Initialize()
     const auto speedDisplayPtr = speedDisplay.get();
     canvas->AddChild(std::move(speedDisplay));
     speedDisplayPtr->Initialize();
+
+    auto timerDisplay = std::make_unique<TimerDisplay>();
+    const auto timerDisplayPtr = timerDisplay.get();
+    canvas->AddChild(std::move(timerDisplay));
+    timerDisplayPtr->Initialize();
 }
 
 void GameUI::Update()

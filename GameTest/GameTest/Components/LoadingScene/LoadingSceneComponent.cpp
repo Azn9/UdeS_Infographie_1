@@ -7,6 +7,7 @@
 #include "Api/Public/Util/Sound/SoundManager.h"
 #include "Core/Public/Util/Time.h"
 #include "GameTest/RestartEvent.h"
+#include "GameTest/Event/GameStartEvent.h"
 #include "GameTest/Scenes/MainScene.h"
 
 void LoadingSceneComponent::Initialize()
@@ -36,6 +37,7 @@ void LoadingSceneComponent::Update()
         //SoundManager::GetInstance().LoadAndPlay("sounds/music/music2.wav"); // TODO
 
         PM3D_API::GameHost::GetInstance()->SetScene(MainScene::GetInstancePtr());
+        PM3D_API::EventSystem::Publish(GameStartEvent());
     }
 }
 
