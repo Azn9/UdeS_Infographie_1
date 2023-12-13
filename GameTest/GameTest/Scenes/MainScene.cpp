@@ -131,20 +131,6 @@ void MainScene::InitializeObjects()
 		spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
 
 		spherePtr->AddComponent(std::make_unique<MovableComponent>());
-
-		auto cameraRealFP = std::make_unique<PM3D_API::Camera>(
-			"Camera RFP",
-			PM3D_API::Camera::PERSPECTIVE,
-			XMFLOAT3(0.0f, 0.1f, 0.0f),
-			XMVectorSet(0.0f, -5.0f, 15.0f, 1.0f)
-		);
-		cameraRealFP->SetFieldOfView(45.0f);
-		cameraRealFP->SetFarDist(1000.0f);
-		cameraRealFP->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
-
-		spherePtr->AddChild(std::move(cameraRealFP));
-
-
 	}
 
 	// ============= Add railings =============
