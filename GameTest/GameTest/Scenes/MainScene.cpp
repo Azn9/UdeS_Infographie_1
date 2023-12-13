@@ -29,6 +29,7 @@
 #include <GameTest/Objects/Right_Ski.h>
 #include <GameTest/Objects/Left_ski.h>
 #include <GameTest/Components/JointsBreakerComponent.h>
+#include <GameTest/Components/ToggleOnSkierComponent.h>
 
 
 void MainScene::InitializePhysics()
@@ -154,124 +155,7 @@ void MainScene::InitializeObjects()
 
 	for (int i = 0; i < 10; ++i)
 	{
-		// right ski
-		auto rski = std::make_unique<Right_Ski>();
-		const auto rskiPtr = rski.get();
-		AddChild(std::move(rski));
-		rskiPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
-		rskiPtr->SetWorldPosition(XMFLOAT3(-20 + 10 * i, -70.f, 0.f));
-		rskiPtr->Initialize();
-		
-		auto rskiRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-		const auto rskiRigidbodyPtr = rskiRigidbody.get();
-		rskiPtr->AddComponent(std::move(rskiRigidbody));
-		rskiRigidbodyPtr->Initialize();
-		rskiRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/ /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
-
-
-	
-		//auto rskiCollider = std::make_unique<
-		//	PM3D_API::BoxCollider>(PxGetPhysics().createMaterial(0.f, 0.f, 1.f));
-		//const auto rskiColliderPtr = rskiCollider.get();
-		//rskiPtr->AddComponent(std::move(rskiCollider));
-		//rskiColliderPtr->Initialize();
-		//filterDataSkier.word0 = FilterGroup::eSKI;
-		//physx::PxShape* rskiShape = rskiColliderPtr->getShape();
-		//rskiShape->setSimulationFilterData(filterDataSkier);
-
-
-		// left ski
-		auto lski = std::make_unique<Left_Ski>();
-		const auto lskiPtr = lski.get();
-		AddChild(std::move(lski));
-		lskiPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
-		lskiPtr->SetWorldPosition(XMFLOAT3(-20 + 10 * i, -70.f, 0.f));
-		lskiPtr->Initialize();
-
-		auto lskiRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-		const auto lskiRigidbodyPtr = lskiRigidbody.get();
-		lskiPtr->AddComponent(std::move(lskiRigidbody));
-		lskiRigidbodyPtr->Initialize();
-		lskiRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z/* | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/ /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
-		
-		auto lskiCollider = std::make_unique<
-			PM3D_API::SkierCollider>(PxGetPhysics().createMaterial(0.f, 0.f, 1.f));
-		const auto lskiColliderPtr = lskiCollider.get();
-		lskiPtr->AddComponent(std::move(lskiCollider));
-		lskiPtr->AddComponent(std::move(std::make_unique<JointsBreakerComponent>()));
-
-		lskiColliderPtr->Initialize();
-		physx::PxFilterData filterDataSkier;
-		filterDataSkier.word0 = FilterGroup::eSKIER;
-		filterDataSkier.word1 = physx::PxU32(i);
-		physx::PxShape* lskiShape = lskiColliderPtr->getShape();
-		lskiShape->setSimulationFilterData(filterDataSkier);
-		
-
-
-		// skier
-		auto skier = std::make_unique<Skier>();
-		const auto skierPtr = skier.get();
-		AddChild(std::move(skier));
-		skierPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
-		skierPtr->SetWorldPosition(XMFLOAT3(-20 + 10 * i, -70.f, 0.f));
-		skierPtr->Initialize();
-
-		auto skierRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-		const auto skierRigidbodyPtr = skierRigidbody.get();
-		skierPtr->AddComponent(std::move(skierRigidbody));
-		skierRigidbodyPtr->Initialize();
-		skierRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
-
-
-		/*auto skierCollider = std::make_unique<
-			PM3D_API::NoCollider>(PxGetPhysics().createMaterial(0.0f, 0.0f, 0.7f));
-		const auto skierColliderPtr = skierCollider.get();
-		skierPtr->AddComponent(std::move(skierCollider));
-		skierColliderPtr->Initialize();
-		physx::PxFilterData filterDataSnowball;
-		filterDataSnowball.word0 = FilterGroup::eSKIER;
-		physx::PxShape* skierShape = skierColliderPtr->getShape();
-		skierShape->setSimulationFilterData(filterDataSnowball);*/
-
-		physx::PxShape* SkierShape;
-		skierRigidbodyPtr->GetActor()->getShapes(&SkierShape, 1, 0);
-		skierRigidbodyPtr->GetActor()->detachShape(*SkierShape);
-
-		physx::PxShape* rSkiShape;
-		rskiRigidbodyPtr->GetActor()->getShapes(&rSkiShape, 1, 0);
-		rskiRigidbodyPtr->GetActor()->detachShape(*rSkiShape);
-
-		 //joints between skis and skier
-		auto jointSki = physx::PxFixedJointCreate(*GetScene()->GetPhysicsResolver()->GetPhysics(),
-			lskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0, 0, 0),
-				physx::PxQuat(0, 0, 0, 1)),
-			rskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0, 0, 0),
-				physx::PxQuat(0, 0, 0, 1)));
-
-		//rskiRigidbodyPtr->getRigidDynamic()->setLinearVelocity(physx::PxVec3(0.f, 0.f, -2.f));
-		//lskiRigidbodyPtr->getRigidDynamic()->setLinearVelocity(physx::PxVec3(0.f, 0.f, -2.f));
-		//skierRigidbodyPtr->getRigidDynamic()->setLinearVelocity(physx::PxVec3(0.f, 0.f, -2.f));
-		//rskiRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
-		//lskiRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
-		//skierRigidbodyPtr->getRigidDynamic()->addForce(physx::PxVec3(0.f, 0.f, -2.f), physx::PxForceMode::eACCELERATION);
-
-
-	
-		auto jointSkier = physx::PxD6JointCreate(*GetScene()->GetPhysicsResolver()->GetPhysics(),
-			skierRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0.f,-0.2f, 0.f),
-				physx::PxQuat(0, 0, 0, 1)),
-			lskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0.f, 0.f, 0.f),
-				physx::PxQuat(0, 0, 0, 1)));
-		/*
-		jointSkier->setMotion(physx::PxD6Axis::eTWIST, physx::PxD6Motion::eLIMITED);
-		jointSkier->setTwistLimit(physx::PxJointAngularLimitPair(-0.3f, 0.3f));*/
-
-		jointSkier->setMotion(physx::PxD6Axis::eSWING1, physx::PxD6Motion::eLIMITED);
-		jointSkier->setPyramidSwingLimit(physx::PxJointLimitPyramid(-0.3f,0.3f,0.f,0.f));
-
-		jointSkier->setMotion(physx::PxD6Axis::eY, physx::PxD6Motion::eLIMITED);
-		jointSkier->setDistanceLimit(physx::PxJointLinearLimit(0.2f));
+		AddSkier(XMFLOAT3(-10.f + 5.f * i, -60.f, -5.f), i, 1);
 		
 	}
 
@@ -358,4 +242,104 @@ void MainScene::AddPine(const DirectX::XMFLOAT3& pos)
 	filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
 	physx::PxShape* treeShape = pineMeshColliderPtr->getShape();
 	treeShape->setSimulationFilterData(filterDataObstacle);
+}
+
+void MainScene::AddSkier(DirectX::XMFLOAT3 position, physx::PxU32 id, int checkpoint)
+{
+	// right ski
+	auto rski = std::make_unique<Right_Ski>();
+	const auto rskiPtr = rski.get();
+	AddChild(std::move(rski));
+	rskiPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
+	rskiPtr->SetWorldPosition(position);
+	rskiPtr->Initialize();
+	rskiPtr->AddComponent(std::move(std::make_unique<ToggleOnSkierComponent>(checkpoint)));
+
+	auto rskiRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+	const auto rskiRigidbodyPtr = rskiRigidbody.get();
+	rskiPtr->AddComponent(std::move(rskiRigidbody));
+	rskiRigidbodyPtr->Initialize();
+	rskiRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/ /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
+	
+	rskiRigidbodyPtr->getRigidDynamic()->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+
+	
+	// left ski
+	auto lski = std::make_unique<Left_Ski>();
+	const auto lskiPtr = lski.get();
+	AddChild(std::move(lski));
+	lskiPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
+	lskiPtr->SetWorldPosition(position);
+	lskiPtr->Initialize();
+
+	auto lskiRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+	const auto lskiRigidbodyPtr = lskiRigidbody.get();
+	lskiPtr->AddComponent(std::move(lskiRigidbody));
+	lskiRigidbodyPtr->Initialize();
+	lskiRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z/* | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/ /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
+	
+	lskiRigidbodyPtr->getRigidDynamic()->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+	
+	auto lskiCollider = std::make_unique<
+		PM3D_API::SkierCollider>(PxGetPhysics().createMaterial(0.f, 0.f, 1.f));
+	const auto lskiColliderPtr = lskiCollider.get();
+	lskiPtr->AddComponent(std::move(lskiCollider));
+	lskiPtr->AddComponent(std::move(std::make_unique<JointsBreakerComponent>()));
+	lskiPtr->AddComponent(std::move(std::make_unique<ToggleOnSkierComponent>(checkpoint)));
+
+	lskiColliderPtr->Initialize();
+	physx::PxFilterData filterDataSkier;
+	filterDataSkier.word0 = FilterGroup::eSKIER;
+	filterDataSkier.word1 = physx::PxU32(id);
+	physx::PxShape* lskiShape = lskiColliderPtr->getShape();
+	lskiShape->setSimulationFilterData(filterDataSkier);
+
+
+
+	// skier
+	auto skier = std::make_unique<Skier>();
+	const auto skierPtr = skier.get();
+	AddChild(std::move(skier));
+	skierPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
+	skierPtr->SetWorldPosition(position);
+	skierPtr->Initialize();
+	skierPtr->AddComponent(std::move(std::make_unique<ToggleOnSkierComponent>(checkpoint)));
+	auto skierRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+	const auto skierRigidbodyPtr = skierRigidbody.get();
+	skierPtr->AddComponent(std::move(skierRigidbody));
+	skierRigidbodyPtr->Initialize();
+	skierRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
+	
+	skierRigidbodyPtr->getRigidDynamic()->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+	
+	physx::PxShape* SkierShape;
+	skierRigidbodyPtr->GetActor()->getShapes(&SkierShape, 1, 0);
+	skierRigidbodyPtr->GetActor()->detachShape(*SkierShape);
+
+	physx::PxShape* rSkiShape;
+	rskiRigidbodyPtr->GetActor()->getShapes(&rSkiShape, 1, 0);
+	rskiRigidbodyPtr->GetActor()->detachShape(*rSkiShape);
+
+	//joints between skis and skier
+	auto jointSki = physx::PxFixedJointCreate(*GetScene()->GetPhysicsResolver()->GetPhysics(),
+		lskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0, 0, 0),
+			physx::PxQuat(0, 0, 0, 1)),
+		rskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0, 0, 0),
+			physx::PxQuat(0, 0, 0, 1)));
+
+
+	auto jointSkier = physx::PxD6JointCreate(*GetScene()->GetPhysicsResolver()->GetPhysics(),
+		skierRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0.f, -0.2f, 0.f),
+			physx::PxQuat(0, 0, 0, 1)),
+		lskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0.f, 0.f, 0.f),
+			physx::PxQuat(0, 0, 0, 1)));
+
+
+	jointSkier->setMotion(physx::PxD6Axis::eSWING1, physx::PxD6Motion::eLIMITED);
+	jointSkier->setPyramidSwingLimit(physx::PxJointLimitPyramid(-0.3f, 0.3f, 0.f, 0.f));
+
+	jointSkier->setMotion(physx::PxD6Axis::eY, physx::PxD6Motion::eLIMITED);
+	jointSkier->setDistanceLimit(physx::PxJointLinearLimit(0.2f));
+
+
 }

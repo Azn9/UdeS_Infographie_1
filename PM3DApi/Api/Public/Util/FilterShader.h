@@ -25,6 +25,11 @@ PxFilterFlags FilterShader(
 		pairFlags = PxPairFlag::eTRIGGER_DEFAULT | PxPairFlag::eCONTACT_DEFAULT;
 		return PxFilterFlag::eDEFAULT;
 	}
+	if (filterData0.word0 == FilterGroup::eSKIER && filterData1.word0 == FilterGroup::eSKIER) 
+	{
+		pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+		return PxFilterFlag::eDEFAULT;
+	}
 	if ((filterData0.word0 == FilterGroup::eSNOWBALL && filterData1.word0 == FilterGroup::eSKIER) || (filterData1.word0 == FilterGroup::eSNOWBALL && filterData0.word0 == FilterGroup::eSKIER))
 	{
 		if (filterData0.word0 == FilterGroup::eSNOWBALL)
