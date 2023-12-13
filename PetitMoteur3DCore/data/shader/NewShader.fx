@@ -64,14 +64,20 @@ struct VS_Sortie
 	float3 worldPos  : TEXCOORD5;
 	float3 cameraDir : TEXCOORD6;
 	float4 PosInMap[MAX_LIGHTS] : TEXCOORD7;
+	float fogRatio;
 };
+
+cbuffer truc {
+float clearDistance = 10;
+float fogDistance = 100;
+}
 
 VS_Sortie MainVS(
     float4 vPos      : POSITION, 
     float3 vNormal   : NORMAL, 
     float3 vBiNormal : BINORMAL,
     float3 vTangent  : TANGENT,
-    float2 coordTex  : TEXCOORD
+    float2 coordTex  : TEXCOORD,
 ) {
     VS_Sortie output;
 
@@ -99,6 +105,9 @@ VS_Sortie MainVS(
 	}
 
 	output.PosInMap = PosInMaps;
+
+	float verticalDist = vCamera.y - vPos.y;
+	output.fogRatio = smoothstep(clearDistance, clearDistance+fogDistance, verticalDist);
 
 	return output;
 }
@@ -250,6 +259,8 @@ float4 MainPS(VS_Sortie input) : SV_Target
     }
 
 	float3 finalColor = couleurTexture.rgb * (totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb);
+
+	finalColor = lerp(finalColor, float3(1.0,1.0,1.0), input.fogRatio);
 
 	return float4(finalColor, 1.0f);
 }
