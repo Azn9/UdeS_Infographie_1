@@ -59,6 +59,7 @@ SnowShader::SnowShader(
     })
 {
     Initialize(fileName);
+    initialized = true;
 }
 
 SnowShader::~SnowShader()

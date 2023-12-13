@@ -1,4 +1,4 @@
-﻿#include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
+﻿#include "Api/Public/Component/Basic/Render/3D/InstancedMeshRenderer.h"
 
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -9,7 +9,6 @@
 #include "Core/Public/Mesh/FastobjChargeur.h"
 #include "Core/Public/Texture/GestionnaireDeTextures.h"
 #include "Core/Public/Util/resource.h"
-#include "Core/Public/Util/Time.h"
 #include "Core/Public/Util/util.h"
 #include "Api/Public/GameHost.h"
 #include "Api/Public/GameObject/GameObject.h"
@@ -17,10 +16,13 @@
 #include "Api/Public/Shader/Shader.h"
 #include "Api/Public/Util/Util.h"
 
-PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName) : Renderer(
-    std::move(shader))
+PM3D_API::InstancedMeshRenderer::InstancedMeshRenderer(
+    std::unique_ptr<Shader>&& shader,
+    std::string meshName,
+    const std::vector<MapImporter::InstanceObject>&& instances
+) : Renderer(std::move(shader)), instances(instances)
 {
-    std::cout << "MeshRenderer::MeshRenderer(" << meshName << ")" << std::endl;
+    std::cout << "InstancedMeshRenderer::InstancedMeshRenderer(" << meshName << ")" << std::endl;
 
     if (meshName.find_last_of(".obj") == std::string::npos)
         meshName += ".obj";
@@ -37,51 +39,58 @@ PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::stri
     LoadMesh();
 }
 
-PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur) :
-    Renderer(std::move(shader)), chargeur(chargeur)
+PM3D_API::InstancedMeshRenderer::InstancedMeshRenderer(
+    std::unique_ptr<Shader>&& shader,
+    PM3D::IChargeur* chargeur,
+    const std::vector<PM3D_API::MapImporter::InstanceObject>&& instances
+) : Renderer(std::move(shader)), chargeur(chargeur), instances(instances)
 {
-    std::cout << "MeshRenderer::MeshRenderer(chargeur)" << std::endl;
+    std::cout << "InstancedMeshRenderer::InstancedMeshRenderer(chargeur)" << std::endl;
 
     // Load mesh
     LoadMesh();
 }
 
-PM3D_API::MeshRenderer::~MeshRenderer()
+PM3D_API::InstancedMeshRenderer::~InstancedMeshRenderer()
 {
-    std::cout << "MeshRenderer::~MeshRenderer()" << std::endl;
+    std::cout << "InstancedMeshRenderer::~InstancedMeshRenderer()" << std::endl;
 
     delete chargeur; // Will also delete mesh using fastObjDestroy
 }
 
-void PM3D_API::MeshRenderer::Initialize()
+void PM3D_API::InstancedMeshRenderer::Initialize()
 {
-    std::cout << "MeshRenderer::Initialize()" << std::endl;
+    std::cout << "InstancedMeshRenderer::Initialize()" << std::endl;
 }
 
-void PM3D_API::MeshRenderer::DrawSelf() const
+void PM3D_API::InstancedMeshRenderer::DrawSelf() const
 {
     LogBeginDrawSelf();
 
     if (!mesh)
-        throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
+        throw std::runtime_error("InstancedMeshRenderer::DrawSelf: mesh is null");
 
     const auto scene = parentObject->GetScene();
     const auto camera = scene->GetMainCamera();
 
     if (!camera)
     {
-        throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
+        throw std::runtime_error("InstancedMeshRenderer::DrawSelf: camera is null");
     }
 
     // Frustrum culling
+    // TODO: compute bounding box for each object
+    /*
     if (!IsVisible())
     {
         LogEndDrawSelf();
         return;
     }
+    */
 
     // Obtenir le contexte
     const auto pDispositif = GameHost::GetInstance()->GetDispositif();
+    const auto pD3DDevice = pDispositif->GetD3DDevice();
     ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
 
     // Choisir la topologie des primitives
@@ -94,73 +103,19 @@ void PM3D_API::MeshRenderer::DrawSelf() const
     pImmediateContext->IASetIndexBuffer(shader->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
     // Vertex buffer
-    constexpr UINT stride = sizeof(CSommetMesh);
-    constexpr UINT offset = 0;
-    pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
+    UINT strides[2];
+    strides[0] = sizeof(CSommetMesh);
+    strides[1] = sizeof(UINT);
 
-    /*
-    { // SHADOWS
-        pImmediateContext->OMSetRenderTargets(0, nullptr, shader->GetDepthStencilView());
-        pImmediateContext->ClearDepthStencilView(shader->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-        pDispositif->SetViewportDimension(512,512);
-        const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
-        const auto pPasse = pTechnique->GetPassByIndex(0);
-        pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
+    UINT offsets[2];
+    offsets[0] = 0;
+    offsets[1] = 0;
 
-        shader->LoadLights(pImmediateContext, parentObject);
+    ID3D11Buffer* buffers[2];
+    buffers[0] = shader->GetVertexBuffer();
+    buffers[1] = shader->GetInstanceBuffer();
 
-        const XMMATRIX viewProj = camera->GetMatViewProj();
-    
-        const auto shaderParameters = shader->PrepareParameters(
-            XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
-            XMMatrixTranspose(parentObject->GetMatWorld())
-        );
-
-        for (int i = 0; i < mesh->object_count; ++i)
-        {
-            const auto objGroup = mesh->objects[i];
-            const unsigned indexStart = objGroup.index_offset;
-        
-            unsigned int indexDrawAmount;
-            if (mesh->object_count > 1)
-            {
-                indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
-            } else
-            {
-                indexDrawAmount = mesh->index_count;
-            }
-
-            if (!indexDrawAmount)
-            {
-                continue;
-            }
-
-            shader->ApplyMaterialParameters(
-                shaderParameters,
-                XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient),
-                XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse),
-                XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular),
-                Material[SubmeshMaterialIndex[i]].Puissance,
-                Material[SubmeshMaterialIndex[i]].pAlbedoTexture,
-                Material[SubmeshMaterialIndex[i]].pNormalmapTexture
-            );
-
-            // IMPORTANT pour ajuster les param.
-            shader->GetPass()->Apply(0, pImmediateContext);
-
-            shader->ApplyShaderParams();
-            pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
-        
-            pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
-        }
-
-        shader->DeleteParameters(shaderParameters);
-    }
-    */
-
-    //ID3D11RenderTargetView* tabRTV[1];
-    //tabRTV[0] = pDispositif->GetRenderTargetView();
-    //pImmediateContext->OMSetRenderTargets(1, tabRTV, pDispositif->GetDepthStencilView());
+    pImmediateContext->IASetVertexBuffers(0, 2, buffers, strides, offsets);
 
     pDispositif->ResetViewportDimension();
 
@@ -168,30 +123,103 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
     const XMMATRIX viewProj = camera->GetMatViewProj();
 
-    const auto shaderParameters = shader->PrepareParameters(
-        XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
-        XMMatrixTranspose(parentObject->GetMatWorld())
-    );
+    const auto shaderParameters = shader->PrepareParameters(XMMATRIX(), XMMATRIX());
 
-    //pDispositif->SetNormalRSState();
+    auto drawInstances = std::vector<DrawInstance>();
+    auto instancesIndexes = std::vector<UINT>();
+
+    for (size_t i = 0; i < instances.size(); ++i)
+    {
+        const auto& instance = instances[i];
+
+        const auto position = instance.position;
+        const auto rotation = instance.rotation;
+        const auto scale = instance.scale;
+
+        if (!IsVisible(position, scale))
+        {
+            continue;
+        }
+
+        const auto matWorld = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
+            DirectX::XMMatrixRotationQuaternion(Quaternion(rotation).ToXMVector()) *
+            DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+
+        const auto matWorldViewProj = matWorld * viewProj;
+
+        drawInstances.emplace_back(DrawInstance{
+            DirectX::XMMatrixTranspose(matWorldViewProj),
+            DirectX::XMMatrixTranspose(matWorld)
+        });
+        instancesIndexes.emplace_back(static_cast<UINT>(i));
+    }
+
+    const auto instancesCount = drawInstances.size();
+
+    if (instancesCount == 0)
+    {
+        LogEndDrawSelf();
+        return;
+    }
+
+    {
+        if (shader->GetInstanceBuffer())
+        {
+            shader->GetInstanceBuffer()->Release();
+        }
+
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_IMMUTABLE;
+        bd.ByteWidth = sizeof(UINT) * instancesCount;
+
+        bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        bd.CPUAccessFlags = 0;
+        D3D11_SUBRESOURCE_DATA InitData;
+        ZeroMemory(&InitData, sizeof(InitData));
+        InitData.pSysMem = instancesIndexes.data();
+        PM3D::DXEssayer(pD3DDevice->CreateBuffer(&bd, &InitData, shader->GetInstanceBufferPtr()),
+                        DXE_CREATIONINDEXBUFFER);
+    }
+
+    D3D11_BUFFER_DESC instancesBufferDesc;
+    ZeroMemory(&instancesBufferDesc, sizeof(instancesBufferDesc));
+    instancesBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    instancesBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    instancesBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+    instancesBufferDesc.StructureByteStride = sizeof(DrawInstance);
+    instancesBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    instancesBufferDesc.ByteWidth = sizeof(DrawInstance) * static_cast<UINT>(instancesCount);
+
+    D3D11_SUBRESOURCE_DATA initData = {};
+    initData.pSysMem = drawInstances.data();
+
+    ID3D11Buffer* instancesBuffer = nullptr;
+    PM3D::DXEssayer(pD3DDevice->CreateBuffer(&instancesBufferDesc, &initData, &instancesBuffer));
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+    srvDesc.Buffer.FirstElement = 0;
+    srvDesc.Buffer.ElementWidth = static_cast<UINT>(instancesCount);
+
+    ID3D11ShaderResourceView* resource_view = nullptr;
+    PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(instancesBuffer, &srvDesc, &resource_view));
+
+    ID3DX11EffectShaderResourceVariable* resource_variable;
+    resource_variable = shader->GetEffect()->GetVariableByName("instances")->AsShaderResource();
+    resource_variable->SetResource(resource_view);
 
     // Dessiner les sous-objets non-transparents
     for (unsigned int i = 0; i < mesh->group_count; ++i)
     {
-        const auto objGroup = mesh->groups[i];
-        const unsigned indexStart = objGroup.index_offset;
+        const auto [name, face_count, face_offset, index_offset] = mesh->groups[i];
+        const unsigned indexStart = index_offset;
 
         unsigned int indexDrawAmount;
-        if (mesh->group_count > 1)
+        if (mesh->group_count > 1 && i + 1 < mesh->group_count)
         {
-            if (i + 1 < mesh->group_count)
-            {
-                indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
-            }
-            else
-            {
-                indexDrawAmount = mesh->index_count - indexStart;
-            }
+            indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
         }
         else
         {
@@ -222,27 +250,39 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
         pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
 
-        pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
+        pImmediateContext->DrawInstanced(indexDrawAmount, static_cast<UINT>(instancesCount), indexStart, 0);
     }
 
     shader->DeleteParameters(shaderParameters);
+    resource_variable->Release();
+    instancesBuffer->Release();
+    resource_view->Release();
 
     LogEndDrawSelf();
 }
 
-bool PM3D_API::MeshRenderer::IsVisible() const
+bool PM3D_API::InstancedMeshRenderer::IsVisible(const XMFLOAT3 position, const XMFLOAT3 scale) const
 {
     const Camera* camera = parentObject->GetScene()->GetMainCamera();
-    float maxScale =
+    const float maxScale = max(max(scale.x, scale.y), scale.z);
+    const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&position);
+    const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera->GetMatView());
+    return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
+}
+
+bool PM3D_API::InstancedMeshRenderer::IsVisible() const
+{
+    const Camera* camera = parentObject->GetScene()->GetMainCamera();
+    const float maxScale =
         max(max(parentObject->GetWorldScale().x, parentObject->GetWorldScale().y), parentObject->GetWorldScale().z);
     const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&parentObject->GetWorldPosition());
     const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera->GetMatView());
     return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
 }
 
-void PM3D_API::MeshRenderer::LoadMesh()
+void PM3D_API::InstancedMeshRenderer::LoadMesh()
 {
-    if (!chargeur || !chargeur->GetMesh()) return;
+    mesh = static_cast<fastObjMesh*>(chargeur->GetMesh());
 
     ID3D11Device* pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
 
@@ -250,7 +290,7 @@ void PM3D_API::MeshRenderer::LoadMesh()
     {
         const size_t nombreSommets = chargeur->GetNombreSommets();
 
-        std::cout << "MeshRenderer::LoadMesh: nombreSommets = " << nombreSommets << std::endl;
+        std::cout << "InstancedMeshRenderer::LoadMesh: nombreSommets = " << nombreSommets << std::endl;
 
         std::unique_ptr<CSommetMesh[]> ts(new CSommetMesh[nombreSommets]);
         boundingRadius = 0.f;
@@ -328,21 +368,26 @@ void PM3D_API::MeshRenderer::LoadMesh()
     }
 
     // 4c) Trouver l’index du materiau pour chaque sous-ensemble
-    SubmeshMaterialIndex.reserve(chargeur->GetNombreSubset());
-    for (int32_t i = 0; i < chargeur->GetNombreSubset(); ++i)
+    SubmeshMaterialIndex.reserve(mesh->group_count);
+    for (int32_t i = 0; i < mesh->group_count; ++i)
     {
+        const auto group = mesh->groups[i];
+        SubmeshMaterialIndex.push_back(mesh->face_materials[group.face_offset]);
+
+        /*
         int32_t index;
         for (index = 0; index < Material.size(); ++index)
         {
             const auto materialName = Material[index].NomMateriau;
-            if (materialName == "" || materialName == chargeur->GetMaterialName(i))
+            if (materialName == chargeur->GetMaterialName(i))
                 break;
         }
         if (index >= Material.size()) index = 0; // valeur de défaut
         SubmeshMaterialIndex.push_back(index);
+        */
     }
 
-    std::reverse(SubmeshMaterialIndex.begin(), SubmeshMaterialIndex.end());
+    //std::reverse(SubmeshMaterialIndex.begin(), SubmeshMaterialIndex.end());
 
     // 4d) Chargement des textures
     PM3D::CGestionnaireDeTextures& TexturesManager = PM3D::CMoteurWindows::GetInstance().GetTextureManager();
@@ -357,7 +402,8 @@ void PM3D_API::MeshRenderer::LoadMesh()
         }
         else
         {
-            std::cout << "MeshRenderer::LoadMesh: Material[" << i << "].albedoTextureFileName is empty" << std::endl;
+            std::cout << "InstancedMeshRenderer::LoadMesh: Material[" << i << "].albedoTextureFileName is empty" <<
+                std::endl;
         }
 
         if (Material[i].normalmapTextureFileName.length() > 0)
@@ -369,10 +415,10 @@ void PM3D_API::MeshRenderer::LoadMesh()
         }
         else
         {
-            std::cout << "MeshRenderer::LoadMesh: Material[" << i << "].normalmapTextureFileName is empty" << std::endl;
+            std::cout << "InstancedMeshRenderer::LoadMesh: Material[" << i << "].normalmapTextureFileName is empty" <<
+                std::endl;
         }
     }
 
-    mesh = static_cast<fastObjMesh*>(chargeur->GetMesh());
     meshLoaded = true;
 }

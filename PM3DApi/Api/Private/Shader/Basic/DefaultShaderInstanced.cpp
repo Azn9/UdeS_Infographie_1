@@ -1,4 +1,4 @@
-﻿#include "Api/Public/Shader/Basic/DefaultShader.h"
+﻿#include "Api/Public/Shader/Basic/DefaultShaderInstanced.h"
 
 #include <codecvt>
 #include <d3dcompiler.h>
@@ -12,7 +12,7 @@
 #include "Api/Public/Util/Util.h"
 
 // Definir l’organisation de notre sommet
-D3D11_INPUT_ELEMENT_DESC layout[] =
+D3D11_INPUT_ELEMENT_DESC dsiLayout[] =
 {
     {
         "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
@@ -33,26 +33,32 @@ D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48,
         D3D11_INPUT_PER_VERTEX_DATA, 0
+    },
+
+    {
+        "SV_InstanceID", 0, DXGI_FORMAT_R32_UINT, 1, 0,
+        D3D11_INPUT_PER_INSTANCE_DATA, 1
     }
 };
-UINT numElements;
+UINT dsiNumElements;
 
-PM3D_API::DefaultShader::DefaultShader(
+PM3D_API::DefaultShaderInstanced::DefaultShaderInstanced(
     const std::wstring& fileName
 ) : Shader(),
     vertexBuffer(nullptr),
     indexBuffer(nullptr),
+    instanceBuffer(nullptr),
     fileWatcher(fileName, [fileName, this]()
     {
         std::lock_guard<std::mutex> guard{reloadingMutex};
         if (!initialized)
             return;
-        
+
         std::cout << "Reloading shader " << Util::ws2s(fileName) << std::endl;
         Destroy();
 
         Sleep(150); // To avoid issues
-        
+
         Initialize(fileName);
 
         std::cout << "Shader reloaded!" << std::endl;
@@ -62,7 +68,7 @@ PM3D_API::DefaultShader::DefaultShader(
     Initialize(fileName);
 }
 
-PM3D_API::DefaultShader::~DefaultShader()
+PM3D_API::DefaultShaderInstanced::~DefaultShaderInstanced()
 {
     fileWatcher.~FileWatcher();
 
@@ -72,7 +78,7 @@ PM3D_API::DefaultShader::~DefaultShader()
     PM3D::DXRelacher(indexBuffer);
 }
 
-void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
+void PM3D_API::DefaultShaderInstanced::Initialize(const std::wstring& wstring)
 {
     const auto pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
 
@@ -80,7 +86,7 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
     ZeroMemory(&shaderParametersBufferDesc, sizeof(shaderParametersBufferDesc));
 
     shaderParametersBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    shaderParametersBufferDesc.ByteWidth = sizeof(DefaultShaderParameters);
+    shaderParametersBufferDesc.ByteWidth = sizeof(DefaultShaderInstancedParameters);
     shaderParametersBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     shaderParametersBufferDesc.CPUAccessFlags = 0;
 
@@ -117,7 +123,7 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
             errorBlob->Release();
         }
 
-        throw std::runtime_error("Shader compilation failed! (DefaultShader > " + convertedFileName + ")");
+        throw std::runtime_error("Shader compilation failed! (DefaultShaderInstanced > " + convertedFileName + ")");
     }
 
     res = D3DX11CreateEffectFromMemory(
@@ -130,7 +136,7 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
 
     if (res != S_OK)
     {
-        throw std::runtime_error("Shader creation failed! (DefaultShader > " + convertedFileName + ")");
+        throw std::runtime_error("Shader creation failed! (DefaultShaderInstanced > " + convertedFileName + ")");
     }
 
     pFXBlob->Release();
@@ -154,10 +160,10 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
         const uint32_t vsCodeLen = effectVSDesc2.BytecodeLength;
         vertexLayout = nullptr;
 
-        numElements = ARRAYSIZE(layout);
+        dsiNumElements = ARRAYSIZE(dsiLayout);
 
-        PM3D::DXEssayer(pD3DDevice->CreateInputLayout(layout,
-                                                      numElements,
+        PM3D::DXEssayer(pD3DDevice->CreateInputLayout(dsiLayout,
+                                                      dsiNumElements,
                                                       vsCodePtr,
                                                       vsCodeLen,
                                                       &vertexLayoutShadow),
@@ -177,10 +183,10 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
     const uint32_t vsCodeLen = effectVSDesc2.BytecodeLength;
     vertexLayout = nullptr;
 
-    numElements = ARRAYSIZE(layout);
+    dsiNumElements = ARRAYSIZE(dsiLayout);
 
-    PM3D::DXEssayer(pD3DDevice->CreateInputLayout(layout,
-                                                  numElements,
+    PM3D::DXEssayer(pD3DDevice->CreateInputLayout(dsiLayout,
+                                                  dsiNumElements,
                                                   vsCodePtr,
                                                   vsCodeLen,
                                                   &vertexLayout),
@@ -241,19 +247,15 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
 
     initialized = true;
-
-#ifdef _DEBUG
-    fileWatcher.Run();
-#endif
 }
 
-void PM3D_API::DefaultShader::Destroy()
+void PM3D_API::DefaultShaderInstanced::Destroy()
 {
     if (!initialized)
         return;
 
     initialized = false;
-    
+
     PM3D::DXRelacher(shaderParametersBuffer);
     PM3D::DXRelacher(effect);
     PM3D::DXRelacher(vertexLayout);
@@ -265,73 +267,73 @@ void PM3D_API::DefaultShader::Destroy()
     PM3D::DXRelacher(vertexLayoutShadow);
 }
 
-ID3D11Buffer* PM3D_API::DefaultShader::GetShaderParametersBuffer() const
+ID3D11Buffer* PM3D_API::DefaultShaderInstanced::GetShaderParametersBuffer() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return shaderParametersBuffer;
 }
 
-ID3DX11EffectPass* PM3D_API::DefaultShader::GetPass() const
+ID3DX11EffectPass* PM3D_API::DefaultShaderInstanced::GetPass() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return passe;
 }
 
-ID3D11InputLayout* PM3D_API::DefaultShader::GetVertexLayout() const
+ID3D11InputLayout* PM3D_API::DefaultShaderInstanced::GetVertexLayout() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return vertexLayout;
 }
 
-ID3D11Buffer* PM3D_API::DefaultShader::GetIndexBuffer() const
+ID3D11Buffer* PM3D_API::DefaultShaderInstanced::GetIndexBuffer() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return indexBuffer;
 }
 
-ID3D11InputLayout* PM3D_API::DefaultShader::GetShadowVertexLayout() const
+ID3D11InputLayout* PM3D_API::DefaultShaderInstanced::GetShadowVertexLayout() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return vertexLayoutShadow;
 }
 
-ID3D11Texture2D* PM3D_API::DefaultShader::GetDepthTexture() const
+ID3D11Texture2D* PM3D_API::DefaultShaderInstanced::GetDepthTexture() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthTexture;
 }
 
-ID3D11DepthStencilView* PM3D_API::DefaultShader::GetDepthStencilView() const
+ID3D11DepthStencilView* PM3D_API::DefaultShaderInstanced::GetDepthStencilView() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthStencilView;
 }
 
-ID3D11ShaderResourceView* PM3D_API::DefaultShader::GetDepthShaderResourceView() const
+ID3D11ShaderResourceView* PM3D_API::DefaultShaderInstanced::GetDepthShaderResourceView() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthShaderResourceView;
 }
 
-ID3DX11Effect* PM3D_API::DefaultShader::GetEffect() const
+ID3DX11Effect* PM3D_API::DefaultShaderInstanced::GetEffect() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return effect;
 }
 
-ID3D11Buffer** PM3D_API::DefaultShader::GetVertexBufferPtr() const
+ID3D11Buffer** PM3D_API::DefaultShaderInstanced::GetVertexBufferPtr() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return &vertexBuffer;
 }
 
-ID3D11Buffer** PM3D_API::DefaultShader::GetIndexBufferPtr() const
+ID3D11Buffer** PM3D_API::DefaultShaderInstanced::GetIndexBufferPtr() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return &indexBuffer;
 }
 
-void* PM3D_API::DefaultShader::PrepareParameters(
+void* PM3D_API::DefaultShaderInstanced::PrepareParameters(
     DirectX::XMMATRIX matWorldViewProj,
     DirectX::XMMATRIX matWorld
 )
@@ -347,9 +349,7 @@ void* PM3D_API::DefaultShader::PrepareParameters(
     const auto cameraPos = GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldPosition();
     const auto cameraDir = GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldDirection();
 
-    const auto parameters = new DefaultShaderParameters{
-        matWorldViewProj,
-        matWorld,
+    const auto parameters = new DefaultShaderInstancedParameters{
         DirectX::XMVectorSet(cameraPos.x, cameraPos.y, cameraPos.z, 1.0f),
         DirectX::XMVectorSet(cameraDir.x, cameraDir.y, cameraDir.z, 1.0f)
     };
@@ -357,7 +357,7 @@ void* PM3D_API::DefaultShader::PrepareParameters(
     return parameters;
 }
 
-void PM3D_API::DefaultShader::ApplyMaterialParameters(
+void PM3D_API::DefaultShaderInstanced::ApplyMaterialParameters(
     void* shaderParameters,
     DirectX::XMVECTOR materialAmbiant,
     DirectX::XMVECTOR materialDiffuse,
@@ -369,7 +369,7 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
 
-    auto& parameters = *static_cast<DefaultShaderParameters*>(shaderParameters);
+    auto& parameters = *static_cast<DefaultShaderInstancedParameters*>(shaderParameters);
 
     parameters.materialAmbiant = materialAmbiant;
     parameters.materialDiffuse = materialDiffuse;
@@ -410,14 +410,14 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
     }
 }
 
-void PM3D_API::DefaultShader::DeleteParameters(void* shader_parameters)
+void PM3D_API::DefaultShaderInstanced::DeleteParameters(void* shader_parameters)
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
 
-    delete static_cast<DefaultShaderParameters*>(shader_parameters);
+    delete static_cast<DefaultShaderInstancedParameters*>(shader_parameters);
 }
 
-void PM3D_API::DefaultShader::ApplyShaderParams() const
+void PM3D_API::DefaultShaderInstanced::ApplyShaderParams() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
 
@@ -425,7 +425,7 @@ void PM3D_API::DefaultShader::ApplyShaderParams() const
     pCB->SetConstantBuffer(shaderParametersBuffer);
 }
 
-void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context, GameObject* gameObject)
+void PM3D_API::DefaultShaderInstanced::LoadLights(ID3D11DeviceContext* context, GameObject* gameObject)
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
 
@@ -514,7 +514,8 @@ void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context, GameObjec
     lightParametersBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     lightParametersBufferDesc.StructureByteStride = sizeof(ShaderLightDefaultParameters);
     lightParametersBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    lightParametersBufferDesc.ByteWidth = sizeof(ShaderLightDefaultParameters) * static_cast<UINT>(shaderLightsParameters.size());
+    lightParametersBufferDesc.ByteWidth = sizeof(ShaderLightDefaultParameters) * static_cast<UINT>(
+        shaderLightsParameters.size());
 
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = shaderLightsParameters.data();

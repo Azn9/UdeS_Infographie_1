@@ -7,11 +7,11 @@
 
 namespace PM3D_API
 {
-    class DefaultShader final : public Shader
+    class DefaultShaderInstanced final : public Shader
     {
     public:
-        explicit DefaultShader(const std::wstring& fileName);
-        ~DefaultShader() override;
+        explicit DefaultShaderInstanced(const std::wstring& fileName);
+        ~DefaultShaderInstanced() override;
 
         void Initialize(const std::wstring& wstring);
         void Destroy();
@@ -62,12 +62,12 @@ namespace PM3D_API
 
         ID3D11Buffer* GetInstanceBuffer() override
         {
-            return nullptr;
+            return instanceBuffer;
         }
 
         ID3D11Buffer** GetInstanceBufferPtr() override
         {
-            return nullptr;
+            return &instanceBuffer;
         }
 
     protected:
@@ -89,14 +89,12 @@ namespace PM3D_API
 
         mutable ID3D11Buffer* vertexBuffer;
         mutable ID3D11Buffer* indexBuffer;
+        mutable ID3D11Buffer* instanceBuffer;
         bool initialized;
 
     private:
-        struct DefaultShaderParameters
+        struct DefaultShaderInstancedParameters
         {
-            DirectX::XMMATRIX matWorldViewProj;
-            DirectX::XMMATRIX matWorld;
-
             DirectX::XMVECTOR cameraPos;
             DirectX::XMVECTOR cameraDir;
 

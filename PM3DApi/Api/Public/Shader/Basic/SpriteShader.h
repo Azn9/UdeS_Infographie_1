@@ -55,7 +55,20 @@ namespace PM3D_API
             float alpha;
         };
 
-    protected:
+    ID3D11Buffer* GetVertexBuffer() override
+        {
+            return vertexBuffer;
+        }
+
+        ID3D11Buffer* GetInstanceBuffer() override
+        {
+            return nullptr;
+        }
+
+        ID3D11Buffer** GetInstanceBufferPtr() override
+        {
+            return nullptr;
+        }protected:
         std::wstring fileName;
 
         ID3D11Buffer* shaderParametersBuffer;

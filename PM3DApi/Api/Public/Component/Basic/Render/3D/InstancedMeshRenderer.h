@@ -8,21 +8,27 @@
 #include "Core/Imgui/imgui.h"
 #include "Core/Public/Mesh/chargeur.h"
 #include "Core/Public/Texture/CMaterial.h"
-#include "Core/Public/Util/Time.h"
 #include "Api/Public/Shader/Shader.h"
+#include "Api/Public/Util/MapImporter/MapImporter.h"
 
 namespace PM3D_API
 {
-    class MeshRenderer : public Renderer
+    class InstancedMeshRenderer final : public Renderer
     {
     public:
-        MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName);
-        MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur);
+        InstancedMeshRenderer(std::unique_ptr<Shader>&& shader,
+                              std::string meshName,
+                              const std::vector<MapImporter::InstanceObject>&& instances);
 
-        ~MeshRenderer() override;
+        InstancedMeshRenderer(std::unique_ptr<Shader>&& shader,
+                              PM3D::IChargeur* chargeur,
+                              const std::vector<MapImporter::InstanceObject>&& instances);
+
+        ~InstancedMeshRenderer() override;
 
         void Initialize() override;
         void DrawSelf() const override;
+        bool IsVisible(const XMFLOAT3 position, const XMFLOAT3 scale) const;
 
         void DrawDebugInfo() const override
         {
@@ -53,14 +59,22 @@ namespace PM3D_API
 
         bool IsVisible() const override;
 
-        PM3D::IChargeur* getChargeur() { return chargeur; }
+        PM3D::IChargeur* getChargeur() const { return chargeur; }
+
+        const std::vector<PM3D_API::MapImporter::InstanceObject>& getInstances() const { return instances; }
 
     protected:
+        struct DrawInstance
+        {
+            DirectX::XMMATRIX matWorldViewProj;
+            DirectX::XMMATRIX matWorld;
+        };
+
         void LoadMesh();
 
-        PM3D::IChargeur* chargeur = nullptr;
-        fastObjMesh* mesh = nullptr;
-        bool meshLoaded = false;
+        PM3D::IChargeur* chargeur;
+        fastObjMesh* mesh;
+        bool meshLoaded;
 
         // Les sous-objets
         size_t NombreSubmesh; // Nombre de sous-objets dans le mesh
@@ -70,5 +84,7 @@ namespace PM3D_API
 
         ///radius of the bounding sphere
         float boundingRadius = 0.f;
+
+        const std::vector<PM3D_API::MapImporter::InstanceObject> instances;
     };
 }
