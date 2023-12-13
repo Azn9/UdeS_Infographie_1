@@ -7,7 +7,6 @@
 #include "Api/Public/Util/Sound/SoundManager.h"
 #include "GameTest/Objects/LoadingScene/CustomPlane.h"
 #include "GameTest/UI/FadeWhiteComponent.h"
-#include "GameTest/UI/TimerDisplay.h"
 #include "GameTest/UI/Menus/MainMenuUI.h"
 
 using namespace DirectX;
