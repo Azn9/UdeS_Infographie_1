@@ -34,7 +34,7 @@ public:
 
 	void Update() override
 	{
-		/*if (parentObject->GetWorldPosition().z < -400.f)   //temporaire pour les tests
+		/*if (parentObject->GetWorldPosition().z < -1730.f)   //temporaire pour les tests
 			PM3D_API::EventSystem::Publish(GameOverEvent(true));*/
 	}
 

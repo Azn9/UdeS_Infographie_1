@@ -301,9 +301,6 @@ void CAfficheurSprite::Draw()
     ID3DX11EffectShaderResourceVariable* variableTexture;
     variableTexture = pEffet->GetVariableByName("textureEntree")->AsShaderResource();
 
-	// **** Rendu de l’objet
-	pDispositif->ActiverMelangeAlpha();
-
 	// Faire le rendu de tous nos sprites
 	for (int i=0;i<tabSprites.size();++i)
 	{
@@ -322,8 +319,6 @@ void CAfficheurSprite::Draw()
 		// **** Rendu de l’objet
 		pImmediateContext->Draw( 6, 0 );
 	}
-	
-	pDispositif->DesactiverMelangeAlpha();
 }
 
 }

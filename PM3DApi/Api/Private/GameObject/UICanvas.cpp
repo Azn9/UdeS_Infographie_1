@@ -6,6 +6,8 @@
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/EventSystem/Basic/WindowResizeEvent.h"
 
+class MouseClickEvent;
+
 PM3D_API::UICanvas::UICanvas() : UIObject(
     "Canvas",
     {
@@ -31,14 +33,17 @@ PM3D_API::UICanvas::~UICanvas()
 
 void PM3D_API::UICanvas::Initialize()
 {
-    // Do nothing by default
+    EventSystem::Subscribe([&](const MouseClickEvent& event)
+    {
+        UpdateClick(event);
+    });
 }
 
 void PM3D_API::UICanvas::Update()
 {
     if (isDeleted) return;
 
-    for (const auto & uiObject : children)
+    for (const auto& uiObject : children)
     {
         if (uiObject)
             uiObject->Update();
@@ -48,12 +53,17 @@ void PM3D_API::UICanvas::Update()
 void PM3D_API::UICanvas::Draw()
 {
     if (isDeleted) return;
-    
-    for (const auto & uiObject : children)
+
+    const auto pDispositif = GameHost::GetInstance()->GetDispositif();
+    pDispositif->DesactiverDepth();
+
+    for (const auto& uiObject : children)
     {
         if (uiObject)
             uiObject->Draw();
     }
+
+    pDispositif->ActiverDepth();
 }
 
 void PM3D_API::UICanvas::DrawSelf() const
@@ -77,9 +87,88 @@ void PM3D_API::UICanvas::SetScale(const DirectX::XMFLOAT2& newScale)
 {
     UIObject::SetScale(newScale);
 
-    for (const auto & uiObject : children)
+    for (const auto& uiObject : children)
     {
         if (uiObject)
             uiObject->UpdateScaleAndPosition();
+    }
+}
+
+void PM3D_API::UICanvas::UpdateHover(const int x, const int y) const
+{
+    const int screenX = x;
+    const int screenY = GameHost::GetInstance()->GetScreenHeight() - y;
+
+    for (const auto& uiObject : children)
+    {
+        if (!uiObject) continue;
+
+        {
+            const int minX = static_cast<int>(uiObject->GetPosition().x);
+            const int maxX = static_cast<int>(uiObject->GetPosition().x + uiObject->GetScale().x);
+            const int minY = static_cast<int>(uiObject->GetPosition().y);
+            const int maxY = static_cast<int>(uiObject->GetPosition().y + uiObject->GetScale().y);
+
+            if (screenX >= minX && screenX <= maxX && screenY >= minY && screenY <= maxY)
+            {
+                if (!uiObject->isHovered)
+                {
+                    uiObject->isHovered = true;
+                    uiObject->OnHoverEnter();
+                }
+            }
+            else
+            {
+                if (uiObject->isHovered)
+                {
+                    uiObject->isHovered = false;
+                    uiObject->OnHoverExit();
+                }
+            }
+        }
+    }
+}
+
+void PM3D_API::UICanvas::UpdateClick(const MouseClickEvent& event)
+{
+    const int screenX = event.x;
+    const int screenY = GameHost::GetInstance()->GetScreenHeight() - event.y;
+    const bool pressed = event.pressed;
+
+    for (const auto& uiObject : children)
+    {
+        if (!uiObject) continue;
+
+        {
+            const int minX = static_cast<int>(uiObject->GetPosition().x);
+            const int maxX = static_cast<int>(uiObject->GetPosition().x + uiObject->GetScale().x);
+            const int minY = static_cast<int>(uiObject->GetPosition().y);
+            const int maxY = static_cast<int>(uiObject->GetPosition().y + uiObject->GetScale().y);
+
+            if (screenX >= minX && screenX <= maxX && screenY >= minY && screenY <= maxY)
+            {
+                if (pressed)
+                {
+                    if (!uiObject->isClicked)
+                    {
+                        uiObject->isClicked = true;
+                        uiObject->OnClickPressed();
+                    }
+                }
+                else if (uiObject->isClicked)
+                {
+                    uiObject->isClicked = false;
+                    uiObject->OnClickReleased();
+                }
+            }
+            else
+            {
+                if (uiObject->isClicked)
+                {
+                    uiObject->isClicked = false;
+                    uiObject->OnClickReleased();
+                }
+            }
+        }
     }
 }

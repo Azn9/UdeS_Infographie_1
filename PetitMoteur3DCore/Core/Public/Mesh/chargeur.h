@@ -18,6 +18,14 @@ public:
 		bMainGauche = false;
 	}
 
+	CParametresChargement(const std::string& filename)
+	{
+		NomFichier = filename;
+		NomChemin = "";
+		bInverserCulling = false;
+		bMainGauche = false;
+	}
+
 	std::string NomFichier;
 	std::string NomChemin;
 	bool bInverserCulling;

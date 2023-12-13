@@ -92,8 +92,6 @@ void PM3D_API::SpriteRenderer::DrawSelf() const
         nullptr
     );
 
-    pDispositif->ActiverMelangeAlpha();
-
     shader->ApplyShaderParams();
     pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, &shaderParameters, 0, 0);
 

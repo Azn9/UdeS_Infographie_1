@@ -59,6 +59,7 @@ SnowShader::SnowShader(
     })
 {
     Initialize(fileName);
+    initialized = true;
 }
 
 SnowShader::~SnowShader()
@@ -240,6 +241,10 @@ void SnowShader::Initialize(const std::wstring& wstring)
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
 
     initialized = true;
+
+#ifdef _DEBUG
+    fileWatcher.Run();
+#endif
 }
 
 void SnowShader::Destroy()
