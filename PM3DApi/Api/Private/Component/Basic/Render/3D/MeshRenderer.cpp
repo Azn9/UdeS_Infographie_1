@@ -259,6 +259,9 @@ bool PM3D_API::MeshRenderer::IsVisible() const
 
 bool PM3D_API::MeshRenderer::IsVisible(const Camera& camera) const
 {
+    if(ignoreCulling)
+        return true;
+    
     const float maxScale =
         max(max(parentObject->GetWorldScale().x, parentObject->GetWorldScale().y), parentObject->GetWorldScale().z);
     const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&parentObject->GetWorldPosition());
