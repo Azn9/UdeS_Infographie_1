@@ -12,6 +12,7 @@
 #include "Api/Public/GameHost.h"
 #include <Core/Public/Mesh/CSommetMesh.h>
 #include "ToggleOnSkierComponent.h"
+#include <GameTest/Objects/objWithChargeur.h>
 
 
 
@@ -29,12 +30,12 @@ void SkierSpawner::AddSkier(
 	int checkpoint
 )
 {
-	auto scene = parentObject->GetScene();
-
+	
+	
 	// right ski
-	auto rski = std::make_unique<Right_Ski>();
+	auto rski = std::make_unique<objWithChargeur>(_chargeurrSki, "rski");
 	const auto rskiPtr = rski.get();
-	scene->AddChild(std::move(rski));
+	_scene->AddChild(std::move(rski));
 	rskiPtr->SetWorldScale(XMFLOAT3(3.f, 3.f, 3.f));
 	rskiPtr->SetWorldPosition(position);
 	rskiPtr->Initialize();
@@ -45,15 +46,16 @@ void SkierSpawner::AddSkier(
 	const auto rskiRigidbodyPtr = rskiRigidbody.get();
 	rskiPtr->AddComponent(std::move(rskiRigidbody));
 	rskiRigidbodyPtr->Initialize();
-	rskiRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/ /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
 
-	rskiRigidbodyPtr->getRigidDynamic()->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+	auto rSkiRigidDynamic = rskiRigidbodyPtr->getRigidDynamic();
+	rSkiRigidDynamic->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/ /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
+	rSkiRigidDynamic->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
 
 
 	// left ski
-	auto lski = std::make_unique<Left_Ski>();
+	auto lski = std::make_unique<objWithChargeur>(_chargeurlSki, "lski");
 	const auto lskiPtr = lski.get();
-	scene->AddChild(std::move(lski));
+	_scene->AddChild(std::move(lski));
 	lskiPtr->SetWorldScale(XMFLOAT3(3.f, 3.f, 3.f));
 	lskiPtr->SetWorldPosition(position);
 	lskiPtr->Initialize();
@@ -62,9 +64,10 @@ void SkierSpawner::AddSkier(
 	const auto lskiRigidbodyPtr = lskiRigidbody.get();
 	lskiPtr->AddComponent(std::move(lskiRigidbody));
 	lskiRigidbodyPtr->Initialize();
-	lskiRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z/* | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/ /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
 
-	lskiRigidbodyPtr->getRigidDynamic()->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+	auto lSkiRigidDynamic = rskiRigidbodyPtr->getRigidDynamic();
+	lSkiRigidDynamic->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z/* | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/ /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
+	lSkiRigidDynamic->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
 
 	auto lskiCollider = std::make_unique<
 		PM3D_API::SkierCollider>(PxGetPhysics().createMaterial(0.f, 0.f, 1.f));
@@ -84,9 +87,9 @@ void SkierSpawner::AddSkier(
 
 
 	// skier
-	auto skier = std::make_unique<Skier>();
+	auto skier = std::make_unique<objWithChargeur>(_chargeurSkier, "lski");
 	const auto skierPtr = skier.get();
-	scene->AddChild(std::move(skier));
+	_scene->AddChild(std::move(skier));
 	skierPtr->SetWorldScale(XMFLOAT3(3.f, 3.f, 3.f));
 	skierPtr->SetWorldPosition(position);
 	skierPtr->Initialize();
@@ -96,9 +99,10 @@ void SkierSpawner::AddSkier(
 	const auto skierRigidbodyPtr = skierRigidbody.get();
 	skierPtr->AddComponent(std::move(skierRigidbody));
 	skierRigidbodyPtr->Initialize();
-	skierRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
 
-	skierRigidbodyPtr->getRigidDynamic()->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
+	auto skierRigidDynamic = rskiRigidbodyPtr->getRigidDynamic();
+	skierRigidDynamic->setRigidDynamicLockFlags(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
+	skierRigidDynamic->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
 
 	physx::PxShape* SkierShape;
 	skierRigidbodyPtr->GetActor()->getShapes(&SkierShape, 1, 0);
@@ -109,14 +113,14 @@ void SkierSpawner::AddSkier(
 	rskiRigidbodyPtr->GetActor()->detachShape(*rSkiShape);
 
 	//joints between skis and skier
-	auto jointSki = physx::PxFixedJointCreate(*scene->GetPhysicsResolver()->GetPhysics(),
+	auto jointSki = physx::PxFixedJointCreate(*_scene->GetPhysicsResolver()->GetPhysics(),
 		lskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0, 0, 0),
 			physx::PxQuat(0, 0, 0, 1)),
 		rskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0, 0, 0),
 			physx::PxQuat(0, 0, 0, 1)));
 
 
-	auto jointSkier = physx::PxD6JointCreate(*scene->GetPhysicsResolver()->GetPhysics(),
+	auto jointSkier = physx::PxD6JointCreate(*_scene->GetPhysicsResolver()->GetPhysics(),
 		skierRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0.f, -0.2f, 0.f),
 			physx::PxQuat(0, 0, 0, 1)),
 		lskiRigidbodyPtr->GetActor(), physx::PxTransform(physx::PxVec3(0.f, 0.f, 0.f),

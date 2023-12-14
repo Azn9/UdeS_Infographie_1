@@ -14,6 +14,10 @@
 #include "Core/Public/Util/Time.h"
 #include <Api/Public/EventSystem/RespawnSkierEvent.h>
 #include <Api/Public/EventSystem/DeletedSkierEvent.h>
+#include <Core/Public/Mesh/FastobjChargeur.h>
+#include <API/Public/Component/Basic/Render/3D/MeshRenderer.h>
+#include <Api/Public/Shader/Basic/DefaultShader.h>
+
 
 class SkierSpawner final : public PM3D_API::Component
 {
@@ -31,11 +35,25 @@ public:
 				if(_deletedSkierCount == _current_id*3)
 					PM3D_API::EventSystem::Publish(RespawnSkierEvent());
 			});
+	
+		auto shaderSkier = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+		_meshrendererSkier = std::make_unique<PM3D_API::MeshRenderer>(std::move(shaderSkier), "skier.obj");
+		_chargeurSkier = static_cast<PM3D::FastobjChargeur*>(_meshrendererSkier.get()->getChargeur());
+
+
+		auto shaderlSki = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+		_meshrendererlSki = std::make_unique<PM3D_API::MeshRenderer>(std::move(shaderlSki), "Left_ski.obj");
+		_chargeurlSki = static_cast<PM3D::FastobjChargeur*>(_meshrendererlSki.get()->getChargeur());
+
+		auto shaderrSki = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+		_meshrendererrSki = std::make_unique<PM3D_API::MeshRenderer>(std::move(shaderrSki), "Right_ski.obj");
+		_chargeurrSki = static_cast<PM3D::FastobjChargeur*>(_meshrendererrSki.get()->getChargeur());
 	}
 
 	void Update() override
 	{
 		if (_reSpawn) {
+			_scene = parentObject->GetScene();
 			_current_id = 0;
 			_deletedSkierCount = 0;
 			SkierWave1();
@@ -59,5 +77,15 @@ private:
 	physx::PxU32 _current_id{};
 	physx::PxU32 _deletedSkierCount = 0;
 	bool _reSpawn = true;
+
+	PM3D_API::Scene* _scene; 
+
+	std::unique_ptr<PM3D_API::MeshRenderer> _meshrendererSkier;
+	std::unique_ptr<PM3D_API::MeshRenderer> _meshrendererlSki;
+	std::unique_ptr<PM3D_API::MeshRenderer> _meshrendererrSki;
+
+	PM3D::FastobjChargeur* _chargeurSkier;
+	PM3D::FastobjChargeur* _chargeurlSki;
+	PM3D::FastobjChargeur* _chargeurrSki;
 
 };
