@@ -7,15 +7,16 @@
 #include "Core/Public/Util/util.h"
 #include "GameTest/Shader/SnowShader.h"
 
-#define TEXTURE_SCALE 512
+#define TEXTURE_SCALE 2048
 
 void SnowRenderer::Initialize()
 {
     MeshRenderer::Initialize();
 
     const auto dispositif = PM3D_API::GameHost::GetInstance()->GetDispositif();
-    
-    sparklesTexture = PM3D::CMoteurWindows::GetInstance().GetTextureManager().GetNewTexture(L"sparkles.dds", dispositif);
+
+    sparklesTexture = PM3D::CMoteurWindows::GetInstance().GetTextureManager().
+                                                          GetNewTexture(L"sparkles.dds", dispositif);
 
     const auto pD3DDevice = dispositif->GetD3DDevice();
 
@@ -42,7 +43,7 @@ void SnowRenderer::Initialize()
     sr_desc.Texture2D.MostDetailedMip = 0;
     sr_desc.Texture2D.MipLevels = 1;
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(snowRVT, &sr_desc, &snowRVTResourceView));
-    
+
     textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
     textureDesc.Usage = D3D11_USAGE_STAGING;
     textureDesc.BindFlags = 0;
@@ -61,17 +62,130 @@ void SnowRenderer::Initialize()
 
 void SnowRenderer::DrawSelf() const
 {
+    LogBeginDrawSelf();
+
     DrawRVT();
 
     const auto effect = shader->GetEffect();
-    
-    auto variableTexture = effect->GetVariableByName("snowRVT")->AsShaderResource();
-    PM3D::DXEssayer(variableTexture->SetResource(snowRVTResourceView));
 
-    variableTexture = effect->GetVariableByName("sparkleTexture")->AsShaderResource();
-    PM3D::DXEssayer(variableTexture->SetResource(sparklesTexture->GetD3DTexture()));
+    const auto snowRvtResource = effect->GetVariableByName("snowRVT")->AsShaderResource();
+    PM3D::DXEssayer(snowRvtResource->SetResource(snowRVTResourceView));
 
-    MeshRenderer::DrawSelf();
+    const auto sparkleTexture = effect->GetVariableByName("sparkleTexture")->AsShaderResource();
+    PM3D::DXEssayer(sparkleTexture->SetResource(sparklesTexture->GetD3DTexture()));
+
+    if (!mesh)
+        throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
+
+    const auto scene = parentObject->GetScene();
+    const auto camera = scene->GetMainCamera();
+
+    if (!camera)
+    {
+        throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
+    }
+
+    // Frustrum culling
+    if (!IsVisible())
+    {
+        LogEndDrawSelf();
+        return;
+    }
+
+    // Obtenir le contexte
+    const auto pDispositif = PM3D_API::GameHost::GetInstance()->GetDispositif();
+    ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+
+    // Choisir la topologie des primitives
+    if (tesselate)
+    {
+        pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+    }
+    else
+    {
+        pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    }
+
+    // input layout des sommets
+    pImmediateContext->IASetInputLayout(shader->GetVertexLayout());
+
+    // Index buffer
+    pImmediateContext->IASetIndexBuffer(shader->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+    // Vertex buffer
+    constexpr UINT stride = sizeof(CSommetMesh);
+    constexpr UINT offset = 0;
+    pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
+
+    shader->LoadLights(pImmediateContext, parentObject);
+
+    const XMMATRIX viewProj = camera->GetMatViewProj();
+
+    const auto shaderParameters = shader->PrepareParameters(
+        XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
+        XMMatrixTranspose(parentObject->GetMatWorld())
+    );
+
+    //pDispositif->SetNormalRSState();
+
+    // Dessiner les sous-objets non-transparents
+    for (unsigned int i = 0; i < mesh->group_count; ++i)
+    {
+        const auto objGroup = mesh->groups[i];
+        const unsigned indexStart = objGroup.index_offset;
+
+        unsigned int indexDrawAmount;
+        if (mesh->group_count > 1)
+        {
+            if (i + 1 < mesh->group_count)
+            {
+                indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
+            }
+            else
+            {
+                indexDrawAmount = mesh->index_count - indexStart;
+            }
+        }
+        else
+        {
+            indexDrawAmount = mesh->index_count;
+        }
+
+        if (!indexDrawAmount)
+        {
+            continue;
+        }
+
+        const auto material = Material[SubmeshMaterialIndex[i]];
+
+        shader->ApplyMaterialParameters(
+            shaderParameters,
+            XMLoadFloat4(&material.Ambient),
+            XMLoadFloat4(&material.Diffuse),
+            XMLoadFloat4(&material.Specular),
+            material.Puissance,
+            material.pAlbedoTexture,
+            material.pNormalmapTexture
+        );
+
+        // IMPORTANT pour ajuster les param.
+        shader->GetPass()->Apply(0, pImmediateContext);
+
+        shader->ApplyShaderParams();
+
+        pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
+
+        pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
+    }
+
+    shader->DeleteParameters(shaderParameters);
+
+    snowRvtResource->SetResource(nullptr);
+
+    pImmediateContext->HSSetShader(nullptr, nullptr, 0);
+    pImmediateContext->DSSetShader(nullptr, nullptr, 0);
+
+    LogEndDrawSelf();
 }
 
 void SnowRenderer::DrawRVT() const
@@ -79,16 +193,15 @@ void SnowRenderer::DrawRVT() const
     const auto dispositif = PM3D_API::GameHost::GetInstance()->GetDispositif();
     const auto context = dispositif->GetImmediateContext();
 
-    dispositif->ActiverMelangeAlpha();
-
     // Improvement possible : update fade only every 1/4th frame to save performance
     // Or disable the whole following block if we don't want the snow to fade back
+    /*
     {
         context->CopyResource(stagingTexture, snowRVT);
 
         D3D11_MAPPED_SUBRESOURCE mappedResource;
         PM3D::DXEssayer(context->Map(stagingTexture, 0, D3D11_MAP_READ_WRITE, 0, &mappedResource));
-    
+
         for (int i = 0; i < TEXTURE_SCALE; ++i)
         {
             for (int j = 0; j < TEXTURE_SCALE; ++j)
@@ -109,9 +222,16 @@ void SnowRenderer::DrawRVT() const
 
         context->Unmap(stagingTexture, 0);
         context->CopyResource(snowRVT, stagingTexture);
-    }
+    }*/
 
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    if (tesselate)
+    {
+        context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+    }
+    else
+    {
+        context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    }
 
     // input layout des sommets
     context->IASetInputLayout(shader->GetVertexLayout());
@@ -123,6 +243,9 @@ void SnowRenderer::DrawRVT() const
     constexpr UINT offset = 0;
     context->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
+    context->OMSetRenderTargets(0, nullptr, nullptr);
+    shader->GetPass()->Apply(0, context);
+
     // Bind ID3D11Texture2D as ID3D11RenderTargetView
     ID3D11RenderTargetView* tabRTV[1];
     tabRTV[0] = snowRVTRTV;
@@ -133,16 +256,16 @@ void SnowRenderer::DrawRVT() const
     const auto pos = parentObject->GetWorldPosition();
 
     const XMMATRIX viewProj = XMMatrixLookAtRH(
-        XMVectorSet(pos.x, pos.y + 10.0f, pos.z, 1.0f),
-        XMVectorSet(pos.x, pos.y, pos.z, 1.0f),
+        XMVectorSet(0, 10.0f, -1000.f, 1.0f),
+        XMVectorSet(0, 0, -1000.f, 1.0f),
         XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f)
     ) * XMMatrixOrthographicRH(
-        20,
-        20,
-        0.1f,
-        100.0f
+        2700,
+        2700,
+        1.f,
+        1000.0f
     );
-    
+
     const auto parameters = new SnowShader::SnowShaderParameters{
         XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
         XMMatrixTranspose(parentObject->GetMatWorld()),
@@ -157,17 +280,17 @@ void SnowRenderer::DrawRVT() const
         false,
         true,
     };
-    
+
     const auto effect = shader->GetEffect();
-    
+
     ID3DX11EffectConstantBuffer* pCB = effect->GetConstantBufferByName("param");
     pCB->SetConstantBuffer(shader->GetShaderParametersBuffer());
 
     context->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, parameters, 0, 0);
-    
+
     std::vector<PM3D_API::ShaderLightDefaultParameters> shaderLightsParameters{};
 
-    for (const auto & child : parentObject->GetScene()->GetChildren())
+    for (const auto& child : parentObject->GetScene()->GetChildren())
     {
         if (!child) continue;
 
@@ -180,7 +303,8 @@ void SnowRenderer::DrawRVT() const
         {
             shaderLightsParameters.push_back(PM3D_API::ShaderLightDefaultParameters{
                 XMMatrixIdentity(),
-                XMVectorSet(child->GetWorldPosition().x, child->GetWorldPosition().y + 1.0f, child->GetWorldPosition().z, 1.0f),
+                XMVectorSet(child->GetWorldPosition().x, child->GetWorldPosition().y + 1.0f,
+                            child->GetWorldPosition().z, 1.0f),
                 XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
                 XMVectorSet(0.2f, 0.2f, 0.2f, 1.0f),
                 XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f),
@@ -197,14 +321,14 @@ void SnowRenderer::DrawRVT() const
 
     if (shaderLightsParameters.empty())
     {
-        std::cerr << "No snow mover found" << std::endl;
+        //std::cerr << "No snow mover found" << std::endl;
     }
 
     for (int i = 0; i < 10 - static_cast<int>(shaderLightsParameters.size()); ++i)
     {
         shaderLightsParameters.push_back(PM3D_API::ShaderLightDefaultParameters{});
     }
-    
+
     D3D11_BUFFER_DESC lightParametersBufferDesc;
     ZeroMemory(&lightParametersBufferDesc, sizeof(lightParametersBufferDesc));
     lightParametersBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -212,7 +336,8 @@ void SnowRenderer::DrawRVT() const
     lightParametersBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     lightParametersBufferDesc.StructureByteStride = sizeof(PM3D_API::ShaderLightDefaultParameters);
     lightParametersBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * static_cast<UINT>(shaderLightsParameters.size());
+    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * static_cast<UINT>(
+        shaderLightsParameters.size());
 
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = shaderLightsParameters.data();
@@ -235,17 +360,18 @@ void SnowRenderer::DrawRVT() const
     variableTexture->SetResource(lightSRV);
 
     shader->GetPass()->Apply(0, context);
-    
+
     for (unsigned int i = 0; i < mesh->object_count; ++i)
     {
         const auto [name, face_count, face_offset, index_offset] = mesh->objects[i];
         const unsigned indexStart = index_offset;
-		
+
         unsigned int indexDrawAmount;
         if (mesh->object_count > 1)
         {
             indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
-        } else
+        }
+        else
         {
             indexDrawAmount = mesh->index_count;
         }
@@ -254,7 +380,7 @@ void SnowRenderer::DrawRVT() const
         {
             continue;
         }
-        
+
         context->DrawIndexed(indexDrawAmount, indexStart, 0);
     }
 
@@ -262,9 +388,16 @@ void SnowRenderer::DrawRVT() const
     lightBuffer->Release();
 
     dispositif->ResetViewportDimension();
-    
+
+    ID3D11RenderTargetView* nullRTV = nullptr;
+    context->OMSetRenderTargets(1, &nullRTV, nullptr);
+    shader->GetPass()->Apply(0, context);
+
     tabRTV[0] = dispositif->GetRenderTargetView();
     context->OMSetRenderTargets(1, tabRTV, dispositif->GetDepthStencilView());
 
-    dispositif->DesactiverMelangeAlpha();
+    // Release resources
+    lightSRV->Release();
+    lightBuffer->Release();
+    variableTexture->Release();
 }

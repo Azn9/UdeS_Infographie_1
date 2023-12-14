@@ -2,6 +2,7 @@
 
 #include <any>
 #include <iostream>
+#include <thread>
 
 #include "Core/Public/Util/util.h"
 #include "Core/Public/Util/Resource.h"
@@ -40,7 +41,14 @@ void CDIManipulateur::AcquireFocus()
         if (pClavier->Acquire() != S_OK)
             std::cerr << "Erreur lors de l'acquisition du clavier !" << std::endl;
 
-    //if (pJoystick) pJoystick->Acquire();
+    auto t = std::thread([&]()
+    {
+        while (pDirectInput != nullptr && (!pClavier || pClavier->Acquire() != S_OK))
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+    });
+    t.detach();
 }
 
 bool CDIManipulateur::Init(HINSTANCE hInstance, HWND hWnd)

@@ -2,8 +2,9 @@
 #include <type_traits>
 
 template <typename T, typename U>
-struct IsDerivedFrom {
-	static constexpr bool value = std::is_base_of<T, U>::value;
+struct IsDerivedFrom
+{
+    static constexpr bool value = std::is_base_of<T, U>::value;
 };
 
 template <typename T, typename U>

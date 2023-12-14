@@ -36,7 +36,8 @@ D3D11_INPUT_ELEMENT_DESC snowShaderLayout[] =
 UINT snowShaderNumElements;
 
 SnowShader::SnowShader(
-    const std::wstring& fileName
+    const std::wstring& fileName,
+    const bool tesselate /*= false*/
 ) : Shader(),
     vertexBuffer(nullptr),
     indexBuffer(nullptr),
@@ -44,21 +45,23 @@ SnowShader::SnowShader(
     {
         std::lock_guard<std::mutex> guard{reloadingMutex};
         Sleep(150); // To avoid issues
-        
+
         if (!initialized)
             return;
-        
+
         std::cout << "Reloading shader " << Util::ws2s(fileName) << std::endl;
         Destroy();
 
         Sleep(150); // To avoid issues
-        
+
         Initialize(fileName);
 
         std::cout << "Shader reloaded!" << std::endl;
-    })
+    }),
+    tesselate(tesselate)
 {
     Initialize(fileName);
+    initialized = true;
 }
 
 SnowShader::~SnowShader()
@@ -240,13 +243,17 @@ void SnowShader::Initialize(const std::wstring& wstring)
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
 
     initialized = true;
+
+#ifdef _DEBUG
+    fileWatcher.Run();
+#endif
 }
 
 void SnowShader::Destroy()
 {
     if (!initialized)
         return;
-    
+
     PM3D::DXRelacher(shaderParametersBuffer);
     PM3D::DXRelacher(effect);
     PM3D::DXRelacher(vertexLayout);
@@ -375,9 +382,9 @@ void SnowShader::ApplyMaterialParameters(
                                                       DirectX::XMVectorGetZ(materialDiffuse),
                                                       1.0f);;
     parameters.materialSpecular = DirectX::XMVectorSet(DirectX::XMVectorGetX(materialSpecular) * 0.875f,
-                                                      DirectX::XMVectorGetY(materialSpecular),
-                                                      DirectX::XMVectorGetZ(materialSpecular),
-                                                      1.0f);;
+                                                       DirectX::XMVectorGetY(materialSpecular),
+                                                       DirectX::XMVectorGetZ(materialSpecular),
+                                                       1.0f);;
     parameters.materialSpecularPower = specularPower;
 
     if (albedoTexture == nullptr)
@@ -477,7 +484,7 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
         {
             int remaining = 10 - static_cast<int>(ambiantLights.size());
 
-            if (directionalLights.size() > remaining)  // NOLINT(bugprone-branch-clone)
+            if (directionalLights.size() > remaining) // NOLINT(bugprone-branch-clone)
             {
                 // Adds only the first remaining directional lights
                 std::copy_n(directionalLights.begin(), remaining, finalLights.begin() + ambiantLights.size());
@@ -501,10 +508,11 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
     }
 
     std::vector<PM3D_API::ShaderLightDefaultParameters> shaderLightsParameters{};
-    std::for_each(finalLights.begin(), finalLights.end(), [&shaderLightsParameters, &gameObject](const PM3D_API::Light* light)
-    {
-        shaderLightsParameters.push_back(light->GetShaderLightDefaultParameters(gameObject));
-    });
+    std::for_each(finalLights.begin(), finalLights.end(),
+                  [&shaderLightsParameters, &gameObject](const PM3D_API::Light* light)
+                  {
+                      shaderLightsParameters.push_back(light->GetShaderLightDefaultParameters(gameObject));
+                  });
 
     for (int i = 0; i < 10 - lightCount; ++i)
     {
@@ -518,7 +526,8 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
     lightParametersBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     lightParametersBufferDesc.StructureByteStride = sizeof(PM3D_API::ShaderLightDefaultParameters);
     lightParametersBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * static_cast<UINT>(shaderLightsParameters.size());
+    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * static_cast<UINT>(
+        shaderLightsParameters.size());
 
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = shaderLightsParameters.data();

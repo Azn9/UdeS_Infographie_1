@@ -8,92 +8,114 @@
 class SnowShader final : public PM3D_API::Shader
 {
 public:
-	explicit SnowShader(const std::wstring& fileName);
-	~SnowShader() override;
-	
-	void Initialize(const std::wstring& wstring);
-	void Destroy();
+    explicit SnowShader(const std::wstring& fileName, bool tesselate = false);
+    ~SnowShader() override;
 
-	ID3D11Buffer* GetShaderParametersBuffer() const override;
-	ID3DX11EffectPass* GetPass() const override;
-	ID3D11InputLayout* GetVertexLayout() const override;
-	ID3D11Buffer* GetIndexBuffer() const override;
+    void Initialize(const std::wstring& wstring);
+    void Destroy();
 
-	ID3D11InputLayout* GetShadowVertexLayout() const override;
-	ID3D11Texture2D* GetDepthTexture() const override;
-	ID3D11DepthStencilView* GetDepthStencilView() const override;
-	ID3D11ShaderResourceView* GetDepthShaderResourceView() const override;
+    ID3D11Buffer* GetShaderParametersBuffer() const override;
+    ID3DX11EffectPass* GetPass() const override;
+    ID3D11InputLayout* GetVertexLayout() const override;
+    ID3D11Buffer* GetIndexBuffer() const override;
 
-	ID3DX11Effect* GetEffect() const override;
+    ID3D11InputLayout* GetShadowVertexLayout() const override;
+    ID3D11Texture2D* GetDepthTexture() const override;
+    ID3D11DepthStencilView* GetDepthStencilView() const override;
+    ID3D11ShaderResourceView* GetDepthShaderResourceView() const override;
 
-	ID3D11Buffer** GetVertexBufferPtr() const override;
-	ID3D11Buffer** GetIndexBufferPtr() const override;
+    ID3DX11Effect* GetEffect() const override;
 
-	void LoadLights(
-		ID3D11DeviceContext* context,
-		PM3D_API::GameObject* gameObject
-	) override;
-	
-	void* PrepareParameters(
-		DirectX::XMMATRIX matWorldViewProj,
-		DirectX::XMMATRIX matWorld
-	) override;
+    ID3D11Buffer** GetVertexBufferPtr() const override;
+    ID3D11Buffer** GetIndexBufferPtr() const override;
 
-	void ApplyMaterialParameters(
-		void* shaderParameters,
-		DirectX::XMVECTOR materialAmbiant,
-		DirectX::XMVECTOR materialDiffuse,
-		DirectX::XMVECTOR materialSpecular,
-		float specularPower,
-		ID3D11ShaderResourceView* albedoTexture,
-		ID3D11ShaderResourceView* normalmapTexture
-	) override;
+    void LoadLights(
+        ID3D11DeviceContext* context,
+        PM3D_API::GameObject* gameObject
+    ) override;
 
-	void DeleteParameters(void* shader_parameters) override;
+    void* PrepareParameters(
+        DirectX::XMMATRIX matWorldViewProj,
+        DirectX::XMMATRIX matWorld
+    ) override;
 
-	void ApplyShaderParams() const override;
+    void ApplyMaterialParameters(
+        void* shaderParameters,
+        DirectX::XMVECTOR materialAmbiant,
+        DirectX::XMVECTOR materialDiffuse,
+        DirectX::XMVECTOR materialSpecular,
+        float specularPower,
+        ID3D11ShaderResourceView* albedoTexture,
+        ID3D11ShaderResourceView* normalmapTexture
+    ) override;
 
-	struct SnowShaderParameters
-	{
-		DirectX::XMMATRIX matWorldViewProj;
-		DirectX::XMMATRIX matWorld;
+    void DeleteParameters(void* shader_parameters) override;
 
-		DirectX::XMVECTOR cameraPos;
-		DirectX::XMVECTOR cameraDir;
+    void ApplyShaderParams() const override;
 
-		DirectX::XMVECTOR materialAmbiant;
-		DirectX::XMVECTOR materialDiffuse;
-		DirectX::XMVECTOR materialSpecular;
+    struct SnowShaderParameters
+    {
+        DirectX::XMMATRIX matWorldViewProj;
+        DirectX::XMMATRIX matWorld;
 
-		float materialSpecularPower;
+        DirectX::XMVECTOR cameraPos;
+        DirectX::XMVECTOR cameraDir;
 
-		float fallback;
-		int hasAlbedoTexture;
-		int hasNormalmapTexture;
-		int isPreCompute;
-	};
+        DirectX::XMVECTOR materialAmbiant;
+        DirectX::XMVECTOR materialDiffuse;
+        DirectX::XMVECTOR materialSpecular;
+
+        float materialSpecularPower;
+
+        float fallback;
+        int hasAlbedoTexture;
+        int hasNormalmapTexture;
+        int isPreCompute;
+    };
+
+    ID3D11Buffer* GetVertexBuffer() override
+    {
+        return vertexBuffer;
+    }
+
+    ID3D11Buffer* GetInstanceBuffer() override
+    {
+        return nullptr;
+    }
+
+    ID3D11Buffer** GetInstanceBufferPtr() override
+    {
+        return nullptr;
+    }
+
+    bool IsTesselated() const
+    {
+        return tesselate;
+    }
+
 protected:
-	std::wstring fileName;
+    std::wstring fileName;
 
-	ID3D11Buffer* shaderParametersBuffer;
-	ID3DX11Effect* effect;
-	ID3DX11EffectTechnique* technique;
-	ID3DX11EffectPass* passe;
-	ID3D11InputLayout* vertexLayout;
+    ID3D11Buffer* shaderParametersBuffer;
+    ID3DX11Effect* effect;
+    ID3DX11EffectTechnique* technique;
+    ID3DX11EffectPass* passe;
+    ID3D11InputLayout* vertexLayout;
 
-	ID3D11SamplerState* albedoSampleState;
-	ID3D11SamplerState* normalmapSampleState;
+    ID3D11SamplerState* albedoSampleState;
+    ID3D11SamplerState* normalmapSampleState;
 
-	ID3D11InputLayout* vertexLayoutShadow;
-	ID3D11Texture2D* depthTexture;
-	ID3D11DepthStencilView* depthStencilView;
-	ID3D11ShaderResourceView* depthShaderResourceView;
+    ID3D11InputLayout* vertexLayoutShadow;
+    ID3D11Texture2D* depthTexture;
+    ID3D11DepthStencilView* depthStencilView;
+    ID3D11ShaderResourceView* depthShaderResourceView;
 
-	mutable ID3D11Buffer* vertexBuffer;
-	mutable ID3D11Buffer* indexBuffer;
-	bool initialized;
+    mutable ID3D11Buffer* vertexBuffer;
+    mutable ID3D11Buffer* indexBuffer;
+    bool initialized;
 
 private:
-	PM3D_API::FileWatcher fileWatcher;
-	mutable std::mutex reloadingMutex{};
+    bool tesselate;
+    PM3D_API::FileWatcher fileWatcher;
+    mutable std::mutex reloadingMutex{};
 };

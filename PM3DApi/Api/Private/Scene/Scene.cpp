@@ -14,7 +14,7 @@ PM3D_API::Scene::~Scene()
 
 void PM3D_API::Scene::Initialize()
 {
-	std::cout << "Scene::Initialize()" << std::endl;
+    std::cout << "Scene::Initialize()" << std::endl;
 
 	scene = this;
 
@@ -29,14 +29,14 @@ void PM3D_API::Scene::Initialize()
 
 void PM3D_API::Scene::SetMainCamera(std::unique_ptr<Camera>&& newMainCamera)
 {
-	newMainCamera->SetScene(this);
-	mainCamera = newMainCamera.get();
-	GameObject::AddChild(std::move(newMainCamera));
+    newMainCamera->SetScene(this);
+    mainCamera = newMainCamera.get();
+    GameObject::AddChild(std::move(newMainCamera));
 }
 
 void PM3D_API::Scene::SetMainCamera(Camera* newMainCamera)
 {
-	// Check if newMainCamera is a child of this scene
+    // Check if newMainCamera is a child of this scene
 
 	if (const auto it = std::ranges::find_if(children,
 		[newMainCamera](const std::unique_ptr<GameObject>& child)
@@ -48,7 +48,7 @@ void PM3D_API::Scene::SetMainCamera(Camera* newMainCamera)
 		throw std::runtime_error("newMainCamera is not a child of this scene");
 	}
 
-	mainCamera = newMainCamera;
+    mainCamera = newMainCamera;
 }
 
 void PM3D_API::Scene::SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newPhysicsResolver)
@@ -61,8 +61,8 @@ void PM3D_API::Scene::SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newP
 
 void PM3D_API::Scene::Update()
 {
-	if (isDeleted) return;
-	GameObject::Update();
+    if (isDeleted) return;
+    GameObject::Update();
 }
 
 void PM3D_API::Scene::PhysicsUpdate()
@@ -71,8 +71,8 @@ void PM3D_API::Scene::PhysicsUpdate()
 
 	GameObject::PhysicsUpdate();
 
-	if (physicsEnabled && physicsResolver)
-		physicsResolver->ResolvePhysics();
+    if (physicsEnabled && physicsResolver)
+        physicsResolver->ResolvePhysics();
 }
 
 void PM3D_API::Scene::Draw()
@@ -86,8 +86,8 @@ void PM3D_API::Scene::Draw()
 	
 	GameObject::Draw();
 
-	if (lightsNeedUpdate)
-		lightsNeedUpdate = false;
+    if (lightsNeedUpdate)
+        lightsNeedUpdate = false;
 }
 
 void PM3D_API::Scene::DrawShadow(const Camera& camera)
@@ -104,19 +104,20 @@ void PM3D_API::Scene::DrawSelf() const
 	if (isDeleted) return;
 	GameObject::DrawSelf();
 
-	LogEndDrawSelf();
+    LogEndDrawSelf();
 }
 
 void PM3D_API::Scene::InitializeUI()
 {
-	uiCanvas = std::make_unique<UICanvas>();
-	uiCanvas->Initialize();
+    uiCanvas = std::make_unique<UICanvas>();
+    uiCanvas->scene = this;
+    uiCanvas->Initialize();
 }
 
 void PM3D_API::Scene::AddUiChild(std::unique_ptr<UIObject>&& child) const
 {
-	if (!uiCanvas)
-		throw std::runtime_error("Scene::AddUiChild: uiCanvas is not initialized");
+    if (!uiCanvas)
+        throw std::runtime_error("Scene::AddUiChild: uiCanvas is not initialized");
 
-	uiCanvas->AddChild(std::move(child));
+    uiCanvas->AddChild(std::move(child));
 }
