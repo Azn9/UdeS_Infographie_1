@@ -121,8 +121,6 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 		worldMatrix
 	);
 
-	pDispositif->ActiverMelangeAlpha();
-
 	shader->ApplyMaterialParameters(
 		shaderParameters,
 		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),

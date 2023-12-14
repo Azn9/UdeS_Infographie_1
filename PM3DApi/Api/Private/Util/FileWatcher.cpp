@@ -9,11 +9,8 @@
 PM3D_API::FileWatcher::FileWatcher(
     const std::wstring& pathToWatch,
     const std::function<void()>& onChange
-) : running(true)
-    , path(L"")
-    , fileName(L"")
+) : running(false)
     , onChange(onChange)
-    , thread()
 {
     // Split path into directory and filename
     const std::wstring::size_type pos = pathToWatch.find_last_of(L"\\/");
@@ -29,6 +26,11 @@ PM3D_API::FileWatcher::FileWatcher(
         path = pathToWatch.substr(0, pos);
         fileName = pathToWatch.substr(pos + 1);
     }
+}
+
+void PM3D_API::FileWatcher::Run()
+{
+    if (running) return;
 
     thread = std::thread([this]() { Start(); });
     thread.detach();
@@ -46,6 +48,8 @@ PM3D_API::FileWatcher::~FileWatcher()
 
 void PM3D_API::FileWatcher::Start()
 {
+    running = true;
+    
     HANDLE hDir = CreateFile(path.c_str(), // pointer to the file name
                              FILE_LIST_DIRECTORY, // access (read/write) mode
                              FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, // share mode

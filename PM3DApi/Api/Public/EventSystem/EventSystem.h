@@ -24,7 +24,7 @@ namespace PM3D_API
         struct BaseWrapper
         {
             virtual ~BaseWrapper() = default;
-            
+
             struct id
             {
             private:
@@ -53,10 +53,11 @@ namespace PM3D_API
             };
 
             [[nodiscard]] virtual const id& getId() const = 0;
-            virtual void apply(const std::conditional_t<false, const long, std::function<void(const PM3D_API::Event&)>>& function) = 0;
+            virtual void apply(
+                const std::conditional_t<false, const long, std::function<void(const PM3D_API::Event&)>>& function) = 0;
         };
 
-        template <class E, template_extends<Event, E>  = 0>
+        template <class E, template_extends<Event, E> = 0>
         class EventWrapper final : public BaseWrapper
         {
         public:
@@ -69,11 +70,12 @@ namespace PM3D_API
 
             E& get() { return event; }
 
-            void apply(const std::conditional_t<false, const long, std::function<void(const Event&)>>& function) override
+            void apply(
+                const std::conditional_t<false, const long, std::function<void(const Event&)>>& function) override
             {
                 function(event);
             }
-            
+
         private:
             E event;
         };
@@ -133,19 +135,19 @@ namespace PM3D_API
             }
         }
 
-        template <class T, template_extends<Event, T>  = 0>
+        template <class T, template_extends<Event, T> = 0>
         void publish(T&& event)
         {
             eventsToProcess.push_back(std::make_unique<EventWrapper<T>>(std::forward<T>(event)));
         }
 
-        template <class T, template_extends<PhysicEvent, T>  = 0>
+        template <class T, template_extends<PhysicEvent, T> = 0>
         void publish(T&& event)
         {
             physicsEventsToProcess.push_back(std::make_unique<EventWrapper<T>>(std::forward<T>(event)));
         }
 
-        template <class T, template_extends<Event, T>  = 0>
+        template <class T, template_extends<Event, T> = 0>
         long subscribe(const std::function<void(const T&)>& listener)
         {
             long id = generateId();
@@ -172,11 +174,11 @@ namespace PM3D_API
             return id;
         }
 
-        template <class T, template_extends<Event, T>  = 0>
+        template <class T, template_extends<Event, T> = 0>
         void unsubscribe(const long& listenerId)
         {
             const auto eventId = EventWrapper<T>::id.get();
-            
+
             if (!listeners.contains(eventId)) return;
 
             auto& map = listeners[eventId];
@@ -191,19 +193,19 @@ namespace PM3D_API
             }
         }
 
-        template <class T, template_extends<Event, T>  = 0>
+        template <class T, template_extends<Event, T> = 0>
         static void Publish(T&& event)
         {
             GetInstance().publish(std::forward<T>(event));
         }
 
-        template <class T, template_extends<PhysicEvent, T>  = 0>
+        template <class T, template_extends<PhysicEvent, T> = 0>
         static void Publish(T&& event)
         {
             GetInstance().publish(std::forward<T>(event));
         }
 
-        template <class T, template_extends<Event, T>  = 0>
+        template <class T, template_extends<Event, T> = 0>
         static long Subscribe(const std::function<void(const T&)>& listener)
         {
             return GetInstance().subscribe(listener);
@@ -216,7 +218,7 @@ namespace PM3D_API
             return GetInstance().subscribe(std::function(std::forward<F>(listener)));
         }
 
-        template <class T, template_extends<Event, T>  = 0>
+        template <class T, template_extends<Event, T> = 0>
         static void Unsubscribe(const long& listenerId)
         {
             GetInstance().unsubscribe<T>(listenerId);
@@ -231,7 +233,7 @@ namespace PM3D_API
 
         long generateId()
         {
-            // Pour éviter que deux threads génèrent le même id
+            // Pour Ã©viter que deux threads gÃ©nÃ¨rent le mÃªme id
             std::lock_guard guard{idMutex};
             return nextId++;
         }

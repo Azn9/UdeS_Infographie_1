@@ -3,5 +3,6 @@
 
 class RestartEvent : public PM3D_API::Event
 {
-
+public:
+    RestartEvent() = default;
 };

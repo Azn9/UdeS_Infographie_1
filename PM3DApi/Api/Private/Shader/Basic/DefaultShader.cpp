@@ -241,11 +241,14 @@ void PM3D_API::DefaultShader::Initialize(const std::wstring& wstring)
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
 
     initialized = true;
+
+#ifdef _DEBUG
+    fileWatcher.Run();
+#endif
 }
 
 void PM3D_API::DefaultShader::Destroy()
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
     if (!initialized)
         return;
 

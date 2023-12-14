@@ -15,74 +15,59 @@ using namespace PM3D;
 using namespace PM3D_API;
 
 int APIENTRY _tWinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPTSTR lpCmdLine,
-	int nCmdShow)
+    HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    LPTSTR lpCmdLine,
+    int nCmdShow)
 {
-	// Pour ne pas avoir d'avertissement
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
-	UNREFERENCED_PARAMETER(nCmdShow);
-	
-	std::cout << "A" << std::endl;
+    // Pour ne pas avoir d'avertissement
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
 
-	const auto gameHost = GameHost::GetInstance();
-	gameHost->Initialize();
+    const auto gameHost = GameHost::GetInstance();
+    gameHost->Initialize();
 
-	std::cout << "B" << std::endl;
+    try
+    {
+        // Cr�ation de l'objet Moteur
+        CMoteurWindows& rMoteur = CMoteurWindows::GetInstance();
 
-	try
-	{
-		// Cr�ation de l'objet Moteur
-		CMoteurWindows& rMoteur = CMoteurWindows::GetInstance();
+        rMoteur.SetGameHost(gameHost);
 
-		std::cout << "C" << std::endl;
-		
-		rMoteur.SetGameHost(gameHost);
+        // Sp�cifiques � une application Windows
+        rMoteur.SetWindowsAppInstance(hInstance);
 
-		std::cout << "D" << std::endl;
-		
-		// Sp�cifiques � une application Windows
-		rMoteur.SetWindowsAppInstance(hInstance);
-
-		std::cout << "E" << std::endl;
-
-		// Initialisation du moteur
-		rMoteur.Initialisations();
+        // Initialisation du moteur
+        rMoteur.Initialisations();
 
 		gameHost->InitializePostProcessParam();
+		
+        // Boucle d'application
+        rMoteur.Run();
 
-		std::cout << "F" << std::endl;
+        return (int)1;
+    }
 
-		// Boucle d'application
-		rMoteur.Run();
+    catch (const std::exception& E)
+    {
+        const int BufferSize = 128;
+        wchar_t message[BufferSize];
 
-		std::cout << "G" << std::endl;
+        size_t numCharacterConverted;
+        mbstowcs_s(&numCharacterConverted, message, E.what(), BufferSize - 1);
+        ::MessageBox(nullptr, message, L"Erreur", MB_ICONWARNING);
 
-		return (int)1;
-	}
+        return (int)99;
+    }
 
-	catch (const std::exception& E)
-	{
-		const int BufferSize = 128;
-		wchar_t message[BufferSize];
+    catch (int codeErreur)
+    {
+        wchar_t szErrMsg[MAX_LOADSTRING]; // Un message d'erreur selon le code
 
-		size_t numCharacterConverted;
-		mbstowcs_s(&numCharacterConverted, message, E.what(), BufferSize - 1);
-		::MessageBox(nullptr, message, L"Erreur", MB_ICONWARNING);
+        ::LoadString(hInstance, codeErreur, szErrMsg, MAX_LOADSTRING);
+        ::MessageBox(nullptr, szErrMsg, L"Erreur", MB_ICONWARNING);
 
-		return (int)99;
-	}
-
-	catch (int codeErreur)
-	{
-		wchar_t szErrMsg[MAX_LOADSTRING]; // Un message d'erreur selon le code
-
-		::LoadString(hInstance, codeErreur, szErrMsg, MAX_LOADSTRING);
-		::MessageBox(nullptr, szErrMsg, L"Erreur", MB_ICONWARNING);
-
-		return (int)99; // POURQUOI 99???
-	}
-
+        return (int)99; // POURQUOI 99???
+    }
 }

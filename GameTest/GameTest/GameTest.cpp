@@ -3,16 +3,17 @@
 #include "Core/Public/Core/Moteur.h"
 #include "Core/Public/Texture/Texture.h"
 #include "Scenes/LoadingScene.h"
+#include "_NEW_UI_TEST/NewUIScene.h"
 
 PM3D_API::GameHost* PM3D_API::GameHost::GetInstance()
 {
-	static GameTest instance;
-	return &instance;
+    static GameTest instance;
+    return &instance;
 }
 
 void GameTest::Initialize()
 {
-	SetScene(LoadingScene::GetInstancePtr());
+    SetScene(LoadingScene::GetInstancePtr());
 }
 
 void GameTest::InitializePostProcessParam() const
