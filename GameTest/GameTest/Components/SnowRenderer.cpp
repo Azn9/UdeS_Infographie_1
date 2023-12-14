@@ -7,7 +7,7 @@
 #include "Core/Public/Util/util.h"
 #include "GameTest/Shader/SnowShader.h"
 
-#define TEXTURE_SCALE 512
+#define TEXTURE_SCALE 2048
 
 void SnowRenderer::Initialize()
 {
@@ -62,6 +62,8 @@ void SnowRenderer::Initialize()
 
 void SnowRenderer::DrawSelf() const
 {
+    LogBeginDrawSelf();
+
     DrawRVT();
 
     const auto effect = shader->GetEffect();
@@ -72,9 +74,118 @@ void SnowRenderer::DrawSelf() const
     const auto sparkleTexture = effect->GetVariableByName("sparkleTexture")->AsShaderResource();
     PM3D::DXEssayer(sparkleTexture->SetResource(sparklesTexture->GetD3DTexture()));
 
-    MeshRenderer::DrawSelf();
+    if (!mesh)
+        throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
+
+    const auto scene = parentObject->GetScene();
+    const auto camera = scene->GetMainCamera();
+
+    if (!camera)
+    {
+        throw std::runtime_error("MeshRenderer::DrawSelf: camera is null");
+    }
+
+    // Frustrum culling
+    if (!IsVisible())
+    {
+        LogEndDrawSelf();
+        return;
+    }
+
+    // Obtenir le contexte
+    const auto pDispositif = PM3D_API::GameHost::GetInstance()->GetDispositif();
+    ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+
+    // Choisir la topologie des primitives
+    if (tesselate)
+    {
+        pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+    }
+    else
+    {
+        pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    }
+
+    // input layout des sommets
+    pImmediateContext->IASetInputLayout(shader->GetVertexLayout());
+
+    // Index buffer
+    pImmediateContext->IASetIndexBuffer(shader->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+    // Vertex buffer
+    constexpr UINT stride = sizeof(CSommetMesh);
+    constexpr UINT offset = 0;
+    pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
+
+    shader->LoadLights(pImmediateContext, parentObject);
+
+    const XMMATRIX viewProj = camera->GetMatViewProj();
+
+    const auto shaderParameters = shader->PrepareParameters(
+        XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
+        XMMatrixTranspose(parentObject->GetMatWorld())
+    );
+
+    //pDispositif->SetNormalRSState();
+
+    // Dessiner les sous-objets non-transparents
+    for (unsigned int i = 0; i < mesh->group_count; ++i)
+    {
+        const auto objGroup = mesh->groups[i];
+        const unsigned indexStart = objGroup.index_offset;
+
+        unsigned int indexDrawAmount;
+        if (mesh->group_count > 1)
+        {
+            if (i + 1 < mesh->group_count)
+            {
+                indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
+            }
+            else
+            {
+                indexDrawAmount = mesh->index_count - indexStart;
+            }
+        }
+        else
+        {
+            indexDrawAmount = mesh->index_count;
+        }
+
+        if (!indexDrawAmount)
+        {
+            continue;
+        }
+
+        const auto material = Material[SubmeshMaterialIndex[i]];
+
+        shader->ApplyMaterialParameters(
+            shaderParameters,
+            XMLoadFloat4(&material.Ambient),
+            XMLoadFloat4(&material.Diffuse),
+            XMLoadFloat4(&material.Specular),
+            material.Puissance,
+            material.pAlbedoTexture,
+            material.pNormalmapTexture
+        );
+
+        // IMPORTANT pour ajuster les param.
+        shader->GetPass()->Apply(0, pImmediateContext);
+
+        shader->ApplyShaderParams();
+
+        pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
+
+        pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
+    }
+
+    shader->DeleteParameters(shaderParameters);
 
     snowRvtResource->SetResource(nullptr);
+
+    pImmediateContext->HSSetShader(nullptr, nullptr, 0);
+    pImmediateContext->DSSetShader(nullptr, nullptr, 0);
+
+    LogEndDrawSelf();
 }
 
 void SnowRenderer::DrawRVT() const
@@ -84,6 +195,7 @@ void SnowRenderer::DrawRVT() const
 
     // Improvement possible : update fade only every 1/4th frame to save performance
     // Or disable the whole following block if we don't want the snow to fade back
+    /*
     {
         context->CopyResource(stagingTexture, snowRVT);
 
@@ -110,9 +222,16 @@ void SnowRenderer::DrawRVT() const
 
         context->Unmap(stagingTexture, 0);
         context->CopyResource(snowRVT, stagingTexture);
-    }
+    }*/
 
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    if (tesselate)
+    {
+        context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+    }
+    else
+    {
+        context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    }
 
     // input layout des sommets
     context->IASetInputLayout(shader->GetVertexLayout());
@@ -137,14 +256,14 @@ void SnowRenderer::DrawRVT() const
     const auto pos = parentObject->GetWorldPosition();
 
     const XMMATRIX viewProj = XMMatrixLookAtRH(
-        XMVectorSet(pos.x, pos.y + 10.0f, pos.z, 1.0f),
-        XMVectorSet(pos.x, pos.y, pos.z, 1.0f),
+        XMVectorSet(0, 10.0f, -1000.f, 1.0f),
+        XMVectorSet(0, 0, -1000.f, 1.0f),
         XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f)
     ) * XMMatrixOrthographicRH(
-        20,
-        20,
-        0.1f,
-        100.0f
+        2700,
+        2700,
+        1.f,
+        1000.0f
     );
 
     const auto parameters = new SnowShader::SnowShaderParameters{

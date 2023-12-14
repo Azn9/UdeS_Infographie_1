@@ -5,6 +5,7 @@
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "Api/Public/Component/Basic/Render/3D/InstancedMeshRenderer.h"
 #include "Api/Public/Shader/Basic/DefaultShaderInstanced.h"
+#include "GameTest/Components/SnowRenderer.h"
 
 Map::Map() : GameObject("World"), mapImporter("Map/map_data.json")
 {
@@ -12,9 +13,20 @@ Map::Map() : GameObject("World"), mapImporter("Map/map_data.json")
 
 void Map::Initialize()
 {
+    /*
     auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>(
         std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx"),
         "Map/map.obj"
+    );
+    const auto meshRendererPtr = meshRenderer.get();
+    AddComponent(std::move(meshRenderer));
+    meshRendererPtr->Initialize();
+    */
+    auto meshRenderer = std::make_unique<SnowRenderer>(
+        //std::make_unique<SnowShader>(L"shader/SnowShader_tesselate.fx", true),
+        std::make_unique<SnowShader>(L"shader/SnowShader.fx"),
+        "Map/map.obj",
+        false
     );
     const auto meshRendererPtr = meshRenderer.get();
     AddComponent(std::move(meshRenderer));
@@ -26,7 +38,8 @@ void Map::Initialize()
     mapRigidbodyPtr->Initialize();
 
     auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(
-        parent->GetScene()->GetPhysicsResolver()->GetDefaultMaterial()
+        parent->GetScene()->GetPhysicsResolver()->GetDefaultMaterial(),
+        meshRendererPtr->getChargeur()
     );
     const auto meshColliderPtr = meshCollider.get();
     AddComponent(std::move(meshCollider));

@@ -18,6 +18,7 @@
 
 #include "GameTest/Components/MovableComponent.h"
 #include "GameTest/Components/SizeModifierComponent.h"
+#include "GameTest/Components/WalkSoundComponent.h"
 #include "GameTest/UI/GameUI.h"
 #include "GameTest/Objects/MainScene/Map.h"
 
@@ -77,14 +78,14 @@ void MainScene::InitializeObjects()
     objectsMeshColliderPtr->Initialize();
 
     // ============= Add the map =============
-    
-        auto map = std::make_unique<Map>();
-        const auto mapPtr = map.get();
-        AddChild(std::move(map));
 
-        
-        mapPtr->Initialize();
-    
+    auto map = std::make_unique<Map>();
+    const auto mapPtr = map.get();
+    AddChild(std::move(map));
+
+
+    mapPtr->Initialize();
+
 
     // ============= Add a sphere =============
     {
@@ -116,6 +117,11 @@ void MainScene::InitializeObjects()
 
         spherePtr->AddComponent(std::make_unique<MovableComponent>());
 
+        auto walkSoundComponent = std::make_unique<WalkSoundComponent>();
+        const auto walkSoundComponentPtr = walkSoundComponent.get();
+        spherePtr->AddComponent(std::move(walkSoundComponent));
+        walkSoundComponentPtr->Initialize();
+
         auto cameraRealFP = std::make_unique<PM3D_API::Camera>(
             "Camera RFP",
             PM3D_API::Camera::PERSPECTIVE,
@@ -127,7 +133,6 @@ void MainScene::InitializeObjects()
         cameraRealFP->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
 
         spherePtr->AddChild(std::move(cameraRealFP));
-    
     }
 }
 

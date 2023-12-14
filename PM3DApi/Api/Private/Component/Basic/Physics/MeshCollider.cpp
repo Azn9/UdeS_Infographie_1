@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+class SnowRenderer;
 using namespace physx;
 
 void PM3D_API::MeshCollider::Initialize()
@@ -17,14 +18,22 @@ void PM3D_API::MeshCollider::Initialize()
 
     const auto worldScale = parentObject->GetWorldScale();
 
-    const auto meshRenderer = parentObject->GetComponent<MeshRenderer>();
-
-    if (!meshRenderer)
+    if (!chargeur)
     {
-        throw std::runtime_error("MeshCollider::Initialize - No mesh renderer on the parent object");
-    }
+        const auto meshRenderer = parentObject->GetComponent<MeshRenderer>();
 
-    PM3D::FastobjChargeur* chargeur = static_cast<PM3D::FastobjChargeur*>(meshRenderer->getChargeur());
+        if (!meshRenderer)
+        {
+            throw std::runtime_error("MeshCollider::Initialize - No mesh renderer on the parent object");
+        }
+
+        chargeur = meshRenderer->getChargeur();
+
+        if (!chargeur)
+        {
+            throw std::runtime_error("MeshCollider::Initialize - No chargeur on the mesh renderer");
+        }
+    }
 
     std::vector<XMFLOAT3> verts = chargeur->getPositionArray();
 

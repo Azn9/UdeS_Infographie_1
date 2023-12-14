@@ -74,6 +74,7 @@ float snoise01(float2 v) {
 
 
 
+
 #define EPSILON 0.000001
 struct Light {
 	float4x4 matWorldViewProj;
@@ -100,7 +101,7 @@ struct Light {
 cbuffer param
 {
     float4x4 matWorldViewProj; // la matrice totale 
-    float4x4 matViewProj; // la matrice totale 
+	//float4x4 matViewProj; // la matrice totale 
     float4x4 matWorld; // matrice de transformation dans le monde
     float4 vCamera; // la position de la caméra
     float4 dCamera; // La direction de la caméra
@@ -109,8 +110,11 @@ cbuffer param
     float4 vSMat; // la valeur spéculaire du matériau
     float Ns; // la puissance de spécularité
     
-    int hasAlbedoTexture; // Booléen pour la présence de texture
-    int hasNormalmapTexture;
+	float fallback;
+	
+    bool hasAlbedoTexture; // Booléen pour la présence de texture
+    bool hasNormalmapTexture;
+	bool isPreCompute;
 };
 
 #define MAX_LIGHTS 10
@@ -127,19 +131,32 @@ SamplerState ShadowMapSampler
 	AddressV = Clamp;
 };
 
+Texture2D snowRVT;
+SamplerState snowRVTSampler
+{
+	Filter = MIN_MAG_MIP_POINT;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+
+Texture2D sparkleTexture;
+SamplerState sparkleTextureSampler
+{
+	Filter = MIN_MAG_MIP_POINT;
+	AddressU = Wrap;
+	AddressV = Wrap;
+};
+
 Texture2D normalMap;
 SamplerState SampleStateNormalMap;
 
 struct VS_Sortie
 {
-	float4 position  : Position;
+	float4 position  : SV_Position;
 	float3 normal    : NORMAL;
     float3 binormal  : BINORMAL;
     float3 tangent   : TANGENT;
-	float3 cameraVec : TEXCOORD0;
-	float2 coordTex  : TEXCOORD1;
-	float3 worldPos  : TEXCOORD2;
-	float3 cameraDir : TEXCOORD3;
+	float2 coordTex  : TEXCOORD0;
 };
 
 VS_Sortie MainVS(
@@ -151,97 +168,48 @@ VS_Sortie MainVS(
 ) {
     VS_Sortie output;
 
-    output.normal = mul(float4(vNormal, 0.0f), matWorld);
-    output.binormal = mul(float4(vBiNormal, 0.0f), matWorld);
-    output.tangent = mul(float4(vTangent, 0.0f), matWorld);
-
-
-    /*ANCHOR
-    float noiseV = snoise01(vPos.xz * 2.0f);
-    vPos.y = vPos.y + noiseV * 1;
-
-    output.noiseValue = noiseV;
-    */
-
-    output.position = mul(vPos, matWorldViewProj);
-    output.worldPos = mul(vPos, matWorld);
-
-    //output.worldPos = float3(worldPos.x, worldPos.y + noiseV, worldPos.z);
-
+	output.position = vPos;
+    output.normal = vNormal;
+    output.binormal = vBiNormal;
+    output.tangent = vTangent;
     output.coordTex = coordTex;
-
-    output.cameraVec = vCamera.xyz - output.worldPos;
-    output.cameraDir = dCamera.xyz;
-
-    /*ANCHOR
-	float4 PosInMaps[MAX_LIGHTS];
-
-	for (uint i = 0; i < MAX_LIGHTS; ++i) {
-		Light li = lights[i];
-		
-		if (!li.initialized) continue;
-		
-		float4 tempValue = mul(vPos, li.matWorldViewProj);
-		PosInMaps[i] = tempValue;
-	}
-
-	output.PosInMap = PosInMaps;
-    */
 
 	return output;
 }
 
 struct HS_CONSTANTES_Sortie
 {
-    float edgeTesselationFactor[4]   : SV_TessFactor;
-    float insideTesselationFactor[2] : SV_InsideTessFactor;
+    float edgeTesselationFactor[3]   : SV_TessFactor;
+    float insideTesselationFactor    : SV_InsideTessFactor;
 };
 
-struct HS_Sortie
-{
-	float4 position  : Position;
-	float3 normal    : NORMAL;
-    float3 binormal  : BINORMAL;
-    float3 tangent   : TANGENT;
-	float3 cameraVec : TEXCOORD0;
-	float2 coordTex  : TEXCOORD1;
-	float3 worldPos  : TEXCOORD2;
-	float3 cameraDir : TEXCOORD3;
-};
+#define TessellationFactor 32
 
-#define TessellationFactor 1
-
-HS_CONSTANTES_Sortie ConstantHS(InputPatch<VS_Sortie, 4> ip, uint PatchID :SV_PrimitiveID)
+HS_CONSTANTES_Sortie ConstantHS(InputPatch<VS_Sortie, 3> ip, uint PatchID :SV_PrimitiveID)
 {
     HS_CONSTANTES_Sortie Sortie;
     
     Sortie.edgeTesselationFactor[0] = 
     Sortie.edgeTesselationFactor[1] = 
-    Sortie.edgeTesselationFactor[2] = 
-    Sortie.edgeTesselationFactor[3] = TessellationFactor;
-
-    Sortie.insideTesselationFactor[0] = 
-    Sortie.insideTesselationFactor[1] = TessellationFactor;
+    Sortie.edgeTesselationFactor[2] = TessellationFactor;
+    Sortie.insideTesselationFactor = TessellationFactor;
 
     return Sortie;
 }
 
-[domain("quad")]
-[partitioning("integer")]
-[outputtopology("triangle_ccw")]
-[outputcontrolpoints(4)]
+[domain("tri")]
+[partitioning("fractional_odd")]
+[outputtopology("triangle_cw")]
+[outputcontrolpoints(3)]
 [patchconstantfunc("ConstantHS")]
-HS_Sortie EssaiHS( InputPatch<VS_Sortie, 4> p, uint i : SV_OutputControlPointID, uint PatchID : SV_PrimitiveID )
+VS_Sortie EssaiHS( InputPatch<VS_Sortie, 3> p, uint i : SV_OutputControlPointID)
 {
-    HS_Sortie Sortie;
+    VS_Sortie Sortie;
     
     Sortie.position = p[i].position;
     Sortie.normal = p[i].normal;
     Sortie.binormal = p[i].binormal;
     Sortie.tangent = p[i].tangent;
-    Sortie.cameraDir = p[i].cameraDir;
-    Sortie.cameraVec = p[i].cameraVec;
-    Sortie.worldPos = p[i].worldPos;
     Sortie.coordTex = p[i].coordTex;
 
     return Sortie;
@@ -249,33 +217,107 @@ HS_Sortie EssaiHS( InputPatch<VS_Sortie, 4> p, uint i : SV_OutputControlPointID,
 
 struct DS_Sortie
 {
-	float4 position  : Position;
+	float4 position  : SV_Position;
 	float3 normal    : NORMAL;
     float3 binormal  : BINORMAL;
     float3 tangent   : TANGENT;
 	float3 cameraVec : TEXCOORD0;
 	float2 coordTex  : TEXCOORD1;
-	float3 worldPos  : TEXCOORD2;
-	float3 cameraDir : TEXCOORD3;
+	float3 worldPos  : TEXCOORD2;	
+	float  noiseValue : TEXCOORD4;
+	float  pathValue : TEXCOORD5;
+	float4 PosInMap[MAX_LIGHTS] : TEXCOORD6;
 };
 
-[domain("quad")]
-DS_Sortie EssaiDS( HS_CONSTANTES_Sortie entree, float2 UV : SV_DomainLocation, const OutputPatch<HS_Sortie, 4> quad ) 
+float4 BarycentricInterpolate(float4 v0, float4 v1, float4 v2, float3 barycentricCoords) {
+    // Interpolate the position using barycentric coordinates
+    float4 finalPos = v0 * barycentricCoords.x + v1 * barycentricCoords.y + v2 * barycentricCoords.z;
+
+    return finalPos;
+}
+
+float2 BarycentricInterpolate(float2 texCoord0, float2 texCoord1, float2 texCoord2, float3 barycentricCoords) {
+    // Interpolate the texture coordinates using barycentric coordinates
+    float2 finalTexCoord = texCoord0 * barycentricCoords.x +
+                           texCoord1 * barycentricCoords.y +
+                           texCoord2 * barycentricCoords.z;
+
+    return finalTexCoord;
+}
+
+[domain("tri")]
+DS_Sortie EssaiDS( HS_CONSTANTES_Sortie entree, float3 UV : SV_DomainLocation, const OutputPatch<VS_Sortie, 3> quad ) 
 {
     DS_Sortie Sortie;
     
+	float4 finalPos = BarycentricInterpolate(quad[0].position, quad[1].position, quad[2].position, UV);
+
+/*
     float3 verticalPos1 = lerp(quad[0].position, quad[1].position, UV.y);
     float3 verticalPos2 = lerp(quad[3].position, quad[2].position, UV.y);
     float3 finalPos = lerp(verticalPos1, verticalPos2, UV.x);
+*/
+
+	// Calculate the normal
+    // Interpolating normals from the control points
+	/*
+    float3 normal1 = lerp(quad[0].normal, quad[1].normal, UV.y);
+    float3 normal2 = lerp(quad[3].normal, quad[2].normal, UV.y);
+    float3 interpolatedNormal = lerp(normal1, normal2, UV.x);
+*/
+
+	float4 interpolatedNormal = BarycentricInterpolate(float4(quad[0].normal, 0), float4(quad[1].normal, 0), float4(quad[2].normal, 0), UV);
+	float4 interpolatedBiNormal = BarycentricInterpolate(float4(quad[0].binormal, 0), float4(quad[1].binormal, 0), float4(quad[2].binormal, 0), UV);
+	float4 interpolatedTangent = BarycentricInterpolate(float4(quad[0].tangent, 0), float4(quad[1].tangent, 0), float4(quad[2].tangent, 0), UV);
+
+    // Normalize the interpolated normal
+    Sortie.normal = normalize(interpolatedNormal);
+	Sortie.binormal = normalize(interpolatedBiNormal);
+	Sortie.tangent = normalize(interpolatedTangent);
     
-    Sortie.position = mul(float4(finalPos, 1), matViewProj);
-    
-    float3 coordTex1 = lerp(quad[0].coordTex,quad[1].coordTex,UV.y);
-    float3 coordTex2 = lerp(quad[3].coordTex,quad[2].coordTex,UV.y);
-    Sortie.coordTex = lerp(coordTex1, coordTex2,UV.x);
+	/*
+    float2 coordTex1 = lerp(quad[0].coordTex,quad[1].coordTex,UV);
+    float2 coordTex2 = lerp(quad[3].coordTex,quad[2].coordTex,UV);
+	float2 finalCoordTex = lerp(coordTex1, coordTex2,UV);
+    Sortie.coordTex = finalCoordTex;
+	*/
+
+	float2 finalCoordTex = BarycentricInterpolate(quad[0].coordTex, quad[1].coordTex, quad[2].coordTex, UV);
+	Sortie.coordTex = finalCoordTex;
+
+	if (!isPreCompute) {
+    	float noiseV = snoise01(finalPos.xz * 4.0f);
+		float pathV = snowRVT.SampleLevel(snowRVTSampler, finalCoordTex, 0).r;
+
+		finalPos.y = max(finalPos.y, finalPos.y + 2 * noiseV * (1-pathV) - pathV);
+		Sortie.noiseValue = noiseV;
+		Sortie.pathValue = pathV;
+	} else {
+		Sortie.noiseValue = 0.f;
+		Sortie.pathValue = 0.f;
+	}
+
+	Sortie.position = mul(finalPos, matWorldViewProj);
+	Sortie.worldPos = mul(finalPos, matWorld);
+
+	float4 PosInMaps[MAX_LIGHTS];
+
+	for (uint i = 0; i < MAX_LIGHTS; ++i) {
+		Light li = lights[i];
+		
+		if (!li.initialized) continue;
+		
+		float4 tempValue = mul(finalPos, li.matWorldViewProj);
+		PosInMaps[i] = tempValue;
+	}
+
+	Sortie.PosInMap = PosInMaps;
+
+	Sortie.cameraVec = vCamera.xyz - Sortie.worldPos;
     
     return Sortie;
 }
+
 
 
 
@@ -346,6 +388,10 @@ float4 MainPS(DS_Sortie input) : SV_Target
             float D = length(li.position.xyz - input.worldPos);
             float attenuation = (1 / D) * li.specularPower;
             //float attenuation = (1 / (D * D)) * li.intensity;
+
+			if (isPreCompute) {
+				attenuation *= 0.6;
+			}
 
             totalAmbiant += li.ambiant * attenuation;
             totalDiffuse += li.diffuse * diffuseValue * attenuation;
@@ -427,21 +473,62 @@ float4 MainPS(DS_Sortie input) : SV_Target
     }
 
     float noiseV = (input.noiseValue + 0.7f) / 1.7f;
+	float pathV = (input.pathValue + 0.7f) / 1.7f;
 
-	float3 finalColor = couleurTexture.rgb * 
-        (totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb)
-        * noiseV;        ;
+	float3 finalColor;
 
-	return float4(finalColor, 1.0f);
+	if (isPreCompute)
+	{
+		finalColor = couleurTexture.rgb * 
+			(totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb);
+
+		if (finalColor.r > 0.9) {
+			return float4(finalColor, 1.0);
+		} else {
+			return float4(finalColor, finalColor.r/20);
+		}
+	}
+	else
+	{
+		#define sparkleScale 50.0f
+		#define sparkleCutoffValue 0.99f
+
+		// Sample sparkle texture
+		float sparkleValue = sparkleTexture.Sample(sparkleTextureSampler, input.coordTex * sparkleScale).r;
+		float sparkleCutoff = step(sparkleCutoffValue, sparkleValue);
+
+		finalColor = couleurTexture.rgb * 
+			(totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb)
+			* (noiseV * (1-pathV)) 
+			+ (1-pathV) * float3(0.95f, 0.98f, 0.99f)
+			+ sparkleCutoff * saturate(1- (pathV * 2)) * 4;
+
+		if (pathV > 0.3f) {
+			finalColor += pathV * float3(0.45f, 0.98f, 0.99f);
+
+			finalColor /= 1.2f;
+			//finalColor = saturate(finalColor);
+		}
+
+		return float4(finalColor, 1.0f);
+	}
 }
 
 technique11 NewShader
 {
 	pass pass0
 	{
+        SetVertexShader(CompileShader(vs_5_0, MainVS()));
+        SetHullShader(CompileShader(hs_5_0, EssaiHS()));
+        SetDomainShader(CompileShader(ds_5_0, EssaiDS()));
+        SetPixelShader(CompileShader(ps_5_0, MainPS()));
+        SetGeometryShader(NULL); // Only if you're using a geometry shader
+
+		/*
 		SetVertexShader(CompileShader(vs_5_0, MainVS()));
 		SetPixelShader(CompileShader(ps_5_0, MainPS()));
 		SetGeometryShader(NULL);
+		*/
 	}
 }
 

@@ -196,7 +196,8 @@ void Input::SetMousePosition(const int x, const int y)
     mouseX = x;
     mouseY = y;
 
-    PM3D_API::GameHost::GetInstance()->GetScene()->GetUICanvas()->UpdateHover(x, y);
+    if (const auto canvas = PM3D_API::GameHost::GetInstance()->GetScene()->GetUICanvas())
+        canvas->UpdateHover(x, y);
 }
 
 void Input::SetMouseLeftPressed(const bool cond)

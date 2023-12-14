@@ -8,7 +8,7 @@
 class SnowShader final : public PM3D_API::Shader
 {
 public:
-    explicit SnowShader(const std::wstring& fileName);
+    explicit SnowShader(const std::wstring& fileName, bool tesselate = false);
     ~SnowShader() override;
 
     void Initialize(const std::wstring& wstring);
@@ -88,6 +88,11 @@ public:
         return nullptr;
     }
 
+    bool IsTesselated() const
+    {
+        return tesselate;
+    }
+
 protected:
     std::wstring fileName;
 
@@ -110,6 +115,7 @@ protected:
     bool initialized;
 
 private:
+    bool tesselate;
     PM3D_API::FileWatcher fileWatcher;
     mutable std::mutex reloadingMutex{};
 };

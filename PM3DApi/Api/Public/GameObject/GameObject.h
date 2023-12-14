@@ -97,7 +97,7 @@ public:
 		{
 			if (!component) continue;
 			
-			if (typeid(*component.get()) == typeid(T))
+			if (typeid(*component.get()) == typeid(T) || IsDerivedFrom<T, Component>::value)
 			{
 				return static_cast<T*>(component.get());
 			}

@@ -176,9 +176,17 @@ VS_Sortie MainVS(
     output.binormal = mul(float4(vBiNormal, 0.0f), matWorld);
     output.tangent = mul(float4(vTangent, 0.0f), matWorld);
 
+	float4 worldPos = mul(vPos, matWorldViewProj);
+
 	if (!isPreCompute) {
     	float noiseV = snoise01(vPos.xz * 2.0f);
-		float pathV = snowRVT.SampleLevel(snowRVTSampler, coordTex, 0).r;
+
+		float2 uv = float2(
+			((worldPos.x * 0.75f) + 1024.f) / 2048.f,
+			((worldPos.z * 0.7584f) + 1783.f) / 2048.f
+		);
+
+		float pathV = snowRVT.SampleLevel(snowRVTSampler, uv, 0).r;
 
 		vPos.y = max(vPos.y, vPos.y + 2 * noiseV * (1-pathV) - pathV);
 		output.noiseValue = noiseV;
@@ -279,7 +287,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
             //float attenuation = (1 / (D * D)) * li.intensity;
 
 			if (isPreCompute) {
-				attenuation *= 0.6;
+				//attenuation *= 0.6;
 			}
 
             totalAmbiant += li.ambiant * attenuation;
