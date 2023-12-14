@@ -59,7 +59,7 @@ void SizeModifierComponent::PhysicsUpdate()
         shape->setGeometry(physx::PxSphereGeometry(preScale.x * .5f));
 
         if (preScale.x * .5f < 0.1f)
-            PM3D_API::EventSystem::Publish(GameOverEvent(false));
+            PM3D_API::EventSystem::Publish(GameOverEvent(_inTunnel));
     }
     else
     {
