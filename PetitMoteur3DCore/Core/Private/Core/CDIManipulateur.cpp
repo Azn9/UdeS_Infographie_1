@@ -43,7 +43,7 @@ void CDIManipulateur::AcquireFocus()
 
     auto t = std::thread([&]()
     {
-        while (!pClavier || pClavier->Acquire() != S_OK)
+        while (pDirectInput != nullptr && (!pClavier || pClavier->Acquire() != S_OK))
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
