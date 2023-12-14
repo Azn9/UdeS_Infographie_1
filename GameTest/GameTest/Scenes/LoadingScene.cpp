@@ -25,7 +25,7 @@ void LoadingScene::InitializeCamera()
         XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
-    mainCamera->SetFarDist(1000.0f);
+    mainCamera->SetFarDist(20000.0f);
     mainCamera->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
     SetMainCamera(std::move(mainCamera));
 }
@@ -57,6 +57,16 @@ void LoadingScene::InitializeObjects()
     shadowProcessor->Initialize();
     shadowProcessor->SetScene(this);
     AddComponent(std::move(shadowProcessor));
+
+    // === Add skybox ===
+    auto skybox = std::make_unique<GameObject>("Skybox");
+    skybox->SetWorldScale({10000.f,10000.f,10000.f});
+    skybox->Initialize();
+    auto skyShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/SkyShader.fx");
+    auto skyRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(skyShader), "skybox.obj");
+    skyRenderer->SetIgnoreCulling(true);
+    skybox->AddComponent(std::move(skyRenderer));
+    AddChild(std::move(skybox));
 }
 
 void LoadingScene::InitializeUI()

@@ -18,6 +18,7 @@ cbuffer param {
     float radialDistance;
     float startVelocityRadial;
     float endVelocityRadial;
+    float startScreenDistRadial;//0 to sqrt(2)
 
     //Vignette
     float vignettePower;
@@ -157,6 +158,8 @@ float4 RadialBlurPS(VS_Sortie vs) : SV_Target
     }
 
     float t = smoothstep(startVelocityRadial, endVelocityRadial, velocity);
+    float dist = length(vs.CoordTex - float2(0.5,0.5)) * (2.0f / sqrt(2));
+    t = t * smoothstep(startScreenDistRadial, startScreenDistRadial+0.1, dist);
 
     return lerp(ct, couleur, t);
 }
