@@ -15,12 +15,10 @@ namespace PM3D_API
 		DirectionalLight(const std::string& name, DirectX::XMFLOAT3 direction, float intensity);
 		DirectionalLight(const std::string& name, DirectX::XMFLOAT3 direction, float intensity, DirectX::XMFLOAT3 color);
 
-		void SetWorldPosition(DirectX::XMFLOAT3) override {}
-		void SetLocalPosition(DirectX::XMFLOAT3) override {}
-
 		void SetDirection(DirectX::XMFLOAT3 newDirection);
 
 		ShaderLightDefaultParameters GetShaderLightDefaultParameters(GameObject* gameObject) const override;
+		ShaderLightDefaultParameters GetShaderLightDefaultParameters(DirectX::XMMATRIX wvp) const override;
 
 		LightType GetType() const override { return LightType::DIRECTIONAL; }
 

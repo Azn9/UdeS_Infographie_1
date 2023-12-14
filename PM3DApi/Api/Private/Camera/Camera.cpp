@@ -85,6 +85,18 @@ void PM3D_API::Camera::SetFieldOfView(const float newFieldOfView)
 	UpdateInternalMatrices();
 }
 
+void PM3D_API::Camera::SetViewHeight(const float newViewHeight)
+{
+	viewHeight = newViewHeight;
+	UpdateInternalMatrices();
+}
+
+void PM3D_API::Camera::SetViewWidth(const float newViewWidth)
+{
+	viewWidth = newViewWidth;
+	UpdateInternalMatrices();
+}
+
 void PM3D_API::Camera::SetNearDist(const float newnearDist)
 {
 	nearDist = newnearDist;
@@ -179,8 +191,8 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	else // ORTHOGRAPHIC
 	{
 		matProj = DirectX::XMMatrixOrthographicRH(
-			PM3D_API::GameHost::GetInstance()->GetScreenWidth(),
-			PM3D_API::GameHost::GetInstance()->GetScreenHeight(),
+			viewWidth,
+			viewHeight,
 			nearDist,
 			farDist
 		);

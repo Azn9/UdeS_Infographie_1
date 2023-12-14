@@ -384,6 +384,9 @@ void SnowRenderer::DrawRVT() const
         context->DrawIndexed(indexDrawAmount, indexStart, 0);
     }
 
+    lightSRV->Release();
+    lightBuffer->Release();
+
     dispositif->ResetViewportDimension();
 
     ID3D11RenderTargetView* nullRTV = nullptr;

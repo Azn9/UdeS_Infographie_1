@@ -7,6 +7,7 @@
 #include "../Light/DirectionalLight.h"
 #include "../Component/Basic/Physics/PhysicsResolver.h"
 #include "../GameObject/UICanvas.h"
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
 
 namespace PM3D_API
 {
@@ -29,12 +30,12 @@ public:
 	void Update() override;
 	void PhysicsUpdate() override;
 	void Draw() override;
-	void DrawSelf() const override;
+	void DrawShadow(const Camera& camera) override;
 
-	virtual void InitializePhysics() {};
-	virtual void InitializeCamera() {};
-	virtual void InitializeLights() {};
-	virtual void InitializeObjects() {};
+	virtual void InitializePhysics() {}
+	virtual void InitializeCamera() {}
+	virtual void InitializeLights() {}
+	virtual void InitializeObjects() {}
 	virtual void InitializeUI();
 
 	template <typename L, template_extends<Light, L>  = 0>
@@ -57,6 +58,8 @@ public:
 	void SetLightsNeedUpdate(const bool needUpdate) { lightsNeedUpdate = needUpdate; }
 	bool GetLightsNeedUpdate() const { return lightsNeedUpdate; }
 
+	ShadowProcessor* GetShadowProcessor() { return GetComponent<ShadowProcessor>(); }
+
 	void SetMainCamera(Camera* newMainCamera);
 protected:
 	bool isDeleted = false;
@@ -66,6 +69,8 @@ protected:
 	
 	void SetMainCamera(std::unique_ptr<Camera>&& newMainCamera);
 	void SetPhysicsResolver(std::unique_ptr<PhysicsResolver>&& newPhysicsResolver);
+
+	void DrawSelf() const override;
 
 private:
 	Camera* mainCamera;

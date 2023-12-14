@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
+
 PM3D_API::Scene::~Scene()
 {
     isDeleted = true;
@@ -27,28 +29,24 @@ void PM3D_API::Scene::Initialize()
 
 void PM3D_API::Scene::SetMainCamera(std::unique_ptr<Camera>&& newMainCamera)
 {
-	newMainCamera->SetScene(this);
-	if(mainCamera != nullptr)
-		mainCamera->SetScene(nullptr);
-	mainCamera = newMainCamera.get();
-	mainCamera->UpdatePostProcessShaderParam();
-	GameObject::AddChild(std::move(newMainCamera));
+    newMainCamera->SetScene(this);
+    if (mainCamera != nullptr)
+        mainCamera->SetScene(nullptr);
+    mainCamera = newMainCamera.get();
+    mainCamera->UpdatePostProcessShaderParam();
+    GameObject::AddChild(std::move(newMainCamera));
 }
 
 void PM3D_API::Scene::SetMainCamera(Camera* newMainCamera)
 {
     // Check if newMainCamera is a child of this scene
 
-    const GameObject* parent = newMainCamera->GetParent();
-    while (parent != nullptr)
-    {
-        if (parent == this)
-            break;
-
-        parent = parent->GetParent();
-    }
-
-    if (parent == nullptr)
+    if (const auto it = std::ranges::find_if(children,
+                                             [newMainCamera](const std::unique_ptr<GameObject>& child)
+                                             {
+                                                 return child.get() == newMainCamera;
+                                             }
+    ); it == children.end())
     {
         throw std::runtime_error("newMainCamera is not a child of this scene");
     }
@@ -83,10 +81,22 @@ void PM3D_API::Scene::PhysicsUpdate()
 void PM3D_API::Scene::Draw()
 {
     if (isDeleted) return;
+    if (const auto shadowProcessor = GetComponent<ShadowProcessor>())
+    {
+        shadowProcessor->ProcessShadow();
+    }
+
     GameObject::Draw();
 
     if (lightsNeedUpdate)
         lightsNeedUpdate = false;
+}
+
+void PM3D_API::Scene::DrawShadow(const Camera& camera)
+{
+    if (isDeleted) return;
+
+    GameObject::DrawShadow(camera);
 }
 
 void PM3D_API::Scene::DrawSelf() const
