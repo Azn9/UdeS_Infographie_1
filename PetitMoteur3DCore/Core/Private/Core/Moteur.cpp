@@ -123,7 +123,9 @@ int PM3D::CMoteur::Initialisations()
     // * Initialisation du dispositif de rendu
     pDispositif = CreationDispositifSpecific(CDS_FENETRE);
 
+	pPanneauPE = std::make_unique<CPanneauPE>(pDispositif);
     gameHost->SetDispositif(pDispositif);
+	gameHost->SetPostEffectPlane(pPanneauPE.get());
 
     //Resize(1280, 720);
     //ResizeWindow(1280, 720);
@@ -185,20 +187,36 @@ int PM3D::CMoteur::InitAnimation()
 
 bool PM3D::CMoteur::RenderScene()
 {
-    if (!canRender)
-    {
-        ImGui::EndFrame();
-        return true;
-    }
+	if (!canRender)
+	{
+		ImGui::EndFrame();
+		return true;
+	}
+		
+	const uint64_t start = Time::GetInstance().GetTimeSpecific();
 
-    const uint64_t start = Time::GetInstance().GetTimeSpecific();
+#ifdef _DEBUG
+	BeginRenderDebug();
+#endif
+	
+	BeginRenderSceneSpecific();//Begin rendering
+	
+	pPanneauPE->BeginDrawToPostEffect();
 
-    BeginRenderSceneSpecific();
+	BeginRenderSceneSpecific();// Begin rendering on the RTV used by PP
+	gameHost->Draw();
+	EndRenderSceneSpecific();// Ending rendering on the RTV used by PP
 
-    gameHost->Draw();
-    gameHost->DrawUI();
+	pPanneauPE->Draw();
+	pPanneauPE->EndDrawToPostEffect();
+	
+	gameHost->DrawUI();
 
     EndRenderSceneSpecific();
+
+	#ifdef _DEBUG
+		EndRenderDebug();
+	#endif
 
     const uint64_t end = Time::GetInstance().GetTimeSpecific();
 

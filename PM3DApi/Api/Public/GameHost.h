@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "Core/Public/Core/dispositifD3D11.h"
+#include "Core/Public/Object/PanneauPE.h"
+#include "Core/Public/Texture/Texture.h"
 #include "Debug/DebugRenderer.h"
 #include "Scene/Scene.h"
 
@@ -20,6 +22,9 @@ namespace PM3D_API
 
         PM3D::CDispositifD3D11* GetDispositif() const { return dispositif; }
         void SetDispositif(PM3D::CDispositifD3D11* dispositif);
+
+        PM3D::CPanneauPE* GetPostEffectPlane() const { return postEffectPlane; }
+        void SetPostEffectPlane(PM3D::CPanneauPE* plane) { postEffectPlane = plane; }
         
         float GetAspectRatio() const;
         float GetScreenWidth() const;
@@ -35,6 +40,7 @@ namespace PM3D_API
         // === Interface ===
 
         virtual void Initialize() = 0;
+        virtual void InitializePostProcessParam() const {}
         virtual void Draw();
         virtual void DrawUI();
 
@@ -47,6 +53,8 @@ namespace PM3D_API
         virtual void SetScene(Scene* newScene);
     protected:
         std::vector<std::unique_ptr<DebugRenderer>> debugRenderers;
+
+        PM3D::CPanneauPE* postEffectPlane;
 
     private:
         Scene* scene;

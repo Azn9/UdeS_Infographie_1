@@ -27,9 +27,12 @@ void PM3D_API::Scene::Initialize()
 
 void PM3D_API::Scene::SetMainCamera(std::unique_ptr<Camera>&& newMainCamera)
 {
-    newMainCamera->SetScene(this);
-    mainCamera = newMainCamera.get();
-    GameObject::AddChild(std::move(newMainCamera));
+	newMainCamera->SetScene(this);
+	if(mainCamera != nullptr)
+		mainCamera->SetScene(nullptr);
+	mainCamera = newMainCamera.get();
+	mainCamera->UpdatePostProcessShaderParam();
+	GameObject::AddChild(std::move(newMainCamera));
 }
 
 void PM3D_API::Scene::SetMainCamera(Camera* newMainCamera)

@@ -62,7 +62,7 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 		worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
 		worldMatrix *= XMMatrixScaling(scale.x, scale.y, 1.0f);
 
-		// Regarde toujours vers la cam�ra
+		// Regarde toujours vers la caméra
 		XMMATRIX lookAtMatrix = XMMatrixLookAtLH(
 			cameraPosVec,
 			cameraFocusVec,

@@ -91,6 +91,15 @@ void PM3D_API::Camera::SetNearDist(const float newnearDist)
 	UpdateInternalMatrices();
 }
 
+void PM3D_API::Camera::UpdatePostProcessShaderParam() const
+{
+	GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("far", farDist);
+	GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("near", nearDist);
+
+	XMMATRIX invProj = XMMatrixInverse(nullptr, matProj);
+	GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("matInvProj", invProj);
+}
+
 void PM3D_API::Camera::SetFarDist(const float newfarDist)
 {
 	farDist = newfarDist;
@@ -181,6 +190,11 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 	matViewProj = matView * matProj;
 
 	initialized = true;
+
+	XMMATRIX invProj = XMMatrixInverse(nullptr, matProj);
+
+	if(scene != nullptr)
+		UpdatePostProcessShaderParam();
 }
 
 void PM3D_API::Camera::SetUpDirection(DirectX::XMVECTOR newUpDirection)

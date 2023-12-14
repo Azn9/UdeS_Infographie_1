@@ -25,7 +25,7 @@ public:
 
 	int64_t GetCurrentTimeMs() const
 	{
-		return clock.GetTimeCount() * static_cast<int64_t>(clock.GetSecPerCount() * 1000.0);
+		return static_cast<int64_t>(clock.GetTimeCount() * (clock.GetSecPerCount() * 1000.0));
 	}
 
 	double GetTimeIntervalsInMs(const int64_t start, const int64_t stop) const

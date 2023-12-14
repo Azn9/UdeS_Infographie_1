@@ -12,6 +12,7 @@
 #include "../../Public/Texture/GestionnaireDeTextures.h"
 #include "../../Public/Sprite/AfficheurSprite.h"
 #include "../../Public/Sprite/SpriteTemp.h"
+#include "Core/Public/Object/PanneauPE.h"
 
 namespace PM3D
 {
@@ -108,10 +109,12 @@ namespace PM3D
         virtual bool RunSpecific() = 0;
         virtual int InitialisationsSpecific() = 0;
 
-        virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) = 0;
-        virtual void InitSceneSpecific() = 0;
-        virtual void BeginRenderSceneSpecific() = 0;
-        virtual void EndRenderSceneSpecific() = 0;
+	virtual CDispositifD3D11* CreationDispositifSpecific(const CDS_MODE cdsMode) = 0;
+	virtual void InitSceneSpecific() = 0;
+	virtual void BeginRenderDebug() = 0;
+	virtual void BeginRenderSceneSpecific() = 0;
+	virtual void EndRenderSceneSpecific() = 0;
+	virtual void EndRenderDebug() = 0;
 
         // Autres fonctions
         virtual int InitAnimation();
@@ -152,5 +155,7 @@ namespace PM3D
         virtual void SetThreadName(std::thread&, const std::string&)
         {
         }
+
+		std::unique_ptr<CPanneauPE> pPanneauPE;
     };
 } // namespace PM3D

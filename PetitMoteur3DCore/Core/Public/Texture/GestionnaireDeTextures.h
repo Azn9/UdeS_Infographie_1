@@ -15,6 +15,13 @@ public:
 		const std::wstring& filename,
 		CDispositifD3D11* pDispositif
 	);
+
+	CTexture* GetNewTextureArray(
+		const std::wstring& name,
+		const std::vector<std::wstring>& filenames,
+		CDispositifD3D11* pDispositif
+	);
+	
 	CTexture* GetTexture(const std::wstring& filename) const;
 
 private:
