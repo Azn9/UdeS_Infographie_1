@@ -80,7 +80,7 @@ namespace PM3D
         if(texture == nullptr)
             texture = gestionnaire.GetNewTextureArray(wname, filenames, pDispositif);
             
-        SetShaderVariableValue(name, texture->GetD3DTextureSRV());
+        SetShaderVariableValue(name, texture->GetD3DTexture());
     }
 
     const D3DX11_EFFECT_DESC* CPanneauPE::getEffectDesc() const

@@ -69,7 +69,7 @@ void SnowRenderer::DrawSelf() const
     PM3D::DXEssayer(variableTexture->SetResource(snowRVTResourceView));
 
     variableTexture = effect->GetVariableByName("sparkleTexture")->AsShaderResource();
-    PM3D::DXEssayer(variableTexture->SetResource(sparklesTexture->GetD3DTextureSRV()));
+    PM3D::DXEssayer(variableTexture->SetResource(sparklesTexture->GetD3DTexture()));
 
     MeshRenderer::DrawSelf();
 }

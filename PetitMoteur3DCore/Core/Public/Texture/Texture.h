@@ -15,7 +15,7 @@ public:
 	~CTexture();
 
 	const std::wstring& GetName() const { return m_Name; }
-	ID3D11ShaderResourceView* GetD3DTextureSRV() { return m_TextureSRV; }
+	ID3D11ShaderResourceView* GetD3DTexture() { return m_TextureSRV; }
 	
 
 protected:

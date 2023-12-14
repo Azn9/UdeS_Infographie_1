@@ -19,7 +19,7 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
 {
 	LogBeginDrawSelf();
 
-	const auto pTexture = texture->GetD3DTextureSRV();
+	const auto pTexture = texture->GetD3DTexture();
 
 	// Obtenir le contexte
 	const auto pDispositif = GameHost::GetInstance()->GetDispositif();

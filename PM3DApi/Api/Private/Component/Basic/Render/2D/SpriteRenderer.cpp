@@ -17,7 +17,7 @@ void PM3D_API::SpriteRenderer::Initialize()
     ID3D11Resource* pResource;
     ID3D11Texture2D* pTextureInterface = nullptr;
 		
-    texture->GetD3DTextureSRV()->GetResource(&pResource);
+    texture->GetD3DTexture()->GetResource(&pResource);
     pResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
 		
     D3D11_TEXTURE2D_DESC desc;
@@ -88,7 +88,7 @@ void PM3D_API::SpriteRenderer::DrawSelf() const
         DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f),
         DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
         0.0f,
-        texture->GetD3DTextureSRV(),
+        texture->GetD3DTexture(),
         nullptr
     );
 
