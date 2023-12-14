@@ -72,7 +72,7 @@ void PM3D_API::LODRenderer::DrawDebugInfo() const
 
 void PM3D_API::LODRenderer::AddRenderer(const float& maxDist, std::unique_ptr<Renderer>&& renderer)
 {
-    subRenderers.insert(std::make_pair(maxDist, renderer));
+    subRenderers.insert(std::make_pair(maxDist, std::move(renderer)));
 }
 
 void PM3D_API::LODRenderer::SetGameObject(GameObject* gameObject)
