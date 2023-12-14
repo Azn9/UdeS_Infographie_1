@@ -44,7 +44,6 @@ PM3D_API::GameObject::GameObject(
 
 PM3D_API::GameObject::~GameObject()
 {
-    
     children.clear();
     components.clear();
 }
@@ -85,8 +84,6 @@ void PM3D_API::GameObject::PhysicsUpdate()
 {
     for (auto& component : components)
     {
-        
-
         if (const auto componentPtr = component.get())
             componentPtr->PhysicsUpdate();
     }
@@ -125,13 +122,15 @@ void PM3D_API::GameObject::Draw()
     for (auto& component : components)
     {
         if (const auto componentPtr = component.get())
-            componentPtr->DrawSelf();
+            if (componentPtr)
+                componentPtr->DrawSelf();
     }
 
     for (auto& child : children)
     {
         if (const auto childPtr = child.get())
-            childPtr->Draw();
+            if (childPtr)
+                childPtr->Draw();
     }
 }
 
@@ -142,25 +141,27 @@ void PM3D_API::GameObject::DrawSelf() const
 
 void PM3D_API::GameObject::DrawShadowSelf() const
 {
-	// Do nothing by default
+    // Do nothing by default
 }
 
 void PM3D_API::GameObject::DrawShadow(const Camera& camera)
 {
-	if (HasComponent<ShadowCaster>())
-		DrawShadowSelf();
+    if (HasComponent<ShadowCaster>())
+        DrawShadowSelf();
 
-	for (auto& component : components)
-	{
-		if (const auto componentPtr = component.get())
-			componentPtr->DrawShadowSelf(camera);
-	}
+    for (auto& component : components)
+    {
+        if (const auto componentPtr = component.get())
+            if (componentPtr)
+                componentPtr->DrawShadowSelf(camera);
+    }
 
-	for (auto& child: children)
-	{
-		if (const auto childPtr = child.get())
-			childPtr->DrawShadow(camera);
-	}
+    for (auto& child : children)
+    {
+        if (const auto childPtr = child.get())
+            if (childPtr)
+                childPtr->DrawShadow(camera);
+    }
 }
 
 std::unique_ptr<PM3D_API::GameObject> PM3D_API::GameObject::DetachFromParent()

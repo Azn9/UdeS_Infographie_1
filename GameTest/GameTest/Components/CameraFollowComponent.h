@@ -19,34 +19,36 @@ enum class CameraType
 class CameraFollowComponent final : public PM3D_API::Component
 {
 public:
-    CameraFollowComponent() {
-		PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
-			{
-				_inTunnel = true;
-			});
-		PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
-			{
-				_resetRequested = true;
-			});
-	}
+    CameraFollowComponent()
+    {
+        PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
+        {
+            _inTunnel = true;
+        });
+        PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
+        {
+            _resetRequested = true;
+        });
+    }
 
-	void PhysicsUpdate() override
-	{
-		if (!_objectToFollow)
-			return;
-		
-		if (_resetRequested) {
-			_resetRequested = false;
-			_inTunnel = false;
-		}
+    void PhysicsUpdate() override
+    {
+        if (!_objectToFollow)
+            return;
 
-		if (Input::IsKeyPressed(KeyCode::C)) // Ou IsKeyHeld
-		{
-			if (camType == CameraType::ThirdPerson)
-				camType = CameraType::FirstPerson;
-			else if (camType == CameraType::FirstPerson)
-				camType = CameraType::FirstPersonWTF;
-			else if (camType == CameraType::FirstPersonWTF) 
+        if (_resetRequested)
+        {
+            _resetRequested = false;
+            _inTunnel = false;
+        }
+
+        if (Input::IsKeyPressed(KeyCode::C)) // Ou IsKeyHeld
+        {
+            if (camType == CameraType::ThirdPerson)
+                camType = CameraType::FirstPerson;
+            else if (camType == CameraType::FirstPerson)
+                camType = CameraType::FirstPersonWTF;
+            else if (camType == CameraType::FirstPersonWTF)
             {
                 static_cast<PM3D_API::Camera*>(parentObject)->SetUpDirection({0.f, 1.f, 0.f, 0.f});
                 camType = CameraType::ThirdPerson;
@@ -66,24 +68,26 @@ public:
         DirectX::XMFLOAT3 position;
         auto camRFP = parentObject->GetChild<PM3D_API::Camera>();
 
-        if (_inTunnel) {
-			position = XMFLOAT3(
-				positionObjectToFollow.x - 10 * velNormalized.x,
-				positionObjectToFollow.y + 10.0f,
-				positionObjectToFollow.z - 10 * velNormalized.z
-			);
-			position = Util::Lerp(parentObject->GetWorldPosition(), position, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 3.0f);
-			static_cast<PM3D_API::Camera*>(parentObject)->SetUpDirection({ 0.f,1.f,0.f,0.f });
-		}
-		else if (camType == CameraType::ThirdPerson)
-		{
-			position = XMFLOAT3(
-				positionObjectToFollow.x - 10 * velNormalized.x,
-				positionObjectToFollow.y + 10.0f,
-				positionObjectToFollow.z - 10 * velNormalized.z
-			);
-			position = Util::Lerp(parentObject->GetWorldPosition(), position, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 3.0f);
-
+        if (_inTunnel)
+        {
+            position = XMFLOAT3(
+                positionObjectToFollow.x - 10 * velNormalized.x,
+                positionObjectToFollow.y + 10.0f,
+                positionObjectToFollow.z - 10 * velNormalized.z
+            );
+            position = Util::Lerp(parentObject->GetWorldPosition(), position,
+                                  PM3D::Time::GetInstance().GetUpdateDeltaTime() * 3.0f);
+            static_cast<PM3D_API::Camera*>(parentObject)->SetUpDirection({0.f, 1.f, 0.f, 0.f});
+        }
+        else if (camType == CameraType::ThirdPerson)
+        {
+            position = XMFLOAT3(
+                positionObjectToFollow.x - 10 * velNormalized.x,
+                positionObjectToFollow.y + 10.0f,
+                positionObjectToFollow.z - 10 * velNormalized.z
+            );
+            position = Util::Lerp(parentObject->GetWorldPosition(), position,
+                                  PM3D::Time::GetInstance().GetUpdateDeltaTime() * 3.0f);
         }
         else if (camType == CameraType::FirstPerson)
         {
@@ -111,53 +115,50 @@ public:
             _angle += max(velMean / 250.f, 0.05f);
         }
 
-		
-		const auto lerpedPosition = Util::Lerp(parentObject->GetWorldPosition(), position,
-                                               vel.magnitude() * PM3D::Time::GetInstance().GetPhysicsDeltaTime());
-        parentObject->SetWorldPosition(lerpedPosition);
+        parentObject->SetWorldPosition(position);
 
         DirectX::XMFLOAT3 camLookAt;
 
-        if (_inTunnel) {
-			
-			camLookAt = XMFLOAT3(50, -1200, -4500);
-			camLookAt = Util::Lerp(_currentLookAt, camLookAt, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 0.3f);
-		}
-		else if (camType == CameraType::ThirdPerson)
-		{
-			const float velDivider = 5.f;
-			DirectX::XMFLOAT3 camLookAt_Temp = DirectX::XMFLOAT3(
-				0.f + velNormalized.x / velDivider,
-				0.f + velNormalized.y / velDivider,
-				-2.f + velNormalized.z / velDivider);
-			camLookAt = DirectX::XMFLOAT3(
-				positionObjectToFollow.x + camLookAt_Temp.x,
-				positionObjectToFollow.y - 1, // + camLookAt.y, 
-				positionObjectToFollow.z + camLookAt_Temp.z
-			);
-		}
-		else if (camType == CameraType::FirstPerson)
-		{
-			const float velDivider = 2.5f;
-			DirectX::XMFLOAT3 camLookAt_Temp = DirectX::XMFLOAT3(
-				0.f + velNormalized.x / velDivider,
-				0.f + velNormalized.y / velDivider,
-				-4.f + velNormalized.z / velDivider);
-			camLookAt = XMFLOAT3(
-				positionObjectToFollow.x + camLookAt_Temp.x,
-				positionObjectToFollow.y - 1, // + camLookAt.y, 
-				positionObjectToFollow.z + camLookAt_Temp.z
-			);
-		}
-		else if (camType == CameraType::FirstPersonWTF)
-		{
-			camLookAt = positionObjectToFollow;
-		}
+        if (_inTunnel)
+        {
+            camLookAt = XMFLOAT3(50, -1200, -4500);
+            camLookAt = Util::Lerp(_currentLookAt, camLookAt, PM3D::Time::GetInstance().GetUpdateDeltaTime() * 0.3f);
+        }
+        else if (camType == CameraType::ThirdPerson)
+        {
+            const float velDivider = 5.f;
+            DirectX::XMFLOAT3 camLookAt_Temp = DirectX::XMFLOAT3(
+                0.f + velNormalized.x / velDivider,
+                0.f + velNormalized.y / velDivider,
+                -2.f + velNormalized.z / velDivider);
+            camLookAt = DirectX::XMFLOAT3(
+                positionObjectToFollow.x + camLookAt_Temp.x,
+                positionObjectToFollow.y - 1, // + camLookAt.y, 
+                positionObjectToFollow.z + camLookAt_Temp.z
+            );
+        }
+        else if (camType == CameraType::FirstPerson)
+        {
+            const float velDivider = 2.5f;
+            DirectX::XMFLOAT3 camLookAt_Temp = DirectX::XMFLOAT3(
+                0.f + velNormalized.x / velDivider,
+                0.f + velNormalized.y / velDivider,
+                -4.f + velNormalized.z / velDivider);
+            camLookAt = XMFLOAT3(
+                positionObjectToFollow.x + camLookAt_Temp.x,
+                positionObjectToFollow.y - 1, // + camLookAt.y, 
+                positionObjectToFollow.z + camLookAt_Temp.z
+            );
+        }
+        else if (camType == CameraType::FirstPersonWTF)
+        {
+            camLookAt = positionObjectToFollow;
+        }
 
 
-		static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(camLookAt);
-		_currentLookAt = camLookAt;
-	}
+        static_cast<PM3D_API::Camera*>(parentObject)->SetFocusPoint(camLookAt);
+        _currentLookAt = camLookAt;
+    }
 
     void DrawDebugInfo() const override
     {
@@ -180,7 +181,7 @@ private:
     float _angle = 45.0f;
     PM3D_API::GameObject* _objectToFollow{};
     CameraType camType = CameraType::ThirdPerson;
-	bool _inTunnel = false;
-	bool _resetRequested = false;
-	XMFLOAT3 _currentLookAt{};
+    bool _inTunnel = false;
+    bool _resetRequested = false;
+    XMFLOAT3 _currentLookAt{};
 };

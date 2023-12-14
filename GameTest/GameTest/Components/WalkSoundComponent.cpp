@@ -13,7 +13,7 @@ void WalkSoundComponent::Initialize()
 {
     sizeModifierComponent = parentObject->GetComponent<SizeModifierComponent>();
 
-    for (int i = 1; i < 25; ++i)
+    for (int i = 1; i <= 25; ++i)
     {
         std::string name;
         if (i < 10)
@@ -57,7 +57,7 @@ void WalkSoundComponent::PhysicsUpdate()
         hit, physx::PxHitFlag::eDEFAULT, filterData
     ))
     {
-        const auto index = rand() % 24;
+        const auto index = rand() % 25;
         SoundManager::GetInstance().Play(buffers[index]);
     }
 }

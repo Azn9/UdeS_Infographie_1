@@ -13,6 +13,8 @@ public:
 
     float currentSize = 0.2f;
 
+    inline static constexpr float MAX_SIZE = 4.f;
+
 private:
     float _sizeModificationSpeed = 1.002f;
     float _sizeModificationSpeedDecrease = 0.998f;

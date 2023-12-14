@@ -25,8 +25,8 @@ public:
     void DrawSelf() const override;
 
 private:
-    const float MAX_SIZE = 5.f;
-    const float HALF_MAX_SIZE = 2.5f;
+    const float MAX_SIZE = SizeModifierComponent::MAX_SIZE;
+    const float HALF_MAX_SIZE = MAX_SIZE / 2.f;
 
     SizeModifierComponent* sizeModifierComponent = nullptr;
     PM3D::CTexture* bgTexture = nullptr;

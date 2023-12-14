@@ -386,6 +386,7 @@ void SnowRenderer::DrawRVT() const
 
     lightSRV->Release();
     lightBuffer->Release();
+    variableTexture->Release();
 
     dispositif->ResetViewportDimension();
 
@@ -395,9 +396,4 @@ void SnowRenderer::DrawRVT() const
 
     tabRTV[0] = dispositif->GetRenderTargetView();
     context->OMSetRenderTargets(1, tabRTV, dispositif->GetDepthStencilView());
-
-    // Release resources
-    lightSRV->Release();
-    lightBuffer->Release();
-    variableTexture->Release();
 }

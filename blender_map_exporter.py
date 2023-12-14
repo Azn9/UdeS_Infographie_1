@@ -7,15 +7,15 @@ originCollection = bpy.data.collections.get("ORIGIN")
 createdCollection = bpy.data.collections.get("CREATED")
 
 if originCollection and createdCollection:
-    print(f"Found {len(originCollection.objects)} objects in origin collection")
-    print(f"Found {len(createdCollection.objects)} objects in created collection")
+    print(f"Found {len(originCollection.all_objects)} objects in origin collection")
+    print(f"Found {len(createdCollection.all_objects)} objects in created collection")
     
     dictObj = dict()
 
-    for originalObj in originCollection.objects:
+    for originalObj in originCollection.all_objects:
         originalName = originalObj.name
         
-        for createdObj in createdCollection.objects:
+        for createdObj in createdCollection.all_objects:
             if createdObj.name.startswith(originalName):
                 if originalName in dictObj:
                     objList = dictObj[originalName]

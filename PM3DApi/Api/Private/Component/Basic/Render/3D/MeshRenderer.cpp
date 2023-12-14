@@ -98,71 +98,73 @@ void PM3D_API::MeshRenderer::DrawSelf() const
     constexpr UINT offset = 0;
     pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
-    
 
-        shader->LoadLights(pImmediateContext, parentObject);
+    shader->LoadLights(pImmediateContext, parentObject);
 
-        const XMMATRIX viewProj = camera->GetMatViewProj();
-    
-        const auto shaderParameters = shader->PrepareParameters(
-            XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
-            XMMatrixTranspose(parentObject->GetMatWorld())
-        );
+    const XMMATRIX viewProj = camera->GetMatViewProj();
 
-        pDispositif->SetNormalRSState();
+    const auto shaderParameters = shader->PrepareParameters(
+        XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
+        XMMatrixTranspose(parentObject->GetMatWorld())
+    );
+
+    pDispositif->SetNormalRSState();
 
     // Dessiner les sous-objets non-transparents
     for (unsigned int i = 0; i < mesh->group_count; ++i)
-        {
-            const auto objGroup = mesh->groups[i];
-            const unsigned indexStart = objGroup.index_offset;
-        
-            unsigned int indexDrawAmount;
-            if (mesh->group_count > 1 && i + 1 < mesh->group_count)
+    {
+        const auto objGroup = mesh->groups[i];
+        const unsigned indexStart = objGroup.index_offset;
+
+        unsigned int indexDrawAmount;
+        if (mesh->group_count > 1 && i + 1 < mesh->group_count)
         {
             if (i + 1 < mesh->group_count)
             {
-                indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;}
+                indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
+            }
             else
             {
                 indexDrawAmount = mesh->index_count - indexStart;
             }
         }
-             else
-            {
-                indexDrawAmount = mesh->index_count;
-            }
+        else
+        {
+            indexDrawAmount = mesh->index_count;
+        }
 
-            if (!indexDrawAmount)
-            {
-                continue;
-            }
+        if (!indexDrawAmount)
+        {
+            continue;
+        }
 
-            const auto material = Material[SubmeshMaterialIndex[i]];shader->ApplyMaterialParameters(
-                shaderParameters,
-                XMLoadFloat4(&material.Ambient),
-                XMLoadFloat4(&material.Diffuse),
-                XMLoadFloat4(&material.Specular),
-                material.Puissance,
-                material.pAlbedoTexture,
-                material.pNormalmapTexture
-            );if (const auto effectVariablePtr = shader->GetEffect()->GetVariableByName("shadowTexture"))
+        const auto material = Material[SubmeshMaterialIndex[i]];
+        shader->ApplyMaterialParameters(
+            shaderParameters,
+            XMLoadFloat4(&material.Ambient),
+            XMLoadFloat4(&material.Diffuse),
+            XMLoadFloat4(&material.Specular),
+            material.Puissance,
+            material.pAlbedoTexture,
+            material.pNormalmapTexture
+        );
+        if (const auto effectVariablePtr = shader->GetEffect()->GetVariableByName("shadowTexture"))
         {
             ID3DX11EffectShaderResourceVariable* variableTexture = effectVariablePtr->AsShaderResource();
             variableTexture->SetResource(scene->GetShadowProcessor()->getDepthTextureResourceView());
         }
 
-            // IMPORTANT pour ajuster les param.
-            shader->GetPass()->Apply(0, pImmediateContext);
+        // IMPORTANT pour ajuster les param.
+        shader->GetPass()->Apply(0, pImmediateContext);
 
-            shader->ApplyShaderParams();
-            pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
-        
-            pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
-        }
+        shader->ApplyShaderParams();
+        pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
 
-        shader->DeleteParameters(shaderParameters);
-    
+        pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
+    }
+
+    shader->DeleteParameters(shaderParameters);
+
     LogEndDrawSelf();
 }
 
@@ -211,10 +213,10 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
     pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
     shader->ApplyShaderParams();
 
-    
-    for (int i = 0; i < mesh->object_count; ++i)
+
+    for (int i = 0; i < mesh->group_count; ++i)
     {
-        const auto objGroup = mesh->objects[i];
+        const auto objGroup = mesh->groups[i];
         const unsigned indexStart = objGroup.index_offset;
 
         unsigned int indexDrawAmount;
@@ -222,7 +224,7 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
         {
             if (i + 1 < mesh->group_count)
             {
-                indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+                indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
             }
             else
             {
@@ -239,27 +241,21 @@ void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
             continue;
         }
 
-        /*
-
         // IMPORTANT pour ajuster les param.pPasse->Apply(0, pImmediateContext);
-        //shader->GetPass()->Apply(0, pImmediateContext);
+        shader->GetPass()->Apply(0, pImmediateContext);
 
         shader->ApplyShaderParams();
 
-        
-*/
         pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
     }
 
     shader->DeleteParameters(shaderParameters);
-
-    
 }
 
 bool PM3D_API::MeshRenderer::IsVisible() const
 {
     return IsVisible(*parentObject->GetScene()->GetMainCamera());
-    }
+}
 
 bool PM3D_API::MeshRenderer::IsVisible(const Camera& camera) const
 {

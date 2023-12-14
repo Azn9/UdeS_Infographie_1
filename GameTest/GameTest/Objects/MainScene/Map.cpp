@@ -5,6 +5,7 @@
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "Api/Public/Component/Basic/Render/3D/InstancedMeshRenderer.h"
 #include "Api/Public/Shader/Basic/DefaultShaderInstanced.h"
+#include "Api/Public/Util/FilterGroup.h"
 #include "GameTest/Components/SnowRenderer.h"
 
 Map::Map() : GameObject("World"), mapImporter("Map/map_data.json")
@@ -170,4 +171,9 @@ void Map::Initialize()
     const auto tunnelMeshColliderPtr = tunnelMeshCollider.get();
     tunnelObjPtr->AddComponent(std::move(tunnelMeshCollider));
     tunnelMeshColliderPtr->Initialize();
+
+    physx::PxFilterData filterDataTunnel;
+    filterDataTunnel.word0 = FilterGroup::eTUNNEL;
+    physx::PxShape* tunnelShape = tunnelMeshColliderPtr->getShape();
+    tunnelShape->setSimulationFilterData(filterDataTunnel);
 }

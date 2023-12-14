@@ -43,6 +43,7 @@ public:
 
     IDirectSoundBuffer8* uiClick1Buffer;
     IDirectSoundBuffer8* uiRollover1Buffer;
+    IDirectSoundBuffer8* toungBuffer;
 
 private:
     bool initialized = false;
