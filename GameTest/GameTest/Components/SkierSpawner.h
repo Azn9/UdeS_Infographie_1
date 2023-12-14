@@ -13,6 +13,7 @@
 #include <Api/Public/Component/Basic/Physics/PhysicsResolver.h>
 #include "Core/Public/Util/Time.h"
 #include <Api/Public/EventSystem/RespawnSkierEvent.h>
+#include <Api/Public/EventSystem/DeletedSkierEvent.h>
 
 class SkierSpawner final : public PM3D_API::Component
 {
@@ -24,13 +25,19 @@ public:
 				_reSpawn = true;
 				Update();
 			});
+		PM3D_API::EventSystem::Subscribe([this](const DeletedSkierEvent&)
+			{
+				_deletedSkierCount++;
+				if(_deletedSkierCount == _current_id*3)
+					PM3D_API::EventSystem::Publish(RespawnSkierEvent());
+			});
 	}
 
 	void Update() override
 	{
 		if (_reSpawn) {
-			PM3D::Time::GetInstance().SetTimeScale(0.f);
 			_current_id = 0;
+			_deletedSkierCount = 0;
 			SkierWave1();
 			SkierWave2();
 			SkierWave3();
@@ -50,6 +57,7 @@ private:
 	void SkierWave5();
 
 	physx::PxU32 _current_id{};
+	physx::PxU32 _deletedSkierCount = 0;
 	bool _reSpawn = true;
 
 };

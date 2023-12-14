@@ -103,12 +103,10 @@ void SkierSpawner::AddSkier(
 	physx::PxShape* SkierShape;
 	skierRigidbodyPtr->GetActor()->getShapes(&SkierShape, 1, 0);
 	skierRigidbodyPtr->GetActor()->detachShape(*SkierShape);
-	SkierShape->release();
 
 	physx::PxShape* rSkiShape;
 	rskiRigidbodyPtr->GetActor()->getShapes(&rSkiShape, 1, 0);
 	rskiRigidbodyPtr->GetActor()->detachShape(*rSkiShape);
-	rSkiShape->release();
 
 	//joints between skis and skier
 	auto jointSki = physx::PxFixedJointCreate(*scene->GetPhysicsResolver()->GetPhysics(),
@@ -134,14 +132,14 @@ void SkierSpawner::AddSkier(
 
 void SkierSpawner::SkierWave1()
 {
-	for (int i = 0; i != 10; ++i) {
+	for (int i = 0; i != 5; ++i) {
 		AddSkier(DirectX::XMFLOAT3(-20.f + i * 5.f, -60.f, -10.f), _current_id, 1);
 		_current_id++;
 	}
 }
 void SkierSpawner::SkierWave2()
 {
-	for (int i = 0; i != 10; ++i) {
+	for (int i = 0; i != 5; ++i) {
 		AddSkier(DirectX::XMFLOAT3(-20.f + i * 5.f, -200.f, -300.f), _current_id, 2);
 		_current_id++;
 	}

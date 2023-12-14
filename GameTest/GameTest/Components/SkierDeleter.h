@@ -9,6 +9,7 @@
 #include "Api/Public/Component/Component.h"
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
+#include "Api/Public/EventSystem/DeletedSkierEvent.h"
 
 class SkierDeleter final : public PM3D_API::Component
 {
@@ -27,6 +28,7 @@ public:
 			auto pt = parentObject->DetachFromParent();
 			pt.release();
 			_resetRequested = false;
+			PM3D_API::EventSystem::Publish(DeletedSkierEvent());
 		}
 	}
 

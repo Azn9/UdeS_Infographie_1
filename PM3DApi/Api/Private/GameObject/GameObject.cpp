@@ -132,9 +132,10 @@ void PM3D_API::GameObject::Draw()
 		if (componentPtr)
 			componentPtr->DrawSelf();
 	}
-
+	int i = 0;
 	for (auto& child: children)
 	{
+		i++;
 		const auto childPtr = child.get();
 
 		if (childPtr)
