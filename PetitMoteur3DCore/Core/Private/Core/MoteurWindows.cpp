@@ -230,12 +230,6 @@ namespace PM3D
 
         pImmediateContext->ClearRenderTargetView(pRenderTargetView, Couleur);
 
-#ifdef _DEBUG
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-#endif
-
         //ImGui::DockSpaceOverViewport();
 
         // On r�-initialise le tampon de profondeur
@@ -247,11 +241,24 @@ namespace PM3D
     {
         if (!canRender) return;
 
-#ifdef _DEBUG
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-#endif
-    }
+/*#ifdef _DEBUG
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+#endif*/
+}
+
+void CMoteurWindows::BeginRenderDebug()
+{
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+}
+
+void CMoteurWindows::EndRenderDebug()
+{
+	ImGui::Render();
+	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+}
 
     void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
     {
@@ -302,10 +309,12 @@ namespace PM3D
 
         pImmediateContext->OMSetRenderTargets(1, pRenderTargetView, pDispositif->GetDepthStencilView());
 
-        PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
+		pPanneauPE->Resize(largeur, hauteur);
 
-        canRender = true;
-    }
+		PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
+
+	canRender = true;
+}
 
     void CMoteurWindows::ResizeWindow(int largeur, int hauteur)
     {

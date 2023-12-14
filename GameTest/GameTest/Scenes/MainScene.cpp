@@ -22,6 +22,8 @@
 #include "GameTest/UI/GameUI.h"
 #include "GameTest/Objects/MainScene/Map.h"
 
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
+
 void MainScene::InitializePhysics()
 {
     auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
@@ -121,19 +123,12 @@ void MainScene::InitializeObjects()
         const auto walkSoundComponentPtr = walkSoundComponent.get();
         spherePtr->AddComponent(std::move(walkSoundComponent));
         walkSoundComponentPtr->Initialize();
-
-        auto cameraRealFP = std::make_unique<PM3D_API::Camera>(
-            "Camera RFP",
-            PM3D_API::Camera::PERSPECTIVE,
-            XMFLOAT3(0.0f, 0.1f, 0.0f),
-            XMVectorSet(0.0f, -5.0f, 15.0f, 1.0f)
-        );
-        cameraRealFP->SetFieldOfView(45.0f);
-        cameraRealFP->SetFarDist(200000.0f);
-        cameraRealFP->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
-
-        spherePtr->AddChild(std::move(cameraRealFP));
     }
+    
+    auto shadowProcessor = std::make_unique<ShadowProcessor>();
+    shadowProcessor->Initialize();
+    shadowProcessor->SetScene(this);
+    AddComponent(std::move(shadowProcessor));
 
     // === Add skybox ===
     auto skybox = std::make_unique<GameObject>("Skybox");

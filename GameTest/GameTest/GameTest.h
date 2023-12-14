@@ -12,7 +12,6 @@ public:
 	void Initialize() override;
 
 protected:
-
-private:
+	virtual void InitializePostProcessParam() const override;
 
 };

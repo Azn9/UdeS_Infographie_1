@@ -62,7 +62,7 @@ void SizeModifierComponent::PhysicsUpdate()
     }
     else
     {
-        if (preScale.x < 2.f && !_inTunnel) // < 2.f pour les tests, � enlever quand on aura des obstacles
+        if (preScale.x < MAX_SIZE && !_inTunnel)
             parentObject->SetWorldScale(DirectX::XMFLOAT3(
                 preScale.x * _sizeModificationSpeed,
                 preScale.y * _sizeModificationSpeed,

@@ -98,71 +98,6 @@ void PM3D_API::MeshRenderer::DrawSelf() const
     constexpr UINT offset = 0;
     pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
-    /*
-    { // SHADOWS
-        pImmediateContext->OMSetRenderTargets(0, nullptr, shader->GetDepthStencilView());
-        pImmediateContext->ClearDepthStencilView(shader->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-        pDispositif->SetViewportDimension(512,512);
-        const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
-        const auto pPasse = pTechnique->GetPassByIndex(0);
-        pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
-
-        shader->LoadLights(pImmediateContext, parentObject);
-
-        const XMMATRIX viewProj = camera->GetMatViewProj();
-    
-        const auto shaderParameters = shader->PrepareParameters(
-            XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
-            XMMatrixTranspose(parentObject->GetMatWorld())
-        );
-
-        for (int i = 0; i < mesh->object_count; ++i)
-        {
-            const auto objGroup = mesh->objects[i];
-            const unsigned indexStart = objGroup.index_offset;
-        
-            unsigned int indexDrawAmount;
-            if (mesh->object_count > 1)
-            {
-                indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
-            } else
-            {
-                indexDrawAmount = mesh->index_count;
-            }
-
-            if (!indexDrawAmount)
-            {
-                continue;
-            }
-
-            shader->ApplyMaterialParameters(
-                shaderParameters,
-                XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Ambient),
-                XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Diffuse),
-                XMLoadFloat4(&Material[SubmeshMaterialIndex[i]].Specular),
-                Material[SubmeshMaterialIndex[i]].Puissance,
-                Material[SubmeshMaterialIndex[i]].pAlbedoTexture,
-                Material[SubmeshMaterialIndex[i]].pNormalmapTexture
-            );
-
-            // IMPORTANT pour ajuster les param.
-            shader->GetPass()->Apply(0, pImmediateContext);
-
-            shader->ApplyShaderParams();
-            pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
-        
-            pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
-        }
-
-        shader->DeleteParameters(shaderParameters);
-    }
-    */
-
-    //ID3D11RenderTargetView* tabRTV[1];
-    //tabRTV[0] = pDispositif->GetRenderTargetView();
-    //pImmediateContext->OMSetRenderTargets(1, tabRTV, pDispositif->GetDepthStencilView());
-
-    pDispositif->ResetViewportDimension();
 
     shader->LoadLights(pImmediateContext, parentObject);
 
@@ -173,10 +108,113 @@ void PM3D_API::MeshRenderer::DrawSelf() const
         XMMatrixTranspose(parentObject->GetMatWorld())
     );
 
-    //pDispositif->SetNormalRSState();
+    pDispositif->SetNormalRSState();
 
     // Dessiner les sous-objets non-transparents
     for (unsigned int i = 0; i < mesh->group_count; ++i)
+    {
+        const auto objGroup = mesh->groups[i];
+        const unsigned indexStart = objGroup.index_offset;
+
+        unsigned int indexDrawAmount;
+        if (mesh->group_count > 1 && i + 1 < mesh->group_count)
+        {
+            if (i + 1 < mesh->group_count)
+            {
+                indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
+            }
+            else
+            {
+                indexDrawAmount = mesh->index_count - indexStart;
+            }
+        }
+        else
+        {
+            indexDrawAmount = mesh->index_count;
+        }
+
+        if (!indexDrawAmount)
+        {
+            continue;
+        }
+
+        const auto material = Material[SubmeshMaterialIndex[i]];
+        shader->ApplyMaterialParameters(
+            shaderParameters,
+            XMLoadFloat4(&material.Ambient),
+            XMLoadFloat4(&material.Diffuse),
+            XMLoadFloat4(&material.Specular),
+            material.Puissance,
+            material.pAlbedoTexture,
+            material.pNormalmapTexture
+        );
+        if (const auto effectVariablePtr = shader->GetEffect()->GetVariableByName("shadowTexture"))
+        {
+            ID3DX11EffectShaderResourceVariable* variableTexture = effectVariablePtr->AsShaderResource();
+            variableTexture->SetResource(scene->GetShadowProcessor()->getDepthTextureResourceView());
+        }
+
+        // IMPORTANT pour ajuster les param.
+        shader->GetPass()->Apply(0, pImmediateContext);
+
+        shader->ApplyShaderParams();
+        pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
+
+        pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
+    }
+
+    shader->DeleteParameters(shaderParameters);
+
+    LogEndDrawSelf();
+}
+
+void PM3D_API::MeshRenderer::DrawShadowSelf(const Camera& camera) const
+{
+    if (!mesh)
+        throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
+
+    // Frustrum culling
+    if (!IsVisible(camera))
+    {
+        LogEndDrawSelf();
+        return;
+    }
+
+    //Obtenir le contexte
+    const auto pDispositif = GameHost::GetInstance()->GetDispositif();
+    ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+
+    // Choisir la topologie des primitives
+    pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // input layout des sommets
+    //pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
+    pImmediateContext->IASetInputLayout(shader->GetVertexLayout());
+
+    // Index buffer
+    pImmediateContext->IASetIndexBuffer(shader->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+    // Vertex buffer
+    constexpr UINT stride = sizeof(CSommetMesh);
+    constexpr UINT offset = 0;
+    pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
+
+    const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
+    const auto pPasse = pTechnique->GetPassByIndex(0);
+
+    const XMMATRIX viewProj = camera.GetMatViewProj();
+
+    const auto shaderParameters = shader->PrepareParameters(
+        XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
+        XMMatrixTranspose(parentObject->GetMatWorld())
+    );
+
+    pPasse->Apply(0, pImmediateContext);
+    pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
+    shader->ApplyShaderParams();
+
+
+    for (int i = 0; i < mesh->group_count; ++i)
     {
         const auto objGroup = mesh->groups[i];
         const unsigned indexStart = objGroup.index_offset;
@@ -203,44 +241,32 @@ void PM3D_API::MeshRenderer::DrawSelf() const
             continue;
         }
 
-        const auto material = Material[SubmeshMaterialIndex[i]];
-
-        shader->ApplyMaterialParameters(
-            shaderParameters,
-            XMLoadFloat4(&material.Ambient),
-            XMLoadFloat4(&material.Diffuse),
-            XMLoadFloat4(&material.Specular),
-            material.Puissance,
-            material.pAlbedoTexture,
-            material.pNormalmapTexture
-        );
-
-        // IMPORTANT pour ajuster les param.
+        // IMPORTANT pour ajuster les param.pPasse->Apply(0, pImmediateContext);
         shader->GetPass()->Apply(0, pImmediateContext);
 
         shader->ApplyShaderParams();
-
-        pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
 
         pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
     }
 
     shader->DeleteParameters(shaderParameters);
-
-    LogEndDrawSelf();
 }
 
 bool PM3D_API::MeshRenderer::IsVisible() const
 {
+    return IsVisible(*parentObject->GetScene()->GetMainCamera());
+}
+
+bool PM3D_API::MeshRenderer::IsVisible(const Camera& camera) const
+{
     if(ignoreCulling)
         return true;
     
-    const Camera* camera = parentObject->GetScene()->GetMainCamera();
-    float maxScale =
+    const float maxScale =
         max(max(parentObject->GetWorldScale().x, parentObject->GetWorldScale().y), parentObject->GetWorldScale().z);
     const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&parentObject->GetWorldPosition());
-    const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera->GetMatView());
-    return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
+    const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera.GetMatView());
+    return camera.getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
 }
 
 void PM3D_API::MeshRenderer::LoadMesh()

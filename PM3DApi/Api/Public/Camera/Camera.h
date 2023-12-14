@@ -35,15 +35,14 @@ namespace PM3D_API
 			const DirectX::XMFLOAT3 worldPosition,
 			const DirectX::XMVECTOR focusPoint,
 			const DirectX::XMVECTOR upDirection = {0.f,1.f,0.f,0.f}
-		) : GameObject(
+		) : Camera(
 				"Main camera",
+				cameraType,
 				worldPosition,
 				{0.0f, 0.0f, 0.0f},
 				{1.0f, 1.0f, 1.0f}
-			), cameraType(cameraType), focusPoint(focusPoint), upDirection(upDirection)
-		{
-			SetFocusPoint(focusPoint); // Recalculate rotation
-		}
+			)
+		{}
 
 		void Initialize() override;
 
@@ -59,8 +58,12 @@ namespace PM3D_API
 		void SetUpDirection(DirectX::XMVECTOR newUpDirection);
 
 		void SetFieldOfView(float newFieldOfView);
+		void SetViewHeight(float newViewHeight);
+		void SetViewWidth(float newViewWidth);
 		void SetFarDist(float newFarDist);
 		void SetNearDist(float newNearDist);
+
+		void UpdatePostProcessShaderParam() const;
 
 		const DirectX::XMMATRIX& GetMatView() const { return matView; }
 		const DirectX::XMMATRIX& GetMatProj() const { return matProj; }
@@ -71,6 +74,8 @@ namespace PM3D_API
 		const Frustrum& getFrustrum() const{return frustrum;}
 
 		float getFieldOfView() const { return fieldOfView; }
+		float getViewHeight() const { return viewHeight; }
+		float getViewWidth() const { return viewWidth; }
 
 		float getNearDist() const { return nearDist; }
 
@@ -95,6 +100,9 @@ namespace PM3D_API
 		DirectX::XMMATRIX matViewProj;
 
 		float fieldOfView = 45.0f;
+		float viewHeight = 512.0f;
+		float viewWidth = 512.0f;
+		
 		float nearDist = 0.05f;
 		float farDist = 400.0f;
 

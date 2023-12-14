@@ -13,6 +13,8 @@
 #include "GameTest/UI/FadeWhiteComponent.h"
 #include "GameTest/UI/Menus/MainMenuUI.h"
 
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
+
 void LoadingScene::InitializeCamera()
 {
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
@@ -50,6 +52,11 @@ void LoadingScene::InitializeObjects()
     auto objectsShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
     objects->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
     AddChild(std::move(objects));
+
+    auto shadowProcessor = std::make_unique<ShadowProcessor>();
+    shadowProcessor->Initialize();
+    shadowProcessor->SetScene(this);
+    AddComponent(std::move(shadowProcessor));
 
     // === Add skybox ===
     auto skybox = std::make_unique<GameObject>("Skybox");

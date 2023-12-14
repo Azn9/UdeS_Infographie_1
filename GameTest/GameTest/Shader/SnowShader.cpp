@@ -448,13 +448,13 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
     const auto& lights = PM3D_API::GameHost::GetInstance()->GetScene()->GetLights();
     const auto lightCount = lights.size();
 
-    auto finalLights = std::vector<PM3D_API::Light*>{};
+    std::vector<PM3D_API::Light*> finalLights;
 
     if (lightCount > static_cast<std::vector<std::unique_ptr<PM3D_API::Light>>::size_type>(10))
     {
-        std::vector<PM3D_API::Light*> ambiantLights{};
-        std::vector<PM3D_API::Light*> directionalLights{};
-        std::vector<PM3D_API::Light*> otherLights{};
+        std::vector<PM3D_API::Light*> ambiantLights;
+        std::vector<PM3D_API::Light*> directionalLights;
+        std::vector<PM3D_API::Light*> otherLights;
 
         // Trop de lumières, on prend 1. Ambiant puis 2. Directional puis 3 par distance
 
@@ -548,4 +548,7 @@ void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* 
     ID3DX11EffectShaderResourceVariable* variableTexture;
     variableTexture = effect->GetVariableByName("lights")->AsShaderResource();
     variableTexture->SetResource(lightSRV);
+
+    lightSRV->Release();
+    lightBuffer->Release();
 }

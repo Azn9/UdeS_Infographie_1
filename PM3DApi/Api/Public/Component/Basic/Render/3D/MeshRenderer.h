@@ -23,6 +23,7 @@ namespace PM3D_API
 
         void Initialize() override;
         void DrawSelf() const override;
+	void DrawShadowSelf(const Camera& camera) const override;
 
         void DrawDebugInfo() const override
         {
@@ -52,8 +53,9 @@ namespace PM3D_API
         }
 
         bool IsVisible() const override;
+        bool IsVisible(const Camera& camera) const override;
 
-        PM3D::IChargeur* getChargeur() { return chargeur; }
+        PM3D::IChargeur* getChargeur() const { return chargeur; }
 
         void SetIgnoreCulling(bool b) {ignoreCulling = b;}
 
