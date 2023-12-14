@@ -35,7 +35,7 @@ void SkierSpawner::AddSkier(
 	auto rski = std::make_unique<Right_Ski>();
 	const auto rskiPtr = rski.get();
 	scene->AddChild(std::move(rski));
-	rskiPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
+	rskiPtr->SetWorldScale(XMFLOAT3(3.f, 3.f, 3.f));
 	rskiPtr->SetWorldPosition(position);
 	rskiPtr->Initialize();
 	rskiPtr->AddComponent(std::move(std::make_unique<ToggleOnSkierComponent>(checkpoint)));
@@ -54,7 +54,7 @@ void SkierSpawner::AddSkier(
 	auto lski = std::make_unique<Left_Ski>();
 	const auto lskiPtr = lski.get();
 	scene->AddChild(std::move(lski));
-	lskiPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
+	lskiPtr->SetWorldScale(XMFLOAT3(3.f, 3.f, 3.f));
 	lskiPtr->SetWorldPosition(position);
 	lskiPtr->Initialize();
 
@@ -87,7 +87,7 @@ void SkierSpawner::AddSkier(
 	auto skier = std::make_unique<Skier>();
 	const auto skierPtr = skier.get();
 	scene->AddChild(std::move(skier));
-	skierPtr->SetWorldScale(XMFLOAT3(2.f, 2.f, 2.f));
+	skierPtr->SetWorldScale(XMFLOAT3(3.f, 3.f, 3.f));
 	skierPtr->SetWorldPosition(position);
 	skierPtr->Initialize();
 	skierPtr->AddComponent(std::move(std::make_unique<ToggleOnSkierComponent>(checkpoint)));
@@ -133,14 +133,14 @@ void SkierSpawner::AddSkier(
 void SkierSpawner::SkierWave1()
 {
 	for (int i = 0; i != 5; ++i) {
-		AddSkier(DirectX::XMFLOAT3(-20.f + i * 5.f, -60.f, -10.f), _current_id, 1);
+		AddSkier(DirectX::XMFLOAT3(-20.f + i * 5.f, -90.f, -60.f), _current_id, 1);
 		_current_id++;
 	}
 }
 void SkierSpawner::SkierWave2()
 {
 	for (int i = 0; i != 5; ++i) {
-		AddSkier(DirectX::XMFLOAT3(-20.f + i * 5.f, -200.f, -300.f), _current_id, 2);
+		AddSkier(DirectX::XMFLOAT3(-20.f + i * 5.f, -230.f, -300.f), _current_id, 2);
 		_current_id++;
 	}
 }
