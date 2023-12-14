@@ -49,10 +49,7 @@ public:
 			PM3D_API::EventSystem::Publish(CheckpointEvent_5(true));
 		/*if (parentObject->GetWorldPosition().z < -1730.f)   //temporaire pour les tests
 			PM3D_API::EventSystem::Publish(GameOverEvent(true));*/
-		physx::PxRigidDynamic* rigidDyn = parentObject->GetComponent<PM3D_API::Rigidbody>()->getRigidDynamic();
-		float vel = rigidDyn->getLinearVelocity().magnitude();
-
-		PM3D_API::GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("velocity", vel);
+		
 	}
 
 	void PhysicsUpdate() override
@@ -72,6 +69,10 @@ public:
 		{
 			rigidDynamic->addForce(physx::PxVec3(0.f, 0.f, -static_cast<float>(_speed*2)));
 		}
+
+		physx::PxRigidDynamic* rigidDyn = parentObject->GetComponent<PM3D_API::Rigidbody>()->getRigidDynamic();
+		float vel = rigidDyn->getLinearVelocity().magnitude();
+		PM3D_API::GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("velocity", vel);
 	}
 
 	void DrawDebugInfo() const override
