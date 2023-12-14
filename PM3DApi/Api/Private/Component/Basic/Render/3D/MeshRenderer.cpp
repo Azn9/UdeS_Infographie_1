@@ -232,6 +232,9 @@ void PM3D_API::MeshRenderer::DrawSelf() const
 
 bool PM3D_API::MeshRenderer::IsVisible() const
 {
+    if(ignoreCulling)
+        return true;
+    
     const Camera* camera = parentObject->GetScene()->GetMainCamera();
     float maxScale =
         max(max(parentObject->GetWorldScale().x, parentObject->GetWorldScale().y), parentObject->GetWorldScale().z);

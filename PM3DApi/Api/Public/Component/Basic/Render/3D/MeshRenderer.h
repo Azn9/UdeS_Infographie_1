@@ -55,6 +55,8 @@ namespace PM3D_API
 
         PM3D::IChargeur* getChargeur() { return chargeur; }
 
+        void SetIgnoreCulling(bool b) {ignoreCulling = b;}
+
     protected:
         void LoadMesh();
 
@@ -70,5 +72,7 @@ namespace PM3D_API
 
         ///radius of the bounding sphere
         float boundingRadius = 0.f;
+
+        bool ignoreCulling = false;
     };
 }
