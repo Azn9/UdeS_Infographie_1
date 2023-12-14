@@ -24,11 +24,11 @@ protected:
 
 	void LogBeginDrawSelf() const;
 	void LogEndDrawSelf() const;
+	virtual void SetGameObject(GameObject* gameObject) { parentObject = gameObject; }
 
 private:
 	friend class GameObject;
 	friend class LODRenderer;
-	void SetGameObject(GameObject* gameObject) { parentObject = gameObject; }
 
 	mutable uint64_t beginDrawSelf;
 	mutable uint64_t endDrawSelf;

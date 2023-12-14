@@ -19,7 +19,13 @@ public:
     virtual void DrawSelf() const;
     virtual void DrawDebugInfo() const;
 
+    void AddRenderer(const float& maxDist, std::unique_ptr<Renderer>&& renderer);
+
     Renderer* GetCurrentRenderer() { return currentRenderer; }
+
+protected:
+
+    virtual void SetGameObject(GameObject* gameObject) override;
     
 private:
 

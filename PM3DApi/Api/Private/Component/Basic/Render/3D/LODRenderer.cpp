@@ -1,16 +1,17 @@
 #include "Api/Public/Component/Basic/Render/3D/LODRenderer.h"
 #include <algorithm>
-#include<string>
+#include <ranges>
+#include <string>
 #include "Api/Public/Util/Util.h"
 
 using namespace Util;
 
 void PM3D_API::LODRenderer::Initialize()
 {
-    /*for (auto [_, renderer] : subRenderers)
+    for (auto& renderer : subRenderers | std::views::values)
     {
         renderer->Initialize();
-    }*/
+    }
 }
 
 void PM3D_API::LODRenderer::Update()
@@ -67,4 +68,19 @@ void PM3D_API::LODRenderer::DrawDebugInfo() const
 
     ImGui::Text(("LOD Renderer: LOD" + std::to_string(currentLOD)).c_str());
     currentRenderer->DrawDebugInfo();
+}
+
+void PM3D_API::LODRenderer::AddRenderer(const float& maxDist, std::unique_ptr<Renderer>&& renderer)
+{
+    subRenderers.insert(std::make_pair(maxDist, renderer));
+}
+
+void PM3D_API::LODRenderer::SetGameObject(GameObject* gameObject)
+{
+    Component::SetGameObject(gameObject);
+
+    for (auto& renderer : subRenderers | std::views::values)
+    {
+        renderer->SetGameObject(parentObject);
+    }
 }
