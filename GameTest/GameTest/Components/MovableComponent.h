@@ -13,6 +13,7 @@
 #include "GameTest/Event/GameOverEvent.h"
 #include <Api/Public/EventSystem/InTunnelEvent.h>
 #include <Api/Public/EventSystem/CheckpointEvents.h>
+#include <Api/Public/EventSystem/RespawnSkierEvent.h>
 
 class MovableComponent final : public PM3D_API::Component
 {
@@ -26,6 +27,7 @@ public:
 			rigidDyn->setAngularVelocity({0.f,0.f,0.f});
 			parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
 			_inTunnel = false;
+			//PM3D_API::EventSystem::Publish(RespawnSkierEvent());
 		});
 		PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
 			{

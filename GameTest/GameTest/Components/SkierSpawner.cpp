@@ -103,10 +103,12 @@ void SkierSpawner::AddSkier(
 	physx::PxShape* SkierShape;
 	skierRigidbodyPtr->GetActor()->getShapes(&SkierShape, 1, 0);
 	skierRigidbodyPtr->GetActor()->detachShape(*SkierShape);
+	SkierShape->release();
 
 	physx::PxShape* rSkiShape;
 	rskiRigidbodyPtr->GetActor()->getShapes(&rSkiShape, 1, 0);
 	rskiRigidbodyPtr->GetActor()->detachShape(*rSkiShape);
+	rSkiShape->release();
 
 	//joints between skis and skier
 	auto jointSki = physx::PxFixedJointCreate(*scene->GetPhysicsResolver()->GetPhysics(),

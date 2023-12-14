@@ -11,14 +11,15 @@
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include <Api/Public/Component/Basic/Physics/PhysicsResolver.h>
-
+#include "Core/Public/Util/Time.h"
+#include <Api/Public/EventSystem/RespawnSkierEvent.h>
 
 class SkierSpawner final : public PM3D_API::Component
 {
 public:
 	SkierSpawner()
 	{
-		PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
+		PM3D_API::EventSystem::Subscribe([this](const RespawnSkierEvent&)
 			{
 				_reSpawn = true;
 				Update();
@@ -28,6 +29,7 @@ public:
 	void Update() override
 	{
 		if (_reSpawn) {
+			PM3D::Time::GetInstance().SetTimeScale(0.f);
 			_current_id = 0;
 			SkierWave1();
 			SkierWave2();
@@ -35,6 +37,7 @@ public:
 			SkierWave4();
 			SkierWave5();
 			_reSpawn = false;
+			PM3D::Time::GetInstance().SetTimeScale(1.f);
 		}
 	}
 
