@@ -267,8 +267,7 @@ namespace PM3D
         variableTexture = pEffet->GetVariableByName("depthTexture")->AsShaderResource();
         variableTexture->SetResource(pMainDepthStencilShaderRessourceView);
         
-        ID3D11DepthStencilState* oldDepthState = pDispositif->GetDepthStencilState();
-        pDispositif->SetDepthState(false, false); //on désactive les tests et l'écriture sur la profondeur
+        pDispositif->DesactiverDepth(); //on désactive les tests et l'écriture sur la profondeur
 
         // Obtenir le contexte
         ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
@@ -335,7 +334,7 @@ namespace PM3D
         variableTexture->SetResource(nullptr);
 
         pDispositif->SetRenderTargetView(pMainRenderTargetView, pMainDepthStencilView);
-        pDispositif->SetDepthState(true, true);
+        pDispositif->ActiverDepth();
     }
 
     HRESULT CPanneauPE::SetShaderVar(const std::string& name, const float& f) const

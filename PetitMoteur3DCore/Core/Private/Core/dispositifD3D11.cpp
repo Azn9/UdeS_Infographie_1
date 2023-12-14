@@ -17,8 +17,7 @@ CDispositifD3D11::~CDispositifD3D11()
 	DXRelacher(pDepthStencilView);
 	DXRelacher(pDepthStencilState);
 	DXRelacher(pDepthShaderRessourceView);
-	DXRelacher(pNoDepthTestDepthStencilState);
-	DXRelacher(pNoDepthTestAndWriteTestDepthStencilState);
+	DXRelacher(pNoDepthStencilState);
 
 	if (pImmediateContext)
 	{
@@ -153,7 +152,7 @@ CDispositifD3D11::CDispositifD3D11(const CDS_MODE cdsMode, const HWND hWnd, UINT
 
 	InitDepthState();
 	//DesactiverDepth();
-	SetDepthState(true, true);
+	ActiverDepth();
 
 	InitBlendStates();
 
@@ -196,24 +195,14 @@ void CDispositifD3D11::DesactiverMelangeAlpha() const
 	pImmediateContext->OMSetBlendState(alphaBlendDisable, nullptr, 0xffffffff);
 }
 
-void CDispositifD3D11::SetDepthState(const bool& depthTest, const bool& depthWrite) const
+	void CDispositifD3D11::ActiverDepth() const
 {
-	if(depthWrite && depthTest) {
-		pImmediateContext->OMSetDepthStencilState(pDepthStencilState, 1);
-	}
-	else if (depthWrite && !depthTest)
-	{
-		pImmediateContext->OMSetDepthStencilState(pNoDepthTestDepthStencilState, 1);
-	}
-	else if (!depthWrite && !depthTest)
-	{
-		pImmediateContext->OMSetDepthStencilState(pNoDepthTestAndWriteTestDepthStencilState, 1);
-		//pImmediateContext->OM
-	}
-	else
-	{
-		throw "Non supporté";
-	}
+	pImmediateContext->OMSetDepthStencilState(pDepthStencilState, 1);
+}
+
+	void CDispositifD3D11::DesactiverDepth() const
+{
+	pImmediateContext->OMSetDepthStencilState(pNoDepthStencilState, 1);
 }
 
 void CDispositifD3D11::InitDepthBuffer()
@@ -275,13 +264,9 @@ void CDispositifD3D11::InitDepthState()
 
 	D3D11_DEPTH_STENCIL_DESC dsDescCopy = dsDesc;
 	dsDescCopy.DepthEnable = false;
-
-	pD3DDevice->CreateDepthStencilState(&dsDescCopy, &pNoDepthTestDepthStencilState);
-
-	D3D11_DEPTH_STENCIL_DESC dsDescCopy2 = dsDescCopy;
 	dsDescCopy.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 
-	pD3DDevice->CreateDepthStencilState(&dsDescCopy2, &pNoDepthTestAndWriteTestDepthStencilState);
+	pD3DDevice->CreateDepthStencilState(&dsDescCopy, &pNoDepthStencilState);
 }
 
 void CDispositifD3D11::InitBlendStates()

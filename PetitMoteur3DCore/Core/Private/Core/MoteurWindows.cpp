@@ -270,7 +270,7 @@ void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
 	pDispositif->InitDepthBuffer();
 	pDispositif->InitDepthState();
 
-	pDispositif->SetDepthState(true, true);
+	pDispositif->ActiverDepth();
 	//pDispositif->DesactiverDepth();
 
 	pDispositif->InitBlendStates();
