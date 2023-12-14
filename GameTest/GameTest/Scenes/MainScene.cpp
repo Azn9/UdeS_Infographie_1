@@ -13,6 +13,7 @@
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/GameObject/Basic/BasicSphere.h"
+#include "Api/Private/Light/Shadow/ShadowProcessor.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/MainScene/PauseComponent.h"
 #include "GameTest/UI/TestUIObject.h"
@@ -153,6 +154,12 @@ void MainScene::InitializeObjects()
         AddPine(XMFLOAT3(5.0f, -33.96f, -56.48f));
         AddPine(XMFLOAT3(21.97f, -34.6f, -55.14f));
     }
+
+
+    auto shadowProcessor = std::make_unique<ShadowProcessor>();
+    shadowProcessor->Initialize();
+    shadowProcessor->SetScene(this);
+    AddComponent(std::move(shadowProcessor));
 }
 
 
