@@ -6,19 +6,12 @@
 
 #include "Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
-#include "Api/Public/Component/Basic/Physics/SphereCollider.h"
 #include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Light/AmbiantLight.h"
-#include "Api/Public/Util/FilterGroup.h"
-#include "Api/Public/GameObject/Basic/BasicSphere.h"
 #include "GameTest/Components/CameraFollowComponent.h"
-#include "GameTest/Components/MainScene/PauseComponent.h"
 #include "GameTest/Objects/Pine.h"
 
-#include "GameTest/Components/MovableComponent.h"
-#include "GameTest/Components/SizeModifierComponent.h"
-#include "GameTest/Components/WalkSoundComponent.h"
 #include "GameTest/UI/GameUI.h"
 #include "GameTest/Objects/MainScene/Map.h"
 #include <GameTest/Objects/Skier.h>
@@ -32,6 +25,8 @@
 #include <GameTest/Components/SkierSpawner.h>
 
 #include "Api/Private/Light/Shadow/ShadowProcessor.h"
+#include "Api/Public/Util/Sound/SoundManager.h"
+#include "GameTest/Objects/Sphere/Sphere.h"
 
 void MainScene::InitializePhysics()
 {
@@ -97,7 +92,6 @@ void MainScene::InitializeObjects()
     AddChild(std::move(map));
     mapPtr->Initialize();
 
-
     // === Add skybox ===
     auto skybox = std::make_unique<GameObject>("Skybox");
     skybox->SetWorldScale({10000.f,10000.f,10000.f});
@@ -109,65 +103,46 @@ void MainScene::InitializeObjects()
     AddChild(std::move(skybox));
 
 
+    auto sphere = std::make_unique<Sphere>();
+    spherePtr = sphere.get();
+    AddChild(std::move(sphere));
+    spherePtr->Initialize();
 
-	// ============= Add a sphere =============
-	{
-		auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-		spherePtr = sphere.get();
-		AddChild(std::move(sphere));
-		spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-		spherePtr->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
-		spherePtr->Initialize();
+    auto skierSpawner = std::make_unique<SkierSpawner>();
+    const auto skierSpawnerPtr = skierSpawner.get();
+    AddComponent(std::move(skierSpawner));
+    skierSpawnerPtr->Initialize();
+    skierSpawnerPtr->Update();
 
-		auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-		const auto sphereRigidbodyPtr = sphereRigidbody.get();
-		spherePtr->AddComponent(std::move(sphereRigidbody));
-		sphereRigidbodyPtr->Initialize();
-
-		auto sphereCollider = std::make_unique<
-			PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
-		const auto sphereColliderPtr = sphereCollider.get();
-		spherePtr->AddComponent(std::move(sphereCollider));
-		sphereColliderPtr->Initialize();
-		physx::PxFilterData filterDataSnowball;
-		filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
-		physx::PxShape* sphereShape = sphereColliderPtr->getShape();
-		sphereShape->setSimulationFilterData(filterDataSnowball);
-
-		GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
-
-		spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
-
-		spherePtr->AddComponent(std::make_unique<MovableComponent>());
-
-
-		auto skierSpawner = std::make_unique<SkierSpawner>();
-		const auto skierSpawnerPtr = skierSpawner.get();
-		AddComponent(std::move(skierSpawner));
-		skierSpawnerPtr->Initialize();
-		skierSpawnerPtr->Update();
-
-
-		auto walkSoundComponent = std::make_unique<WalkSoundComponent>();
-		const auto walkSoundComponentPtr = walkSoundComponent.get();
-		spherePtr->AddComponent(std::move(walkSoundComponent));
-		walkSoundComponentPtr->Initialize();
-
-
-		auto shadowProcessor = std::make_unique<ShadowProcessor>();
-		shadowProcessor->Initialize();
-		shadowProcessor->SetScene(this);
-		AddComponent(std::move(shadowProcessor));
-	}
+    
+    auto shadowProcessor = std::make_unique<ShadowProcessor>();
+    shadowProcessor->Initialize();
+    shadowProcessor->SetScene(this);
+    AddComponent(std::move(shadowProcessor));
 }
 
 	void MainScene::InitializeUI()
 	{
 		Scene::InitializeUI(); // Init the base canvas
 
-		auto gameUI = std::make_unique<GameUI>();
-		const auto gameUIPtr = gameUI.get();
-		AddUiChild(std::move(gameUI));
-		gameUIPtr->Initialize();
-	}
+    auto gameUI = std::make_unique<GameUI>();
+    const auto gameUIPtr = gameUI.get();
+    AddUiChild(std::move(gameUI));
+    gameUIPtr->Initialize();
+
+    if (
+        const auto loadRes = SoundManager::GetInstance().loadSound(
+            "sounds/effects/toung.wav",
+            &SoundManager::GetInstance().toungBuffer
+        );
+        !loadRes
+    )
+    {
+        std::cerr << "Failed to load sound toung.wav" << std::endl;
+    }
+    else
+    {
+        std::cout << "Loaded sound toung.wav" << std::endl;
+    }
+}
 

@@ -9,6 +9,7 @@
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/EventSystem/InTunnelEvent.h"
 #include "Api/Public/GameObject/GameObject.h"
+#include "Api/Public/Util/Sound/SoundManager.h"
 #include "GameTest/GameTest.h"
 #include "GameTest/RestartEvent.h"
 #include "GameTest/Event/GameOverEvent.h"
@@ -18,6 +19,7 @@ SizeModifierComponent::SizeModifierComponent()
 {
     PM3D_API::EventSystem::Subscribe([this](const CollisionObstacleEvent& event)
     {
+        //SoundManager::GetInstance().Play(SoundManager::GetInstance().toungBuffer);
         _collisionHappend = true;
     });
 
@@ -40,9 +42,9 @@ void SizeModifierComponent::PhysicsUpdate()
     {
         _resetRequested = false;
         _inTunnel = false;
-        shape->setGeometry(physx::PxSphereGeometry(0.2f));
+        shape->setGeometry(physx::PxSphereGeometry(1.f));
         parentObject->SetWorldPosition(DirectX::XMFLOAT3(0.f, -60.f, 0.f));
-        parentObject->SetWorldScale(DirectX::XMFLOAT3(0.2f, 0.2f, 0.2f));
+        parentObject->SetWorldScale(DirectX::XMFLOAT3(1.f, 1.f, 1.f));
         return;
     }
 

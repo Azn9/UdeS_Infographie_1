@@ -11,7 +11,7 @@ public:
 
     void DrawDebugInfo() const override;
 
-    float currentSize = 0.2f;
+    float currentSize = 1.f;
 
     inline static constexpr float MAX_SIZE = 4.f;
 

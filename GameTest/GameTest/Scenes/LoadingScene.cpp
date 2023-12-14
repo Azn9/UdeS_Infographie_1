@@ -14,6 +14,8 @@
 #include "GameTest/UI/Menus/MainMenuUI.h"
 
 #include "Api/Private/Light/Shadow/ShadowProcessor.h"
+#include "GameTest/Objects/Sphere/SphereRenderer.h"
+#include "GameTest/Objects/Sphere/SphereShader.h"
 
 void LoadingScene::InitializeCamera()
 {
@@ -67,6 +69,18 @@ void LoadingScene::InitializeObjects()
     skyRenderer->SetIgnoreCulling(true);
     skybox->AddComponent(std::move(skyRenderer));
     AddChild(std::move(skybox));
+
+    auto sphere = std::make_unique<GameObject>("Sphere");
+    sphere->Initialize();
+    sphere->SetWorldScale(XMFLOAT3(1.f, 1.f, 1.f));
+    sphere->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
+    const auto spherePtr = sphere.get();
+    AddChild(std::move(sphere));
+    auto sphereShader = std::make_unique<SphereShader>(L"shader/SphereShader.fx");
+    auto sphereRenderer = std::make_unique<SphereRenderer>(std::move(sphereShader));
+    const auto sphereRendererPtr = sphereRenderer.get();
+    spherePtr->AddComponent(std::move(sphereRenderer));
+    sphereRendererPtr->Initialize();
 }
 
 void LoadingScene::InitializeUI()
