@@ -15,5 +15,4 @@ public:
 
 private:
 	void AddPine(const DirectX::XMFLOAT3& pos);
-	void AddSkier(DirectX::XMFLOAT3 position, physx::PxU32 id, int checkpoint);
 };
