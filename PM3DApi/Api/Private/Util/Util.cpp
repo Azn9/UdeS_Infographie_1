@@ -34,6 +34,16 @@ DirectX::XMFLOAT2 Util::operator/(const DirectX::XMFLOAT2& a, const float& f)
     return {a.x / f, a.y / f};
 }
 
+DirectX::XMFLOAT3 Util::operator+(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+{
+    return {a.x + b.x, a.y + b.y, a.z + b.z};
+}
+
+DirectX::XMFLOAT3 Util::operator-(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+{
+    return {a.x - b.x, a.y - b.y, a.z - b.z};
+}
+
 float Util::magnitude(const DirectX::XMFLOAT2& f2)
 {
     return std::sqrt(f2.x * f2.x + f2.y * f2.y);

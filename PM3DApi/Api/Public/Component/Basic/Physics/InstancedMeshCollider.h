@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Collider.h"
+#include "Api/Public/Component/Basic/Render/3D/InstancedMeshRenderer.h"
 
 namespace PM3D_API
 {
@@ -8,8 +9,9 @@ namespace PM3D_API
     {
     public:
         explicit InstancedMeshCollider(
-            physx::PxMaterial* _material
-        ) : shape(nullptr), material(_material)
+            physx::PxMaterial* _material,
+            InstancedMeshRenderer* _meshRenderer
+        ) : shape(nullptr), material(_material), meshRenderer(_meshRenderer)
         {
         }
 
@@ -20,5 +22,7 @@ namespace PM3D_API
     protected:
         physx::PxShape* shape;
         physx::PxMaterial* material;
+
+        InstancedMeshRenderer* meshRenderer;
     };
 }

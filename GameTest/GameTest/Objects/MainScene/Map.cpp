@@ -26,7 +26,8 @@ void Map::Initialize()
     mapRigidbodyPtr->Initialize();
 
     auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(
-        parent->GetScene()->GetPhysicsResolver()->GetDefaultMaterial()
+        parent->GetScene()->GetPhysicsResolver()->GetDefaultMaterial(),
+        meshRendererPtr
     );
     const auto meshColliderPtr = meshCollider.get();
     AddComponent(std::move(meshCollider));
@@ -59,7 +60,8 @@ void Map::Initialize()
         rendererPtr->Initialize();
 
         auto instancedMeshCollider = std::make_unique<PM3D_API::InstancedMeshCollider>(
-            scene->GetPhysicsResolver()->GetDefaultMaterial());
+            scene->GetPhysicsResolver()->GetDefaultMaterial(),
+            rendererPtr);
         const auto instancedMeshColliderPtr = instancedMeshCollider.get();
         gameObjectPtr->AddComponent(std::move(instancedMeshCollider));
         instancedMeshColliderPtr->Initialize();
@@ -152,7 +154,8 @@ void Map::Initialize()
     tunnelRigidbodyPtr->Initialize();
 
     auto tunnelMeshCollider = std::make_unique<PM3D_API::MeshCollider>(
-        parent->GetScene()->GetPhysicsResolver()->GetDefaultMaterial()
+        parent->GetScene()->GetPhysicsResolver()->GetDefaultMaterial(),
+        tunnelRendererPtr
     );
     const auto tunnelMeshColliderPtr = tunnelMeshCollider.get();
     tunnelObjPtr->AddComponent(std::move(tunnelMeshCollider));

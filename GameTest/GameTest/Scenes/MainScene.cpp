@@ -62,8 +62,10 @@ void MainScene::InitializeObjects()
     objects->Initialize();
     const auto objectsPtr = objects.get();
     auto objectsShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
-    objects->AddComponent(
-        std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
+    auto objectsRenderer =
+        std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj");
+    auto objectsRendererPtr = objectsRenderer.get();
+    objects->AddComponent(std::move(objectsRenderer));
     AddChild(std::move(objects));
 
     auto objectsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
@@ -71,7 +73,8 @@ void MainScene::InitializeObjects()
     objectsPtr->AddComponent(std::move(objectsRigidbody));
     objectsRigidbodyPtr->Initialize();
 
-    auto objectsMeshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+    auto objectsMeshCollider =
+        std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial(), objectsRendererPtr);
     const auto objectsMeshColliderPtr = objectsMeshCollider.get();
     objectsPtr->AddComponent(std::move(objectsMeshCollider));
     objectsMeshColliderPtr->Initialize();

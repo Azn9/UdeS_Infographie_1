@@ -15,8 +15,6 @@ void PM3D_API::InstancedMeshCollider::Initialize()
 {
     const auto pxPhysics = parentObject->GetScene()->GetPhysicsResolver()->GetPhysics();
 
-    const auto meshRenderer = parentObject->GetComponent<InstancedMeshRenderer>();
-
     if (!meshRenderer)
     {
         throw std::runtime_error("MeshCollider::Initialize - No mesh renderer on the parent object");

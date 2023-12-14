@@ -17,8 +17,6 @@ void PM3D_API::MeshCollider::Initialize()
 
     const auto worldScale = parentObject->GetWorldScale();
 
-    const auto meshRenderer = parentObject->GetComponent<MeshRenderer>();
-
     if (!meshRenderer)
     {
         throw std::runtime_error("MeshCollider::Initialize - No mesh renderer on the parent object");

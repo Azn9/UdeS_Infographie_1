@@ -4,6 +4,7 @@
 namespace PM3D_API
 {
 class GameObject;
+class LODRenderer;
 
 class Component
 {
@@ -26,6 +27,7 @@ protected:
 
 private:
 	friend class GameObject;
+	friend class LODRenderer;
 	void SetGameObject(GameObject* gameObject) { parentObject = gameObject; }
 
 	mutable uint64_t beginDrawSelf;
