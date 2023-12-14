@@ -53,7 +53,7 @@ void WalkSoundComponent::PhysicsUpdate()
     if (physx::PxRaycastBuffer hit; scene->raycast(
         physx::PxVec3(position.x, position.y, position.z),
         physx::PxVec3(0.0f, -1.0f, 0.0f),
-        sizeModifierComponent->currentSize + 0.2f,
+        sizeModifierComponent->currentSize + 0.5f,
         hit, physx::PxHitFlag::eDEFAULT, filterData
     ))
     {

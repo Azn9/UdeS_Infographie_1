@@ -1,9 +1,7 @@
 ﻿#include "GameTest.h"
 
 #include "Core/Public/Core/Moteur.h"
-#include "Core/Public/Texture/Texture.h"
 #include "Scenes/LoadingScene.h"
-#include "_SHADOWTEST/ShadowtestScene.h"
 
 PM3D_API::GameHost* PM3D_API::GameHost::GetInstance()
 {
@@ -13,14 +11,13 @@ PM3D_API::GameHost* PM3D_API::GameHost::GetInstance()
 
 void GameTest::Initialize()
 {
-    //SetScene(ShadowtestScene::GetInstancePtr());
-	SetScene(LoadingScene::GetInstancePtr());
+    SetScene(LoadingScene::GetInstancePtr());
+    //SetScene(SRScene::GetInstancePtr());
 }
 
 void GameTest::InitializePostProcessParam() const
 {
-	
-	postEffectPlane->enableAllPostEffects();
+    postEffectPlane->enableAllPostEffects();
 
 	postEffectPlane->SetShaderVariableValue("startScreenDistRadial", 0.4f);
 	postEffectPlane->SetShaderVariableValue("speedLinesFrameLength", 25);
