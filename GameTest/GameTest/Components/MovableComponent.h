@@ -12,6 +12,8 @@
 #include "Api/Public/Input/Input.h"
 #include "GameTest/Event/GameOverEvent.h"
 #include <Api/Public/EventSystem/InTunnelEvent.h>
+#include <Api/Public/EventSystem/CheckpointEvents.h>
+#include <Api/Public/EventSystem/RespawnSkierEvent.h>
 
 class MovableComponent final : public PM3D_API::Component
 {
@@ -25,6 +27,7 @@ public:
 			rigidDyn->setAngularVelocity({0.f,0.f,0.f});
 			parentObject->SetWorldPosition(XMFLOAT3(0.f,0.f,0.f));
 			_inTunnel = false;
+			//PM3D_API::EventSystem::Publish(RespawnSkierEvent());
 		});
 		PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
 			{
@@ -34,6 +37,16 @@ public:
 
 	void Update() override
 	{
+		if (parentObject->GetWorldPosition().z < -0.f)
+			PM3D_API::EventSystem::Publish(CheckpointEvent_1(true));
+		if (parentObject->GetWorldPosition().z < -250.f)
+			PM3D_API::EventSystem::Publish(CheckpointEvent_2(true));
+		if (parentObject->GetWorldPosition().z < -800.f)
+			PM3D_API::EventSystem::Publish(CheckpointEvent_3(true));
+		if (parentObject->GetWorldPosition().z < -1200.f)
+			PM3D_API::EventSystem::Publish(CheckpointEvent_4(true));
+		if (parentObject->GetWorldPosition().z < -1700.f)
+			PM3D_API::EventSystem::Publish(CheckpointEvent_5(true));
 		/*if (parentObject->GetWorldPosition().z < -1730.f)   //temporaire pour les tests
 			PM3D_API::EventSystem::Publish(GameOverEvent(true));*/
 		physx::PxRigidDynamic* rigidDyn = parentObject->GetComponent<PM3D_API::Rigidbody>()->getRigidDynamic();

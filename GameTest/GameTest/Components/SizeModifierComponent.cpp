@@ -12,6 +12,7 @@
 #include "GameTest/GameTest.h"
 #include "GameTest/RestartEvent.h"
 #include "GameTest/Event/GameOverEvent.h"
+#include "Api/Public/Util/FilterGroup.h"
 
 SizeModifierComponent::SizeModifierComponent()
 {
@@ -79,6 +80,12 @@ void SizeModifierComponent::PhysicsUpdate()
 
         shape->setGeometry(physx::PxSphereGeometry(currentSize));
     }
+    physx::PxFilterData filterDataSnowBall = shape->getSimulationFilterData();
+    if (parentObject->GetWorldScale().x >= 0.9f)
+        filterDataSnowBall.word2 = BuriablePenguin::eCanBury;
+    else
+        filterDataSnowBall.word2 = BuriablePenguin::eCannotBury;
+    shape->setSimulationFilterData(filterDataSnowBall);
 }
 
 void SizeModifierComponent::DrawDebugInfo() const
