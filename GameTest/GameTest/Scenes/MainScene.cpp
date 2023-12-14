@@ -95,51 +95,8 @@ void MainScene::InitializeObjects()
     auto map = std::make_unique<Map>();
     const auto mapPtr = map.get();
     AddChild(std::move(map));
-
-
     mapPtr->Initialize();
 
-
-    // ============= Add a sphere =============
-    {
-        auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-        spherePtr = sphere.get();
-        AddChild(std::move(sphere));
-        spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-        spherePtr->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
-        spherePtr->Initialize();
-
-        auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-        const auto sphereRigidbodyPtr = sphereRigidbody.get();
-        spherePtr->AddComponent(std::move(sphereRigidbody));
-        sphereRigidbodyPtr->Initialize();
-
-        auto sphereCollider = std::make_unique<
-            PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
-        const auto sphereColliderPtr = sphereCollider.get();
-        spherePtr->AddComponent(std::move(sphereCollider));
-        sphereColliderPtr->Initialize();
-        physx::PxFilterData filterDataSnowball;
-        filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
-        physx::PxShape* sphereShape = sphereColliderPtr->getShape();
-        sphereShape->setSimulationFilterData(filterDataSnowball);
-
-        GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
-
-        spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
-
-        spherePtr->AddComponent(std::make_unique<MovableComponent>());
-
-        auto walkSoundComponent = std::make_unique<WalkSoundComponent>();
-        const auto walkSoundComponentPtr = walkSoundComponent.get();
-        spherePtr->AddComponent(std::move(walkSoundComponent));
-        walkSoundComponentPtr->Initialize();
-    }
-    
-    auto shadowProcessor = std::make_unique<ShadowProcessor>();
-    shadowProcessor->Initialize();
-    shadowProcessor->SetScene(this);
-    AddComponent(std::move(shadowProcessor));
 
     // === Add skybox ===
     auto skybox = std::make_unique<GameObject>("Skybox");
@@ -150,27 +107,7 @@ void MainScene::InitializeObjects()
     skyRenderer->SetIgnoreCulling(true);
     skybox->AddComponent(std::move(skyRenderer));
     AddChild(std::move(skybox));
-}
 
-
-	auto objectsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
-	const auto objectsRigidbodyPtr = objectsRigidbody.get();
-	objectsPtr->AddComponent(std::move(objectsRigidbody));
-	objectsRigidbodyPtr->Initialize();
-
-	auto objectsMeshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
-	const auto objectsMeshColliderPtr = objectsMeshCollider.get();
-	objectsPtr->AddComponent(std::move(objectsMeshCollider));
-	objectsMeshColliderPtr->Initialize();
-
-	// ============= Add the map =============
-
-	auto map = std::make_unique<Map>();
-	const auto mapPtr = map.get();
-	AddChild(std::move(map));
-
-
-	mapPtr->Initialize();
 
 
 	// ============= Add a sphere =============
