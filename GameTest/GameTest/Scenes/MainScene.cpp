@@ -21,6 +21,15 @@
 #include "GameTest/Components/WalkSoundComponent.h"
 #include "GameTest/UI/GameUI.h"
 #include "GameTest/Objects/MainScene/Map.h"
+#include <GameTest/Objects/Skier.h>
+#include <Api/Public/Component/Basic/Physics/BoxCollider.h>
+#include <Api/Public/Component/Basic/Physics/SkierCollider.h>
+#include <GameTest/Objects/Right_Ski.h>
+#include <GameTest/Objects/Left_ski.h>
+#include <GameTest/Components/JointsBreakerComponent.h>
+#include <GameTest/Components/ToggleOnSkierComponent.h>
+#include <GameTest/Components/SkierDeleter.h>
+#include <GameTest/Components/SkierSpawner.h>
 
 #include "Api/Private/Light/Shadow/ShadowProcessor.h"
 
@@ -119,6 +128,73 @@ void MainScene::InitializeObjects()
 
         spherePtr->AddComponent(std::make_unique<MovableComponent>());
 
+		auto cameraRealFP = std::make_unique<PM3D_API::Camera>(
+			"Camera RFP",
+			PM3D_API::Camera::PERSPECTIVE,
+			XMFLOAT3(0.0f, 0.1f, 0.0f),
+			XMVectorSet(0.0f, -5.0f, 15.0f, 1.0f)
+		);
+		cameraRealFP->SetFieldOfView(45.0f);
+		cameraRealFP->SetFarDist(1000.0f);
+		cameraRealFP->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
+
+		spherePtr->AddChild(std::move(cameraRealFP));
+	}
+
+	// ============= Add railings =============
+	{
+		auto railings = std::make_unique<GameObject>("railings");
+		auto shader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
+		railings->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), "Railings.obj"));
+		railings->Initialize();
+		const auto railingsPtr = railings.get();
+		AddChild(std::move(railings));
+
+		auto railingsRigidbody = std::make_unique<PM3D_API::Rigidbody>(true);
+		const auto railingsRigidbodyPtr = railingsRigidbody.get();
+		railingsPtr->AddComponent(std::move(railingsRigidbody));
+		railingsRigidbodyPtr->Initialize();
+
+		auto meshCollider = std::make_unique<PM3D_API::MeshCollider>(physicsResolver->GetDefaultMaterial());
+		const auto meshColliderPtr = meshCollider.get();
+		railingsPtr->AddComponent(std::move(meshCollider));
+		meshColliderPtr->Initialize();
+
+		physx::PxFilterData filterDataObstacle;
+		filterDataObstacle.word0 = FilterGroup::eOBSTACLE;
+		physx::PxShape* railingShape = meshColliderPtr->getShape();
+		railingShape->setSimulationFilterData(filterDataObstacle);
+	}
+
+	// ============= Add a pines =============
+	{
+		AddPine(XMFLOAT3(0.f, -80.f, -10.f));
+		AddPine(XMFLOAT3(1.2f, 14.f, -21.f));
+		AddPine(XMFLOAT3(-2.1f, -12.6f, -18.f));
+		AddPine(XMFLOAT3(-3.75f, -14.54f, -21.94f));
+		AddPine(XMFLOAT3(1.2f, -14.1f, -21.f));
+		AddPine(XMFLOAT3(12.87f, -27.54f, -44.46f));
+		AddPine(XMFLOAT3(16.96f, -35.3f, -57.02f));
+		AddPine(XMFLOAT3(14.53f, -31.53f, -51.1f));
+		AddPine(XMFLOAT3(-15.4f, -35.8f, -60.16f));
+		AddPine(XMFLOAT3(-27.11f, -35.67f, -57.92f));
+		AddPine(XMFLOAT3(-22.06f, -21.8f, -35.15f));
+		AddPine(XMFLOAT3(10.83f, -43.02f, -71.44f));
+		AddPine(XMFLOAT3(22.33f, -20.25f, -29.9f));
+		AddPine(XMFLOAT3(-12.64f, -36.24f, -61.14f));
+		AddPine(XMFLOAT3(-10.16f, -35.38f, -59.47f));
+		AddPine(XMFLOAT3(-21.72f, -40.49f, -68.81f));
+		AddPine(XMFLOAT3(2.31f, -32.77f, -54.46f));
+		AddPine(XMFLOAT3(5.0f, -33.96f, -56.48f));
+		AddPine(XMFLOAT3(21.97f, -34.6f, -55.14f));
+	}
+	auto skierSpawner = std::make_unique<SkierSpawner>();
+	const auto skierSpawnerPtr = skierSpawner.get();
+	AddComponent(std::move(skierSpawner));
+	skierSpawnerPtr->Initialize();
+	skierSpawnerPtr->Update();
+
+
         auto walkSoundComponent = std::make_unique<WalkSoundComponent>();
         const auto walkSoundComponentPtr = walkSoundComponent.get();
         spherePtr->AddComponent(std::move(walkSoundComponent));
@@ -140,3 +216,4 @@ void MainScene::InitializeUI()
     AddUiChild(std::move(gameUI));
     gameUIPtr->Initialize();
 }
+
