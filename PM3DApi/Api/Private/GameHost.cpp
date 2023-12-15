@@ -23,6 +23,12 @@ void PM3D_API::GameHost::Update() const
 
 	if (const auto uiCanvas = scene->GetUICanvas())
 		uiCanvas->Update();
+
+	if(PM3D::Time::GetInstance().GetTimeScale() > 0.001f)
+	{
+		int64_t timeMs = PM3D::Time::GetInstance().GetCurrentTimeMs();
+		postEffectPlane->SetShaderVariableValue("time", static_cast<int>(timeMs));
+	}
 }
 
 void PM3D_API::GameHost::PhysicsUpdate() const
@@ -75,8 +81,6 @@ void PM3D_API::GameHost::SetScene(Scene* newScene)
 
 void PM3D_API::GameHost::Draw()
 {
-	int64_t timeMs = PM3D::Time::GetInstance().GetCurrentTimeMs();
-	postEffectPlane->SetShaderVariableValue("time", static_cast<int>(timeMs));
 	
 	if (scene)
 	{

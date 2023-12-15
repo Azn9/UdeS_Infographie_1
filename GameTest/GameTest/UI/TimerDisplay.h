@@ -26,9 +26,16 @@ public:
     void Initialize() override;
     void Update() override;
 
+    void Test()
+    {
+        isInTunnel = true;
+    }
+
 private:
+    int64_t time;
     int64_t startTime;
     int64_t endTime;
     bool isRunning;
+    bool isInTunnel;
     std::unique_ptr<PM3D_API::TextRenderer>::pointer textDisplayPtr;
 };
