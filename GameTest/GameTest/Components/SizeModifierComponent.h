@@ -17,7 +17,7 @@ public:
 
 private:
     float _sizeModificationSpeed = 1.002f;
-    float _sizeModificationSpeedDecrease = 0.990f;
+    float _sizeModificationSpeedDecrease = 0.993f;
     bool _collisionHappend = false;
     bool _resetRequested = false;
     bool _inTunnel = false;

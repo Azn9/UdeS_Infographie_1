@@ -19,7 +19,7 @@ public:
               0.0f,
               true,
               true
-          ), startTime(0), endTime(0), isRunning(false), textDisplayPtr(nullptr)
+          ), startTime(0), endTime(0), isRunning(false), textDisplayPtr(nullptr), isInTunnel(false)
     {
     }
 
@@ -29,6 +29,16 @@ public:
     void Test()
     {
         isInTunnel = true;
+    }
+
+    void Test2()
+    {
+        std::cout << "aaa" << std::endl;
+    }
+
+    void Test3()
+    {
+        std::cout << "aaa" << std::endl;
     }
 
 private:
