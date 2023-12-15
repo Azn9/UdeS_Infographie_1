@@ -244,32 +244,28 @@ float4 MainPS(VS_Sortie input) : SV_Target
 			continue;
         }
 
-        float3 ambiantValueF = float3(0, 0, 0);
-        float3 diffuseValueF = float3(0, 0, 0);
-        float3 specularValueF = float3(0, 0, 0);
-
-        if (li.lightType == 0) // ambiant
-        {
-            ambiantValueF = li.ambiant;
-        }
-        else if (li.lightType == 1) // Directionnal
-        {
-            float3 L = normalize(-li.direction.xyz);
-            float3 diff = saturate(dot(N, L));
+		if (li.lightType == 0) // ambiant
+		{
+			totalAmbiant += li.ambiant;
+		}
+		else if (li.lightType == 1) // Directionnal
+		{
+			float3 L = normalize(-li.direction.xyz);
+			float3 diff = saturate(dot(N, L));
 			//float3 R = normalize(2 * diff * N - L);
 			//float3 S = pow(saturate(dot(R, V)), li.specularPower);
 
-            float3 H = normalize(L + V);
-            float NdotH = saturate(dot(N, H));
-            float puissance = max(EPSILON, Ns * li.specularPower);
-            float specularValue = pow(NdotH, puissance);
+			float3 H = normalize(L + V);
+			float NdotH = saturate(dot(N, H));
+			float puissance = max(EPSILON, Ns * li.specularPower);
+			float specularValue = pow(NdotH, puissance);
 
-            ambiantValueF = li.ambiant;
-            diffuseValueF = li.diffuse.rgb * diff;
-            specularValueF = li.specular.rgb * specularValue;
-        }
-        else if (li.lightType == 2) // Point
-        {
+			totalAmbiant += li.ambiant;
+			totalDiffuse += li.diffuse.rgb * diff;
+			totalSpecular += li.specular.rgb * specularValue;
+		}
+		else if (li.lightType == 2) // Point
+		{
             float3 L = normalize(li.position.xyz - input.worldPos);
 
             // Diffuse
@@ -290,83 +286,76 @@ float4 MainPS(VS_Sortie input) : SV_Target
             float attenuation = (1 / D) * li.specularPower;
             //float attenuation = (1 / (D * D)) * li.intensity;
 
-            ambiantValueF = li.ambiant * attenuation;
-            diffuseValueF = li.diffuse * diffuseValue * attenuation;
-            specularValueF = li.specular * specularValue * attenuation;
-        }
-        else if (li.lightType == 3) // Spot
-        {
-            float3 lightDirection = normalize(li.position.xyz - input.position.xyz);
-            float3 spotDirection = normalize(-li.direction.xyz);
+			if (isPreCompute) {
+				//attenuation *= 0.6;
+			}
 
-            float spotCosine = saturate(dot(lightDirection, -spotDirection));
+            totalAmbiant += li.ambiant * attenuation;
+            totalDiffuse += li.diffuse * diffuseValue * attenuation;
+            totalSpecular += li.specular * specularValue * attenuation;
+		}
+		else if (li.lightType == 3) // Spot
+		{
+			float3 lightDirection = normalize(li.position.xyz - input.position.xyz);
+			float3 spotDirection = normalize(-li.direction.xyz);
 
-            if (spotCosine <= cos(li.outerAngle))
-            {
-                float diffuseFalloff;
+			float spotCosine = saturate(dot(lightDirection, -spotDirection));
 
-                if (spotCosine <= cos(li.innerAngle))
-                {
-                    diffuseFalloff = 1.0;
-                }
-                else
-                {
-                    float t = saturate((spotCosine - cos(li.outerAngle)) / (cos(li.innerAngle) - cos(li.outerAngle)));
-                    diffuseFalloff = smoothstep(0.0, 1.0, t);
-                }
+			if (spotCosine <= cos(li.outerAngle))
+			{
+				float diffuseFalloff;
 
-                float3 L = normalize(-li.direction.xyz);
-                float3 diff = saturate(dot(N, L));
+				if (spotCosine <= cos(li.innerAngle))
+				{
+					diffuseFalloff = 1.0;
+				}
+				else
+				{
+					float t = saturate((spotCosine - cos(li.outerAngle)) / (cos(li.innerAngle) - cos(li.outerAngle)));
+        			diffuseFalloff = smoothstep(0.0, 1.0, t);
+				}
+
+				float3 L = normalize(-li.direction.xyz);
+				float3 diff = saturate(dot(N, L));
 				//float3 R = normalize(2 * diff * N - L);
 				//float3 S = pow(saturate(dot(R, V)), li.specularPower);
 
-                float3 H = normalize(L + V);
-                float NdotH = saturate(dot(N, H));
-                float puissance = max(EPSILON, Ns * li.specularPower);
-                float specularValue = pow(NdotH, puissance);
+				float3 H = normalize(L + V);
+				float NdotH = saturate(dot(N, H));
+				float puissance = max(EPSILON, Ns * li.specularPower);
+				float specularValue = pow(NdotH, puissance);
 
-                ambiantValueF = li.ambiant.xyz * diffuseFalloff;
-                diffuseValueF = li.diffuse.rgb * diff * diffuseFalloff;
-                specularValueF = li.specular.rgb * specularValue * diffuseFalloff;
-            }
-        }
+				totalAmbiant += li.ambiant.xyz * diffuseFalloff;
+				totalDiffuse += li.diffuse.rgb * diff * diffuseFalloff;
+				totalSpecular += li.specular.rgb * specularValue * diffuseFalloff;
+			}
 
-        totalAmbiant += ambiantValueF;
-        
+/*
+			float3 toLight = li.position.xyz - input.position.xyz;
+			float3 toEye = input.cameraVec.xyz - input.position.xyz;
+			float distToLight = length(toLight);
+			
+			toLight = normalize(toLight);
+
+			float NDotL = saturate(dot(toLight, N));
+			totalDiffuse += li.diffuse.rgb * NDotL;
+			
+			toEye = normalize(toEye);
+   			float3 HalfWay = normalize(toEye + toLight);
+   			float NDotH = saturate(dot(HalfWay, N));
+			float puissance = max(EPSILON, Ns * li.specularPower);
+   			totalDiffuse += li.specular.rgb * pow(NDotH, puissance);
+
+			float conAtt = saturate((cosAng - SpotCosOuterCone) * SpotCosInnerConeRcp);
+   			conAtt *= conAtt;
+
+			float DistToLightNorm = 1.0 - saturate(DistToLight * SpotLightRangeRcp);
+		    float Attn = DistToLightNorm * DistToLightNorm;
+*/
+
+		}
+
 		// SHADOWS
-        float4 posInMap = input.PosInMap[i];
-		// validate that x & y are in [-1, 1]
-
-        if (posInMap.x <= -1 || posInMap.x >= 0.9982 || posInMap.y <= -1 || posInMap.y >= 0.998)
-        {
-            totalDiffuse += diffuseValueF;
-            totalSpecular += specularValueF;
-            continue;
-        }
-
-		// Texture coordinates are 0-1
-        float2 uv = float2((posInMap.x / 2) + 0.5f, (-posInMap.y / 2) + 0.5f);
-
-        float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
-		
-		
-		// clacul of the distance to the plan (ortho)
-        float vectorX = input.worldPos.x - li.position.x;
-        float vectorY = input.worldPos.y - li.position.y;
-        float vectorZ = input.worldPos.z - li.position.z;
-
-		// Calcul du produit scalaire entre le vecteur et la normale du plan
-        float dotProduct = vectorX * li.direction.x + vectorY * li.direction.y + vectorZ * li.direction.z;
-
-		// Calcul de la magnitude de la normale pour obtenir la distance (distance signée)
-        float normalMagnitude = sqrt(li.direction.x * li.direction.x + li.direction.y * li.direction.y + li.direction.z * li.direction.z);
-        float distance = dotProduct / normalMagnitude / 500.f; // 500.f = far dist of the shadowmap camera
-
-        if (distance <= depthV) // Not in shadows
-        {
-            totalDiffuse += diffuseValueF;
-            totalSpecular += specularValueF;
-        }
 
 
 	}

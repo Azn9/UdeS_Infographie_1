@@ -23,7 +23,7 @@ namespace PM3D_API
 
         void Initialize() override;
         void DrawSelf() const override;
-	    void DrawShadowSelf(const Camera& camera) const override;
+	void DrawShadowSelf(const Camera& camera) const override;
 
         void DrawDebugInfo() const override
         {
