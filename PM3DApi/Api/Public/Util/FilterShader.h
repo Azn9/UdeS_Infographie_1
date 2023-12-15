@@ -18,7 +18,7 @@ PxFilterFlags FilterShader(
 	PxU32 constantBlockSize)
 {
 
-	std::cout << FilterGroup::eSNOWBALL << " " << filterData0.word0 << "||" << filterData1.word0 << std::endl;
+	//std::cout << FilterGroup::eSNOWBALL << " " << filterData0.word0 << "||" << filterData1.word0 << std::endl;
 
 	if ((filterData0.word0 == FilterGroup::eSNOWBALL && filterData1.word0 == FilterGroup::eOBSTACLE) 
 		|| (filterData1.word0 == FilterGroup::eSNOWBALL && filterData0.word0 == FilterGroup::eOBSTACLE)
