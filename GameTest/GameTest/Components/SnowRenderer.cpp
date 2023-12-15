@@ -7,7 +7,7 @@
 #include "Core/Public/Util/util.h"
 #include "GameTest/Shader/SnowShader.h"
 
-#define TEXTURE_SCALE 2048
+#define TEXTURE_SCALE 512
 
 void SnowRenderer::Initialize()
 {
@@ -261,14 +261,14 @@ void SnowRenderer::DrawRVT() const
     const auto pos = parentObject->GetWorldPosition();
 
     const XMMATRIX viewProj = XMMatrixLookAtRH(
-        XMVectorSet(0, 10.0f, -1000.f, 1.0f),
-        XMVectorSet(0, 0, -1000.f, 1.0f),
+        XMVectorSet(20.f, -40.0f, 88.f, 1.0f),
+        XMVectorSet(20.f, -50, 88.f, 1.0f),
         XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f)
     ) * XMMatrixOrthographicRH(
-        2700,
-        2700,
+        20,
+        20,
         1.f,
-        1000.0f
+        100.0f
     );
 
     const auto parameters = SnowShader::SnowShaderParameters{

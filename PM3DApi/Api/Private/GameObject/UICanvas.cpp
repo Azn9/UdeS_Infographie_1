@@ -97,7 +97,7 @@ void PM3D_API::UICanvas::SetScale(const DirectX::XMFLOAT2& newScale)
 void PM3D_API::UICanvas::UpdateHover(const int x, const int y) const
 {
     const int screenX = x;
-    const int screenY = GameHost::GetInstance()->GetScreenHeight() - y;
+    const int screenY = GameHost::GetInstance()->GetScreenHeight() - static_cast<int>(y);
 
     for (const auto& uiObject : children)
     {
@@ -132,7 +132,7 @@ void PM3D_API::UICanvas::UpdateHover(const int x, const int y) const
 void PM3D_API::UICanvas::UpdateClick(const MouseClickEvent& event)
 {
     const int screenX = event.x;
-    const int screenY = GameHost::GetInstance()->GetScreenHeight() - event.y;
+    const int screenY = GameHost::GetInstance()->GetScreenHeight() - static_cast<int>(event.y);
     const bool pressed = event.pressed;
 
     for (const auto& uiObject : children)

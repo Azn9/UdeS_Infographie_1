@@ -93,7 +93,7 @@ void SizeModifierComponent::PhysicsUpdate()
         shape->setGeometry(physx::PxSphereGeometry(currentSize));
     }
     physx::PxFilterData filterDataSnowBall = shape->getSimulationFilterData();
-    if (parentObject->GetWorldScale().x >= 0.9f)
+    if (parentObject->GetWorldScale().x >= 2.0f)
         filterDataSnowBall.word2 = BuriablePenguin::eCanBury;
     else
         filterDataSnowBall.word2 = BuriablePenguin::eCannotBury;

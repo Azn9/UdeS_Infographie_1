@@ -14,6 +14,7 @@
 #include "GameTest/UI/Menus/MainMenuUI.h"
 
 #include "Api/Private/Light/Shadow/ShadowProcessor.h"
+#include "GameTest/Components/TournerComponent.h"
 #include "GameTest/Objects/Sphere/SphereRenderer.h"
 #include "GameTest/Objects/Sphere/SphereShader.h"
 
@@ -22,8 +23,8 @@ void LoadingScene::InitializeCamera()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSPECTIVE,
-        XMFLOAT3(-2.0f, -50.0f, 50.0f),
-        XMVectorSet(6.0f, -50.0f, 66.0f, 1.0f),
+        XMFLOAT3(-2.0f, -45.0f, 50.0f),
+        XMVectorSet(6.0f, -45.0f, 66.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
@@ -55,6 +56,20 @@ void LoadingScene::InitializeObjects()
     objects->AddComponent(
         std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
     AddChild(std::move(objects));
+
+    // 20 -52 88
+    auto otherSnowball = std::make_unique<GameObject>("OS");
+    const auto otherSnowballPtr = otherSnowball.get();
+    AddChild(std::move(otherSnowball));
+    auto sphereShader1 = std::make_unique<SphereShader>(L"shader/SphereShader.fx");
+    auto sphereRenderer1 = std::make_unique<SphereRenderer>(std::move(sphereShader1));
+    const auto sphereRendererPtr1 = sphereRenderer1.get();
+    otherSnowballPtr->AddComponent(std::move(sphereRenderer1));
+    sphereRendererPtr1->Initialize();
+    otherSnowballPtr->SetWorldPosition(XMFLOAT3(20.f, -52.f, 88.f));
+    otherSnowballPtr->SetWorldScale(XMFLOAT3(1.f, 1.f, 1.f));
+    otherSnowballPtr->AddComponent(std::make_unique<SnowMover>());
+    otherSnowballPtr->AddComponent(std::make_unique<TournerComponent>());
 
     auto shadowProcessor = std::make_unique<ShadowProcessor>();
     shadowProcessor->Initialize();

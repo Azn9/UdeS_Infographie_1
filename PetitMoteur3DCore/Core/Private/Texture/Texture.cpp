@@ -64,7 +64,7 @@ namespace PM3D
         textureArrayDesc.Width = desc.Width;
         textureArrayDesc.Height = desc.Height;
         textureArrayDesc.MipLevels = desc.MipLevels;
-        textureArrayDesc.ArraySize = textures.size();
+        textureArrayDesc.ArraySize = static_cast<UINT>(textures.size());
         textureArrayDesc.Format = desc.Format;
         textureArrayDesc.SampleDesc.Count = 1;
         textureArrayDesc.SampleDesc.Quality = 0;
@@ -88,7 +88,7 @@ namespace PM3D
         srvDesc.Format = desc.Format;
         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
         srvDesc.Texture2DArray.MipLevels = desc.MipLevels;
-        srvDesc.Texture2DArray.ArraySize = textures.size();
+        srvDesc.Texture2DArray.ArraySize = static_cast<UINT>(textures.size());
 
         DXEssayer(pDevice->CreateShaderResourceView(textureArray, &srvDesc, &m_TextureSRV));//essayer avec desc = null
 

@@ -45,7 +45,7 @@ void MainScene::InitializeCamera()
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSPECTIVE,
-        XMFLOAT3(-2.0f, -50.0f, 50.0f),
+        XMFLOAT3(-2.0f, -45.0f, 50.0f),
         XMVectorSet(-2.0f, -50.0f, 80.0f, 1.0f),
         XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
     );

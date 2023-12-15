@@ -307,7 +307,7 @@ void PM3D_API::InstancedMeshRenderer::DrawShadowSelf(const PM3D_API::Camera& cam
     shader->ApplyShaderParams();
 
 
-    for (int i = 0; i < mesh->group_count; ++i)
+    for (unsigned i = 0; i < mesh->group_count; ++i)
     {
         const auto objGroup = mesh->groups[i];
         const unsigned indexStart = objGroup.index_offset;
