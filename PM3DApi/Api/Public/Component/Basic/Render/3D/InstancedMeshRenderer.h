@@ -28,7 +28,10 @@ namespace PM3D_API
 
         void Initialize() override;
         void DrawSelf() const override;
+        void DrawShadowSelf(const PM3D_API::Camera& camera) const override;
+
         bool IsVisible(const XMFLOAT3 position, const XMFLOAT3 scale) const;
+        /*bool IsVisible(const Camera& camera) const override;*/
 
         void DrawDebugInfo() const override
         {

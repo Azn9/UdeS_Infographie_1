@@ -261,6 +261,90 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
     LogEndDrawSelf();
 }
 
+void PM3D_API::InstancedMeshRenderer::DrawShadowSelf(const PM3D_API::Camera& camera) const
+{
+    if (!mesh)
+        throw std::runtime_error("MeshRenderer::DrawSelf: mesh is null");
+
+    // Frustrum culling
+    /*if (!IsVisible(camera))
+    {
+        LogEndDrawSelf();
+        return;
+    }*/
+
+    //Obtenir le contexte
+    const auto pDispositif = GameHost::GetInstance()->GetDispositif();
+    ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
+
+    // Choisir la topologie des primitives
+    pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // input layout des sommets
+    //pImmediateContext->IASetInputLayout(shader->GetShadowVertexLayout());
+    pImmediateContext->IASetInputLayout(shader->GetVertexLayout());
+
+    // Index buffer
+    pImmediateContext->IASetIndexBuffer(shader->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+    // Vertex buffer
+    constexpr UINT stride = sizeof(CSommetMesh);
+    constexpr UINT offset = 0;
+    pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
+
+    const auto pTechnique = shader->GetEffect()->GetTechniqueByName("ShadowMap");
+    const auto pPasse = pTechnique->GetPassByIndex(0);
+
+    const XMMATRIX viewProj = camera.GetMatViewProj();
+
+    const auto shaderParameters = shader->PrepareParameters(
+        XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
+        XMMatrixTranspose(parentObject->GetMatWorld())
+    );
+
+    pPasse->Apply(0, pImmediateContext);
+    pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, shaderParameters, 0, 0);
+    shader->ApplyShaderParams();
+
+
+    for (int i = 0; i < mesh->group_count; ++i)
+    {
+        const auto objGroup = mesh->groups[i];
+        const unsigned indexStart = objGroup.index_offset;
+
+        unsigned int indexDrawAmount;
+        if (mesh->group_count > 1)
+        {
+            if (i + 1 < mesh->group_count)
+            {
+                indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
+            }
+            else
+            {
+                indexDrawAmount = mesh->index_count - indexStart;
+            }
+        }
+        else
+        {
+            indexDrawAmount = mesh->index_count;
+        }
+
+        if (!indexDrawAmount)
+        {
+            continue;
+        }
+
+        // IMPORTANT pour ajuster les param.pPasse->Apply(0, pImmediateContext);
+        shader->GetPass()->Apply(0, pImmediateContext);
+
+        shader->ApplyShaderParams();
+
+        pImmediateContext->DrawIndexed(indexDrawAmount, indexStart, 0);
+    }
+
+    shader->DeleteParameters(shaderParameters);
+}
+
 bool PM3D_API::InstancedMeshRenderer::IsVisible(const XMFLOAT3 position, const XMFLOAT3 scale) const
 {
     const Camera* camera = parentObject->GetScene()->GetMainCamera();
@@ -269,6 +353,11 @@ bool PM3D_API::InstancedMeshRenderer::IsVisible(const XMFLOAT3 position, const X
     const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera->GetMatView());
     return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
 }
+
+//bool PM3D_API::InstancedMeshRenderer::IsVisible(const Camera& camera) const
+//{
+//    return true;
+//}
 
 bool PM3D_API::InstancedMeshRenderer::IsVisible() const
 {
