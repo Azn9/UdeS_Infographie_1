@@ -19,8 +19,10 @@ SizeModifierComponent::SizeModifierComponent()
 {
     PM3D_API::EventSystem::Subscribe([this](const CollisionObstacleEvent& event)
     {
-        //SoundManager::GetInstance().Play(SoundManager::GetInstance().toungBuffer);
         _collisionHappend = true;
+
+        if (SoundManager::GetInstance().toungBuffer)
+            SoundManager::GetInstance().Play(SoundManager::GetInstance().toungBuffer);
     });
 
 
@@ -61,10 +63,18 @@ void SizeModifierComponent::PhysicsUpdate()
         shape->setGeometry(physx::PxSphereGeometry(preScale.x * .5f));
 
         if (preScale.x * .5f < 0.1f)
+        {
             PM3D_API::EventSystem::Publish(GameOverEvent(_inTunnel));
+        }
     }
     else
     {
+        if (preScale.x < 0.1f && _inTunnel)
+        {
+            PM3D_API::EventSystem::Publish(GameOverEvent(true));
+            return;
+        }
+        
         if (preScale.x < MAX_SIZE && !_inTunnel)
             parentObject->SetWorldScale(DirectX::XMFLOAT3(
                 preScale.x * _sizeModificationSpeed,

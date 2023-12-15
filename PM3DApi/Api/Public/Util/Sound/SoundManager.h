@@ -44,6 +44,8 @@ public:
     IDirectSoundBuffer8* uiClick1Buffer;
     IDirectSoundBuffer8* uiRollover1Buffer;
     IDirectSoundBuffer8* toungBuffer;
+    IDirectSoundBuffer8* music1Buffer;
+    IDirectSoundBuffer8* music2Buffer;
 
 private:
     bool initialized = false;

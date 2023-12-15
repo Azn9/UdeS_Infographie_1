@@ -52,7 +52,8 @@ void LoadingScene::InitializeObjects()
     auto objects = std::make_unique<GameObject>("Objects");
     objects->Initialize();
     auto objectsShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
-    objects->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
+    objects->AddComponent(
+        std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
     AddChild(std::move(objects));
 
     auto shadowProcessor = std::make_unique<ShadowProcessor>();
@@ -117,6 +118,22 @@ void LoadingScene::InitializeUI()
         std::cout << "Loaded sound click1.wav" << std::endl;
     }
 
+    if (
+        const auto loadRes = SoundManager::GetInstance().loadSound(
+            "sounds/music/music1.wav",
+            &SoundManager::GetInstance().music1Buffer
+        );
+        !loadRes
+    )
+    {
+        std::cerr << "Failed to load sound music1.wav" << std::endl;
+    }
+    else
+    {
+        std::cout << "Loaded sound music1.wav" << std::endl;
+        SoundManager::GetInstance().Play(SoundManager::GetInstance().music1Buffer);
+    }
+
     auto mainMenuUi = std::make_unique<MainMenuUI>();
     const auto mainMenuUiPtr = mainMenuUi.get();
     AddUiChild(std::move(mainMenuUi));
@@ -131,4 +148,3 @@ void LoadingScene::InitializeUI()
     whiteFadeObjectPtr->SetToTransparent(true);
     whiteFadeObjectPtr->SetFading(true);
 }
-

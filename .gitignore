@@ -14,3 +14,4 @@ PetitMoteur3D/imgui.ini
 build
 /PetitMoteur3DCore/data/Map/map_data.json
 /PetitMoteur3DCore/data/imgui.ini
+cmake

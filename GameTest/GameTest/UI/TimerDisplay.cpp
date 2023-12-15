@@ -13,7 +13,12 @@ void TimerDisplay::Initialize()
 {
     PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
     {
+        if(isInTunnel)
+            return;
         isRunning = false;
+        endTime = PM3D::Time::GetInstance().GetTimeSpecific();
+        isInTunnel = true;
+        Test();
     });
 
     PM3D_API::EventSystem::GetInstance().Subscribe([&](const GameStartEvent&)
@@ -29,6 +34,7 @@ void TimerDisplay::Initialize()
         std::cout << "RestartEvent" << std::endl;
         startTime = PM3D::Time::GetInstance().GetTimeSpecific();
         isRunning = true;
+        isInTunnel = false;
         alpha = 1.f;
     });
 
@@ -37,7 +43,7 @@ void TimerDisplay::Initialize()
         std::cout << "GameOverEvent" << std::endl;
         endTime = PM3D::Time::GetInstance().GetTimeSpecific();
         isRunning = false;
-        alpha = 0.f;
+        //alpha = 0.f;
     });
 
     PM3D_API::EventSystem::GetInstance().Subscribe([&](const PauseEvent& event)
@@ -45,11 +51,11 @@ void TimerDisplay::Initialize()
         if (event.paused)
         {
             isRunning = false;
-            alpha = 0.f;
+            //alpha = 0.f;
         }
         else
         {
-            isRunning = true;
+            isRunning = !isInTunnel;
             alpha = 1.f;
         }
     });
@@ -72,17 +78,12 @@ void TimerDisplay::Initialize()
 
 void TimerDisplay::Update()
 {
-    uint64_t usedEndTime;
     if (isRunning)
     {
-        usedEndTime = PM3D::Time::GetInstance().GetTimeSpecific();
-    }
-    else
-    {
-        usedEndTime = endTime;
+        endTime = PM3D::Time::GetInstance().GetTimeSpecific();
     }
 
-    const uint64_t diff = PM3D::Time::GetInstance().GetTimeIntervalsInMs(startTime, usedEndTime);
+    const uint64_t diff = PM3D::Time::GetInstance().GetTimeIntervalsInMs(startTime, endTime);
 
     const uint64_t ms = diff % 1000;
     const uint64_t s = (diff / 1000) % 60;

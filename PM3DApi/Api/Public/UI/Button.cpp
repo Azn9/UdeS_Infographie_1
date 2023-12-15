@@ -7,9 +7,9 @@
 
 void Button::Initialize()
 {
-    auto spriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(baseFileName);
-    spriteRendererPtr = spriteRenderer.get();
-    AddComponent(std::move(spriteRenderer));
+    auto baseSpriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(baseFileName);
+    spriteRendererPtr = baseSpriteRenderer.get();
+    AddComponent(std::move(baseSpriteRenderer));
     spriteRendererPtr->Initialize();
 
     auto hoverSpriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(hoverFileName);
@@ -22,18 +22,26 @@ void Button::Initialize()
     AddComponent(std::move(pressedSpriteRenderer));
     pressedSpriteRendererPtr->Initialize();
 
-    if (text == "") return;
-
-    auto textRenderer = std::make_unique<PM3D_API::TextRenderer>(
-        fontLoader,
-        text,
-        positionOffset,
-        DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
-        scale
-    );
-    textRendererPtr = textRenderer.get();
-    AddComponent(std::move(textRenderer));
-    textRendererPtr->Initialize();
+    if (text != "")
+    {
+        auto textRenderer = std::make_unique<PM3D_API::TextRenderer>(
+            fontLoader,
+            text,
+            positionOffset,
+            DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f),
+            scale
+        );
+        textRendererPtr = textRenderer.get();
+        AddComponent(std::move(textRenderer));
+        textRendererPtr->Initialize();
+    }
+    else if (imagePath != L"")
+    {
+        auto spriteRenderer = std::make_unique<PM3D_API::SpriteRenderer>(imagePath);
+        imageSpriteRendererPtr = spriteRenderer.get();
+        AddComponent(std::move(spriteRenderer));
+        imageSpriteRendererPtr->Initialize();
+    }
 }
 
 void Button::OnHoverEnter()
@@ -63,6 +71,15 @@ void Button::OnClickPressed()
         ));
         textRendererPtr->RefreshData();
     }
+    else if (imageSpriteRendererPtr)
+    {
+        imageSpriteRendererPtr->SetPositionOffset(DirectX::XMFLOAT2(
+            imageSpriteRendererPtr->GetPositionOffset().x,
+            imageSpriteRendererPtr->GetPositionOffset().y - 5
+        ));
+        imageSpriteRendererPtr->UpdateMatrix();
+    }
+
     SoundManager::GetInstance().Play(SoundManager::GetInstance().uiClick1Buffer);
 
     callback();
@@ -79,6 +96,14 @@ void Button::OnClickReleased()
             textRendererPtr->GetPositionOffset().y + 5
         ));
         textRendererPtr->RefreshData();
+    }
+    else if (imageSpriteRendererPtr)
+    {
+        imageSpriteRendererPtr->SetPositionOffset(DirectX::XMFLOAT2(
+            imageSpriteRendererPtr->GetPositionOffset().x,
+            imageSpriteRendererPtr->GetPositionOffset().y + 5
+        ));
+        imageSpriteRendererPtr->UpdateMatrix();
     }
 }
 
@@ -99,9 +124,13 @@ void Button::Draw()
         spriteRendererPtr->DrawSelf();
     }
 
-    if (text != "" && textRendererPtr)
+    if (textRendererPtr)
     {
         textRendererPtr->DrawSelf();
+    }
+    else if (imageSpriteRendererPtr)
+    {
+        imageSpriteRendererPtr->DrawSelf();
     }
 }
 
