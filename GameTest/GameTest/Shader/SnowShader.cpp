@@ -43,7 +43,7 @@ SnowShader::SnowShader(
     indexBuffer(nullptr),
     fileWatcher(fileName, [fileName, this]()
     {
-        std::lock_guard<std::mutex> guard{reloadingMutex};
+        /*//std::lock_guard<std::mutex> guard{reloadingMutex};
         Sleep(150); // To avoid issues
 
         if (!initialized)
@@ -56,7 +56,7 @@ SnowShader::SnowShader(
 
         Initialize(fileName);
 
-        std::cout << "Shader reloaded!" << std::endl;
+        std::cout << "Shader reloaded!" << std::endl;*/
     }),
     tesselate(tesselate)
 {
@@ -267,67 +267,67 @@ void SnowShader::Destroy()
 
 ID3D11Buffer* SnowShader::GetShaderParametersBuffer() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return shaderParametersBuffer;
 }
 
 ID3DX11EffectPass* SnowShader::GetPass() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return passe;
 }
 
 ID3D11InputLayout* SnowShader::GetVertexLayout() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return vertexLayout;
 }
 
 ID3D11Buffer* SnowShader::GetIndexBuffer() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return indexBuffer;
 }
 
 ID3D11InputLayout* SnowShader::GetShadowVertexLayout() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return vertexLayoutShadow;
 }
 
 ID3D11Texture2D* SnowShader::GetDepthTexture() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthTexture;
 }
 
 ID3D11DepthStencilView* SnowShader::GetDepthStencilView() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthStencilView;
 }
 
 ID3D11ShaderResourceView* SnowShader::GetDepthShaderResourceView() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthShaderResourceView;
 }
 
 ID3DX11Effect* SnowShader::GetEffect() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return effect;
 }
 
 ID3D11Buffer** SnowShader::GetVertexBufferPtr() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return &vertexBuffer;
 }
 
 ID3D11Buffer** SnowShader::GetIndexBufferPtr() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return &indexBuffer;
 }
 
@@ -336,7 +336,7 @@ void* SnowShader::PrepareParameters(
     DirectX::XMMATRIX matWorld
 )
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     ID3DX11EffectSamplerVariable* variableSampler = effect->GetVariableByName("SampleState")->AsSampler();
     variableSampler->SetSampler(0, albedoSampleState);
@@ -369,7 +369,7 @@ void SnowShader::ApplyMaterialParameters(
     ID3D11ShaderResourceView* normalmapTexture
 )
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     auto& parameters = *static_cast<SnowShaderParameters*>(shaderParameters);
 
@@ -423,14 +423,14 @@ void SnowShader::ApplyMaterialParameters(
 
 void SnowShader::DeleteParameters(void* shader_parameters)
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     delete static_cast<SnowShaderParameters*>(shader_parameters);
 }
 
 void SnowShader::ApplyShaderParams() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     ID3DX11EffectConstantBuffer* pCB = effect->GetConstantBufferByName("param");
     pCB->SetConstantBuffer(shaderParametersBuffer);
@@ -438,7 +438,7 @@ void SnowShader::ApplyShaderParams() const
 
 void SnowShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* gameObject)
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     /*if (!GameHost::GetInstance()->GetScene()->GetLightsNeedUpdate())
     {

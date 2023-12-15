@@ -35,14 +35,13 @@
 
 void MainScene::InitializePhysics()
 {
-	auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
-	physicsResolver->Initialize();
-	SetPhysicsResolver(std::move(physicsResolver));
+    auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
+    physicsResolver->Initialize();
+    SetPhysicsResolver(std::move(physicsResolver));
 }
 
 void MainScene::InitializeCamera()
 {
-
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSPECTIVE,
@@ -59,18 +58,17 @@ void MainScene::InitializeCamera()
 
 void MainScene::InitializeLights()
 {
-	auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
-		"Directional light",
-		XMFLOAT3(1.0f, -1.0f, 0.0f)
-	);
-	directionalLight->SetIntensity(1.0f);
-	directionalLight->Initialize();
-	AddLight(std::move(directionalLight));
+    auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
+        "Directional light",
+        XMFLOAT3(1.0f, -1.0f, 0.0f)
+    );
+    directionalLight->SetIntensity(1.0f);
+    directionalLight->Initialize();
+    AddLight(std::move(directionalLight));
 }
 
 void MainScene::InitializeObjects()
 {
-
     // ============= Base elements from the loading scene =====
     auto objects = std::make_unique<GameObject>("Objects");
     objects->Initialize();
@@ -99,75 +97,75 @@ void MainScene::InitializeObjects()
 
 
     // === Add skybox ===
+    /*
     auto skybox = std::make_unique<GameObject>("Skybox");
-    skybox->SetWorldScale({10000.f,10000.f,10000.f});
+    skybox->SetWorldScale({10000.f, 10000.f, 10000.f});
     skybox->Initialize();
     auto skyShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/SkyShader.fx");
     auto skyRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(skyShader), "skybox.obj");
     skyRenderer->SetIgnoreCulling(true);
     skybox->AddComponent(std::move(skyRenderer));
     AddChild(std::move(skybox));
+    */
 
 
+    // ============= Add a sphere =============
+    {
+        auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
+        spherePtr = sphere.get();
+        AddChild(std::move(sphere));
+        spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
+        spherePtr->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
+        spherePtr->Initialize();
 
-	// ============= Add a sphere =============
-	{
-		auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-		spherePtr = sphere.get();
-		AddChild(std::move(sphere));
-		spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-		spherePtr->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
-		spherePtr->Initialize();
+        auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
+        const auto sphereRigidbodyPtr = sphereRigidbody.get();
+        spherePtr->AddComponent(std::move(sphereRigidbody));
+        sphereRigidbodyPtr->Initialize();
 
-		auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-		const auto sphereRigidbodyPtr = sphereRigidbody.get();
-		spherePtr->AddComponent(std::move(sphereRigidbody));
-		sphereRigidbodyPtr->Initialize();
+        auto sphereCollider = std::make_unique<
+            PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
+        const auto sphereColliderPtr = sphereCollider.get();
+        spherePtr->AddComponent(std::move(sphereCollider));
+        sphereColliderPtr->Initialize();
+        physx::PxFilterData filterDataSnowball;
+        filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
+        physx::PxShape* sphereShape = sphereColliderPtr->getShape();
+        sphereShape->setSimulationFilterData(filterDataSnowball);
 
-		auto sphereCollider = std::make_unique<
-			PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
-		const auto sphereColliderPtr = sphereCollider.get();
-		spherePtr->AddComponent(std::move(sphereCollider));
-		sphereColliderPtr->Initialize();
-		physx::PxFilterData filterDataSnowball;
-		filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
-		physx::PxShape* sphereShape = sphereColliderPtr->getShape();
-		sphereShape->setSimulationFilterData(filterDataSnowball);
+        GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
 
-		GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
+        spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
 
-		spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
-
-		spherePtr->AddComponent(std::make_unique<MovableComponent>());
-
-
-		auto skierSpawner = std::make_unique<SkierSpawner>();
-		const auto skierSpawnerPtr = skierSpawner.get();
-		AddComponent(std::move(skierSpawner));
-		skierSpawnerPtr->Initialize();
-		skierSpawnerPtr->Update();
+        spherePtr->AddComponent(std::make_unique<MovableComponent>());
 
 
-		auto walkSoundComponent = std::make_unique<WalkSoundComponent>();
-		const auto walkSoundComponentPtr = walkSoundComponent.get();
-		spherePtr->AddComponent(std::move(walkSoundComponent));
-		walkSoundComponentPtr->Initialize();
+        auto skierSpawner = std::make_unique<SkierSpawner>();
+        const auto skierSpawnerPtr = skierSpawner.get();
+        AddComponent(std::move(skierSpawner));
+        skierSpawnerPtr->Initialize();
+        skierSpawnerPtr->Update();
 
 
-		auto shadowProcessor = std::make_unique<ShadowProcessor>();
-		shadowProcessor->Initialize();
-		shadowProcessor->SetScene(this);
-		AddComponent(std::move(shadowProcessor));
-	}
+        auto walkSoundComponent = std::make_unique<WalkSoundComponent>();
+        const auto walkSoundComponentPtr = walkSoundComponent.get();
+        spherePtr->AddComponent(std::move(walkSoundComponent));
+        walkSoundComponentPtr->Initialize();
+
+
+        auto shadowProcessor = std::make_unique<ShadowProcessor>();
+        shadowProcessor->Initialize();
+        shadowProcessor->SetScene(this);
+        AddComponent(std::move(shadowProcessor));
+    }
 }
 
-	void MainScene::InitializeUI()
-	{
-		Scene::InitializeUI(); // Init the base canvas
+void MainScene::InitializeUI()
+{
+    Scene::InitializeUI(); // Init the base canvas
 
-		auto gameUI = std::make_unique<GameUI>();
-		const auto gameUIPtr = gameUI.get();
-		AddUiChild(std::move(gameUI));
-		gameUIPtr->Initialize();
-	}
-
+    auto gameUI = std::make_unique<GameUI>();
+    const auto gameUIPtr = gameUI.get();
+    AddUiChild(std::move(gameUI));
+    gameUIPtr->Initialize();
+}

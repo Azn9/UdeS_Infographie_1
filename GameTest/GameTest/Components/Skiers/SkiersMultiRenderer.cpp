@@ -1,76 +1,56 @@
-﻿#include "Api/Public/Component/Basic/Render/3D/InstancedMeshRenderer.h"
+﻿#include "SkiersMultiRenderer.h"
 
-#include <d3d11.h>
-#include <DirectXMath.h>
-#include <stdexcept>
-
+#include "Api/Public/GameHost.h"
+#include "Api/Public/Shader/Basic/DefaultShaderInstanced.h"
 #include "Core/Public/Core/moteurWindows.h"
 #include "Core/Public/Mesh/CSommetMesh.h"
-#include "Core/Public/Mesh/FastobjChargeur.h"
 #include "Core/Public/Texture/GestionnaireDeTextures.h"
 #include "Core/Public/Util/resource.h"
-#include "Core/Public/Util/util.h"
-#include "Api/Public/GameHost.h"
-#include "Api/Public/GameObject/GameObject.h"
-#include "Api/Public/Scene/Scene.h"
-#include "Api/Public/Shader/Shader.h"
-#include "Api/Public/Util/Util.h"
 
-PM3D_API::InstancedMeshRenderer::InstancedMeshRenderer(
-    std::unique_ptr<Shader>&& shader,
-    std::string meshName,
-    const std::vector<MapImporter::InstanceObject>&& instances
-) : Renderer(std::move(shader)), instances(instances)
+void SkiersMultiRenderer::Initialize()
 {
-    std::cout << "InstancedMeshRenderer::InstancedMeshRenderer(" << meshName << ")" << std::endl;
-
-    if (meshName.find_last_of(".obj") == std::string::npos)
-        meshName += ".obj";
-
-    chargeur = new PM3D::FastobjChargeur();
-
-    PM3D::CParametresChargement params;
-    params.NomChemin = "";
-    params.NomFichier = meshName;
-
-    chargeur->Chargement(params);
-
-    // Load mesh
+    shader = std::move(std::make_unique<PM3D_API::DefaultShaderInstanced>(L"shader/NewShaderInstanced.fx"));
     LoadMesh();
 }
 
-PM3D_API::InstancedMeshRenderer::InstancedMeshRenderer(
-    std::unique_ptr<Shader>&& shader,
-    PM3D::IChargeur* chargeur,
-    const std::vector<PM3D_API::MapImporter::InstanceObject>&& instances
-) : Renderer(std::move(shader)), chargeur(chargeur), instances(instances)
+void SkiersMultiRenderer::Update()
 {
-    std::cout << "InstancedMeshRenderer::InstancedMeshRenderer(chargeur)" << std::endl;
+    toRender.erase(std::ranges::remove_if(toRender, [](const GameObject* gameObject)
+    {
+        return !gameObject;
+    }).begin(), toRender.end());
 
-    // Load mesh
-    LoadMesh();
+    instances.clear();
+
+    for (const auto& object : toRender)
+    {
+        const auto position = object->GetWorldPosition();
+        const auto rotation = object->GetWorldRotationEuler();
+        const auto scale = object->GetWorldScale();
+
+        instances.push_back(PM3D_API::MapImporter::InstanceObject(
+            position, rotation, scale
+        ));
+    }
 }
 
-PM3D_API::InstancedMeshRenderer::~InstancedMeshRenderer()
+bool SkiersMultiRenderer::IsVisible(const XMFLOAT3 position, const XMFLOAT3 scale) const
 {
-    std::cout << "InstancedMeshRenderer::~InstancedMeshRenderer()" << std::endl;
-
-    delete chargeur; // Will also delete mesh using fastObjDestroy
+    const PM3D_API::Camera* camera = scene->GetMainCamera();
+    const float maxScale = max(max(scale.x, scale.y), scale.z);
+    const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&position);
+    const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera->GetMatView());
+    return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
 }
 
-void PM3D_API::InstancedMeshRenderer::Initialize()
-{
-    std::cout << "InstancedMeshRenderer::Initialize()" << std::endl;
-}
-
-void PM3D_API::InstancedMeshRenderer::DrawSelf() const
+void SkiersMultiRenderer::DrawSelf() const
 {
     LogBeginDrawSelf();
 
     if (!mesh)
         throw std::runtime_error("InstancedMeshRenderer::DrawSelf: mesh is null");
 
-    const auto scene = parentObject->GetScene();
+    const auto scene = parent->GetScene();
     const auto camera = scene->GetMainCamera();
 
     if (!camera)
@@ -79,7 +59,7 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
     }
 
     // Obtenir le contexte
-    const auto pDispositif = GameHost::GetInstance()->GetDispositif();
+    const auto pDispositif = PM3D_API::GameHost::GetInstance()->GetDispositif();
     const auto pD3DDevice = pDispositif->GetD3DDevice();
     ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
 
@@ -109,7 +89,7 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
 
     pDispositif->ResetViewportDimension();
 
-    shader->LoadLights(pImmediateContext, parentObject);
+    shader->LoadLights(pImmediateContext, parent);
 
     const XMMATRIX viewProj = camera->GetMatViewProj();
 
@@ -132,7 +112,7 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
         }
 
         const auto matWorld = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
-            DirectX::XMMatrixRotationQuaternion(Quaternion(rotation).ToXMVector()) *
+            DirectX::XMMatrixRotationQuaternion(PM3D_API::Quaternion(rotation).ToXMVector()) *
             DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
         const auto matWorldViewProj = matWorld * viewProj;
@@ -251,30 +231,16 @@ void PM3D_API::InstancedMeshRenderer::DrawSelf() const
     LogEndDrawSelf();
 }
 
-bool PM3D_API::InstancedMeshRenderer::IsVisible(const XMFLOAT3 position, const XMFLOAT3 scale) const
+void SkiersMultiRenderer::Add(GameObject* gameObject)
 {
-    const Camera* camera = parentObject->GetScene()->GetMainCamera();
-    const float maxScale = max(max(scale.x, scale.y), scale.z);
-    const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&position);
-    const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera->GetMatView());
-    return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
+    toRender.push_back(gameObject);
 }
 
-bool PM3D_API::InstancedMeshRenderer::IsVisible() const
-{
-    const Camera* camera = parentObject->GetScene()->GetMainCamera();
-    const float maxScale =
-        max(max(parentObject->GetWorldScale().x, parentObject->GetWorldScale().y), parentObject->GetWorldScale().z);
-    const DirectX::XMVECTOR worldPos = DirectX::XMLoadFloat3(&parentObject->GetWorldPosition());
-    const DirectX::XMVECTOR viewPos = -DirectX::XMVector3Transform(worldPos, camera->GetMatView());
-    return camera->getFrustrum().ContainsSphere(viewPos, boundingRadius * maxScale);
-}
-
-void PM3D_API::InstancedMeshRenderer::LoadMesh()
+void SkiersMultiRenderer::LoadMesh()
 {
     mesh = static_cast<fastObjMesh*>(chargeur->GetMesh());
 
-    ID3D11Device* pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
+    ID3D11Device* pD3DDevice = PM3D_API::GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
 
     // 1. SOMMETS a) Créations des sommets dans un tableau temporaire
     {
@@ -388,7 +354,7 @@ void PM3D_API::InstancedMeshRenderer::LoadMesh()
         {
             const std::wstring ws(Material[i].albedoTextureFileName.begin(), Material[i].albedoTextureFileName.end());
             Material[i].pAlbedoTexture = TexturesManager.GetNewTexture(
-                ws.c_str(), GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
+                ws.c_str(), PM3D_API::GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
         }
         else
         {
@@ -401,7 +367,7 @@ void PM3D_API::InstancedMeshRenderer::LoadMesh()
             const std::wstring ws(Material[i].normalmapTextureFileName.begin(),
                                   Material[i].normalmapTextureFileName.end());
             Material[i].pNormalmapTexture = TexturesManager.GetNewTexture(
-                ws.c_str(), GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
+                ws.c_str(), PM3D_API::GameHost::GetInstance()->GetDispositif())->GetD3DTexture();
         }
         else
         {

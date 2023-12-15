@@ -44,7 +44,7 @@ PM3D_API::DefaultShader::DefaultShader(
     indexBuffer(nullptr),
     fileWatcher(fileName, [fileName, this]()
     {
-        std::lock_guard<std::mutex> guard{reloadingMutex};
+        /*//std::lock_guard<std::mutex> guard{reloadingMutex};
         if (!initialized)
             return;
         
@@ -55,10 +55,10 @@ PM3D_API::DefaultShader::DefaultShader(
         
         Initialize(fileName);
 
-        std::cout << "Shader reloaded!" << std::endl;
+        std::cout << "Shader reloaded!" << std::endl;*/
     })
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     Initialize(fileName);
 }
 
@@ -267,67 +267,67 @@ void PM3D_API::DefaultShader::Destroy()
 
 ID3D11Buffer* PM3D_API::DefaultShader::GetShaderParametersBuffer() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return shaderParametersBuffer;
 }
 
 ID3DX11EffectPass* PM3D_API::DefaultShader::GetPass() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return passe;
 }
 
 ID3D11InputLayout* PM3D_API::DefaultShader::GetVertexLayout() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return vertexLayout;
 }
 
 ID3D11Buffer* PM3D_API::DefaultShader::GetIndexBuffer() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return indexBuffer;
 }
 
 ID3D11InputLayout* PM3D_API::DefaultShader::GetShadowVertexLayout() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return vertexLayoutShadow;
 }
 
 ID3D11Texture2D* PM3D_API::DefaultShader::GetDepthTexture() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthTexture;
 }
 
 ID3D11DepthStencilView* PM3D_API::DefaultShader::GetDepthStencilView() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthStencilView;
 }
 
 ID3D11ShaderResourceView* PM3D_API::DefaultShader::GetDepthShaderResourceView() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthShaderResourceView;
 }
 
 ID3DX11Effect* PM3D_API::DefaultShader::GetEffect() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return effect;
 }
 
 ID3D11Buffer** PM3D_API::DefaultShader::GetVertexBufferPtr() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return &vertexBuffer;
 }
 
 ID3D11Buffer** PM3D_API::DefaultShader::GetIndexBufferPtr() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
     return &indexBuffer;
 }
 
@@ -336,7 +336,7 @@ void* PM3D_API::DefaultShader::PrepareParameters(
     DirectX::XMMATRIX matWorld
 )
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     ID3DX11EffectSamplerVariable* variableSampler = effect->GetVariableByName("SampleState")->AsSampler();
     variableSampler->SetSampler(0, albedoSampleState);
@@ -367,7 +367,7 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
     ID3D11ShaderResourceView* normalmapTexture
 )
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     auto& parameters = *static_cast<DefaultShaderParameters*>(shaderParameters);
 
@@ -412,14 +412,14 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
 
 void PM3D_API::DefaultShader::DeleteParameters(void* shader_parameters)
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     delete static_cast<DefaultShaderParameters*>(shader_parameters);
 }
 
 void PM3D_API::DefaultShader::ApplyShaderParams() const
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     ID3DX11EffectConstantBuffer* pCB = effect->GetConstantBufferByName("param");
     pCB->SetConstantBuffer(shaderParametersBuffer);
@@ -427,7 +427,7 @@ void PM3D_API::DefaultShader::ApplyShaderParams() const
 
 void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context, GameObject* gameObject)
 {
-    std::lock_guard<std::mutex> guard{reloadingMutex};
+    //std::lock_guard<std::mutex> guard{reloadingMutex};
 
     /*if (!GameHost::GetInstance()->GetScene()->GetLightsNeedUpdate())
     {

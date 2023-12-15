@@ -37,8 +37,8 @@ PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, std::stri
     LoadMesh();
 }
 
-PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur) :
-    Renderer(std::move(shader)), chargeur(chargeur)
+PM3D_API::MeshRenderer::MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur, bool deleteChargeur) :
+    Renderer(std::move(shader)), chargeur(chargeur), deleteChargeur(deleteChargeur)
 {
     std::cout << "MeshRenderer::MeshRenderer(chargeur)" << std::endl;
 
@@ -50,7 +50,8 @@ PM3D_API::MeshRenderer::~MeshRenderer()
 {
     std::cout << "MeshRenderer::~MeshRenderer()" << std::endl;
 
-    delete chargeur; // Will also delete mesh using fastObjDestroy
+    if (deleteChargeur)
+        delete chargeur; // Will also delete mesh using fastObjDestroy
 }
 
 void PM3D_API::MeshRenderer::Initialize()

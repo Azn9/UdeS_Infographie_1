@@ -17,13 +17,13 @@ namespace PM3D_API
     {
     public:
         MeshRenderer(std::unique_ptr<Shader>&& shader, std::string meshName);
-        MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur);
+        MeshRenderer(std::unique_ptr<Shader>&& shader, PM3D::IChargeur* chargeur, bool deleteChargeur = false);
 
         ~MeshRenderer() override;
 
         void Initialize() override;
         void DrawSelf() const override;
-	void DrawShadowSelf(const Camera& camera) const override;
+        void DrawShadowSelf(const Camera& camera) const override;
 
         void DrawDebugInfo() const override
         {
@@ -57,7 +57,7 @@ namespace PM3D_API
 
         PM3D::IChargeur* getChargeur() const { return chargeur; }
 
-        void SetIgnoreCulling(bool b) {ignoreCulling = b;}
+        void SetIgnoreCulling(bool b) { ignoreCulling = b; }
 
     protected:
         void LoadMesh();
@@ -76,5 +76,8 @@ namespace PM3D_API
         float boundingRadius = 0.f;
 
         bool ignoreCulling = false;
+
+    private:
+        bool deleteChargeur = false;
     };
 }

@@ -59,6 +59,7 @@ void LoadingScene::InitializeObjects()
     AddComponent(std::move(shadowProcessor));
 
     // === Add skybox ===
+    /*
     auto skybox = std::make_unique<GameObject>("Skybox");
     skybox->SetWorldScale({10000.f,10000.f,10000.f});
     skybox->Initialize();
@@ -67,6 +68,7 @@ void LoadingScene::InitializeObjects()
     skyRenderer->SetIgnoreCulling(true);
     skybox->AddComponent(std::move(skyRenderer));
     AddChild(std::move(skybox));
+    */
 }
 
 void LoadingScene::InitializeUI()
