@@ -2,6 +2,7 @@
 
 #include "Api/Public/Component/Basic/Render/2D/TextRenderer.h"
 #include "Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/EventSystem/InTunnelEvent.h"
 #include "Core/Public/Util/Time.h"
 #include "GameTest/RestartEvent.h"
 #include "GameTest/Event/GameOverEvent.h"
@@ -10,6 +11,11 @@
 
 void TimerDisplay::Initialize()
 {
+    PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
+    {
+        isRunning = false;
+    });
+
     PM3D_API::EventSystem::GetInstance().Subscribe([&](const GameStartEvent&)
     {
         std::cout << "GameStartEvent" << std::endl;

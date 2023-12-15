@@ -1,75 +1,91 @@
-float3 mod289(float3 x) {
-    return x - floor(x * (1.0 / 289.0)) * 289.0;
+float wglnoise_mod289(float x)
+{
+    return x - floor(x / 289) * 289;
 }
 
-float2 mod289(float2 x) {
-    return x - floor(x * (1.0 / 289.0)) * 289.0;
+float2 wglnoise_mod289(float2 x)
+{
+    return x - floor(x / 289) * 289;
 }
 
-float3 permute(float3 x) {
-    return mod289((x * 34.0 + 1.0) * x);
+float3 wglnoise_mod289(float3 x)
+{
+    return x - floor(x / 289) * 289;
 }
 
-float3 taylorInvSqrt(float3 r) {
-    return 1.79284291400159 - 0.85373472095314 * r;
+float4 wglnoise_mod289(float4 x)
+{
+    return x - floor(x / 289) * 289;
 }
 
-// output noise is in range [-1, 1]
-float snoise(float2 v) {
-    const float4 C = float4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
-                            0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)
-                            -0.577350269189626, // -1.0 + 2.0 * C.x
-                            0.024390243902439); // 1.0 / 41.0
+float3 wglnoise_permute(float3 x)
+{
+    return wglnoise_mod289((x * 34 + 1) * x);
+}
 
+float4 wglnoise_permute(float4 x)
+{
+    return wglnoise_mod289((x * 34 + 1) * x);
+}
+
+float4 SimplexNoiseGrad(float3 v)
+{
     // First corner
-    float2 i  = floor(v + dot(v, C.yy));
-    float2 x0 = v -   i + dot(i, C.xx);
+    float3 i  = floor(v + dot(v, 1.0 / 3));
+    float3 x0 = v   - i + dot(i, 1.0 / 6);
 
     // Other corners
-    float2 i1;
-    i1.x = step(x0.y, x0.x);
-    i1.y = 1.0 - i1.x;
+    float3 g = x0.yzx <= x0.xyz;
+    float3 l = 1 - g;
+    float3 i1 = min(g.xyz, l.zxy);
+    float3 i2 = max(g.xyz, l.zxy);
 
-    // x1 = x0 - i1  + 1.0 * C.xx;
-    // x2 = x0 - 1.0 + 2.0 * C.xx;
-    float2 x1 = x0 + C.xx - i1;
-    float2 x2 = x0 + C.zz;
+    float3 x1 = x0 - i1 + 1.0 / 6;
+    float3 x2 = x0 - i2 + 1.0 / 3;
+    float3 x3 = x0 - 0.5;
 
     // Permutations
-    i = mod289(i); // Avoid truncation effects in permutation
-    float3 p =
-      permute(permute(i.y + float3(0.0, i1.y, 1.0))
-                    + i.x + float3(0.0, i1.x, 1.0));
+    i = wglnoise_mod289(i); // Avoid truncation effects in permutation
+    float4 p = wglnoise_permute(    i.z + float4(0, i1.z, i2.z, 1));
+           p = wglnoise_permute(p + i.y + float4(0, i1.y, i2.y, 1));
+           p = wglnoise_permute(p + i.x + float4(0, i1.x, i2.x, 1));
 
-    float3 m = max(0.5 - float3(dot(x0, x0), dot(x1, x1), dot(x2, x2)), 0.0);
-    m = m * m;
-    m = m * m;
+    // Gradients: 7x7 points over a square, mapped onto an octahedron.
+    // The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+    float4 gx = lerp(-1, 1, frac(floor(p / 7) / 7));
+    float4 gy = lerp(-1, 1, frac(floor(p % 7) / 7));
+    float4 gz = 1 - abs(gx) - abs(gy);
 
-    // Gradients: 41 points uniformly over a line, mapped onto a diamond.
-    // The ring size 17*17 = 289 is close to a multiple of 41 (41*7 = 287)
-    float3 x = 2.0 * frac(p * C.www) - 1.0;
-    float3 h = abs(x) - 0.5;
-    float3 ox = floor(x + 0.5);
-    float3 a0 = x - ox;
+    bool4 zn = gz < -0.01;
+    gx += zn * (gx < -0.01 ? 1 : -1);
+    gy += zn * (gy < -0.01 ? 1 : -1);
 
-    // Normalise gradients implicitly by scaling m
-    m *= taylorInvSqrt(a0 * a0 + h * h);
+    float3 g0 = normalize(float3(gx.x, gy.x, gz.x));
+    float3 g1 = normalize(float3(gx.y, gy.y, gz.y));
+    float3 g2 = normalize(float3(gx.z, gy.z, gz.z));
+    float3 g3 = normalize(float3(gx.w, gy.w, gz.w));
 
-    // Compute final noise value at P
-    float3 g = float3(
-        a0.x * x0.x + h.x * x0.y,
-        a0.y * x1.x + h.y * x1.y,
-        g.z = a0.z * x2.x + h.z * x2.y
-    );
-    return 130.0 * dot(m, g);
+    // Compute noise and gradient at P
+    float4 m  = float4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3));
+    float4 px = float4(dot(g0, x0), dot(g1, x1), dot(g2, x2), dot(g3, x3));
+
+    m = max(0.5 - m, 0);
+    float4 m3 = m * m * m;
+    float4 m4 = m * m3;
+
+    float4 temp = -8 * m3 * px;
+    float3 grad = m4.x * g0 + temp.x * x0 +
+                  m4.y * g1 + temp.y * x1 +
+                  m4.z * g2 + temp.z * x2 +
+                  m4.w * g3 + temp.w * x3;
+
+    return 107 * float4(grad, dot(m4, px));
 }
 
-float snoise01(float2 v) {
-    return snoise(v) * 0.5 + 0.5;
+float SimplexNoise(float3 v)
+{
+    return SimplexNoiseGrad(v).w;
 }
-
-
-
 
 
 
@@ -106,13 +122,11 @@ cbuffer param
     float4 vAMat; // la valeur ambiante du matériau
     float4 vDMat; // la valeur diffuse du matériau
     float4 vSMat; // la valeur spéculaire du matériau
+    float4 spherePos;
     float Ns; // la puissance de spécularité
     
-	float fallback;
-	
-    bool hasAlbedoTexture; // Booléen pour la présence de texture
-    bool hasNormalmapTexture;
-	bool isPreCompute;
+    int hasAlbedoTexture; // Booléen pour la présence de texture
+    int hasNormalmapTexture;
 };
 
 #define MAX_LIGHTS 10
@@ -124,23 +138,7 @@ SamplerState SampleState; // l’état de sampling
 Texture2D shadowTexture; // La texture du shadow map
 SamplerState ShadowMapSampler
 {
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
-
-Texture2D snowRVT;
-SamplerState snowRVTSampler
-{
-	Filter = MIN_MAG_MIP_POINT;
-	AddressU = Clamp;
-	AddressV = Clamp;
-};
-
-Texture2D sparkleTexture;
-SamplerState sparkleTextureSampler
-{
-	Filter = MIN_MAG_MIP_POINT;
+	//Filter = MIN_MAG_MIP_POINT;
 	AddressU = Wrap;
 	AddressV = Wrap;
 };
@@ -158,9 +156,8 @@ struct VS_Sortie
 	float2 coordTex  : TEXCOORD4;
 	float3 worldPos  : TEXCOORD5;
 	float3 cameraDir : TEXCOORD6;
-    float  noiseValue : TEXCOORD7;
-	float  pathValue : TEXCOORD8;
-	float4 PosInMap[MAX_LIGHTS] : TEXCOORD9;
+    float noiseValue : TEXCOORD7;
+	float4 PosInMap[MAX_LIGHTS] : TEXCOORD8;
 };
 
 VS_Sortie MainVS(
@@ -176,27 +173,20 @@ VS_Sortie MainVS(
     output.binormal = mul(float4(vBiNormal, 0.0f), matWorld);
     output.tangent = mul(float4(vTangent, 0.0f), matWorld);
 
-	float4 worldPos = mul(vPos, matWorldViewProj);
-
-	if (!isPreCompute) {
-    	float noiseV = snoise01(vPos.xz * 2.0f);
-
-		float2 uv = float2(
-			((worldPos.x * 0.75f) + 1024.f) / 2048.f,
-			((worldPos.z * 0.7584f) + 1783.f) / 2048.f
-		);
-
-		float pathV = snowRVT.SampleLevel(snowRVTSampler, uv, 0).r;
-
-		vPos.y = max(vPos.y, vPos.y + 2 * noiseV * (1-pathV) - pathV);
-		output.noiseValue = noiseV;
-		output.pathValue = pathV;
-	}
-
-    output.position = mul(vPos, matWorldViewProj);
+    //output.position = mul(vPos, matWorldViewProj);
     output.worldPos = mul(vPos, matWorld);
 
-    //output.worldPos = float3(worldPos.x, worldPos.y + noiseV, worldPos.z);
+    float3 vec = normalize(output.worldPos.xyz - spherePos.xyz);
+    float noiseV = SimplexNoise(vPos.xyz * 5.0f) * 0.07f;
+    vec *= noiseV;
+
+    vPos.x += vec.x;
+    vPos.y += vec.y;
+    vPos.z += vec.z;
+
+    output.noiseValue = noiseV;
+
+    output.position = mul(vPos, matWorldViewProj);
 
     output.coordTex = coordTex;
 
@@ -208,7 +198,10 @@ VS_Sortie MainVS(
 	for (uint i = 0; i < MAX_LIGHTS; ++i) {
 		Light li = lights[i];
 		
-		if (!li.initialized) continue;
+		if (!li.initialized) {
+			PosInMaps[i] = float4(0, 0, 0, 0);
+			continue;
+		}
 		
 		float4 tempValue = mul(vPos, li.matWorldViewProj);
 		PosInMaps[i] = tempValue;
@@ -244,32 +237,32 @@ float4 MainPS(VS_Sortie input) : SV_Target
 			continue;
         }
 
-        float3 ambiantValueF = float3(0, 0, 0);
-        float3 diffuseValueF = float3(0, 0, 0);
-        float3 specularValueF = float3(0, 0, 0);
+		float3 ambiantValueF = float3(0, 0, 0);
+		float3 diffuseValueF = float3(0, 0, 0);
+		float3 specularValueF = float3(0, 0, 0);
 
-        if (li.lightType == 0) // ambiant
-        {
-            ambiantValueF = li.ambiant;
-        }
-        else if (li.lightType == 1) // Directionnal
-        {
-            float3 L = normalize(-li.direction.xyz);
-            float3 diff = saturate(dot(N, L));
+		if (li.lightType == 0) // ambiant
+		{
+			ambiantValueF = li.ambiant;
+		}
+		else if (li.lightType == 1) // Directionnal
+		{
+			float3 L = normalize(-li.direction.xyz);
+			float3 diff = saturate(dot(N, L));
 			//float3 R = normalize(2 * diff * N - L);
 			//float3 S = pow(saturate(dot(R, V)), li.specularPower);
 
-            float3 H = normalize(L + V);
-            float NdotH = saturate(dot(N, H));
-            float puissance = max(EPSILON, Ns * li.specularPower);
-            float specularValue = pow(NdotH, puissance);
+			float3 H = normalize(L + V);
+			float NdotH = saturate(dot(N, H));
+			float puissance = max(EPSILON, Ns * li.specularPower);
+			float specularValue = pow(NdotH, puissance);
 
-            ambiantValueF = li.ambiant;
-            diffuseValueF = li.diffuse.rgb * diff;
-            specularValueF = li.specular.rgb * specularValue;
-        }
-        else if (li.lightType == 2) // Point
-        {
+			ambiantValueF = li.ambiant;
+			diffuseValueF = li.diffuse.rgb * diff;
+			specularValueF = li.specular.rgb * specularValue;
+		}
+		else if (li.lightType == 2) // Point
+		{
             float3 L = normalize(li.position.xyz - input.worldPos);
 
             // Diffuse
@@ -293,61 +286,65 @@ float4 MainPS(VS_Sortie input) : SV_Target
             ambiantValueF = li.ambiant * attenuation;
             diffuseValueF = li.diffuse * diffuseValue * attenuation;
             specularValueF = li.specular * specularValue * attenuation;
-        }
-        else if (li.lightType == 3) // Spot
-        {
-            float3 lightDirection = normalize(li.position.xyz - input.position.xyz);
-            float3 spotDirection = normalize(-li.direction.xyz);
+		}
+		else if (li.lightType == 3) // Spot
+		{
+			float3 lightDirection = normalize(li.position.xyz - input.position.xyz);
+			float3 spotDirection = normalize(-li.direction.xyz);
 
-            float spotCosine = saturate(dot(lightDirection, -spotDirection));
+			float spotCosine = saturate(dot(lightDirection, -spotDirection));
 
-            if (spotCosine <= cos(li.outerAngle))
-            {
-                float diffuseFalloff;
+			if (spotCosine <= cos(li.outerAngle))
+			{
+				float diffuseFalloff;
 
-                if (spotCosine <= cos(li.innerAngle))
-                {
-                    diffuseFalloff = 1.0;
-                }
-                else
-                {
-                    float t = saturate((spotCosine - cos(li.outerAngle)) / (cos(li.innerAngle) - cos(li.outerAngle)));
-                    diffuseFalloff = smoothstep(0.0, 1.0, t);
-                }
+				if (spotCosine <= cos(li.innerAngle))
+				{
+					diffuseFalloff = 1.0;
+				}
+				else
+				{
+					float t = saturate((spotCosine - cos(li.outerAngle)) / (cos(li.innerAngle) - cos(li.outerAngle)));
+        			diffuseFalloff = smoothstep(0.0, 1.0, t);
+				}
 
-                float3 L = normalize(-li.direction.xyz);
-                float3 diff = saturate(dot(N, L));
+				float3 L = normalize(-li.direction.xyz);
+				float3 diff = saturate(dot(N, L));
 				//float3 R = normalize(2 * diff * N - L);
 				//float3 S = pow(saturate(dot(R, V)), li.specularPower);
 
-                float3 H = normalize(L + V);
-                float NdotH = saturate(dot(N, H));
-                float puissance = max(EPSILON, Ns * li.specularPower);
-                float specularValue = pow(NdotH, puissance);
+				float3 H = normalize(L + V);
+				float NdotH = saturate(dot(N, H));
+				float puissance = max(EPSILON, Ns * li.specularPower);
+				float specularValue = pow(NdotH, puissance);
 
-                ambiantValueF = li.ambiant.xyz * diffuseFalloff;
-                diffuseValueF = li.diffuse.rgb * diff * diffuseFalloff;
-                specularValueF = li.specular.rgb * specularValue * diffuseFalloff;
-            }
-        }
+				ambiantValueF = li.ambiant.xyz * diffuseFalloff;
+				diffuseValueF = li.diffuse.rgb * diff * diffuseFalloff;
+				specularValueF = li.specular.rgb * specularValue * diffuseFalloff;
+			}
+		}
 
-        totalAmbiant += ambiantValueF;
-        
+		totalAmbiant += ambiantValueF;
+		totalDiffuse += diffuseValueF;
+		totalSpecular += specularValueF;
+
+        continue;
+
 		// SHADOWS
-        float4 posInMap = input.PosInMap[i];
+		float4 posInMap = input.PosInMap[i];
 		// validate that x & y are in [-1, 1]
 
         if (posInMap.x <= -1 || posInMap.x >= 0.9982 || posInMap.y <= -1 || posInMap.y >= 0.998)
         {
-            totalDiffuse += diffuseValueF;
-            totalSpecular += specularValueF;
-            continue;
-        }
+			totalDiffuse += diffuseValueF;
+			totalSpecular += specularValueF;
+			continue;
+		}
 
 		// Texture coordinates are 0-1
-        float2 uv = float2((posInMap.x / 2) + 0.5f, (-posInMap.y / 2) + 0.5f);
+		float2 uv = float2((posInMap.x / 2) + 0.5f, (-posInMap.y / 2) + 0.5f);
 
-        float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
+		float depthV = shadowTexture.Sample(ShadowMapSampler, uv).r;
 		
 		
 		// clacul of the distance to the plan (ortho)
@@ -367,8 +364,7 @@ float4 MainPS(VS_Sortie input) : SV_Target
             totalDiffuse += diffuseValueF;
             totalSpecular += specularValueF;
         }
-
-
+		
 	}
 
 	// Échantillonner la couleur du pixel à partir de la texture
@@ -381,45 +377,15 @@ float4 MainPS(VS_Sortie input) : SV_Target
     }
 
     float noiseV = (input.noiseValue + 0.7f) / 1.7f;
-	float pathV = (input.pathValue + 0.7f) / 1.7f;
 
-	float3 finalColor;
+	float3 finalColor = couleurTexture.rgb * (totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb)
+        * noiseV 
+		+ float3(0.95f, 0.98f, 0.99f);
 
-	if (isPreCompute)
-	{
-		finalColor = couleurTexture.rgb * 
-			(totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb);
+    finalColor *= 1.f * float3(0.8f, 1.f, 1.f);
+    finalColor /= 1.2f;
 
-		if (finalColor.r > 0.9) {
-			return float4(finalColor, 1.0);
-		} else {
-			return float4(finalColor, finalColor.r/20);
-		}
-	}
-	else
-	{
-		#define sparkleScale 500.0f
-		#define sparkleCutoffValue 0.99f
-
-		// Sample sparkle texture
-		float sparkleValue = sparkleTexture.Sample(sparkleTextureSampler, input.coordTex * sparkleScale).r;
-		float sparkleCutoff = step(sparkleCutoffValue, sparkleValue);
-
-		finalColor = couleurTexture.rgb * 
-			(totalAmbiant * vAMat.rgb + totalDiffuse * vDMat.rgb + totalSpecular * vSMat.rgb)
-			* (noiseV * (1-pathV)) 
-			+ (1-pathV) * float3(0.95f, 0.98f, 0.99f)
-			+ sparkleCutoff * saturate(1- (pathV * 2)) * 4;
-
-		if (pathV > 0.3f) {
-			finalColor += pathV * float3(0.45f, 0.98f, 0.99f);
-
-			finalColor /= 1.2f;
-			//finalColor = saturate(finalColor);
-		}
-
-		return float4(finalColor, 1.0f);
-	}
+	return float4(finalColor, 1.0f);
 }
 
 technique11 NewShader
@@ -451,7 +417,7 @@ ShadowMapVS_SORTIE MainVS_SM(
 	ShadowMapVS_SORTIE Out;
 	
 	// Calcul des coordonnées
-	Out.Pos = Pos;
+	Out.Pos = mul(Pos, matWorldViewProj);
 
 	float profondeur[MAX_LIGHTS];
 
@@ -474,6 +440,8 @@ ShadowMapVS_SORTIE MainVS_SM(
 RasterizerState rsCullFront
 {
 	CullMode = Front;
+	FillMode = Solid;
+	DepthClipEnable = true;
 };
 
 technique11 ShadowMap

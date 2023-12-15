@@ -1,4 +1,4 @@
-﻿#include "Api/Public/Shader/Basic/DefaultShaderInstanced.h"
+﻿#include "SphereShader.h"
 
 #include <codecvt>
 #include <d3dcompiler.h>
@@ -12,7 +12,7 @@
 #include "Api/Public/Util/Util.h"
 
 // Definir l’organisation de notre sommet
-D3D11_INPUT_ELEMENT_DESC dsiLayout[] =
+D3D11_INPUT_ELEMENT_DESC sphereLayout[] =
 {
     {
         "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
@@ -33,32 +33,26 @@ D3D11_INPUT_ELEMENT_DESC dsiLayout[] =
     {
         "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 48,
         D3D11_INPUT_PER_VERTEX_DATA, 0
-    },
-
-    {
-        "SV_InstanceID", 0, DXGI_FORMAT_R32_UINT, 1, 0,
-        D3D11_INPUT_PER_INSTANCE_DATA, 1
     }
 };
-UINT dsiNumElements;
+UINT sphereNumElements;
 
-PM3D_API::DefaultShaderInstanced::DefaultShaderInstanced(
+SphereShader::SphereShader(
     const std::wstring& fileName
 ) : Shader(),
     vertexBuffer(nullptr),
     indexBuffer(nullptr),
-    instanceBuffer(nullptr),
     fileWatcher(fileName, [fileName, this]()
     {
         std::lock_guard<std::mutex> guard{reloadingMutex};
         if (!initialized)
             return;
-
+        
         std::cout << "Reloading shader " << Util::ws2s(fileName) << std::endl;
         Destroy();
 
         Sleep(150); // To avoid issues
-
+        
         Initialize(fileName);
 
         std::cout << "Shader reloaded!" << std::endl;
@@ -68,7 +62,7 @@ PM3D_API::DefaultShaderInstanced::DefaultShaderInstanced(
     Initialize(fileName);
 }
 
-PM3D_API::DefaultShaderInstanced::~DefaultShaderInstanced()
+SphereShader::~SphereShader()
 {
     fileWatcher.~FileWatcher();
 
@@ -78,15 +72,15 @@ PM3D_API::DefaultShaderInstanced::~DefaultShaderInstanced()
     PM3D::DXRelacher(indexBuffer);
 }
 
-void PM3D_API::DefaultShaderInstanced::Initialize(const std::wstring& wstring)
+void SphereShader::Initialize(const std::wstring& wstring)
 {
-    const auto pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
+    const auto pD3DDevice = PM3D_API::GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
 
     D3D11_BUFFER_DESC shaderParametersBufferDesc;
     ZeroMemory(&shaderParametersBufferDesc, sizeof(shaderParametersBufferDesc));
 
     shaderParametersBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    shaderParametersBufferDesc.ByteWidth = sizeof(DefaultShaderInstancedParameters);
+    shaderParametersBufferDesc.ByteWidth = sizeof(SphereShaderParameters);
     shaderParametersBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     shaderParametersBufferDesc.CPUAccessFlags = 0;
 
@@ -123,7 +117,7 @@ void PM3D_API::DefaultShaderInstanced::Initialize(const std::wstring& wstring)
             errorBlob->Release();
         }
 
-        throw std::runtime_error("Shader compilation failed! (DefaultShaderInstanced > " + convertedFileName + ")");
+        throw std::runtime_error("Shader compilation failed! (SphereShader > " + convertedFileName + ")");
     }
 
     res = D3DX11CreateEffectFromMemory(
@@ -136,7 +130,7 @@ void PM3D_API::DefaultShaderInstanced::Initialize(const std::wstring& wstring)
 
     if (res != S_OK)
     {
-        throw std::runtime_error("Shader creation failed! (DefaultShaderInstanced > " + convertedFileName + ")");
+        throw std::runtime_error("Shader creation failed! (SphereShader > " + convertedFileName + ")");
     }
 
     pFXBlob->Release();
@@ -158,12 +152,12 @@ void PM3D_API::DefaultShaderInstanced::Initialize(const std::wstring& wstring)
 
         const void* vsCodePtr = effectVSDesc2.pBytecode;
         const uint32_t vsCodeLen = effectVSDesc2.BytecodeLength;
-        vertexLayout = nullptr;
+        vertexLayoutShadow = nullptr;
 
-        dsiNumElements = ARRAYSIZE(dsiLayout);
+        sphereNumElements = ARRAYSIZE(sphereLayout);
 
-        PM3D::DXEssayer(pD3DDevice->CreateInputLayout(dsiLayout,
-                                                      dsiNumElements,
+        PM3D::DXEssayer(pD3DDevice->CreateInputLayout(sphereLayout,
+                                                      sphereNumElements,
                                                       vsCodePtr,
                                                       vsCodeLen,
                                                       &vertexLayoutShadow),
@@ -183,10 +177,10 @@ void PM3D_API::DefaultShaderInstanced::Initialize(const std::wstring& wstring)
     const uint32_t vsCodeLen = effectVSDesc2.BytecodeLength;
     vertexLayout = nullptr;
 
-    dsiNumElements = ARRAYSIZE(dsiLayout);
+    sphereNumElements = ARRAYSIZE(sphereLayout);
 
-    PM3D::DXEssayer(pD3DDevice->CreateInputLayout(dsiLayout,
-                                                  dsiNumElements,
+    PM3D::DXEssayer(pD3DDevice->CreateInputLayout(sphereLayout,
+                                                  sphereNumElements,
                                                   vsCodePtr,
                                                   vsCodeLen,
                                                   &vertexLayout),
@@ -247,15 +241,19 @@ void PM3D_API::DefaultShaderInstanced::Initialize(const std::wstring& wstring)
     PM3D::DXEssayer(pD3DDevice->CreateShaderResourceView(depthTexture, &sr_desc, &depthShaderResourceView));
 
     initialized = true;
+
+#ifdef _DEBUG
+    fileWatcher.Run();
+#endif
 }
 
-void PM3D_API::DefaultShaderInstanced::Destroy()
+void SphereShader::Destroy()
 {
     if (!initialized)
         return;
 
     initialized = false;
-
+    
     PM3D::DXRelacher(shaderParametersBuffer);
     PM3D::DXRelacher(effect);
     PM3D::DXRelacher(vertexLayout);
@@ -267,73 +265,73 @@ void PM3D_API::DefaultShaderInstanced::Destroy()
     PM3D::DXRelacher(vertexLayoutShadow);
 }
 
-ID3D11Buffer* PM3D_API::DefaultShaderInstanced::GetShaderParametersBuffer() const
+ID3D11Buffer* SphereShader::GetShaderParametersBuffer() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return shaderParametersBuffer;
 }
 
-ID3DX11EffectPass* PM3D_API::DefaultShaderInstanced::GetPass() const
+ID3DX11EffectPass* SphereShader::GetPass() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return passe;
 }
 
-ID3D11InputLayout* PM3D_API::DefaultShaderInstanced::GetVertexLayout() const
+ID3D11InputLayout* SphereShader::GetVertexLayout() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return vertexLayout;
 }
 
-ID3D11Buffer* PM3D_API::DefaultShaderInstanced::GetIndexBuffer() const
+ID3D11Buffer* SphereShader::GetIndexBuffer() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return indexBuffer;
 }
 
-ID3D11InputLayout* PM3D_API::DefaultShaderInstanced::GetShadowVertexLayout() const
+ID3D11InputLayout* SphereShader::GetShadowVertexLayout() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return vertexLayoutShadow;
 }
 
-ID3D11Texture2D* PM3D_API::DefaultShaderInstanced::GetDepthTexture() const
+ID3D11Texture2D* SphereShader::GetDepthTexture() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthTexture;
 }
 
-ID3D11DepthStencilView* PM3D_API::DefaultShaderInstanced::GetDepthStencilView() const
+ID3D11DepthStencilView* SphereShader::GetDepthStencilView() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthStencilView;
 }
 
-ID3D11ShaderResourceView* PM3D_API::DefaultShaderInstanced::GetDepthShaderResourceView() const
+ID3D11ShaderResourceView* SphereShader::GetDepthShaderResourceView() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return depthShaderResourceView;
 }
 
-ID3DX11Effect* PM3D_API::DefaultShaderInstanced::GetEffect() const
+ID3DX11Effect* SphereShader::GetEffect() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return effect;
 }
 
-ID3D11Buffer** PM3D_API::DefaultShaderInstanced::GetVertexBufferPtr() const
+ID3D11Buffer** SphereShader::GetVertexBufferPtr() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return &vertexBuffer;
 }
 
-ID3D11Buffer** PM3D_API::DefaultShaderInstanced::GetIndexBufferPtr() const
+ID3D11Buffer** SphereShader::GetIndexBufferPtr() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
     return &indexBuffer;
 }
 
-void* PM3D_API::DefaultShaderInstanced::PrepareParameters(
+void* SphereShader::PrepareParameters(
     DirectX::XMMATRIX matWorldViewProj,
     DirectX::XMMATRIX matWorld
 )
@@ -346,10 +344,12 @@ void* PM3D_API::DefaultShaderInstanced::PrepareParameters(
     ID3DX11EffectSamplerVariable* variableSamplerNM = effect->GetVariableByName("SampleStateNormalMap")->AsSampler();
     variableSamplerNM->SetSampler(0, normalmapSampleState);
 
-    const auto cameraPos = GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldPosition();
-    const auto cameraDir = GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldDirection();
+    const auto cameraPos = PM3D_API::GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldPosition();
+    const auto cameraDir = PM3D_API::GameHost::GetInstance()->GetScene()->GetMainCamera()->GetWorldDirection();
 
-    const auto parameters = new DefaultShaderInstancedParameters{
+    const auto parameters = new SphereShaderParameters{
+        matWorldViewProj,
+        matWorld,
         DirectX::XMVectorSet(cameraPos.x, cameraPos.y, cameraPos.z, 1.0f),
         DirectX::XMVectorSet(cameraDir.x, cameraDir.y, cameraDir.z, 1.0f)
     };
@@ -357,7 +357,7 @@ void* PM3D_API::DefaultShaderInstanced::PrepareParameters(
     return parameters;
 }
 
-void PM3D_API::DefaultShaderInstanced::ApplyMaterialParameters(
+void SphereShader::ApplyMaterialParameters(
     void* shaderParameters,
     DirectX::XMVECTOR materialAmbiant,
     DirectX::XMVECTOR materialDiffuse,
@@ -369,7 +369,7 @@ void PM3D_API::DefaultShaderInstanced::ApplyMaterialParameters(
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
 
-    auto& parameters = *static_cast<DefaultShaderInstancedParameters*>(shaderParameters);
+    auto& parameters = *static_cast<SphereShaderParameters*>(shaderParameters);
 
     parameters.materialAmbiant = materialAmbiant;
     parameters.materialDiffuse = materialDiffuse;
@@ -402,22 +402,22 @@ void PM3D_API::DefaultShaderInstanced::ApplyMaterialParameters(
         }
     }
 
-    if (depthShaderResourceView)
+/*    if (depthShaderResourceView)
     {
         ID3DX11EffectShaderResourceVariable* pShadowMap = effect->GetVariableByName("shadowTexture")->
                                                                   AsShaderResource();
         pShadowMap->SetResource(depthShaderResourceView);
-    }
+    }*/
 }
 
-void PM3D_API::DefaultShaderInstanced::DeleteParameters(void* shader_parameters)
+void SphereShader::DeleteParameters(void* shader_parameters)
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
 
-    delete static_cast<DefaultShaderInstancedParameters*>(shader_parameters);
+    delete static_cast<SphereShaderParameters*>(shader_parameters);
 }
 
-void PM3D_API::DefaultShaderInstanced::ApplyShaderParams() const
+void SphereShader::ApplyShaderParams() const
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
 
@@ -425,7 +425,7 @@ void PM3D_API::DefaultShaderInstanced::ApplyShaderParams() const
     pCB->SetConstantBuffer(shaderParametersBuffer);
 }
 
-void PM3D_API::DefaultShaderInstanced::LoadLights(ID3D11DeviceContext* context, GameObject* gameObject)
+void SphereShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject* gameObject)
 {
     std::lock_guard<std::mutex> guard{reloadingMutex};
 
@@ -434,26 +434,26 @@ void PM3D_API::DefaultShaderInstanced::LoadLights(ID3D11DeviceContext* context, 
         return;
     }*/
 
-    const auto& lights = GameHost::GetInstance()->GetScene()->GetLights();
+    const auto& lights = PM3D_API::GameHost::GetInstance()->GetScene()->GetLights();
     const auto lightCount = lights.size();
 
-    auto finalLights = std::vector<Light*>{};
+    auto finalLights = std::vector<PM3D_API::Light*>{};
 
-    if (lightCount > static_cast<std::vector<std::unique_ptr<Light>>::size_type>(10))
+    if (lightCount > static_cast<std::vector<std::unique_ptr<PM3D_API::Light>>::size_type>(10))
     {
-        std::vector<Light*> ambiantLights{};
-        std::vector<Light*> directionalLights{};
-        std::vector<Light*> otherLights{};
+        std::vector<PM3D_API::Light*> ambiantLights{};
+        std::vector<PM3D_API::Light*> directionalLights{};
+        std::vector<PM3D_API::Light*> otherLights{};
 
         // Trop de lumières, on prend 1. Ambiant puis 2. Directional puis 3 par distance
 
         for (auto& light : lights)
         {
-            if (light->GetType() == LightType::AMBIANT)
+            if (light->GetType() == PM3D_API::LightType::AMBIANT)
             {
                 ambiantLights.push_back(light);
             }
-            else if (light->GetType() == LightType::DIRECTIONAL)
+            else if (light->GetType() == PM3D_API::LightType::DIRECTIONAL)
             {
                 directionalLights.push_back(light);
             }
@@ -490,21 +490,21 @@ void PM3D_API::DefaultShaderInstanced::LoadLights(ID3D11DeviceContext* context, 
     }
     else
     {
-        std::for_each(lights.begin(), lights.end(), [&finalLights](Light* light)
+        std::for_each(lights.begin(), lights.end(), [&finalLights](PM3D_API::Light* light)
         {
             finalLights.push_back(light);
         });
     }
 
-    std::vector<ShaderLightDefaultParameters> shaderLightsParameters{};
-    std::for_each(finalLights.begin(), finalLights.end(), [&shaderLightsParameters, &gameObject](const Light* light)
+    std::vector<PM3D_API::ShaderLightDefaultParameters> shaderLightsParameters{};
+    std::for_each(finalLights.begin(), finalLights.end(), [&shaderLightsParameters, &gameObject](const PM3D_API::Light* light)
     {
         shaderLightsParameters.push_back(light->GetShaderLightDefaultParameters(gameObject));
     });
 
     for (int i = 0; i < 10 - lightCount; ++i)
     {
-        shaderLightsParameters.push_back(DefaultShaderLightDefaultParameters);
+        shaderLightsParameters.push_back(PM3D_API::ShaderLightDefaultParameters{});
     }
 
     D3D11_BUFFER_DESC lightParametersBufferDesc;
@@ -512,16 +512,15 @@ void PM3D_API::DefaultShaderInstanced::LoadLights(ID3D11DeviceContext* context, 
     lightParametersBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
     lightParametersBufferDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     lightParametersBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-    lightParametersBufferDesc.StructureByteStride = sizeof(ShaderLightDefaultParameters);
+    lightParametersBufferDesc.StructureByteStride = sizeof(PM3D_API::ShaderLightDefaultParameters);
     lightParametersBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    lightParametersBufferDesc.ByteWidth = sizeof(ShaderLightDefaultParameters) * static_cast<UINT>(
-        shaderLightsParameters.size());
+    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * static_cast<UINT>(shaderLightsParameters.size());
 
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = shaderLightsParameters.data();
 
     ID3D11Buffer* lightBuffer = nullptr;
-    const auto pD3DDevice = GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
+    const auto pD3DDevice = PM3D_API::GameHost::GetInstance()->GetDispositif()->GetD3DDevice();
     PM3D::DXEssayer(pD3DDevice->CreateBuffer(&lightParametersBufferDesc, &initData, &lightBuffer));
 
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};

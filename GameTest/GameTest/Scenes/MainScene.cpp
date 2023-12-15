@@ -7,32 +7,42 @@
 #include "Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "Api/Public/Component/Basic/Physics/SphereCollider.h"
+#include "Api/Public/Component/Basic/Render/3D/BillboardRenderer.h"
 #include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Light/AmbiantLight.h"
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/GameObject/Basic/BasicSphere.h"
+#include "Api/Public/Shader/Basic/SpriteShader.h"
 #include "GameTest/Components/CameraFollowComponent.h"
-#include "GameTest/Components/MainScene/PauseComponent.h"
 #include "GameTest/Objects/Pine.h"
 
-#include "GameTest/Components/MovableComponent.h"
-#include "GameTest/Components/SizeModifierComponent.h"
-#include "GameTest/Components/WalkSoundComponent.h"
 #include "GameTest/UI/GameUI.h"
 #include "GameTest/Objects/MainScene/Map.h"
+#include <GameTest/Objects/Skier.h>
+#include <Api/Public/Component/Basic/Physics/BoxCollider.h>
+#include <Api/Public/Component/Basic/Physics/SkierCollider.h>
+#include <GameTest/Objects/Right_Ski.h>
+#include <GameTest/Objects/Left_ski.h>
+#include <GameTest/Components/JointsBreakerComponent.h>
+#include <GameTest/Components/ToggleOnSkierComponent.h>
+#include <GameTest/Components/SkierDeleter.h>
+#include <GameTest/Components/SkierSpawner.h>
 
 #include "Api/Private/Light/Shadow/ShadowProcessor.h"
+#include "Api/Public/Util/Sound/SoundManager.h"
+#include "GameTest/Objects/Sphere/Sphere.h"
 
 void MainScene::InitializePhysics()
 {
-    auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
-    physicsResolver->Initialize();
-    SetPhysicsResolver(std::move(physicsResolver));
+	auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
+	physicsResolver->Initialize();
+	SetPhysicsResolver(std::move(physicsResolver));
 }
 
 void MainScene::InitializeCamera()
 {
+
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSPECTIVE,
@@ -41,7 +51,7 @@ void MainScene::InitializeCamera()
         XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f)
     );
     mainCamera->SetFieldOfView(45.0f);
-    mainCamera->SetFarDist(1000.0f);
+    mainCamera->SetFarDist(200000.0f);
     mainCamera->AddComponent(std::make_unique<CameraFollowComponent>());
     mainCamera->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
     SetMainCamera(std::move(mainCamera));
@@ -49,17 +59,18 @@ void MainScene::InitializeCamera()
 
 void MainScene::InitializeLights()
 {
-    auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
-        "Directional light",
-        XMFLOAT3(1.0f, -1.0f, 0.0f)
-    );
-    directionalLight->SetIntensity(1.0f);
-    directionalLight->Initialize();
-    AddLight(std::move(directionalLight));
+	auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
+		"Directional light",
+		XMFLOAT3(1.0f, -1.0f, 0.0f)
+	);
+	directionalLight->SetIntensity(1.0f);
+	directionalLight->Initialize();
+	AddLight(std::move(directionalLight));
 }
 
 void MainScene::InitializeObjects()
 {
+
     // ============= Base elements from the loading scene =====
     auto objects = std::make_unique<GameObject>("Objects");
     objects->Initialize();
@@ -84,59 +95,100 @@ void MainScene::InitializeObjects()
     auto map = std::make_unique<Map>();
     const auto mapPtr = map.get();
     AddChild(std::move(map));
-
-
     mapPtr->Initialize();
 
+    // === Add skybox ===
+    auto skybox = std::make_unique<GameObject>("Skybox");
+    skybox->SetWorldScale({10000.f,10000.f,10000.f});
+    skybox->Initialize();
+    auto skyShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/SkyShader.fx");
+    auto skyRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(skyShader), "skybox.obj");
+    skyRenderer->SetIgnoreCulling(true);
+    skybox->AddComponent(std::move(skyRenderer));
+    AddChild(std::move(skybox));
 
-    // ============= Add a sphere =============
-    {
-        auto sphere = std::make_unique<PM3D_API::BasicSphere>("Sphere");
-        spherePtr = sphere.get();
-        AddChild(std::move(sphere));
-        spherePtr->SetWorldScale(XMFLOAT3(.2f, .2f, .2f));
-        spherePtr->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
-        spherePtr->Initialize();
 
-        auto sphereRigidbody = std::make_unique<PM3D_API::Rigidbody>();
-        const auto sphereRigidbodyPtr = sphereRigidbody.get();
-        spherePtr->AddComponent(std::move(sphereRigidbody));
-        sphereRigidbodyPtr->Initialize();
+    auto sphere = std::make_unique<Sphere>();
+    spherePtr = sphere.get();
+    AddChild(std::move(sphere));
+    spherePtr->Initialize();
 
-        auto sphereCollider = std::make_unique<
-            PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
-        const auto sphereColliderPtr = sphereCollider.get();
-        spherePtr->AddComponent(std::move(sphereCollider));
-        sphereColliderPtr->Initialize();
-        physx::PxFilterData filterDataSnowball;
-        filterDataSnowball.word0 = FilterGroup::eSNOWBALL;
-        physx::PxShape* sphereShape = sphereColliderPtr->getShape();
-        sphereShape->setSimulationFilterData(filterDataSnowball);
+    auto skierSpawner = std::make_unique<SkierSpawner>();
+    const auto skierSpawnerPtr = skierSpawner.get();
+    AddComponent(std::move(skierSpawner));
+    skierSpawnerPtr->Initialize();
+    skierSpawnerPtr->Update();
 
-        GetMainCamera()->GetComponent<CameraFollowComponent>()->SetObjectToFollow(spherePtr);
-
-        spherePtr->AddComponent(std::make_unique<SizeModifierComponent>());
-
-        spherePtr->AddComponent(std::make_unique<MovableComponent>());
-
-        auto walkSoundComponent = std::make_unique<WalkSoundComponent>();
-        const auto walkSoundComponentPtr = walkSoundComponent.get();
-        spherePtr->AddComponent(std::move(walkSoundComponent));
-        walkSoundComponentPtr->Initialize();
-    }
-    
     auto shadowProcessor = std::make_unique<ShadowProcessor>();
     shadowProcessor->Initialize();
     shadowProcessor->SetScene(this);
     AddComponent(std::move(shadowProcessor));
+    
+    // Billboards
+    {
+        auto obj = std::make_unique<GameObject>(
+            "panneau_right",
+            XMFLOAT3(-48.0f, -210.0f, -343.0f),
+            XMFLOAT3(0.0f, 0.0f, 0.0f),
+            XMFLOAT3(1.0f, 1.0f, 1.0f)
+        );
+        const auto objPtr = obj.get();
+        AddChild(std::move(obj));
+        auto shader = std::make_unique<PM3D_API::SpriteShader>(L"shader/Sprite1.fx");
+        auto billboardRenderer = std::make_unique<PM3D_API::BillboardRenderer>(
+            std::move(shader),
+            L"sprite/game/panneau_right.dds",
+            PM3D_API::BillboardAlignment::XYZ,
+            XMFLOAT2(5 / 304.f, 15 / 880.f)
+        );
+        const auto billboardRendererPtr = billboardRenderer.get();
+        objPtr->AddComponent(std::move(billboardRenderer));
+        billboardRendererPtr->Initialize();
+    }
+    {
+        auto obj = std::make_unique<GameObject>(
+            "panneau_left",
+            XMFLOAT3(184.0f, -354.0f, -585.0f),
+            XMFLOAT3(0.0f, 0.0f, 0.0f),
+            XMFLOAT3(1.0f, 1.0f, 1.0f)
+        );
+        const auto objPtr = obj.get();
+        AddChild(std::move(obj));
+        auto shader = std::make_unique<PM3D_API::SpriteShader>(L"shader/Sprite1.fx");
+        auto billboardRenderer = std::make_unique<PM3D_API::BillboardRenderer>(
+            std::move(shader),
+            L"sprite/game/panneau_left.dds",
+            PM3D_API::BillboardAlignment::XYZ,
+            XMFLOAT2(5 / 304.f, 15 / 880.f)
+        );
+        const auto billboardRendererPtr = billboardRenderer.get();
+        objPtr->AddComponent(std::move(billboardRenderer));
+        billboardRendererPtr->Initialize();
+    }
 }
 
-void MainScene::InitializeUI()
-{
-    Scene::InitializeUI(); // Init the base canvas
+	void MainScene::InitializeUI()
+	{
+		Scene::InitializeUI(); // Init the base canvas
 
     auto gameUI = std::make_unique<GameUI>();
     const auto gameUIPtr = gameUI.get();
     AddUiChild(std::move(gameUI));
     gameUIPtr->Initialize();
+
+    if (
+        const auto loadRes = SoundManager::GetInstance().loadSound(
+            "sounds/effects/toung.wav",
+            &SoundManager::GetInstance().toungBuffer
+        );
+        !loadRes
+    )
+    {
+        std::cerr << "Failed to load sound toung.wav" << std::endl;
+    }
+    else
+    {
+        std::cout << "Loaded sound toung.wav" << std::endl;
+    }
 }
+

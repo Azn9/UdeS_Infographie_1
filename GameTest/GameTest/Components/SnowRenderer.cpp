@@ -271,7 +271,7 @@ void SnowRenderer::DrawRVT() const
         1000.0f
     );
 
-    const auto parameters = new SnowShader::SnowShaderParameters{
+    const auto parameters = SnowShader::SnowShaderParameters{
         XMMatrixTranspose(parentObject->GetMatWorld() * viewProj),
         XMMatrixTranspose(parentObject->GetMatWorld()),
         XMVectorSet(pos.x, pos.y + 10.0f, pos.z, 1.0f),
@@ -291,9 +291,9 @@ void SnowRenderer::DrawRVT() const
     ID3DX11EffectConstantBuffer* pCB = effect->GetConstantBufferByName("param");
     pCB->SetConstantBuffer(shader->GetShaderParametersBuffer());
 
-    context->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, parameters, 0, 0);
+    context->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, &parameters, 0, 0);
 
-    std::vector<PM3D_API::ShaderLightDefaultParameters> shaderLightsParameters{};
+    std::vector<PM3D_API::ShaderLightDefaultParameters> shaderLightsParameters;
 
     for (const auto& child : parentObject->GetScene()->GetChildren())
     {
@@ -366,15 +366,22 @@ void SnowRenderer::DrawRVT() const
 
     shader->GetPass()->Apply(0, context);
 
-    for (unsigned int i = 0; i < mesh->object_count; ++i)
+    for (unsigned int i = 0; i < mesh->group_count; ++i)
     {
-        const auto [name, face_count, face_offset, index_offset] = mesh->objects[i];
+        const auto [name, face_count, face_offset, index_offset] = mesh->groups[i];
         const unsigned indexStart = index_offset;
 
         unsigned int indexDrawAmount;
-        if (mesh->object_count > 1)
+        if (mesh->group_count > 1)
         {
-            indexDrawAmount = mesh->objects[i + 1].index_offset - indexStart;
+            if (i + 1 < mesh->group_count)
+            {
+                indexDrawAmount = mesh->groups[i + 1].index_offset - indexStart;
+            }
+            else
+            {
+                indexDrawAmount = mesh->index_count - indexStart;
+            }
         }
         else
         {

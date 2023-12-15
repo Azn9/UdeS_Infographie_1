@@ -9,14 +9,17 @@
 #include "Api/Public/EventSystem/EventSystem.h"
 #include "Api/Public/EventSystem/InTunnelEvent.h"
 #include "Api/Public/GameObject/GameObject.h"
+#include "Api/Public/Util/Sound/SoundManager.h"
 #include "GameTest/GameTest.h"
 #include "GameTest/RestartEvent.h"
 #include "GameTest/Event/GameOverEvent.h"
+#include "Api/Public/Util/FilterGroup.h"
 
 SizeModifierComponent::SizeModifierComponent()
 {
     PM3D_API::EventSystem::Subscribe([this](const CollisionObstacleEvent& event)
     {
+        //SoundManager::GetInstance().Play(SoundManager::GetInstance().toungBuffer);
         _collisionHappend = true;
     });
 
@@ -39,9 +42,9 @@ void SizeModifierComponent::PhysicsUpdate()
     {
         _resetRequested = false;
         _inTunnel = false;
-        shape->setGeometry(physx::PxSphereGeometry(0.2f));
+        shape->setGeometry(physx::PxSphereGeometry(1.f));
         parentObject->SetWorldPosition(DirectX::XMFLOAT3(0.f, -60.f, 0.f));
-        parentObject->SetWorldScale(DirectX::XMFLOAT3(0.2f, 0.2f, 0.2f));
+        parentObject->SetWorldScale(DirectX::XMFLOAT3(1.f, 1.f, 1.f));
         return;
     }
 
@@ -58,7 +61,7 @@ void SizeModifierComponent::PhysicsUpdate()
         shape->setGeometry(physx::PxSphereGeometry(preScale.x * .5f));
 
         if (preScale.x * .5f < 0.1f)
-            PM3D_API::EventSystem::Publish(GameOverEvent(false));
+            PM3D_API::EventSystem::Publish(GameOverEvent(_inTunnel));
     }
     else
     {
@@ -79,6 +82,12 @@ void SizeModifierComponent::PhysicsUpdate()
 
         shape->setGeometry(physx::PxSphereGeometry(currentSize));
     }
+    physx::PxFilterData filterDataSnowBall = shape->getSimulationFilterData();
+    if (parentObject->GetWorldScale().x >= 0.9f)
+        filterDataSnowBall.word2 = BuriablePenguin::eCanBury;
+    else
+        filterDataSnowBall.word2 = BuriablePenguin::eCannotBury;
+    shape->setSimulationFilterData(filterDataSnowBall);
 }
 
 void SizeModifierComponent::DrawDebugInfo() const
