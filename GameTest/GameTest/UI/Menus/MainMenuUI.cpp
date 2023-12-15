@@ -2,6 +2,7 @@
 
 #include "Api/Public/Component/Basic/Render/2D/TextRenderer.h"
 #include "Api/Public/EventSystem/EventSystem.h"
+#include "Api/Public/Input/Input.h"
 #include "Api/Public/UI/Button.h"
 #include "Api/Public/UI/DisabledButton.h"
 #include "Core/Public/Core/Moteur.h"
@@ -17,6 +18,48 @@ void MainMenuUI::Initialize()
 
     const auto iceSnowFontLoader = PM3D_API::FontLoader("sprite/font/icesnow.fnt", L"sprite/font/icesnow.dds");
 
+    auto creditsObj = std::make_unique<UIObject>("Credits", XMFLOAT2(1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f), 0.0f, true,
+                                                 true);
+    auto creditsRenderer = std::make_unique<PM3D_API::SpriteRenderer>(L"sprite/ui/credits.dds");
+    creditsObj->SetAlpha(0.f);
+    creditsObjectPtr = creditsObj.get();
+    const auto creditsRendererPtr = creditsRenderer.get();
+    canvas->AddChild(std::move(creditsObj));
+    creditsObjectPtr->AddComponent(std::move(creditsRenderer));
+    creditsRendererPtr->Initialize();
+
+    auto paywallObj = std::make_unique<UIObject>("paywall", XMFLOAT2(1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f), 0.0f, true,
+                                                 true);
+    auto paywallRenderer = std::make_unique<PM3D_API::SpriteRenderer>(L"sprite/ui/paywall.dds");
+    paywallObj->SetAlpha(0.f);
+    paywallObjectPtr = paywallObj.get();
+    const auto paywallRendererPtr = paywallRenderer.get();
+    canvas->AddChild(std::move(paywallObj));
+    paywallObjectPtr->AddComponent(std::move(paywallRenderer));
+    paywallRendererPtr->Initialize();
+
+    Input::GetInstance().AddKeyPressedListener([&](const KeyCode& key_code)
+    {
+        if (key_code == KeyCode::ESCAPE && (creditsDisplayed || paywallDisplayed))
+        {
+            creditsDisplayed = false;
+            paywallDisplayed = false;
+
+            creditsObjectPtr->SetAlpha(0.f);
+            paywallObjectPtr->SetAlpha(0.f);
+            SetAlpha(1.f);
+
+            for (const auto component : allComponents)
+            {
+                if (component)
+                    component->SetAlpha(alpha);
+            }
+
+            disabledPlayButtonPtr->SetAlpha(loaded ? 0.f : 1.f);
+            playButtonPtr->SetAlpha(loaded ? 1.f : 0.f);
+        }
+    });
+
     auto disabledPlayButton = std::make_unique<DisabledButton>(
         L"sprite/ui/large_btn_disabled.dds",
         1311.f / expectedScreenSize.x,
@@ -29,6 +72,7 @@ void MainMenuUI::Initialize()
         0.3f
     );
     disabledPlayButtonPtr = disabledPlayButton.get();
+    allComponents.push_back(disabledPlayButtonPtr);
     canvas->AddChild(std::move(disabledPlayButton));
     disabledPlayButtonPtr->Initialize();
 
@@ -51,6 +95,7 @@ void MainMenuUI::Initialize()
     );
     playButton->SetAlpha(0.f);
     playButtonPtr = playButton.get();
+    allComponents.push_back(playButtonPtr);
     canvas->AddChild(std::move(playButton));
     playButtonPtr->Initialize();
 
@@ -62,12 +107,17 @@ void MainMenuUI::Initialize()
         109.f / expectedScreenSize.y,
         120.f / expectedScreenSize.x,
         120.f / expectedScreenSize.y,
-        []
+        L"sprite/ui/classement_btn.dds",
+        DirectX::XMFLOAT2(0.0f, 0.0f),
+        [&]
         {
-            // TODO
+            paywallObjectPtr->SetAlpha(1.f);
+            paywallDisplayed = true;
+            SetAlpha(0.f);
         }
     );
     const auto leaderboardButtonPtr = leaderboardButton.get();
+    allComponents.push_back(leaderboardButtonPtr);
     canvas->AddChild(std::move(leaderboardButton));
     leaderboardButtonPtr->Initialize();
 
@@ -79,12 +129,17 @@ void MainMenuUI::Initialize()
         109.f / expectedScreenSize.y,
         120.f / expectedScreenSize.x,
         120.f / expectedScreenSize.y,
-        []
+        L"sprite/ui/credits_btn.dds",
+        DirectX::XMFLOAT2(0.0f, 0.0f),
+        [&]
         {
-            // TODO
+            creditsObjectPtr->SetAlpha(1.f);
+            creditsDisplayed = true;
+            SetAlpha(0.f);
         }
     );
     const auto creditsButtonPtr = creditsButton.get();
+    allComponents.push_back(creditsButtonPtr);
     canvas->AddChild(std::move(creditsButton));
     creditsButtonPtr->Initialize();
 
@@ -96,12 +151,17 @@ void MainMenuUI::Initialize()
         109.f / expectedScreenSize.y,
         120.f / expectedScreenSize.x,
         120.f / expectedScreenSize.y,
-        []
+        L"sprite/ui/settings_btn.dds",
+        DirectX::XMFLOAT2(0.0f, 0.0f),
+        [&]
         {
-            // TODO
+            paywallObjectPtr->SetAlpha(1.f);
+            paywallDisplayed = true;
+            SetAlpha(0.f);
         }
     );
     const auto settingsButtonPtr = settingsButton.get();
+    allComponents.push_back(settingsButtonPtr);
     canvas->AddChild(std::move(settingsButton));
     settingsButtonPtr->Initialize();
 
@@ -113,6 +173,8 @@ void MainMenuUI::Initialize()
         109.f / expectedScreenSize.y,
         120.f / expectedScreenSize.x,
         120.f / expectedScreenSize.y,
+        L"sprite/ui/exit_btn.dds",
+        DirectX::XMFLOAT2(0.0f, 0.0f),
         []
         {
             std::cout << "Quit button pressed" << std::endl;
@@ -120,6 +182,7 @@ void MainMenuUI::Initialize()
         }
     );
     const auto quitButtonPtr = quitButton.get();
+    allComponents.push_back(quitButtonPtr);
     canvas->AddChild(std::move(quitButton));
     quitButtonPtr->Initialize();
 
@@ -132,6 +195,7 @@ void MainMenuUI::Initialize()
         true
     );
     const auto objPtr = obj.get();
+    allComponents.push_back(objPtr);
     auto textRenderer = std::make_unique<PM3D_API::TextRenderer>(
         iceSnowFontLoader,
         "PROJECT SNOWBALL",
@@ -154,15 +218,40 @@ void MainMenuUI::Initialize()
     loadingSceneComponentPtr->Initialize();
 }
 
+void MainMenuUI::Draw()
+{
+    for (const auto component : allComponents)
+    {
+        if (component)
+            component->SetAlpha(alpha);
+    }
+
+    if (!displayed || creditsDisplayed || paywallDisplayed) return;
+
+    disabledPlayButtonPtr->SetAlpha(loaded ? 0.f : 1.f);
+    playButtonPtr->SetAlpha(loaded ? 1.f : 0.f);
+
+    DrawSelf();
+
+    for (auto& component : components)
+    {
+        if (component)
+            component->DrawSelf();
+    }
+}
+
+
 void MainMenuUI::DrawSelf() const
 {
-    if (!displayed) return;
-
     UIObject::DrawSelf();
 }
 
-void MainMenuUI::LoadComplete() const
+void MainMenuUI::LoadComplete()
 {
+    loaded = true;
+
+    if (!displayed || creditsDisplayed || paywallDisplayed) return;
+
     disabledPlayButtonPtr->SetAlpha(0.f);
     playButtonPtr->SetAlpha(1.f);
 }

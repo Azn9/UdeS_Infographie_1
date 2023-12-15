@@ -26,6 +26,8 @@ void Sphere::Initialize()
     AddComponent(std::move(sphereRigidbody));
     sphereRigidbodyPtr->Initialize();
 
+    static_cast<physx::PxRigidDynamic*>(sphereRigidbodyPtr->GetActor())->setMass(20.f);
+
     auto sphereCollider = std::make_unique<PM3D_API::SphereCollider>(PxGetPhysics().createMaterial(0.4f, 0.4f, 0.f));
     const auto sphereColliderPtr = sphereCollider.get();
     AddComponent(std::move(sphereCollider));

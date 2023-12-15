@@ -21,6 +21,7 @@ public:
 
     void Initialize() override;
     void DrawSelf() const override;
+    void DrawShadowSelf(const PM3D_API::Camera& camera) const override;
 
 private:
     void DrawRVT() const;
