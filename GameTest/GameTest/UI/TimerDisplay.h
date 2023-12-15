@@ -26,21 +26,6 @@ public:
     void Initialize() override;
     void Update() override;
 
-    void Test()
-    {
-        isInTunnel = true;
-    }
-
-    void Test2()
-    {
-        std::cout << "aaa" << std::endl;
-    }
-
-    void Test3()
-    {
-        std::cout << "aaa" << std::endl;
-    }
-
 private:
     int64_t time;
     int64_t startTime;

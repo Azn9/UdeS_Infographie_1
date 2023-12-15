@@ -18,7 +18,6 @@ void TimerDisplay::Initialize()
         isRunning = false;
         endTime = PM3D::Time::GetInstance().GetTimeSpecific();
         isInTunnel = true;
-        Test();
     });
 
     PM3D_API::EventSystem::GetInstance().Subscribe([&](const GameStartEvent&)
@@ -48,7 +47,6 @@ void TimerDisplay::Initialize()
 
     PM3D_API::EventSystem::GetInstance().Subscribe([&](const PauseEvent& event)
     {
-        Test3();
         if (event.paused)
         {
             isRunning = false;
