@@ -7,11 +7,13 @@
 #include "Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "Api/Public/Component/Basic/Physics/SphereCollider.h"
+#include "Api/Public/Component/Basic/Render/3D/BillboardRenderer.h"
 #include "Api/Public/Component/Basic/Render/3D/MeshRenderer.h"
 #include "Api/Public/GameObject/GameObject.h"
 #include "Api/Public/Light/AmbiantLight.h"
 #include "Api/Public/Util/FilterGroup.h"
 #include "Api/Public/GameObject/Basic/BasicSphere.h"
+#include "Api/Public/Shader/Basic/SpriteShader.h"
 #include "GameTest/Components/CameraFollowComponent.h"
 #include "GameTest/Components/MainScene/PauseComponent.h"
 #include "GameTest/Objects/Pine.h"
@@ -133,6 +135,48 @@ void MainScene::InitializeObjects()
         cameraRealFP->SetClearColor(XMFLOAT3(216.f / 255.f, 242.f / 255.f, 255.f / 255.f));
 
         spherePtr->AddChild(std::move(cameraRealFP));
+    }
+
+    // Billboards
+    {
+        auto obj = std::make_unique<GameObject>(
+            "panneau_right",
+            XMFLOAT3(-48.0f, -210.0f, -343.0f),
+            XMFLOAT3(0.0f, 0.0f, 0.0f),
+            XMFLOAT3(1.0f, 1.0f, 1.0f)
+        );
+        const auto objPtr = obj.get();
+        AddChild(std::move(obj));
+        auto shader = std::make_unique<PM3D_API::SpriteShader>(L"shader/Sprite1.fx");
+        auto billboardRenderer = std::make_unique<PM3D_API::BillboardRenderer>(
+            std::move(shader),
+            L"sprite/game/panneau_right.dds",
+            PM3D_API::BillboardAlignment::XYZ,
+            XMFLOAT2(5 / 304.f, 15 / 880.f)
+        );
+        const auto billboardRendererPtr = billboardRenderer.get();
+        objPtr->AddComponent(std::move(billboardRenderer));
+        billboardRendererPtr->Initialize();
+    }
+    {
+        auto obj = std::make_unique<GameObject>(
+            "panneau_left",
+            XMFLOAT3(184.0f, -354.0f, -585.0f),
+            XMFLOAT3(0.0f, 0.0f, 0.0f),
+            XMFLOAT3(1.0f, 1.0f, 1.0f)
+        );
+        const auto objPtr = obj.get();
+        AddChild(std::move(obj));
+        auto shader = std::make_unique<PM3D_API::SpriteShader>(L"shader/Sprite1.fx");
+        auto billboardRenderer = std::make_unique<PM3D_API::BillboardRenderer>(
+            std::move(shader),
+            L"sprite/game/panneau_left.dds",
+            PM3D_API::BillboardAlignment::XYZ,
+            XMFLOAT2(5 / 304.f, 15 / 880.f)
+        );
+        const auto billboardRendererPtr = billboardRenderer.get();
+        objPtr->AddComponent(std::move(billboardRenderer));
+        billboardRendererPtr->Initialize();
     }
 }
 

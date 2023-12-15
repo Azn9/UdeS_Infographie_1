@@ -11,6 +11,6 @@ PM3D_API::GameHost* PM3D_API::GameHost::GetInstance()
 
 void GameTest::Initialize()
 {
-    //SetScene(LoadingScene::GetInstancePtr());
-    SetScene(BRTScene::GetInstancePtr());
+    SetScene(LoadingScene::GetInstancePtr());
+    //SetScene(BRTScene::GetInstancePtr());
 }

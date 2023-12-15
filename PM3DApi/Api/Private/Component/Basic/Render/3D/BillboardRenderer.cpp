@@ -58,17 +58,17 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
     const auto cameraDirection = camera->GetWorldDirection();
 
     const auto position = parentObject->GetWorldPosition();
+    const auto rotation = parentObject->GetWorldRotationQuaternion();
     XMFLOAT3 scale = parentObject->GetWorldScale();
     scale.x *= textureSizeX * selfScale.x;
     scale.y *= textureSizeY * selfScale.y;
     scale.z = 1.f;
 
-    XMMATRIX worldMatrix;
-
     const auto cameraPosVec = XMVectorSet(cameraPosition.x, cameraPosition.y, cameraPosition.z, 1.0f);
     const auto cameraDirVec = XMVectorSet(cameraDirection.x, cameraDirection.y, cameraDirection.z, 0.0f);
     const auto cameraUpVec = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
+    /*
     switch (alignment)
     {
     case BillboardAlignment::Z:
@@ -93,6 +93,11 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
         break;
     default: ;
     }
+    */
+
+    const XMMATRIX worldMatrix = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
+        DirectX::XMMatrixRotationQuaternion(rotation.ToXMVector()) *
+        DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
     const XMMATRIX viewProj = camera->GetMatViewProj();
 
