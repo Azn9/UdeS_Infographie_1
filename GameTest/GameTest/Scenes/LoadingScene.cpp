@@ -61,7 +61,6 @@ void LoadingScene::InitializeObjects()
     shadowProcessor->SetScene(this);
     AddComponent(std::move(shadowProcessor));
 
-    /*
     // === Add skybox ===
     auto skybox = std::make_unique<GameObject>("Skybox");
     skybox->SetWorldScale({10000.f,10000.f,10000.f});
@@ -71,7 +70,6 @@ void LoadingScene::InitializeObjects()
     skyRenderer->SetIgnoreCulling(true);
     skybox->AddComponent(std::move(skyRenderer));
     AddChild(std::move(skybox));
-*/
 
     auto sphere = std::make_unique<GameObject>("Sphere");
     sphere->Initialize();

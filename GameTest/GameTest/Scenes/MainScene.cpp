@@ -94,8 +94,7 @@ void MainScene::InitializeObjects()
     const auto mapPtr = map.get();
     AddChild(std::move(map));
     mapPtr->Initialize();
-
-    /*
+    
     // === Add skybox ===
     auto skybox = std::make_unique<GameObject>("Skybox");
     skybox->SetWorldScale({10000.f,10000.f,10000.f});
@@ -105,7 +104,6 @@ void MainScene::InitializeObjects()
     skyRenderer->SetIgnoreCulling(true);
     skybox->AddComponent(std::move(skyRenderer));
     AddChild(std::move(skybox));
-*/
 
     auto sphere = std::make_unique<Sphere>();
     spherePtr = sphere.get();
