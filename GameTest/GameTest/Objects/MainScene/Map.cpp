@@ -46,7 +46,8 @@ void Map::Initialize()
     AddComponent(std::move(meshCollider));
     meshColliderPtr->Initialize();
 
-    if (!mapImporter.IsParseSuccessful()) return;
+    //if (!mapImporter.IsParseSuccessful())
+        return;
 
     for (const auto& [name, chargeur, objects] : mapImporter.GetParsedObjects())
     {
