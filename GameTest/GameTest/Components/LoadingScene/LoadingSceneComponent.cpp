@@ -34,7 +34,9 @@ void LoadingSceneComponent::Update()
     if (wantToChangeScene)
     {
         SoundManager::GetInstance().StopAllSounds();
-        //SoundManager::GetInstance().LoadAndPlay("sounds/music/music2.wav"); // TODO
+
+        if (SoundManager::GetInstance().music2Buffer)
+            SoundManager::GetInstance().Play(SoundManager::GetInstance().music2Buffer);
 
         PM3D_API::GameHost::GetInstance()->SetScene(MainScene::GetInstancePtr());
         PM3D_API::EventSystem::Publish(GameStartEvent());

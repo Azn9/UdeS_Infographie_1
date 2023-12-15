@@ -1,1 +1,1 @@
-cmake -S . -B build
+.\cmake\bin\cmake.exe -S . -B build

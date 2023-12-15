@@ -34,6 +34,7 @@ public:
         spriteRendererPtr(nullptr),
         hoverSpriteRendererPtr(nullptr),
         pressedSpriteRendererPtr(nullptr),
+        imageSpriteRendererPtr(nullptr),
         textRendererPtr(nullptr)
     {
     }
@@ -46,15 +47,20 @@ public:
         const float y,
         const float width,
         const float height,
+        std::wstring imagePath,
+        const DirectX::XMFLOAT2 positionOffset,
         const std::function<void()>& callback
     ) : UIObject("Button", {width, height}, {x, y}, 0, true, true),
         baseFileName(std::move(baseFileName)),
         hoverFileName(std::move(hoverFileName)),
         pressedFileName(std::move(pressedFileName)),
+        imagePath(std::move(imagePath)),
+        positionOffset(positionOffset),
         callback(callback),
         spriteRendererPtr(nullptr),
         hoverSpriteRendererPtr(nullptr),
         pressedSpriteRendererPtr(nullptr),
+        imageSpriteRendererPtr(nullptr),
         textRendererPtr(nullptr)
     {
     }
@@ -74,6 +80,7 @@ private:
     std::wstring baseFileName;
     std::wstring hoverFileName;
     std::wstring pressedFileName;
+    std::wstring imagePath;
 
     std::string text;
     DirectX::XMFLOAT2 positionOffset = DirectX::XMFLOAT2(0.0f, 0.0f);
@@ -85,5 +92,6 @@ private:
     std::unique_ptr<PM3D_API::SpriteRenderer>::pointer spriteRendererPtr;
     std::unique_ptr<PM3D_API::SpriteRenderer>::pointer hoverSpriteRendererPtr;
     std::unique_ptr<PM3D_API::SpriteRenderer>::pointer pressedSpriteRendererPtr;
+    std::unique_ptr<PM3D_API::SpriteRenderer>::pointer imageSpriteRendererPtr;
     std::unique_ptr<PM3D_API::TextRenderer>::pointer textRendererPtr;
 };

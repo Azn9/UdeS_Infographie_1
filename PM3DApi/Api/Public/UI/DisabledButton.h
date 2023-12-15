@@ -15,19 +15,6 @@ public:
         const float x,
         const float y,
         const float width,
-        const float height
-    ) : Button(baseFileName, baseFileName, baseFileName, x, y, width, height, [
-               ]()
-               {
-               })
-    {
-    }
-
-    DisabledButton(
-        const std::wstring& baseFileName,
-        const float x,
-        const float y,
-        const float width,
         const float height,
         PM3D_API::FontLoader fontLoader,
         std::string text,

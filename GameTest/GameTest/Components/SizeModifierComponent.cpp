@@ -19,8 +19,10 @@ SizeModifierComponent::SizeModifierComponent()
 {
     PM3D_API::EventSystem::Subscribe([this](const CollisionObstacleEvent& event)
     {
-        //SoundManager::GetInstance().Play(SoundManager::GetInstance().toungBuffer);
         _collisionHappend = true;
+
+        if (SoundManager::GetInstance().toungBuffer)
+            SoundManager::GetInstance().Play(SoundManager::GetInstance().toungBuffer);
     });
 
 

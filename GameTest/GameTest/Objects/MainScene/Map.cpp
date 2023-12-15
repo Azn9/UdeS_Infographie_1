@@ -14,15 +14,6 @@ Map::Map() : GameObject("World"), mapImporter("Map/map_data.json")
 
 void Map::Initialize()
 {
-    /*
-    auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>(
-        std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx"),
-        "Map/map.obj"
-    );
-    const auto meshRendererPtr = meshRenderer.get();
-    AddComponent(std::move(meshRenderer));
-    meshRendererPtr->Initialize();
-    */
     auto meshRenderer = std::make_unique<SnowRenderer>(
         //std::make_unique<SnowShader>(L"shader/SnowShader_tesselate.fx", true),
         std::make_unique<SnowShader>(L"shader/SnowShader.fx"),
@@ -46,7 +37,7 @@ void Map::Initialize()
     AddComponent(std::move(meshCollider));
     meshColliderPtr->Initialize();
 
-    //if (!mapImporter.IsParseSuccessful())
+    if (!mapImporter.IsParseSuccessful())
         return;
 
     for (const auto& [name, chargeur, objects] : mapImporter.GetParsedObjects())

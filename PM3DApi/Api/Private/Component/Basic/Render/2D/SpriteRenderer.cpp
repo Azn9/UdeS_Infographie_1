@@ -41,7 +41,7 @@ void PM3D_API::SpriteRenderer::UpdateMatrix()
 {
     const auto pDispositif = GameHost::GetInstance()->GetDispositif();
 
-    const auto position = parentObject->GetPosition();
+    const auto position = parentObject->GetPosition() + positionOffset;
     const auto scale = parentObject->GetScale();
 
     const auto largeur = static_cast<float>(pDispositif->GetLargeur());

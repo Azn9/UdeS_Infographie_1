@@ -22,6 +22,8 @@ void GameUI::Initialize()
         913.f / expectedScreenSize.y,
         120.f / expectedScreenSize.x,
         120.f / expectedScreenSize.y,
+        L"sprite/ui/pause_btn.dds",
+        DirectX::XMFLOAT2(0.0f, 0.0f),
         [this]
         {
             pauseComponentPtr->TogglePause();

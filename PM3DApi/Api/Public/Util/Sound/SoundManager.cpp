@@ -301,6 +301,9 @@ bool SoundManager::Play(IDirectSoundBuffer8* buffer)
 
 void SoundManager::StopAllSounds()
 {
-    uiRollover1Buffer->Stop();
-    uiClick1Buffer->Stop();
+    if (uiRollover1Buffer) uiRollover1Buffer->Stop();
+    if (uiClick1Buffer) uiClick1Buffer->Stop();
+    if (music1Buffer) music1Buffer->Stop();
+    if (music2Buffer) music2Buffer->Stop();
+    if (toungBuffer) toungBuffer->Stop();
 }

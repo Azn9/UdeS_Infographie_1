@@ -35,14 +35,13 @@
 
 void MainScene::InitializePhysics()
 {
-	auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
-	physicsResolver->Initialize();
-	SetPhysicsResolver(std::move(physicsResolver));
+    auto physicsResolver = std::make_unique<PM3D_API::PhysicsResolver>();
+    physicsResolver->Initialize();
+    SetPhysicsResolver(std::move(physicsResolver));
 }
 
 void MainScene::InitializeCamera()
 {
-
     auto mainCamera = std::make_unique<PM3D_API::Camera>(
         "Main camera",
         PM3D_API::Camera::PERSPECTIVE,
@@ -59,18 +58,17 @@ void MainScene::InitializeCamera()
 
 void MainScene::InitializeLights()
 {
-	auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
-		"Directional light",
-		XMFLOAT3(1.0f, -1.0f, 0.0f)
-	);
-	directionalLight->SetIntensity(1.0f);
-	directionalLight->Initialize();
-	AddLight(std::move(directionalLight));
+    auto directionalLight = std::make_unique<PM3D_API::DirectionalLight>(
+        "Directional light",
+        XMFLOAT3(1.0f, -1.0f, 0.0f)
+    );
+    directionalLight->SetIntensity(1.0f);
+    directionalLight->Initialize();
+    AddLight(std::move(directionalLight));
 }
 
 void MainScene::InitializeObjects()
 {
-
     // ============= Base elements from the loading scene =====
     auto objects = std::make_unique<GameObject>("Objects");
     objects->Initialize();
@@ -97,6 +95,7 @@ void MainScene::InitializeObjects()
     AddChild(std::move(map));
     mapPtr->Initialize();
 
+    /*
     // === Add skybox ===
     auto skybox = std::make_unique<GameObject>("Skybox");
     skybox->SetWorldScale({10000.f,10000.f,10000.f});
@@ -106,7 +105,7 @@ void MainScene::InitializeObjects()
     skyRenderer->SetIgnoreCulling(true);
     skybox->AddComponent(std::move(skyRenderer));
     AddChild(std::move(skybox));
-
+*/
 
     auto sphere = std::make_unique<Sphere>();
     spherePtr = sphere.get();
@@ -123,7 +122,7 @@ void MainScene::InitializeObjects()
     shadowProcessor->Initialize();
     shadowProcessor->SetScene(this);
     AddComponent(std::move(shadowProcessor));
-    
+
     // Billboards
     {
         auto obj = std::make_unique<GameObject>(
@@ -167,9 +166,9 @@ void MainScene::InitializeObjects()
     }
 }
 
-	void MainScene::InitializeUI()
-	{
-		Scene::InitializeUI(); // Init the base canvas
+void MainScene::InitializeUI()
+{
+    Scene::InitializeUI(); // Init the base canvas
 
     auto gameUI = std::make_unique<GameUI>();
     const auto gameUIPtr = gameUI.get();
@@ -189,6 +188,16 @@ void MainScene::InitializeObjects()
     else
     {
         std::cout << "Loaded sound toung.wav" << std::endl;
+    }
+
+    if (const auto res = SoundManager::GetInstance().loadSound("sounds/music/music2.wav",
+                                                               &SoundManager::GetInstance().music2Buffer); !res)
+    {
+        std::cerr << "Failed to load sound music2.wav" << std::endl;
+    }
+    else
+    {
+        std::cout << "Loaded sound music2.wav" << std::endl;
     }
 }
 
