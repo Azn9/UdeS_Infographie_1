@@ -53,7 +53,7 @@ void BRTScene::InitializeObjects()
         auto billboardRenderer = std::make_unique<PM3D_API::BillboardRenderer>(
             std::move(shader),
             L"sprite/trees/pine.dds",
-            PM3D_API::BillboardAlignment::XZ,
+            PM3D_API::BillboardAlignment::NONE,
             XMFLOAT2(1 / 304.f, 3 / 880.f)
         );
         const auto billboardRendererPtr = billboardRenderer.get();

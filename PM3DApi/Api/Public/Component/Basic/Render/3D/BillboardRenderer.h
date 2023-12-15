@@ -14,6 +14,7 @@ namespace PM3D_API
 {
     enum class BillboardAlignment
     {
+        NONE,
         Z,
         XZ,
         YZ,

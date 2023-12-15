@@ -6,7 +6,7 @@
 
 void CameraMoverComponent::Update()
 {
-    angle += 10.0f * PM3D::Time::GetInstance().GetUpdateDeltaTime();
+    angle += 20.0f * PM3D::Time::GetInstance().GetUpdateDeltaTime();
     if (angle >= 360)
         angle = 0;
 

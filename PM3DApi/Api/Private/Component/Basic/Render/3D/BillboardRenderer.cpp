@@ -67,70 +67,56 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
     const auto cameraPosVec = XMVectorSet(cameraPosition.x, cameraPosition.y, cameraPosition.z, 1.0f);
     const auto cameraDirVec = XMVectorSet(cameraDirection.x, cameraDirection.y, cameraDirection.z, 0.0f);
     const auto cameraUpVec = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-    /*
-    switch (alignment)
-    {
-    case BillboardAlignment::Z:
-        worldMatrix = XMMatrixScaling(scale.x, scale.y, 1.0f) * XMMatrixLookAtRH(
-            XMVectorSet(position.x, position.y, position.z, 1.0f), cameraPosVec, cameraUpVec) * XMMatrixTranslation(
-            position.x, position.y, position.z);
-        break;
-    case BillboardAlignment::XZ:
-        worldMatrix = XMMatrixScaling(scale.x, scale.y, 1.0f) * XMMatrixLookAtRH(
-            XMVectorSet(position.x, cameraPosition.y, position.z, 1.0f), cameraPosVec,
-            cameraUpVec) * XMMatrixTranslation(position.x, position.y, position.z);
-        break;
-    case BillboardAlignment::YZ:
-        worldMatrix = XMMatrixScaling(1.0f, scale.y, scale.z) * XMMatrixLookAtRH(
-            XMVectorSet(cameraPosition.x, position.y, position.z, 1.0f), cameraPosVec,
-            cameraUpVec) * XMMatrixTranslation(position.x, position.y, position.z);
-        break;
-    case BillboardAlignment::XYZ:
-        worldMatrix = XMMatrixScaling(scale.x, scale.y, scale.z) * XMMatrixLookAtRH(
-            XMVectorSet(position.x, position.y, position.z, 1.0f), cameraPosVec, cameraUpVec) * XMMatrixTranslation(
-            position.x, position.y, position.z);
-        break;
-    default: ;
-    }
-    */
-
-    const XMMATRIX worldMatrix = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
-        DirectX::XMMatrixRotationQuaternion(rotation.ToXMVector()) *
-        DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+    const auto posVec = XMVectorSet(position.x, position.y, position.z, 1.0f);
 
     const XMMATRIX viewProj = camera->GetMatViewProj();
 
-    /*
-    const auto shaderParameters = shader->PrepareParameters(
-        XMMatrixTranspose(worldMatrix * viewProj),
-        XMMatrixTranspose(worldMatrix)
-    );
-    */
+    XMMATRIX worldMatrix;
 
-    auto shaderParameters = SpriteShader::SpriteShaderParameters{
+    switch (alignment)
+    {
+    case BillboardAlignment::NONE:
+        //worldMatrix = XMMatrixScaling(scale.x, scale.y, 1.0f) * XMMatrixTranslation(position.x, position.y, position.z);
+        worldMatrix = XMMatrixLookAtRH(posVec, cameraPosVec, cameraUpVec);
+        break;
+    case BillboardAlignment::Z:
+        // Calcul de la matrice de rotation pour l'alignement Z
+        worldMatrix = XMMatrixLookAtRH(posVec, cameraPosVec, XMVectorSet(0, 0, 1, 0));
+        break;
+    case BillboardAlignment::XZ:
+        // Calcul de la matrice de rotation pour l'alignement XZ
+        worldMatrix = XMMatrixLookAtRH(posVec, cameraPosVec, XMVectorSet(0, 1, 0, 0));
+        break;
+    case BillboardAlignment::YZ:
+        // Calcul de la matrice de rotation pour l'alignement YZ
+        worldMatrix = XMMatrixLookAtRH(posVec, cameraPosVec, XMVectorSet(1, 0, 0, 0));
+        break;
+    case BillboardAlignment::XYZ:
+        worldMatrix = XMMatrixScaling(scale.x, scale.y, 1.0f)
+            * XMMatrixRotationQuaternion(rotation.ToXMVector())
+            * XMMatrixTranslation(position.x, position.y, position.z);
+        break;
+    }
+
+    //XMMATRIX worldMatrix = XMMatrixScaling(scale.x, scale.y, 1.0f) * XMMatrixTranslation(position.x, position.y, position.z);
+    //XMMATRIX WVP = XMMatrixTranspose(worldMatrix * viewProj);
+
+    const auto shaderParameters = SpriteShader::SpriteShaderParameters{
         XMMatrixTranspose(worldMatrix * viewProj),
         1.f
     };
 
-    shader->ApplyMaterialParameters(
-        &shaderParameters,
-        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-        0.0f,
-        pTexture,
-        nullptr
-    );
+    const auto variableTexture = shader->GetEffect()->GetVariableByName("textureEntree")->AsShaderResource();
+    variableTexture->SetResource(pTexture);
 
-    shader->ApplyShaderParams();
     pImmediateContext->UpdateSubresource(shader->GetShaderParametersBuffer(), 0, nullptr, &shaderParameters, 0, 0);
+
+    ID3DX11EffectConstantBuffer* pCB = shader->GetEffect()->GetConstantBufferByName("param");
+    pCB->SetConstantBuffer(shader->GetShaderParametersBuffer());
 
     shader->GetPass()->Apply(0, pImmediateContext);
 
     pImmediateContext->Draw(6, 0);
-
-    //shader->DeleteParameters(shaderParameters);
 
     LogEndDrawSelf();
 }
