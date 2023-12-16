@@ -4,6 +4,7 @@
 #include "Api/Public/Component/Basic/Physics/MeshCollider.h"
 #include "Api/Public/Component/Basic/Physics/Rigidbody.h"
 #include "Api/Public/Component/Basic/Render/3D/InstancedMeshRenderer.h"
+#include "Api/Public/Light/PointLight.h"
 #include "Api/Public/Shader/Basic/DefaultShaderInstanced.h"
 #include "Api/Public/Util/FilterGroup.h"
 #include "GameTest/Components/SnowRenderer.h"
@@ -168,4 +169,25 @@ void Map::Initialize()
     filterDataTunnel.word0 = FilterGroup::eTUNNEL;
     physx::PxShape* tunnelShape = tunnelMeshColliderPtr->getShape();
     tunnelShape->setSimulationFilterData(filterDataTunnel);
+
+    for (constexpr auto lightPos = {
+             DirectX::XMFLOAT3(61.f, -1064.f, -2293.f),
+             DirectX::XMFLOAT3(61.f, -1064.f, -2593.f),
+             DirectX::XMFLOAT3(61.f, -1064.f, -2893.f),
+             DirectX::XMFLOAT3(61.f, -1064.f, -3193.f),
+             DirectX::XMFLOAT3(61.f, -1064.f, -3493.f),
+             DirectX::XMFLOAT3(61.f, -1064.f, -3793.f),
+             DirectX::XMFLOAT3(61.f, -1064.f, -4093.f),
+         }; const auto& pos : lightPos)
+    {
+        auto light = std::make_unique<PM3D_API::PointLight>(
+            "Tunnel light",
+            pos,
+            XMFLOAT3(1.f, 1.f, 1.f)
+        );
+        const auto lightPtr = light.get();
+        scene->AddLight(std::move(light));
+        lightPtr->SetIntensity(50.f);
+        lightPtr->Initialize();
+    }
 }

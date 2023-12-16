@@ -106,6 +106,8 @@ void PM3D_API::BillboardRenderer::DrawSelf() const
         1.f
     };
 
+    pDispositif->ActiverMelangeAlpha();
+
     const auto variableTexture = shader->GetEffect()->GetVariableByName("textureEntree")->AsShaderResource();
     variableTexture->SetResource(pTexture);
 

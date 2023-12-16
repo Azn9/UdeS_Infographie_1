@@ -141,6 +141,9 @@ float4 MainPS(VS_Sortie input) : SV_Target
 		}
 		else if (li.lightType == 1) // Directionnal
 		{
+			// Cheat pour ne pas éclairer dans le tunnel
+			if (input.worldPos.z < -2184 && abs(length(float3(62.5323f, -1158.03f, 0.f) - float3(input.worldPos.x, input.worldPos.y, 0))) < 104.f) continue;
+
 			float3 L = normalize(-li.direction.xyz);
 			float3 diff = saturate(dot(N, L));
 			//float3 R = normalize(2 * diff * N - L);
