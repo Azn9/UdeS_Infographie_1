@@ -17,24 +17,26 @@ namespace PM3D_API
         }
 
         EmptyGameObject(const std::string& name, const DirectX::XMFLOAT3& worldPosition,
-            const DirectX::XMFLOAT3& worldRotation)
-            : GameObject(name, worldPosition, worldRotation)
-        {
-        }
-
-        EmptyGameObject(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const Quaternion& worldRotation)
+                        const DirectX::XMFLOAT3& worldRotation)
             : GameObject(name, worldPosition, worldRotation)
         {
         }
 
         EmptyGameObject(const std::string& name, const DirectX::XMFLOAT3& worldPosition,
-            const DirectX::XMFLOAT3& worldRotation, const DirectX::XMFLOAT3& worldScale)
+                        const Quaternion& worldRotation)
+            : GameObject(name, worldPosition, worldRotation)
+        {
+        }
+
+        EmptyGameObject(const std::string& name, const DirectX::XMFLOAT3& worldPosition,
+                        const DirectX::XMFLOAT3& worldRotation, const DirectX::XMFLOAT3& worldScale)
             : GameObject(name, worldPosition, worldRotation, worldScale)
         {
         }
 
-        EmptyGameObject(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const Quaternion& worldRotation,
-            const DirectX::XMFLOAT3& worldScale)
+        EmptyGameObject(const std::string& name, const DirectX::XMFLOAT3& worldPosition,
+                        const Quaternion& worldRotation,
+                        const DirectX::XMFLOAT3& worldScale)
             : GameObject(name, worldPosition, worldRotation, worldScale)
         {
         }

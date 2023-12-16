@@ -41,8 +41,8 @@ int APIENTRY _tWinMain(
         // Initialisation du moteur
         rMoteur.Initialisations();
 
-		gameHost->InitializePostProcessParam();
-		
+        gameHost->InitializePostProcessParam();
+
         // Boucle d'application
         rMoteur.Run();
 

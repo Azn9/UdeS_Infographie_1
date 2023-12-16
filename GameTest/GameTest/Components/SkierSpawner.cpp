@@ -64,7 +64,7 @@ void SkierSpawner::AddSkier(
     lskiPtr->AddComponent(std::move(lskiRigidbody));
     lskiRigidbodyPtr->Initialize();
     lskiRigidbodyPtr->getRigidDynamic()->setRigidDynamicLockFlags(
-        physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z/* | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/
+        physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z /* | physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X*/
         /*| physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y*/);
 
     lskiRigidbodyPtr->getRigidDynamic()->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);

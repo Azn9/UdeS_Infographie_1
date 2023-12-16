@@ -6,26 +6,26 @@
 
 namespace PM3D
 {
-class CDispositifD3D11;
+    class CDispositifD3D11;
 
-class CGestionnaireDeTextures
-{
-public:
-	CTexture* GetNewTexture(
-		const std::wstring& filename,
-		CDispositifD3D11* pDispositif
-	);
+    class CGestionnaireDeTextures
+    {
+    public:
+        CTexture* GetNewTexture(
+            const std::wstring& filename,
+            CDispositifD3D11* pDispositif
+        );
 
-	CTexture* GetNewTextureArray(
-		const std::wstring& name,
-		const std::vector<std::wstring>& filenames,
-		CDispositifD3D11* pDispositif
-	);
-	
-	CTexture* GetTexture(const std::wstring& filename) const;
+        CTexture* GetNewTextureArray(
+            const std::wstring& name,
+            const std::vector<std::wstring>& filenames,
+            CDispositifD3D11* pDispositif
+        );
 
-private:
-	// Le tableau de textures
-	std::vector<std::unique_ptr<CTexture>> ListeTextures;
-};
+        CTexture* GetTexture(const std::wstring& filename) const;
+
+    private:
+        // Le tableau de textures
+        std::vector<std::unique_ptr<CTexture>> ListeTextures;
+    };
 }

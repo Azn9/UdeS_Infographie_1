@@ -4,9 +4,12 @@
 class GameOverEvent final : public PM3D_API::Event
 {
 public:
-    explicit GameOverEvent(const bool won) : _won(won) {}
+    explicit GameOverEvent(const bool won) : _won(won)
+    {
+    }
 
     [[nodiscard]] bool IsWon() const { return _won; }
+
 private:
     bool _won;
 };

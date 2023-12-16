@@ -4,5 +4,4 @@
 class ShadowCaster : public PM3D_API::Component
 {
 public:
-	
 };

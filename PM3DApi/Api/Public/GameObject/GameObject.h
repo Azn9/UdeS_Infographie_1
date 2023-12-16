@@ -10,225 +10,236 @@
 
 namespace PM3D_API
 {
-class Scene;
+    class Scene;
 }
 
 namespace PM3D_API
 {
-class GameObject
-{
-public:
-	// ============================
-	//  Constructors & Destructors
-	// ============================
-	explicit GameObject(const std::string& name) : GameObject(
-		name,
-		{0.0f, 0.0f, 0.0f},
-		{0.0f, 0.0f, 0.0f},
-		{1.0f, 1.0f, 1.0f}
-	) {}
+    class GameObject
+    {
+    public:
+        // ============================
+        //  Constructors & Destructors
+        // ============================
+        explicit GameObject(const std::string& name) : GameObject(
+            name,
+            {0.0f, 0.0f, 0.0f},
+            {0.0f, 0.0f, 0.0f},
+            {1.0f, 1.0f, 1.0f}
+        )
+        {
+        }
 
-	GameObject(
-		const std::string& name,
-		const DirectX::XMFLOAT3 worldPosition
-	) : GameObject(
-		name,
-		worldPosition,
-		{0.0f, 0.0f, 0.0f},
-		{1.0f, 1.0f, 1.0f}
-	) {}
-	
-	GameObject(
-		const std::string& name,
-		const DirectX::XMFLOAT3 worldPosition,
-		const DirectX::XMFLOAT3 worldRotation
-	) : GameObject(
-		name,
-		worldPosition,
-		worldRotation,
-		{1.0f, 1.0f, 1.0f}
-	) {}
+        GameObject(
+            const std::string& name,
+            const DirectX::XMFLOAT3 worldPosition
+        ) : GameObject(
+            name,
+            worldPosition,
+            {0.0f, 0.0f, 0.0f},
+            {1.0f, 1.0f, 1.0f}
+        )
+        {
+        }
 
-	GameObject(
-		const std::string& name,
-		const DirectX::XMFLOAT3 worldPosition,
-		const Quaternion worldRotation
-	) : GameObject(
-		name,
-		worldPosition,
-		worldRotation,
-		{1.0f, 1.0f, 1.0f}
-	) {}
-	
-	GameObject(
-		const std::string& name,
-		DirectX::XMFLOAT3 worldPosition,
-		DirectX::XMFLOAT3 worldRotation,
-		DirectX::XMFLOAT3 worldScale
-	);
+        GameObject(
+            const std::string& name,
+            const DirectX::XMFLOAT3 worldPosition,
+            const DirectX::XMFLOAT3 worldRotation
+        ) : GameObject(
+            name,
+            worldPosition,
+            worldRotation,
+            {1.0f, 1.0f, 1.0f}
+        )
+        {
+        }
 
-	GameObject(
-		const std::string& name,
-		DirectX::XMFLOAT3 worldPosition,
-		Quaternion worldRotation,
-		DirectX::XMFLOAT3 worldScale
-	);
+        GameObject(
+            const std::string& name,
+            const DirectX::XMFLOAT3 worldPosition,
+            const Quaternion worldRotation
+        ) : GameObject(
+            name,
+            worldPosition,
+            worldRotation,
+            {1.0f, 1.0f, 1.0f}
+        )
+        {
+        }
 
-	virtual ~GameObject();
+        GameObject(
+            const std::string& name,
+            DirectX::XMFLOAT3 worldPosition,
+            DirectX::XMFLOAT3 worldRotation,
+            DirectX::XMFLOAT3 worldScale
+        );
 
-	// ============================
-	//  GameObject base methods
-	// ============================
-	virtual void Initialize();
+        GameObject(
+            const std::string& name,
+            DirectX::XMFLOAT3 worldPosition,
+            Quaternion worldRotation,
+            DirectX::XMFLOAT3 worldScale
+        );
 
-	virtual void Update();
-	virtual void PhysicsUpdate();
-	virtual void Draw();
-	virtual void DrawShadow(const class Camera& camera);
+        virtual ~GameObject();
 
-	virtual void AddChild(std::unique_ptr<GameObject>&& child);
-	virtual void AddComponent(std::unique_ptr<Component>&& component);
+        // ============================
+        //  GameObject base methods
+        // ============================
+        virtual void Initialize();
 
-	std::string GetName() const { return name; }
+        virtual void Update();
+        virtual void PhysicsUpdate();
+        virtual void Draw();
+        virtual void DrawShadow(const class Camera& camera);
 
-	template <typename T, template_extends<Component, T> = 0>
-	T* GetComponent()
-	{
-		for (const auto& component : components)
-		{
-			if (!component) continue;
-			
-			if (typeid(*component.get()) == typeid(T) || IsDerivedFrom<T, Component>::value)
-			{
-				return static_cast<T*>(component.get());
-			}
-		}
+        virtual void AddChild(std::unique_ptr<GameObject>&& child);
+        virtual void AddComponent(std::unique_ptr<Component>&& component);
 
-		return nullptr;
-	}
+        std::string GetName() const { return name; }
 
-	template <typename T, template_extends<GameObject, T> = 0>
-	T* GetChild()
-	{
-		for (const auto& child : children)
-		{
-			if (!child) continue;
+        template <typename T, template_extends<Component, T>  = 0>
+        T* GetComponent()
+        {
+            for (const auto& component : components)
+            {
+                if (!component) continue;
 
-			if (typeid(*child.get()) == typeid(T))
-			{
-				return static_cast<T*>(child.get());
-			}
-		}
+                if (typeid(*component.get()) == typeid(T) || IsDerivedFrom<T, Component>::value)
+                {
+                    return static_cast<T*>(component.get());
+                }
+            }
 
-		return nullptr;
-	}
+            return nullptr;
+        }
 
-	template <typename T, template_extends<Component, T> = 0>
-	bool HasComponent() const
-	{
-		for (const auto& component : components)
-		{
-			if (!component) continue;
-			
-			if (typeid(*component.get()) == typeid(T))
-			{
-				return true;
-			}
-		}
+        template <typename T, template_extends<GameObject, T>  = 0>
+        T* GetChild()
+        {
+            for (const auto& child : children)
+            {
+                if (!child) continue;
 
-		return false;
-	}
-	
-	template <typename T, template_extends<Component, T> = 0>
-	std::vector<T*> GetComponents()
-	{
-		std::vector<T*> toReturnComponents{};
-		for (const auto& component : components)
-		{
-			if (!component) continue;
-			
-			if (typeid(*component.get()) == typeid(T))
-			{
-				toReturnComponents.push_back(static_cast<T*>(component.get()));
-			}
-		}
+                if (typeid(*child.get()) == typeid(T))
+                {
+                    return static_cast<T*>(child.get());
+                }
+            }
 
-		return toReturnComponents;
-	}
+            return nullptr;
+        }
 
-	const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return children; }
-	const std::vector<std::unique_ptr<Component>>& GetComponents() const { return components; }
+        template <typename T, template_extends<Component, T>  = 0>
+        bool HasComponent() const
+        {
+            for (const auto& component : components)
+            {
+                if (!component) continue;
 
-	Scene* GetScene() { return scene; }
+                if (typeid(*component.get()) == typeid(T))
+                {
+                    return true;
+                }
+            }
 
-	// ============================
-	// Position, rotation, scale
-	// ============================
-	virtual const DirectX::XMFLOAT3& GetLocalPosition() const { return localPosition; }
-	virtual const DirectX::XMFLOAT3& GetLocalScale() const { return localScale; }
-	virtual const DirectX::XMFLOAT3& GetLocalRotationEuler() const { return localRotationEuler; }
-	virtual const Quaternion& GetLocalRotationQuaternion() const { return localRotationQuaternion; }
-	virtual void SetLocalPosition(DirectX::XMFLOAT3 newPosition);
-	virtual void SetLocalScale(DirectX::XMFLOAT3 newScale);
-	virtual void SetLocalRotation(DirectX::XMFLOAT3 newRotation);
-	virtual void SetLocalRotation(Quaternion newRotation);
+            return false;
+        }
 
-	virtual const DirectX::XMFLOAT3& GetWorldPosition() const { return worldPosition; }
-	virtual const DirectX::XMFLOAT3& GetWorldScale() const { return worldScale; }
-	virtual const DirectX::XMFLOAT3& GetWorldRotationEuler() const { return worldRotationEuler; }
-	virtual const Quaternion& GetWorldRotationQuaternion() const { return worldRotationQuaternion; }
-	virtual DirectX::XMFLOAT3 GetWorldDirection() const;
-	virtual void SetWorldPosition(DirectX::XMFLOAT3 newPosition);
-	virtual void SetWorldScale(DirectX::XMFLOAT3 newScale);
-	virtual void SetWorldRotation(DirectX::XMFLOAT3 newRotation);
-	virtual void SetWorldRotation(Quaternion newRotation);
+        template <typename T, template_extends<Component, T>  = 0>
+        std::vector<T*> GetComponents()
+        {
+            std::vector<T*> toReturnComponents{};
+            for (const auto& component : components)
+            {
+                if (!component) continue;
 
-	void SetWorldPositionViaPhysic(DirectX::XMFLOAT3 newPosition);
-	void SetWorldRotationViaPhysic(Quaternion quaternion);
+                if (typeid(*component.get()) == typeid(T))
+                {
+                    toReturnComponents.push_back(static_cast<T*>(component.get()));
+                }
+            }
 
-	virtual const DirectX::XMMATRIX& GetMatWorld() const { return matWorld; }
+            return toReturnComponents;
+        }
 
-	virtual void DrawDebugInfo() const {}
-	int64_t GetBeginDrawSelf() const { return beginDrawSelf; }
-	int64_t GetEndDrawSelf() const { return endDrawSelf; }
+        const std::vector<std::unique_ptr<GameObject>>& GetChildren() const { return children; }
+        const std::vector<std::unique_ptr<Component>>& GetComponents() const { return components; }
 
-	std::unique_ptr<GameObject> DetachFromParent();
-	void SetParent(GameObject* newParent);
-	
-	void SetScene(Scene* newScene) { scene = newScene; }
-	GameObject* GetParent() const { return parent; }
+        Scene* GetScene() { return scene; }
 
-protected:
-	std::string name = "Unnamed GameObject";
-	
-	DirectX::XMFLOAT3 localPosition;
-	DirectX::XMFLOAT3 localScale;
-	DirectX::XMFLOAT3 localRotationEuler;
-	Quaternion localRotationQuaternion;
+        // ============================
+        // Position, rotation, scale
+        // ============================
+        virtual const DirectX::XMFLOAT3& GetLocalPosition() const { return localPosition; }
+        virtual const DirectX::XMFLOAT3& GetLocalScale() const { return localScale; }
+        virtual const DirectX::XMFLOAT3& GetLocalRotationEuler() const { return localRotationEuler; }
+        virtual const Quaternion& GetLocalRotationQuaternion() const { return localRotationQuaternion; }
+        virtual void SetLocalPosition(DirectX::XMFLOAT3 newPosition);
+        virtual void SetLocalScale(DirectX::XMFLOAT3 newScale);
+        virtual void SetLocalRotation(DirectX::XMFLOAT3 newRotation);
+        virtual void SetLocalRotation(Quaternion newRotation);
 
-	DirectX::XMFLOAT3 worldPosition;
-	DirectX::XMFLOAT3 worldScale;
-	DirectX::XMFLOAT3 worldRotationEuler;
-	Quaternion worldRotationQuaternion;
+        virtual const DirectX::XMFLOAT3& GetWorldPosition() const { return worldPosition; }
+        virtual const DirectX::XMFLOAT3& GetWorldScale() const { return worldScale; }
+        virtual const DirectX::XMFLOAT3& GetWorldRotationEuler() const { return worldRotationEuler; }
+        virtual const Quaternion& GetWorldRotationQuaternion() const { return worldRotationQuaternion; }
+        virtual DirectX::XMFLOAT3 GetWorldDirection() const;
+        virtual void SetWorldPosition(DirectX::XMFLOAT3 newPosition);
+        virtual void SetWorldScale(DirectX::XMFLOAT3 newScale);
+        virtual void SetWorldRotation(DirectX::XMFLOAT3 newRotation);
+        virtual void SetWorldRotation(Quaternion newRotation);
 
-	DirectX::XMMATRIX matWorld;
+        void SetWorldPositionViaPhysic(DirectX::XMFLOAT3 newPosition);
+        void SetWorldRotationViaPhysic(Quaternion quaternion);
 
-	std::vector<std::unique_ptr<GameObject>> children{};
-	std::vector<std::unique_ptr<Component>> components{};
-	Scene* scene = nullptr;
-	GameObject* parent = nullptr;
+        virtual const DirectX::XMMATRIX& GetMatWorld() const { return matWorld; }
 
-	virtual void UpdateMatrix(bool updatePhysicRepresentation);
-	virtual void DrawSelf() const;
-	virtual void DrawShadowSelf() const;
+        virtual void DrawDebugInfo() const
+        {
+        }
 
-	void LogBeginDrawSelf() const;
-	void LogEndDrawSelf() const;
-private:
-	friend class Scene;
+        int64_t GetBeginDrawSelf() const { return beginDrawSelf; }
+        int64_t GetEndDrawSelf() const { return endDrawSelf; }
 
-	mutable int64_t beginDrawSelf;
-	mutable int64_t endDrawSelf;
-};
+        std::unique_ptr<GameObject> DetachFromParent();
+        void SetParent(GameObject* newParent);
 
+        void SetScene(Scene* newScene) { scene = newScene; }
+        GameObject* GetParent() const { return parent; }
+
+    protected:
+        std::string name = "Unnamed GameObject";
+
+        DirectX::XMFLOAT3 localPosition;
+        DirectX::XMFLOAT3 localScale;
+        DirectX::XMFLOAT3 localRotationEuler;
+        Quaternion localRotationQuaternion;
+
+        DirectX::XMFLOAT3 worldPosition;
+        DirectX::XMFLOAT3 worldScale;
+        DirectX::XMFLOAT3 worldRotationEuler;
+        Quaternion worldRotationQuaternion;
+
+        DirectX::XMMATRIX matWorld;
+
+        std::vector<std::unique_ptr<GameObject>> children{};
+        std::vector<std::unique_ptr<Component>> components{};
+        Scene* scene = nullptr;
+        GameObject* parent = nullptr;
+
+        virtual void UpdateMatrix(bool updatePhysicRepresentation);
+        virtual void DrawSelf() const;
+        virtual void DrawShadowSelf() const;
+
+        void LogBeginDrawSelf() const;
+        void LogEndDrawSelf() const;
+
+    private:
+        friend class Scene;
+
+        mutable int64_t beginDrawSelf;
+        mutable int64_t endDrawSelf;
+    };
 }

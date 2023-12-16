@@ -3,5 +3,4 @@
 
 class CollisionObstacleEvent : public PM3D_API::Event
 {
-
 };

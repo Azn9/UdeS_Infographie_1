@@ -4,16 +4,18 @@
 
 namespace PM3D_API
 {
-class BoxCollider : public Collider
-{
-public:
-	explicit BoxCollider(
-		physx::PxMaterial* _material
-	) : Collider(_material), shape(nullptr) {}
+    class BoxCollider : public Collider
+    {
+    public:
+        explicit BoxCollider(
+            physx::PxMaterial* _material
+        ) : Collider(_material), shape(nullptr)
+        {
+        }
 
-	void Initialize() override;
+        void Initialize() override;
 
-protected:
-	physx::PxShape* shape;
-};
+    protected:
+        physx::PxShape* shape;
+    };
 }

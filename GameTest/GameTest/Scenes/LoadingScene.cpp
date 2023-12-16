@@ -78,7 +78,7 @@ void LoadingScene::InitializeObjects()
 
     // === Add skybox ===
     auto skybox = std::make_unique<GameObject>("Skybox");
-    skybox->SetWorldScale({10000.f,10000.f,10000.f});
+    skybox->SetWorldScale({10000.f, 10000.f, 10000.f});
     skybox->Initialize();
     auto skyShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/SkyShader.fx");
     auto skyRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(skyShader), "skybox.obj");

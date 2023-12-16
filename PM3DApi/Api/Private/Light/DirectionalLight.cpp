@@ -67,11 +67,11 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
         1.0f
     );
     const auto focusPoint = DirectX::XMVectorSet(
-                worldPosition.x,
-                worldPosition.y,
-                worldPosition.z,
-                1.0f
-            );
+        worldPosition.x,
+        worldPosition.y,
+        worldPosition.z,
+        1.0f
+    );
     const auto mVLight = DirectX::XMMatrixLookAtRH(
         position,
         focusPoint,
@@ -80,7 +80,7 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
 
     constexpr float nearPlane = 0.02f;
     constexpr float farPlane = 500.0f;
-    
+
     const auto mPLight = DirectX::XMMatrixOrthographicRH(
         ShadowProcessor::viewWidthDirectionnalLight,
         ShadowProcessor::viewHeightDirectionnalLight,
@@ -118,7 +118,7 @@ PM3D_API::ShaderLightDefaultParameters PM3D_API::DirectionalLight::GetShaderLigh
 {
     return std::move(ShaderLightDefaultParameters{
         wvp,
-        
+
         DirectX::XMVectorSet(GetWorldPosition().x, GetWorldPosition().y, GetWorldPosition().z, 1.0f), // Position
         DirectX::XMVectorSet(GetWorldDirection().x, GetWorldDirection().y, GetWorldDirection().z, 0.0f),
 

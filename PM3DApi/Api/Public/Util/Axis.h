@@ -2,11 +2,11 @@
 
 enum class Axis
 {
-	X,
-	Y,
-	Z,
-	XY,
-	XZ,
-	YZ,
-	XYZ
+    X,
+    Y,
+    Z,
+    XY,
+    XZ,
+    YZ,
+    XYZ
 };

@@ -13,7 +13,7 @@ void TimerDisplay::Initialize()
 {
     PM3D_API::EventSystem::Subscribe([this](const InTunnelEvent&)
     {
-        if(isInTunnel)
+        if (isInTunnel)
             return;
         isRunning = false;
         endTime = PM3D::Time::GetInstance().GetTimeSpecific();

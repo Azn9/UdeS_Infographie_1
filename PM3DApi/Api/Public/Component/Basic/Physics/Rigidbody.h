@@ -7,40 +7,42 @@
 
 namespace PM3D_API
 {
-class Rigidbody : public Component
-{
-public:
-	Rigidbody() : Rigidbody(false) {}
-	explicit Rigidbody(const bool isStatic) : isStatic(isStatic), actor(nullptr), fixedJoint(nullptr)
-	{
-	}
+    class Rigidbody : public Component
+    {
+    public:
+        Rigidbody() : Rigidbody(false)
+        {
+        }
 
-	void Initialize() override;
+        explicit Rigidbody(const bool isStatic) : isStatic(isStatic), actor(nullptr), fixedJoint(nullptr)
+        {
+        }
 
-	physx::PxRigidActor* GetActor() const { return actor; }
+        void Initialize() override;
 
-	void UpdateGlobalPose() const;
-	void UpdateRenderPos() const;
+        physx::PxRigidActor* GetActor() const { return actor; }
 
-	void SetTranslationLock(Axis axis);
-	void SetRotationLock(Axis axis);
+        void UpdateGlobalPose() const;
+        void UpdateRenderPos() const;
 
-	void DrawDebugInfo() const override;
+        void SetTranslationLock(Axis axis);
+        void SetRotationLock(Axis axis);
 
-	bool IsStatic() const { return isStatic; }
+        void DrawDebugInfo() const override;
 
-	physx::PxRigidDynamic* getRigidDynamic() 
-	{ 
-		if (isStatic) 
-			return nullptr; 
-		else 
-			return static_cast<physx::PxRigidDynamic*>(actor);
-	}
+        bool IsStatic() const { return isStatic; }
 
-protected:
-	bool isStatic;
-	physx::PxRigidActor* actor;
-	physx::PxD6Joint* fixedJoint;
-	
-};
+        physx::PxRigidDynamic* getRigidDynamic()
+        {
+            if (isStatic)
+                return nullptr;
+            else
+                return static_cast<physx::PxRigidDynamic*>(actor);
+        }
+
+    protected:
+        bool isStatic;
+        physx::PxRigidActor* actor;
+        physx::PxD6Joint* fixedJoint;
+    };
 }

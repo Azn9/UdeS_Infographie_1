@@ -4,7 +4,9 @@
 class Pine : public PM3D_API::BasicShape
 {
 public:
-    Pine() : BasicShape("pine") {}
+    Pine() : BasicShape("pine")
+    {
+    }
 
 private:
     std::wstring GetShaderFileName() override { return L"shader/NewShader.fx"; }

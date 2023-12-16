@@ -10,34 +10,34 @@ void PM3D_API::Frustrum::SetPlanes(const Camera& cam)
     const float halfHSide = halfVSide * GameHost::GetInstance()->GetAspectRatio();
     const DirectX::XMVECTOR frontMultFar = DirectX::XMVectorScale(VECTORFORWARD, cam.getFarDist());
 
-    
-    nearPlane = { -VECTORFORWARD, VECTORFORWARD * cam.getNearDist()};
-    
-    farPlane = { VECTORFORWARD, frontMultFar };
-    
-    rightPlane = { -DirectX::XMVector3Cross(frontMultFar - VECTORRIGHT * halfHSide, VECTORUP), VECTORZERO };
-    
-    leftPlane = {-DirectX::XMVector3Cross(VECTORUP,frontMultFar + VECTORRIGHT * halfHSide), VECTORZERO };
-    
-    topPlane = { -DirectX::XMVector3Cross(VECTORRIGHT, frontMultFar - VECTORUP * halfVSide), VECTORZERO };
-    
-    bottomPlane = {-DirectX::XMVector3Cross(frontMultFar + VECTORUP * halfVSide, VECTORRIGHT), VECTORZERO };
+
+    nearPlane = {-VECTORFORWARD, VECTORFORWARD * cam.getNearDist()};
+
+    farPlane = {VECTORFORWARD, frontMultFar};
+
+    rightPlane = {-DirectX::XMVector3Cross(frontMultFar - VECTORRIGHT * halfHSide, VECTORUP), VECTORZERO};
+
+    leftPlane = {-DirectX::XMVector3Cross(VECTORUP, frontMultFar + VECTORRIGHT * halfHSide), VECTORZERO};
+
+    topPlane = {-DirectX::XMVector3Cross(VECTORRIGHT, frontMultFar - VECTORUP * halfVSide), VECTORZERO};
+
+    bottomPlane = {-DirectX::XMVector3Cross(frontMultFar + VECTORUP * halfVSide, VECTORRIGHT), VECTORZERO};
 }
 
 bool PM3D_API::Frustrum::ContainsSphere(const DirectX::XMVECTOR& point, const float& radius) const
 {
     //std::cout << leftPlane.GetNormal().m128_f32[2] << '\n';
-    if(leftPlane.IsSphereInFrontOfPlane(point, radius))
+    if (leftPlane.IsSphereInFrontOfPlane(point, radius))
         return false;
-    if(rightPlane.IsSphereInFrontOfPlane(point, radius))
+    if (rightPlane.IsSphereInFrontOfPlane(point, radius))
         return false;
-    if(nearPlane.IsSphereInFrontOfPlane(point, radius))
+    if (nearPlane.IsSphereInFrontOfPlane(point, radius))
         return false;
-    if(topPlane.IsSphereInFrontOfPlane(point, radius))
+    if (topPlane.IsSphereInFrontOfPlane(point, radius))
         return false;
-    if(bottomPlane.IsSphereInFrontOfPlane(point, radius))
+    if (bottomPlane.IsSphereInFrontOfPlane(point, radius))
         return false;
-    if(farPlane.IsSphereInFrontOfPlane(point, radius))
+    if (farPlane.IsSphereInFrontOfPlane(point, radius))
         return false;
     return true;
 }

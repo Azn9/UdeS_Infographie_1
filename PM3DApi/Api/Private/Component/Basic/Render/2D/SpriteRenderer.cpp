@@ -5,7 +5,8 @@
 
 PM3D_API::SpriteRenderer::SpriteRenderer(const std::wstring& textureName) : matWVP(XMMatrixIdentity())
 {
-    texture = PM3D::CMoteurWindows::GetInstance().GetTextureManager().GetNewTexture(textureName, GameHost::GetInstance()->GetDispositif());
+    texture = PM3D::CMoteurWindows::GetInstance().GetTextureManager().GetNewTexture(
+        textureName, GameHost::GetInstance()->GetDispositif());
     shader = std::make_unique<SpriteShader>(L"shader/Sprite1.fx");
 
     if (!texture)
@@ -16,19 +17,19 @@ void PM3D_API::SpriteRenderer::Initialize()
 {
     ID3D11Resource* pResource;
     ID3D11Texture2D* pTextureInterface = nullptr;
-		
+
     texture->GetD3DTexture()->GetResource(&pResource);
     pResource->QueryInterface<ID3D11Texture2D>(&pTextureInterface);
-		
+
     D3D11_TEXTURE2D_DESC desc;
     pTextureInterface->GetDesc(&desc);
-		
+
     PM3D::DXRelacher(pResource);
     PM3D::DXRelacher(pTextureInterface);
-		
+
     textureSizeX = static_cast<float>(desc.Width);
     textureSizeY = static_cast<float>(desc.Height);
-    
+
     UpdateMatrix();
 }
 
@@ -56,7 +57,7 @@ void PM3D_API::SpriteRenderer::UpdateMatrix()
     const float posY = 1.f - position.y * 2.f / hauteur;
 
     matWVP = XMMatrixScaling(facteurX, facteurY, 1.0f)
-            * XMMatrixTranslation(posX, -posY, 0.0f);
+        * XMMatrixTranslation(posX, -posY, 0.0f);
 }
 
 void PM3D_API::SpriteRenderer::DrawSelf() const
@@ -66,7 +67,7 @@ void PM3D_API::SpriteRenderer::DrawSelf() const
 
     if (parentObject->GetAlpha() == 0.f)
         return;
-    
+
     const auto pDispositif = GameHost::GetInstance()->GetDispositif();
     ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
     pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -76,7 +77,7 @@ void PM3D_API::SpriteRenderer::DrawSelf() const
     pImmediateContext->IASetVertexBuffers(0, 1, shader->GetVertexBufferPtr(), &stride, &offset);
 
     pImmediateContext->IASetInputLayout(shader->GetVertexLayout());
-    
+
     auto shaderParameters = SpriteShader::SpriteShaderParameters{
         XMMatrixTranspose(matWVP),
         parentObject->GetAlpha()

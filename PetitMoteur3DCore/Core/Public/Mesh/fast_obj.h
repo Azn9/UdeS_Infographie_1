@@ -42,42 +42,40 @@
 typedef struct
 {
     /* Texture name from .mtl file */
-    char*                       name;
+    char* name;
 
     /* Resolved path to texture */
-    char*                       path;
-
+    char* path;
 } fastObjTexture;
 
 
 typedef struct
 {
     /* Material name */
-    char*                       name;
+    char* name;
 
     /* Parameters */
-    float                       Ka[3];  /* Ambient */
-    float                       Kd[3];  /* Diffuse */
-    float                       Ks[3];  /* Specular */
-    float                       Ke[3];  /* Emission */
-    float                       Kt[3];  /* Transmittance */
-    float                       Ns;     /* Shininess */
-    float                       Ni;     /* Index of refraction */
-    float                       Tf[3];  /* Transmission filter */
-    float                       d;      /* Disolve (alpha) */
-    int                         illum;  /* Illumination model */
+    float Ka[3]; /* Ambient */
+    float Kd[3]; /* Diffuse */
+    float Ks[3]; /* Specular */
+    float Ke[3]; /* Emission */
+    float Kt[3]; /* Transmittance */
+    float Ns; /* Shininess */
+    float Ni; /* Index of refraction */
+    float Tf[3]; /* Transmission filter */
+    float d; /* Disolve (alpha) */
+    int illum; /* Illumination model */
 
     /* Texture maps */
-    fastObjTexture              map_Ka;
-    fastObjTexture              map_Kd;
-    fastObjTexture              map_Ks;
-    fastObjTexture              map_Ke;
-    fastObjTexture              map_Kt;
-    fastObjTexture              map_Ns;
-    fastObjTexture              map_Ni;
-    fastObjTexture              map_d;
-    fastObjTexture              map_bump;
-
+    fastObjTexture map_Ka;
+    fastObjTexture map_Kd;
+    fastObjTexture map_Ks;
+    fastObjTexture map_Ke;
+    fastObjTexture map_Kt;
+    fastObjTexture map_Ns;
+    fastObjTexture map_Ni;
+    fastObjTexture map_d;
+    fastObjTexture map_bump;
 } fastObjMaterial;
 
 /* Allows user override to bigger indexable array */
@@ -89,83 +87,80 @@ typedef FAST_OBJ_UINT_TYPE fastObjUInt;
 
 typedef struct
 {
-    fastObjUInt                 p;
-    fastObjUInt                 t;
-    fastObjUInt                 n;
-
+    fastObjUInt p;
+    fastObjUInt t;
+    fastObjUInt n;
 } fastObjIndex;
 
 
 typedef struct
 {
     /* Group name */
-    char*                       name;
+    char* name;
 
     /* Number of faces */
-    unsigned int                face_count;
+    unsigned int face_count;
 
     /* First face in fastObjMesh face_* arrays */
-    unsigned int                face_offset;
+    unsigned int face_offset;
 
     /* First index in fastObjMesh indices array */
-    unsigned int                index_offset;
-
+    unsigned int index_offset;
 } fastObjGroup;
 
 
 typedef struct
 {
     /* Vertex data */
-    unsigned int                position_count;
-    float*                      positions;
+    unsigned int position_count;
+    float* positions;
 
-    unsigned int                texcoord_count;
-    float*                      texcoords;
+    unsigned int texcoord_count;
+    float* texcoords;
 
-    unsigned int                normal_count;
-    float*                      normals;
+    unsigned int normal_count;
+    float* normals;
 
-    unsigned int                color_count;
-    float*                      colors;
+    unsigned int color_count;
+    float* colors;
 
     /* Face data: one element for each face */
-    unsigned int                face_count;
-    unsigned int*               face_vertices;
-    unsigned int*               face_materials;
+    unsigned int face_count;
+    unsigned int* face_vertices;
+    unsigned int* face_materials;
 
     /* Index data: one element for each face vertex */
-    unsigned int                index_count;
-    fastObjIndex*               indices;
+    unsigned int index_count;
+    fastObjIndex* indices;
 
     /* Materials */
-    unsigned int                material_count;
-    fastObjMaterial*            materials;
+    unsigned int material_count;
+    fastObjMaterial* materials;
 
     /* Mesh objects ('o' tag in .obj file) */
-    unsigned int                object_count;
-    fastObjGroup*               objects;
+    unsigned int object_count;
+    fastObjGroup* objects;
 
     /* Mesh groups ('g' tag in .obj file) */
-    unsigned int                group_count;
-    fastObjGroup*               groups;
-
+    unsigned int group_count;
+    fastObjGroup* groups;
 } fastObjMesh;
 
 typedef struct
 {
-    void*                       (*file_open)(const char* path, void* user_data);
-    void                        (*file_close)(void* file, void* user_data);
-    size_t                      (*file_read)(void* file, void* dst, size_t bytes, void* user_data);
-    unsigned long               (*file_size)(void* file, void* user_data);
+    void* (*file_open)(const char* path, void* user_data);
+    void (*file_close)(void* file, void* user_data);
+    size_t (*file_read)(void* file, void* dst, size_t bytes, void* user_data);
+    unsigned long (*file_size)(void* file, void* user_data);
 } fastObjCallbacks;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-fastObjMesh*                    fast_obj_read(const char* path);
-fastObjMesh*                    fast_obj_read_with_callbacks(const char* path, const fastObjCallbacks* callbacks, void* user_data);
-void                            fast_obj_destroy(fastObjMesh* mesh);
+fastObjMesh* fast_obj_read(const char* path);
+fastObjMesh* fast_obj_read_with_callbacks(const char* path, const fastObjCallbacks* callbacks, void* user_data);
+void fast_obj_destroy(fastObjMesh* mesh);
 
 #ifdef __cplusplus
 }

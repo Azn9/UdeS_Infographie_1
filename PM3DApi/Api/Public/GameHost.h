@@ -15,7 +15,7 @@ namespace PM3D_API
 
         GameHost() = default;
         virtual ~GameHost();
-        
+
         void Update() const;
         void PhysicsUpdate() const;
         void InitializeScene();
@@ -25,7 +25,7 @@ namespace PM3D_API
 
         PM3D::CPanneauPE* GetPostEffectPlane() const { return postEffectPlane; }
         void SetPostEffectPlane(PM3D::CPanneauPE* plane) { postEffectPlane = plane; }
-        
+
         float GetAspectRatio() const;
         float GetScreenWidth() const;
         float GetScreenHeight() const;
@@ -40,7 +40,11 @@ namespace PM3D_API
         // === Interface ===
 
         virtual void Initialize() = 0;
-        virtual void InitializePostProcessParam() const {}
+
+        virtual void InitializePostProcessParam() const
+        {
+        }
+
         virtual void Draw();
         virtual void DrawUI();
 
@@ -51,6 +55,7 @@ namespace PM3D_API
         const std::vector<std::unique_ptr<DebugRenderer>>& GetDebugRenderers() { return debugRenderers; }
 
         virtual void SetScene(Scene* newScene);
+
     protected:
         std::vector<std::unique_ptr<DebugRenderer>> debugRenderers;
 
@@ -59,6 +64,5 @@ namespace PM3D_API
     private:
         Scene* scene;
         PM3D::CDispositifD3D11* dispositif;
-
     };
 }

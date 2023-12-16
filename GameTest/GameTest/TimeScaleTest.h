@@ -5,9 +5,12 @@
 class TimeScaleTest final : public PM3D_API::DebugRenderer
 {
 public:
-	TimeScaleTest() : DebugRenderer() {}
-	~TimeScaleTest() override = default;
+    TimeScaleTest() : DebugRenderer()
+    {
+    }
 
-	void StepOneFrame();
-	void Draw() override;
+    ~TimeScaleTest() override = default;
+
+    void StepOneFrame();
+    void Draw() override;
 };

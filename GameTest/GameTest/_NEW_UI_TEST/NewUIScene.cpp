@@ -46,7 +46,8 @@ void NewUIScene::InitializeObjects()
     auto objects = std::make_unique<GameObject>("Objects");
     objects->Initialize();
     auto objectsShader = std::make_unique<PM3D_API::DefaultShader>(L"shader/NewShader.fx");
-    objects->AddComponent(std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
+    objects->AddComponent(
+        std::make_unique<PM3D_API::MeshRenderer>(std::move(objectsShader), "LoadingScene/objects.obj"));
     AddChild(std::move(objects));
 }
 

@@ -241,24 +241,24 @@ namespace PM3D
     {
         if (!canRender) return;
 
-/*#ifdef _DEBUG
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-#endif*/
-}
+        /*#ifdef _DEBUG
+            ImGui::Render();
+            ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+        #endif*/
+    }
 
-void CMoteurWindows::BeginRenderDebug()
-{
-	ImGui_ImplDX11_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-}
+    void CMoteurWindows::BeginRenderDebug()
+    {
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+    }
 
-void CMoteurWindows::EndRenderDebug()
-{
-	ImGui::Render();
-	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-}
+    void CMoteurWindows::EndRenderDebug()
+    {
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
 
     void CMoteurWindows::Resize(WORD largeur, WORD hauteur)
     {
@@ -309,12 +309,12 @@ void CMoteurWindows::EndRenderDebug()
 
         pImmediateContext->OMSetRenderTargets(1, pRenderTargetView, pDispositif->GetDepthStencilView());
 
-		pPanneauPE->Resize(largeur, hauteur);
+        pPanneauPE->Resize(largeur, hauteur);
 
-		PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
+        PM3D_API::EventSystem::Publish(PM3D_API::WindowResizeEvent(largeur, hauteur));
 
-	canRender = true;
-}
+        canRender = true;
+    }
 
     void CMoteurWindows::ResizeWindow(int largeur, int hauteur)
     {

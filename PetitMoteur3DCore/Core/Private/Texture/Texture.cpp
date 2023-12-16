@@ -28,26 +28,26 @@ namespace PM3D
     }
 
     //Loading texture array
-    CTexture::CTexture(const std::wstring& name, const std::vector<std::wstring>& filenames, CDispositifD3D11* pDispositif)
+    CTexture::CTexture(const std::wstring& name, const std::vector<std::wstring>& filenames,
+                       CDispositifD3D11* pDispositif)
         : m_Name(name)
     {
-        if(filenames.empty())
+        if (filenames.empty())
         {
             throw std::exception("Aucun fichiers fournis à CTexture::CTexture");
         }
-        
+
         ID3D11Device* pDevice = pDispositif->GetD3DDevice();
 
         //all texture creation
         std::vector<ID3D11Texture2D*> textures{};
         for (const std::wstring& filename : filenames)
         {
-            
             ID3D11Resource* ressource = nullptr;
             const auto res = CreateDDSTextureFromFile(pDevice,
-                                                  filename.c_str(),
-                                                  &ressource,
-                                                  nullptr);
+                                                      filename.c_str(),
+                                                      &ressource,
+                                                      nullptr);
             if (res != S_OK)
             {
                 throw std::exception(("Impossible de charger la texture " + Util::ws2s(filename) + " !").c_str());
@@ -77,7 +77,8 @@ namespace PM3D
         DXEssayer(pDevice->CreateTexture2D(&textureArrayDesc, nullptr, &textureArray));
 
         //Filling the array
-        for (UINT i = 0; i < textures.size(); ++i) {
+        for (UINT i = 0; i < textures.size(); ++i)
+        {
             pDispositif->GetImmediateContext()->CopySubresourceRegion(
                 textureArray, i * desc.MipLevels,
                 0, 0, 0, textures[i], 0, nullptr);
@@ -90,9 +91,10 @@ namespace PM3D
         srvDesc.Texture2DArray.MipLevels = desc.MipLevels;
         srvDesc.Texture2DArray.ArraySize = static_cast<UINT>(textures.size());
 
-        DXEssayer(pDevice->CreateShaderResourceView(textureArray, &srvDesc, &m_TextureSRV));//essayer avec desc = null
+        DXEssayer(pDevice->CreateShaderResourceView(textureArray, &srvDesc, &m_TextureSRV)); //essayer avec desc = null
 
-        for (ID3D11Texture2D* tex : textures) {
+        for (ID3D11Texture2D* tex : textures)
+        {
             tex->Release();
         }
         textureArray->Release();

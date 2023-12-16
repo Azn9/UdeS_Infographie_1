@@ -47,12 +47,12 @@ PM3D_API::DefaultShader::DefaultShader(
         std::lock_guard<std::mutex> guard{reloadingMutex};
         if (!initialized)
             return;
-        
+
         std::cout << "Reloading shader " << Util::ws2s(fileName) << std::endl;
         Destroy();
 
         Sleep(150); // To avoid issues
-        
+
         Initialize(fileName);
 
         std::cout << "Shader reloaded!" << std::endl;
@@ -253,7 +253,7 @@ void PM3D_API::DefaultShader::Destroy()
         return;
 
     initialized = false;
-    
+
     PM3D::DXRelacher(shaderParametersBuffer);
     PM3D::DXRelacher(effect);
     PM3D::DXRelacher(vertexLayout);
@@ -402,12 +402,12 @@ void PM3D_API::DefaultShader::ApplyMaterialParameters(
         }
     }
 
-/*    if (depthShaderResourceView)
-    {
-        ID3DX11EffectShaderResourceVariable* pShadowMap = effect->GetVariableByName("shadowTexture")->
-                                                                  AsShaderResource();
-        pShadowMap->SetResource(depthShaderResourceView);
-    }*/
+    /*    if (depthShaderResourceView)
+        {
+            ID3DX11EffectShaderResourceVariable* pShadowMap = effect->GetVariableByName("shadowTexture")->
+                                                                      AsShaderResource();
+            pShadowMap->SetResource(depthShaderResourceView);
+        }*/
 }
 
 void PM3D_API::DefaultShader::DeleteParameters(void* shader_parameters)
@@ -514,7 +514,8 @@ void PM3D_API::DefaultShader::LoadLights(ID3D11DeviceContext* context, GameObjec
     lightParametersBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     lightParametersBufferDesc.StructureByteStride = sizeof(ShaderLightDefaultParameters);
     lightParametersBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    lightParametersBufferDesc.ByteWidth = sizeof(ShaderLightDefaultParameters) * static_cast<UINT>(shaderLightsParameters.size());
+    lightParametersBufferDesc.ByteWidth = sizeof(ShaderLightDefaultParameters) * static_cast<UINT>(
+        shaderLightsParameters.size());
 
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = shaderLightsParameters.data();

@@ -47,12 +47,12 @@ SphereShader::SphereShader(
         std::lock_guard<std::mutex> guard{reloadingMutex};
         if (!initialized)
             return;
-        
+
         std::cout << "Reloading shader " << Util::ws2s(fileName) << std::endl;
         Destroy();
 
         Sleep(150); // To avoid issues
-        
+
         Initialize(fileName);
 
         std::cout << "Shader reloaded!" << std::endl;
@@ -253,7 +253,7 @@ void SphereShader::Destroy()
         return;
 
     initialized = false;
-    
+
     PM3D::DXRelacher(shaderParametersBuffer);
     PM3D::DXRelacher(effect);
     PM3D::DXRelacher(vertexLayout);
@@ -402,12 +402,12 @@ void SphereShader::ApplyMaterialParameters(
         }
     }
 
-/*    if (depthShaderResourceView)
-    {
-        ID3DX11EffectShaderResourceVariable* pShadowMap = effect->GetVariableByName("shadowTexture")->
-                                                                  AsShaderResource();
-        pShadowMap->SetResource(depthShaderResourceView);
-    }*/
+    /*    if (depthShaderResourceView)
+        {
+            ID3DX11EffectShaderResourceVariable* pShadowMap = effect->GetVariableByName("shadowTexture")->
+                                                                      AsShaderResource();
+            pShadowMap->SetResource(depthShaderResourceView);
+        }*/
 }
 
 void SphereShader::DeleteParameters(void* shader_parameters)
@@ -497,10 +497,11 @@ void SphereShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject
     }
 
     std::vector<PM3D_API::ShaderLightDefaultParameters> shaderLightsParameters{};
-    std::for_each(finalLights.begin(), finalLights.end(), [&shaderLightsParameters, &gameObject](const PM3D_API::Light* light)
-    {
-        shaderLightsParameters.push_back(light->GetShaderLightDefaultParameters(gameObject));
-    });
+    std::for_each(finalLights.begin(), finalLights.end(),
+                  [&shaderLightsParameters, &gameObject](const PM3D_API::Light* light)
+                  {
+                      shaderLightsParameters.push_back(light->GetShaderLightDefaultParameters(gameObject));
+                  });
 
     for (int i = 0; i < 10 - lightCount; ++i)
     {
@@ -514,7 +515,8 @@ void SphereShader::LoadLights(ID3D11DeviceContext* context, PM3D_API::GameObject
     lightParametersBufferDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     lightParametersBufferDesc.StructureByteStride = sizeof(PM3D_API::ShaderLightDefaultParameters);
     lightParametersBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * static_cast<UINT>(shaderLightsParameters.size());
+    lightParametersBufferDesc.ByteWidth = sizeof(PM3D_API::ShaderLightDefaultParameters) * static_cast<UINT>(
+        shaderLightsParameters.size());
 
     D3D11_SUBRESOURCE_DATA initData = {};
     initData.pSysMem = shaderLightsParameters.data();

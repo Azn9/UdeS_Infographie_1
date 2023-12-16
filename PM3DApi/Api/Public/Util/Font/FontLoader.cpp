@@ -12,7 +12,8 @@ PM3D_API::FontLoader::FontLoader(const std::string& fntFileName, const std::wstr
     if (!fntStream.is_open())
         throw std::runtime_error("Could not open " + fntFileName);
 
-    texture = PM3D::CMoteurWindows::GetInstance().GetTextureManager().GetNewTexture(ddsFile, GameHost::GetInstance()->GetDispositif());
+    texture = PM3D::CMoteurWindows::GetInstance().GetTextureManager().GetNewTexture(
+        ddsFile, GameHost::GetInstance()->GetDispositif());
 
     for (std::string line; getline(fntStream, line);)
     {

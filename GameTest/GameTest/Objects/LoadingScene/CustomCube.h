@@ -4,7 +4,9 @@
 class CustomCube : public PM3D_API::BasicShape
 {
 public:
-    CustomCube() : BasicShape("TestCube") {}
+    CustomCube() : BasicShape("TestCube")
+    {
+    }
 
 private:
     std::wstring GetShaderFileName() override { return L"shader/NewShader.fx"; }

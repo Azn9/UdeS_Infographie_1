@@ -110,6 +110,6 @@ void PauseComponent::Update()
         isPaused = false;
         isEnded = false;
         isWon = false;
-       // PM3D::Time::GetInstance().SetTimeScale(1.f);
+        // PM3D::Time::GetInstance().SetTimeScale(1.f);
     }
 }

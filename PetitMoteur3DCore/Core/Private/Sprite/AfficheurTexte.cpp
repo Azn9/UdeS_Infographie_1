@@ -5,26 +5,26 @@
 ULONG_PTR PM3D::CAfficheurTexte::token = 0;
 
 PM3D::CAfficheurTexte::CAfficheurTexte(PM3D::CDispositifD3D11* pDispositif, int largeur, int hauteur,
-    Gdiplus::Font* pPolice)
-: pDispo(pDispositif)
-, TexWidth(largeur)
-, TexHeight(hauteur)
-, pFont(pPolice)
-, pTexture(nullptr)
-, pSurface(nullptr)
-, pTextureView(nullptr)
-, pCharBitmap(nullptr)
-, pCharGraphics(nullptr)
-, pBlackBrush(nullptr)
+                                       Gdiplus::Font* pPolice)
+    : pDispo(pDispositif)
+      , TexWidth(largeur)
+      , TexHeight(hauteur)
+      , pFont(pPolice)
+      , pTexture(nullptr)
+      , pSurface(nullptr)
+      , pTextureView(nullptr)
+      , pCharBitmap(nullptr)
+      , pCharGraphics(nullptr)
+      , pBlackBrush(nullptr)
 
 {
     // Créer le bitmap et un objet GRAPHICS (un dessinateur)
-    pCharBitmap = std ::make_unique<Gdiplus ::Bitmap>(TexWidth, TexHeight,
-    PixelFormat32bppARGB);
+    pCharBitmap = std::make_unique<Gdiplus::Bitmap>(TexWidth, TexHeight,
+                                                    PixelFormat32bppARGB);
     pCharGraphics = std::make_unique<Gdiplus::Graphics>(pCharBitmap.get());
     // Paramètres de l’objet Graphics
-    pCharGraphics->SetCompositingMode(Gdiplus ::CompositingModeSourceOver);
-    pCharGraphics->SetCompositingQuality(Gdiplus ::CompositingQualityHighSpeed);
+    pCharGraphics->SetCompositingMode(Gdiplus::CompositingModeSourceOver);
+    pCharGraphics->SetCompositingQuality(Gdiplus::CompositingQualityHighSpeed);
     pCharGraphics->SetInterpolationMode(Gdiplus::InterpolationModeHighQuality);
     pCharGraphics->SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighSpeed);
     pCharGraphics->SetSmoothingMode(Gdiplus::SmoothingModeNone);
@@ -35,10 +35,10 @@ PM3D::CAfficheurTexte::CAfficheurTexte(PM3D::CDispositifD3D11* pDispositif, int 
     // Un brosse noire pour le remplissage
     // Notez que la brosse aurait pu être passée
     // en paramètre pour plus de flexibilité
-    pBlackBrush = std::make_unique<Gdiplus::SolidBrush>(Gdiplus ::Color(255,
-    0, 0, 0));
+    pBlackBrush = std::make_unique<Gdiplus::SolidBrush>(Gdiplus::Color(255,
+                                                                       0, 0, 0));
     // On efface le bitmap (notez le NOIR TRANSPARENT...)
-    pCharGraphics->Clear(Gdiplus ::Color(0, 0, 0, 0));
+    pCharGraphics->Clear(Gdiplus::Color(0, 0, 0, 0));
     // Nous pourrions ici écrire une valeur initiale sur le bitmap
     // std ::wstring s=L"Valeur initiale";
     // pCharGraphics->DrawString( s.c_str(), s.size(), pFont, PointF( 0.0f, 0.0f ), pBlackBrush.get() );
@@ -49,12 +49,12 @@ PM3D::CAfficheurTexte::CAfficheurTexte(PM3D::CDispositifD3D11* pDispositif, int 
 #pragma warning( disable : 4238 )
 
     const auto rect = new Gdiplus::Rect(0, 0, TexWidth, TexHeight);
-    pCharBitmap->LockBits(rect, Gdiplus ::ImageLockModeRead, PixelFormat32bppARGB, &bmData);
+    pCharBitmap->LockBits(rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bmData);
 
     delete rect;
 
 #pragma warning( pop )
-    
+
     // Création d’une texture de même dimension sur la carte graphique
     D3D11_TEXTURE2D_DESC texDesc;
     texDesc.Width = TexWidth;
@@ -73,8 +73,8 @@ PM3D::CAfficheurTexte::CAfficheurTexte(PM3D::CDispositifD3D11* pDispositif, int 
     data.SysMemPitch = TexWidth * 4;
     data.SysMemSlicePitch = 0;
     // Création de la texture à partir des données du bitmap
-    DXEssayer(pDispo-> GetD3DDevice()->CreateTexture2D(&texDesc, &data,
-    &pTexture));
+    DXEssayer(pDispo->GetD3DDevice()->CreateTexture2D(&texDesc, &data,
+                                                      &pTexture));
     // Création d’un « resourve view » pour accéder facilement à la texture
     // (comme pour les sprites)
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -83,22 +83,22 @@ PM3D::CAfficheurTexte::CAfficheurTexte(PM3D::CDispositifD3D11* pDispositif, int 
     srvDesc.Texture2D.MipLevels = 1;
     srvDesc.Texture2D.MostDetailedMip = 0;
     DXEssayer(pDispositif->GetD3DDevice()->CreateShaderResourceView(pTexture,
-    &srvDesc, &pTextureView));
+                                                                    &srvDesc, &pTextureView));
     pCharBitmap->UnlockBits(&bmData);
 }
 
 PM3D::CAfficheurTexte::~CAfficheurTexte()
 {
-    DXRelacher(pTexture); 
+    DXRelacher(pTexture);
 }
 
 void PM3D::CAfficheurTexte::Ecrire(const std::wstring& s)
 {
     // Effacer
-    pCharGraphics->Clear(Gdiplus ::Color(0, 0, 0, 0));
+    pCharGraphics->Clear(Gdiplus::Color(0, 0, 0, 0));
     // Écrire le nouveau texte
     pCharGraphics->DrawString(s.c_str(), static_cast<int>(s.size()), pFont,
-    Gdiplus::PointF(0.0f, 0.0f), pBlackBrush.get());
+                              Gdiplus::PointF(0.0f, 0.0f), pBlackBrush.get());
     // Transférer
     Gdiplus::BitmapData bmData;
 
@@ -106,16 +106,16 @@ void PM3D::CAfficheurTexte::Ecrire(const std::wstring& s)
 #pragma warning( disable : 4238 )
 
     const auto rect = new Gdiplus::Rect(0, 0, TexWidth, TexHeight);
-    
+
     pCharBitmap->LockBits(rect,
-    Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bmData);
+                          Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bmData);
 
     delete rect;
 
 #pragma warning( pop )
-    
+
     pDispo->GetImmediateContext()->UpdateSubresource(pTexture, 0, 0,
-    bmData.Scan0, TexWidth * 4, 0);
+                                                     bmData.Scan0, TexWidth * 4, 0);
     pCharBitmap->UnlockBits(&bmData);
 }
 

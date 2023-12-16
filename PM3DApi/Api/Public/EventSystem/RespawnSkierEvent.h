@@ -3,6 +3,4 @@
 
 struct RespawnSkierEvent : public PM3D_API::Event
 {
-
-
 };

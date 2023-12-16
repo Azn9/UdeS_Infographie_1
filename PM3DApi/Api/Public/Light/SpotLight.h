@@ -17,12 +17,12 @@ namespace PM3D_API
             const float innerAngle,
             const float outerAngle
         ) : Light(
-            name,
-            position,
-            Util::DirectionToEulerAngles(direction),
-            intensity,
-            color
-        ), innerAngle(innerAngle), outerAngle(outerAngle), direction(direction)
+                name,
+                position,
+                Util::DirectionToEulerAngles(direction),
+                intensity,
+                color
+            ), innerAngle(innerAngle), outerAngle(outerAngle), direction(direction)
         {
         }
 
@@ -34,11 +34,11 @@ namespace PM3D_API
             const float innerAngle,
             const float outerAngle
         ) : Light(
-            position,
-            Util::DirectionToEulerAngles(direction),
-            intensity,
-            color
-        ), innerAngle(innerAngle), outerAngle(outerAngle), direction(direction)
+                position,
+                Util::DirectionToEulerAngles(direction),
+                intensity,
+                color
+            ), innerAngle(innerAngle), outerAngle(outerAngle), direction(direction)
         {
         }
 
@@ -47,8 +47,13 @@ namespace PM3D_API
 
         LightType GetType() const override { return LightType::SPOT; }
 
-        void SetLocalRotation(Quaternion newRotation) override {}
-        void SetWorldRotation(Quaternion newRotation) override {}
+        void SetLocalRotation(Quaternion newRotation) override
+        {
+        }
+
+        void SetWorldRotation(Quaternion newRotation) override
+        {
+        }
 
         DirectX::XMFLOAT3 GetWorldDirection() const override { return direction; }
         void SetDirection(const DirectX::XMFLOAT3 newDirection) { direction = newDirection; }
@@ -56,31 +61,44 @@ namespace PM3D_API
         void DrawDebugInfo() const override
         {
             ImGui::Text("Type");
-            ImGui::SameLine(100.0); ImGui::Text("Point");
+            ImGui::SameLine(100.0);
+            ImGui::Text("Point");
 
             ImGui::Text("Position");
-            ImGui::SameLine(100.0); ImGui::Text("x=%f", worldPosition.x);
-            ImGui::SameLine(200.0); ImGui::Text("y=%f", worldPosition.y);
-            ImGui::SameLine(300.0); ImGui::Text("z=%f", worldPosition.z);
+            ImGui::SameLine(100.0);
+            ImGui::Text("x=%f", worldPosition.x);
+            ImGui::SameLine(200.0);
+            ImGui::Text("y=%f", worldPosition.y);
+            ImGui::SameLine(300.0);
+            ImGui::Text("z=%f", worldPosition.z);
 
             ImGui::Text("Direction");
-            ImGui::SameLine(100.0); ImGui::Text("x=%f", worldRotationEuler.x);
-            ImGui::SameLine(200.0); ImGui::Text("y=%f", worldRotationEuler.y);
-            ImGui::SameLine(300.0); ImGui::Text("z=%f", worldRotationEuler.z);
+            ImGui::SameLine(100.0);
+            ImGui::Text("x=%f", worldRotationEuler.x);
+            ImGui::SameLine(200.0);
+            ImGui::Text("y=%f", worldRotationEuler.y);
+            ImGui::SameLine(300.0);
+            ImGui::Text("z=%f", worldRotationEuler.z);
 
             ImGui::Text("InnerAngle");
-            ImGui::SameLine(100.0); ImGui::Text("%f", innerAngle);
+            ImGui::SameLine(100.0);
+            ImGui::Text("%f", innerAngle);
 
             ImGui::Text("OuterAngle");
-            ImGui::SameLine(100.0); ImGui::Text("%f", outerAngle);
+            ImGui::SameLine(100.0);
+            ImGui::Text("%f", outerAngle);
 
             ImGui::Text("Intensity");
-            ImGui::SameLine(100.0); ImGui::Text("%f", intensity);
+            ImGui::SameLine(100.0);
+            ImGui::Text("%f", intensity);
 
             ImGui::Text("Color");
-            ImGui::SameLine(100.0); ImGui::Text("r=%f", color.x);
-            ImGui::SameLine(200.0); ImGui::Text("g=%f", color.y);
-            ImGui::SameLine(300.0); ImGui::Text("b=%f", color.z);
+            ImGui::SameLine(100.0);
+            ImGui::Text("r=%f", color.x);
+            ImGui::SameLine(200.0);
+            ImGui::Text("g=%f", color.y);
+            ImGui::SameLine(300.0);
+            ImGui::Text("b=%f", color.z);
         }
 
     protected:

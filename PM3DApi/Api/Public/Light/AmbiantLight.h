@@ -27,15 +27,20 @@ namespace PM3D_API
         void DrawDebugInfo() const override
         {
             ImGui::Text("Type");
-            ImGui::SameLine(100.0); ImGui::Text("Ambiant");
+            ImGui::SameLine(100.0);
+            ImGui::Text("Ambiant");
 
             ImGui::Text("Intensity");
-            ImGui::SameLine(100.0); ImGui::Text("%f", intensity);
+            ImGui::SameLine(100.0);
+            ImGui::Text("%f", intensity);
 
             ImGui::Text("Color");
-            ImGui::SameLine(100.0); ImGui::Text("r=%f", color.x);
-            ImGui::SameLine(200.0); ImGui::Text("g=%f", color.y);
-            ImGui::SameLine(300.0); ImGui::Text("b=%f", color.z);
+            ImGui::SameLine(100.0);
+            ImGui::Text("r=%f", color.x);
+            ImGui::SameLine(200.0);
+            ImGui::Text("g=%f", color.y);
+            ImGui::SameLine(300.0);
+            ImGui::Text("b=%f", color.z);
         }
     };
 }

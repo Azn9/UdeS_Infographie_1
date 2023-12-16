@@ -74,7 +74,7 @@ void SizeModifierComponent::PhysicsUpdate()
             PM3D_API::EventSystem::Publish(GameOverEvent(true));
             return;
         }
-        
+
         if (preScale.x < MAX_SIZE && !_inTunnel)
             parentObject->SetWorldScale(DirectX::XMFLOAT3(
                 preScale.x * _sizeModificationSpeed,

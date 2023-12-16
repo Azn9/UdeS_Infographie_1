@@ -20,7 +20,8 @@ namespace PM3D_API
         {
         }
 
-        BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const DirectX::XMFLOAT3& worldRotation)
+        BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition,
+                   const DirectX::XMFLOAT3& worldRotation)
             : GameObject(name, worldPosition, worldRotation)
         {
         }
@@ -30,14 +31,15 @@ namespace PM3D_API
         {
         }
 
-        BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const DirectX::XMFLOAT3& worldRotation,
-            const DirectX::XMFLOAT3& worldScale)
+        BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition,
+                   const DirectX::XMFLOAT3& worldRotation,
+                   const DirectX::XMFLOAT3& worldScale)
             : GameObject(name, worldPosition, worldRotation, worldScale)
         {
         }
 
         BasicShape(const std::string& name, const DirectX::XMFLOAT3& worldPosition, const Quaternion& worldRotation,
-            const DirectX::XMFLOAT3& worldScale)
+                   const DirectX::XMFLOAT3& worldScale)
             : GameObject(name, worldPosition, worldRotation, worldScale)
         {
         }
@@ -100,23 +102,24 @@ namespace PM3D_API
             if (shader)
             {
                 ConstructRenderer(std::move(shader));
-            } else
+            }
+            else
             {
                 ConstructRenderer();
             }
         }
-    
+
     private:
         std::unique_ptr<PM3D_API::Shader> shader;
         virtual std::wstring GetShaderFileName() = 0;
         virtual std::string GetMeshFileName() = 0;
-    
+
         void ConstructRenderer()
         {
             auto shader = std::make_unique<PM3D_API::DefaultShader>(GetShaderFileName());
             ConstructRenderer(std::move(shader));
         }
-    
+
         void ConstructRenderer(std::unique_ptr<PM3D_API::Shader>&& shader)
         {
             auto meshRenderer = std::make_unique<PM3D_API::MeshRenderer>(std::move(shader), GetMeshFileName());

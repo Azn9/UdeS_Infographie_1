@@ -7,32 +7,31 @@
 
 namespace Util
 {
-	DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t);
-	float Lerp(const float a, const float b, const float t);
-	
-	DirectX::XMFLOAT2 operator+(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b);
-	DirectX::XMFLOAT2 operator-(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b);
-	DirectX::XMFLOAT2 operator*(const DirectX::XMFLOAT2& a, const float& f);
-	DirectX::XMFLOAT2 operator/(const DirectX::XMFLOAT2& a, const float& f);
-	DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t);
-	DirectX::XMFLOAT3 DirectionToEulerAngles(DirectX::XMFLOAT3 direction);
-	PM3D_API::Quaternion DirectionToQuaternion(DirectX::XMFLOAT3 direction);
+    DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t);
+    float Lerp(const float a, const float b, const float t);
 
-	float magnitude(const DirectX::XMFLOAT2& f2);
-	float magnitude(const DirectX::XMFLOAT3& f3);
+    DirectX::XMFLOAT2 operator+(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b);
+    DirectX::XMFLOAT2 operator-(const DirectX::XMFLOAT2& a, const DirectX::XMFLOAT2& b);
+    DirectX::XMFLOAT2 operator*(const DirectX::XMFLOAT2& a, const float& f);
+    DirectX::XMFLOAT2 operator/(const DirectX::XMFLOAT2& a, const float& f);
+    DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t);
+    DirectX::XMFLOAT3 DirectionToEulerAngles(DirectX::XMFLOAT3 direction);
+    PM3D_API::Quaternion DirectionToQuaternion(DirectX::XMFLOAT3 direction);
 
-	
-	const DirectX::XMVECTOR VECTORFORWARD = DirectX::XMVECTOR{0.f,0.f,1.f,0.f};
-	const DirectX::XMVECTOR VECTORRIGHT = DirectX::XMVECTOR{-1.f,0.f,0.f,0.f};
-	const DirectX::XMVECTOR VECTORUP = DirectX::XMVECTOR{0.f,1.f,0.f,0.f};
-	const DirectX::XMVECTOR VECTORZERO = DirectX::XMVECTOR{0.f,0.f,0.f,0.f};
+    float magnitude(const DirectX::XMFLOAT2& f2);
+    float magnitude(const DirectX::XMFLOAT3& f3);
 
 
-	void DrawDebugVector3(const std::string name, const DirectX::XMVECTOR& vec);
-	DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t);
-	DirectX::XMFLOAT3 DirectionToEulerAngles(DirectX::XMFLOAT3 direction);
-	PM3D_API::Quaternion DirectionToQuaternion(DirectX::XMFLOAT3 direction);
-	std::string ws2s(const std::wstring& wstr);
-	std::wstring s2ws(const std::string& str);
+    const DirectX::XMVECTOR VECTORFORWARD = DirectX::XMVECTOR{0.f, 0.f, 1.f, 0.f};
+    const DirectX::XMVECTOR VECTORRIGHT = DirectX::XMVECTOR{-1.f, 0.f, 0.f, 0.f};
+    const DirectX::XMVECTOR VECTORUP = DirectX::XMVECTOR{0.f, 1.f, 0.f, 0.f};
+    const DirectX::XMVECTOR VECTORZERO = DirectX::XMVECTOR{0.f, 0.f, 0.f, 0.f};
+
+
+    void DrawDebugVector3(const std::string name, const DirectX::XMVECTOR& vec);
+    DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 a, DirectX::XMFLOAT3 b, float t);
+    DirectX::XMFLOAT3 DirectionToEulerAngles(DirectX::XMFLOAT3 direction);
+    PM3D_API::Quaternion DirectionToQuaternion(DirectX::XMFLOAT3 direction);
+    std::string ws2s(const std::wstring& wstr);
+    std::wstring s2ws(const std::string& str);
 };
-

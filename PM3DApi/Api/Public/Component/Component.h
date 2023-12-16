@@ -3,34 +3,37 @@
 
 namespace PM3D_API
 {
-class GameObject;
+    class GameObject;
 
-class Component
-{
-public:
-	virtual ~Component();
+    class Component
+    {
+    public:
+        virtual ~Component();
 
-	virtual void Initialize();
-	virtual void Update();
-	virtual void PhysicsUpdate();
-	virtual void DrawSelf() const;
-	virtual void DrawShadowSelf(const class Camera& camera) const;
-	virtual void DrawDebugInfo() const {}
+        virtual void Initialize();
+        virtual void Update();
+        virtual void PhysicsUpdate();
+        virtual void DrawSelf() const;
+        virtual void DrawShadowSelf(const class Camera& camera) const;
 
-	uint64_t GetBeginDrawSelf() const { return beginDrawSelf; }
-	uint64_t GetEndDrawSelf() const { return endDrawSelf; }
+        virtual void DrawDebugInfo() const
+        {
+        }
 
-protected:
-	GameObject* parentObject = nullptr;
+        uint64_t GetBeginDrawSelf() const { return beginDrawSelf; }
+        uint64_t GetEndDrawSelf() const { return endDrawSelf; }
 
-	void LogBeginDrawSelf() const;
-	void LogEndDrawSelf() const;
+    protected:
+        GameObject* parentObject = nullptr;
 
-private:
-	friend class GameObject;
-	void SetGameObject(GameObject* gameObject) { parentObject = gameObject; }
+        void LogBeginDrawSelf() const;
+        void LogEndDrawSelf() const;
 
-	mutable uint64_t beginDrawSelf;
-	mutable uint64_t endDrawSelf;
-};
+    private:
+        friend class GameObject;
+        void SetGameObject(GameObject* gameObject) { parentObject = gameObject; }
+
+        mutable uint64_t beginDrawSelf;
+        mutable uint64_t endDrawSelf;
+    };
 }

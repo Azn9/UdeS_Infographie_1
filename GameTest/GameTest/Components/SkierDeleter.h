@@ -14,24 +14,25 @@
 class SkierDeleter final : public PM3D_API::Component
 {
 public:
-	SkierDeleter()
-	{
-		PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
-			{
-				_resetRequested = true;
-			});
-	}
+    SkierDeleter()
+    {
+        PM3D_API::EventSystem::Subscribe([this](const RestartEvent&)
+        {
+            _resetRequested = true;
+        });
+    }
 
-	void Update() override
-	{
-		if (_resetRequested) {
-			auto pt = parentObject->DetachFromParent();
-			pt.release();
-			_resetRequested = false;
-			PM3D_API::EventSystem::Publish(DeletedSkierEvent());
-		}
-	}
+    void Update() override
+    {
+        if (_resetRequested)
+        {
+            auto pt = parentObject->DetachFromParent();
+            pt.release();
+            _resetRequested = false;
+            PM3D_API::EventSystem::Publish(DeletedSkierEvent());
+        }
+    }
 
 private:
-	bool _resetRequested = false;
+    bool _resetRequested = false;
 };

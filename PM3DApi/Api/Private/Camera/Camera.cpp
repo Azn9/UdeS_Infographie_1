@@ -88,14 +88,14 @@ void PM3D_API::Camera::SetFieldOfView(const float newFieldOfView)
 
 void PM3D_API::Camera::SetViewHeight(const float newViewHeight)
 {
-	viewHeight = newViewHeight;
-	UpdateInternalMatrices();
+    viewHeight = newViewHeight;
+    UpdateInternalMatrices();
 }
 
 void PM3D_API::Camera::SetViewWidth(const float newViewWidth)
 {
-	viewWidth = newViewWidth;
-	UpdateInternalMatrices();
+    viewWidth = newViewWidth;
+    UpdateInternalMatrices();
 }
 
 void PM3D_API::Camera::SetNearDist(const float newnearDist)
@@ -106,11 +106,11 @@ void PM3D_API::Camera::SetNearDist(const float newnearDist)
 
 void PM3D_API::Camera::UpdatePostProcessShaderParam() const
 {
-	GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("far", farDist);
-	GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("near", nearDist);
+    GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("far", farDist);
+    GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("near", nearDist);
 
-	XMMATRIX invProj = XMMatrixInverse(nullptr, matProj);
-	GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("matInvProj", invProj);
+    XMMATRIX invProj = XMMatrixInverse(nullptr, matProj);
+    GameHost::GetInstance()->GetPostEffectPlane()->SetShaderVariableValue("matInvProj", invProj);
 }
 
 void PM3D_API::Camera::SetFarDist(const float newfarDist)
@@ -214,10 +214,10 @@ void PM3D_API::Camera::UpdateInternalMatrices()
 
     initialized = true;
 
-	XMMATRIX invProj = XMMatrixInverse(nullptr, matProj);
+    XMMATRIX invProj = XMMatrixInverse(nullptr, matProj);
 
-	if(scene != nullptr)
-		UpdatePostProcessShaderParam();
+    if (scene != nullptr)
+        UpdatePostProcessShaderParam();
 }
 
 void PM3D_API::Camera::SetUpDirection(DirectX::XMVECTOR newUpDirection)

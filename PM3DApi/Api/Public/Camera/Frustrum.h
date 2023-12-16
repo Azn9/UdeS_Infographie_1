@@ -6,29 +6,29 @@
 
 namespace PM3D_API
 {
-using namespace Util;
+    using namespace Util;
 
-class Camera;
-    
-class Frustrum
-{
-public:
-    void SetPlanes(const Camera& cam);
+    class Camera;
 
-    /// \brief checks if a sphere at point of radius radius is intersacting with the frustrum
-    /// \param point Must be in view space
-    /// \param radius Must be in view space
-    /// \return 
-    bool ContainsSphere(const DirectX::XMVECTOR& point, const float& radius = 0.f) const;
+    class Frustrum
+    {
+    public:
+        void SetPlanes(const Camera& cam);
 
-    void DrawDebugInfo() const;
+        /// \brief checks if a sphere at point of radius radius is intersacting with the frustrum
+        /// \param point Must be in view space
+        /// \param radius Must be in view space
+        /// \return 
+        bool ContainsSphere(const DirectX::XMVECTOR& point, const float& radius = 0.f) const;
 
-private:
-    Plane nearPlane;
-    Plane farPlane;
-    Plane leftPlane;
-    Plane rightPlane;
-    Plane topPlane;
-    Plane bottomPlane;
-};
+        void DrawDebugInfo() const;
+
+    private:
+        Plane nearPlane;
+        Plane farPlane;
+        Plane leftPlane;
+        Plane rightPlane;
+        Plane topPlane;
+        Plane bottomPlane;
+    };
 }

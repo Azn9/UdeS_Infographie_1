@@ -4,7 +4,9 @@
 class Left_Ski : public PM3D_API::BasicShape
 {
 public:
-    Left_Ski() : BasicShape("ski") {}
+    Left_Ski() : BasicShape("ski")
+    {
+    }
 
 private:
     std::wstring GetShaderFileName() override { return L"shader/NewShader.fx"; }

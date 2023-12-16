@@ -8,61 +8,59 @@ using namespace DirectX;
 
 namespace PM3D
 {
+    class CParametresChargement
+    {
+    public:
+        CParametresChargement()
+        {
+            bInverserCulling = false;
+            bMainGauche = false;
+        }
 
-class CParametresChargement
-{
-public:
-	CParametresChargement()
-	{
-		bInverserCulling = false;
-		bMainGauche = false;
-	}
+        CParametresChargement(const std::string& filename)
+        {
+            NomFichier = filename;
+            NomChemin = "";
+            bInverserCulling = false;
+            bMainGauche = false;
+        }
 
-	CParametresChargement(const std::string& filename)
-	{
-		NomFichier = filename;
-		NomChemin = "";
-		bInverserCulling = false;
-		bMainGauche = false;
-	}
+        std::string NomFichier;
+        std::string NomChemin;
+        bool bInverserCulling;
+        bool bMainGauche;
+    };
 
-	std::string NomFichier;
-	std::string NomChemin;
-	bool bInverserCulling;
-	bool bMainGauche;
-};
+    class IChargeur
+    {
+    public:
+        virtual ~IChargeur(void) = default;
 
-class IChargeur
-{
-public:
-	virtual ~IChargeur(void) = default;
+        virtual void Chargement(const CParametresChargement& param) = 0;
 
-	virtual void Chargement(const CParametresChargement& param) = 0;
+        virtual size_t GetNombreSommets() const = 0;
+        virtual size_t GetNombreIndex() const = 0;
+        virtual const void* GetIndexData() const = 0;
+        virtual size_t GetNombreSubset() const = 0;
+        virtual size_t GetNombreMaterial() const = 0;
+        virtual CMaterial GetMaterial(int _i) const = 0;
 
-	virtual size_t GetNombreSommets() const = 0;
-	virtual size_t GetNombreIndex() const = 0;
-	virtual const void* GetIndexData()  const = 0;
-	virtual size_t GetNombreSubset() const = 0;
-	virtual size_t  GetNombreMaterial() const = 0;
-	virtual CMaterial GetMaterial(int _i) const = 0;
+        virtual const std::string& GetMaterialName(int i) const = 0;
 
-	virtual const std::string& GetMaterialName(int i) const = 0;
+        virtual void CopieSubsetIndex(std::vector<int>& dest) const = 0;
 
-	virtual void CopieSubsetIndex(std::vector<int>& dest) const = 0;
+        virtual const XMFLOAT3& GetPosition(int NoSommet) const = 0;
+        virtual const XMFLOAT2& GetCoordTex(int NoSommet) const = 0;
+        virtual const XMFLOAT3& GetNormale(int NoSommet) const = 0;
+        virtual const XMFLOAT3& GetBiNormale(int NoSommet) const = 0;
+        virtual const XMFLOAT3& GetTangent(int NoSommet) const = 0;
 
-	virtual const XMFLOAT3& GetPosition(int NoSommet) const = 0;
-	virtual const XMFLOAT2& GetCoordTex(int NoSommet) const = 0;
-	virtual const XMFLOAT3& GetNormale(int NoSommet) const = 0;
-	virtual const XMFLOAT3& GetBiNormale(int NoSommet) const = 0;
-	virtual const XMFLOAT3& GetTangent(int NoSommet) const = 0;
+        virtual void* GetMesh()
+        {
+            return nullptr;
+        }
 
-	virtual void* GetMesh()
-	{
-		return nullptr;
-	}
-
-	virtual std::vector<XMFLOAT3> getPositionArray() const = 0;
-	virtual std::vector<int> getIndexFaces() const = 0;
-};
-
+        virtual std::vector<XMFLOAT3> getPositionArray() const = 0;
+        virtual std::vector<int> getIndexFaces() const = 0;
+    };
 } // namespace PM3D

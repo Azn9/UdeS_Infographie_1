@@ -12,19 +12,23 @@
 
 namespace PM3D
 {
-    template<class T>
+    template <class T>
     concept is_shader_param = std::_Is_any_of_v
         <T, float, int, XMFLOAT3, XMFLOAT4, XMVECTOR, ID3D11SamplerState*, ID3D11ShaderResourceView*, XMMATRIX>;
-    
+
     class CDispositifD3D11;
+
     class CSommetPanneauPE
     {
     public:
         CSommetPanneauPE() = default;
+
         CSommetPanneauPE(const XMFLOAT3& position, const XMFLOAT2& coordTex)
-        : m_position(position)
-        , m_coordTex(coordTex)
-        { }
+            : m_position(position)
+              , m_coordTex(coordTex)
+        {
+        }
+
     public:
         static UINT numElements;
         static D3D11_INPUT_ELEMENT_DESC layout[];
@@ -32,7 +36,7 @@ namespace PM3D
         XMFLOAT2 m_coordTex;
     };
 
-    
+
     // Classe : CPanneauPE
     // BUT : Classe pour les post-effects
     class CPanneauPE : public CObjet3D
@@ -43,8 +47,8 @@ namespace PM3D
         virtual void Draw() override;
         void BeginDrawToPostEffect();
         void EndDrawToPostEffect();
-        
-        template<is_shader_param T>
+
+        template <is_shader_param T>
         void SetShaderVariableValue(const std::string& name, const T& param)
         {
             DXEssayer(SetShaderVar(name, param));
@@ -53,7 +57,7 @@ namespace PM3D
         void SetTexturesShaderVariables(const std::string& name, const std::vector<std::wstring>& filenames);
 
         //void SetTexturesShaderVariables(const std::string& name, const std::vector<std::wstring>& filenames);
-        
+
         void enableAllPostEffects();
         std::set<int>& getEnabledPostEffects();
 
@@ -64,12 +68,11 @@ namespace PM3D
         void CreateTexturesAndViews();
 
     private:
-        
         void InitEffet();
         static CSommetPanneauPE sommets[3];
         ID3D11Buffer* pVertexBuffer;
         CDispositifD3D11* pDispositif;
-        
+
         // Pour les effets
         ID3DX11Effect* pEffet;
         ID3DX11EffectTechnique* pTechnique;
@@ -80,7 +83,7 @@ namespace PM3D
         D3D11_TEXTURE2D_DESC pTextureDesc;
         D3D11_RENDER_TARGET_VIEW_DESC pRenderTargetViewDesc;
         D3D11_SHADER_RESOURCE_VIEW_DESC pShaderResourceViewDesc;
-        
+
         // Textures de rendu pour effets
         ID3D11Texture2D* pTmpTexture;
         ID3D11Texture2D* pTmp2Texture;
@@ -91,16 +94,16 @@ namespace PM3D
 
         ID3D11RenderTargetView* pTmp2RenderTargetView;
         ID3D11ShaderResourceView* pTmp2ResourceView;
-        
+
         ID3D11RenderTargetView* pMainRenderTargetView;
         ID3D11DepthStencilView* pMainDepthStencilView;
-        
+
         ID3D11RenderTargetView* pCurrentRenderTargetView;
         ID3D11ShaderResourceView* pCurrentResourceView;
 
         D3DX11_EFFECT_DESC* pEffectDesc;
         std::set<int> pEnabledTechniques;
-        
+
         ID3D11InputLayout* pVertexLayout;
 
         //Fonctions pour enregistrer les variables de shader
@@ -112,6 +115,5 @@ namespace PM3D
         HRESULT SetShaderVar(const std::string& name, ID3D11SamplerState* s) const;
         HRESULT SetShaderVar(const std::string& name, ID3D11ShaderResourceView* s) const;
         HRESULT SetShaderVar(const std::string& name, const XMMATRIX& m) const;
-        
     };
 } // namespace PM3D

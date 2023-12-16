@@ -1,5 +1,4 @@
-﻿
-/*
+﻿/*
 #include "Sprite/SpriteTemp.h"
 
 #include "Util/resource.h"

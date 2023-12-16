@@ -9,7 +9,6 @@ class LightMoverComponent : public PM3D_API::Component
 public:
     explicit LightMoverComponent(const float offset) : angle(offset)
     {
-        
     }
 
     void Update() override

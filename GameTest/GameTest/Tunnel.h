@@ -4,7 +4,9 @@
 class Tunnel : public PM3D_API::BasicShape
 {
 public:
-    Tunnel() : BasicShape("tunnel") {}
+    Tunnel() : BasicShape("tunnel")
+    {
+    }
 
 private:
     std::wstring GetShaderFileName() override { return L"shader/NewShader.fx"; }

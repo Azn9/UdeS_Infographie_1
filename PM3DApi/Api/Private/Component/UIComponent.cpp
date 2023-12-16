@@ -41,4 +41,3 @@ void PM3D_API::UIComponent::LogEndDrawSelf() const
 {
     endDrawSelf = PM3D::Time::GetInstance().GetTimeSpecific();
 }
-

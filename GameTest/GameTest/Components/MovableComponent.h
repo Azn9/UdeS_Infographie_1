@@ -25,7 +25,7 @@ public:
             physx::PxRigidDynamic* rigidDyn = parentObject->GetComponent<PM3D_API::Rigidbody>()->getRigidDynamic();
             rigidDyn->setLinearVelocity({0.f, 0.f, 0.f});
             rigidDyn->setAngularVelocity({0.f, 0.f, 0.f});
-            parentObject->SetWorldPosition(XMFLOAT3(0.f, 0.f, 0.f));
+            parentObject->SetWorldPosition(XMFLOAT3(6.f, -50.f, 66.f));
             _inTunnel = false;
             //PM3D_API::EventSystem::Publish(RespawnSkierEvent());
         });
@@ -65,10 +65,13 @@ public:
         {
             rigidDynamic->addForce(physx::PxVec3(static_cast<float>(_speed), 0.f, 0.f));
         }
+
+#ifdef _DEBUG
         if (Input::IsKeyHeld(KeyCode::ARROW_UP) && !_inTunnel)
         {
             rigidDynamic->addForce(physx::PxVec3(0.f, 0.f, -static_cast<float>(_speed * 2)));
         }
+#endif
 
         physx::PxRigidDynamic* rigidDyn = parentObject->GetComponent<PM3D_API::Rigidbody>()->getRigidDynamic();
         float vel = rigidDyn->getLinearVelocity().magnitude();

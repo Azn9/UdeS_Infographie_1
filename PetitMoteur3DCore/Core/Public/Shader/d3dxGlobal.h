@@ -17,25 +17,25 @@
 namespace D3DX11Debug
 {
     // Helper sets a D3D resource name string (used by PIX and debug layer leak reporting).
-    inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char *name )
+    inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char* name)
     {
-        #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
-            resource->SetPrivateData( WKPDID_D3DDebugObjectName, static_cast<UINT>(strlen(name)), name );
-        #else
+#if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
+        resource->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UINT>(strlen(name)), name);
+#else
             UNREFERENCED_PARAMETER(resource);
             UNREFERENCED_PARAMETER(name);
-        #endif
+#endif
     }
 
-    template<UINT TNameLength>
-    inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource, _In_z_ const char (&name)[TNameLength])
+    template <UINT TNameLength>
+    inline void SetDebugObjectName(_In_ ID3D11DeviceChild * resource, _In_z_ const char(&name)[TNameLength])
     {
-        #if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
-            resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
-        #else
+#if !defined(NO_D3D11_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
+        resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
+#else
             UNREFERENCED_PARAMETER(resource);
             UNREFERENCED_PARAMETER(name);
-        #endif
+#endif
     }
 }
 
@@ -82,42 +82,40 @@ inline uint32_t AlignToPowerOf2(uint32_t Value, uint32_t Alignment)
     return (Value + Alignment - 1) & (~(Alignment - 1));
 }
 
-inline void * AlignToPowerOf2(void *pValue, UINT_PTR Alignment)
+inline void* AlignToPowerOf2(void* pValue, UINT_PTR Alignment)
 {
     assert((Alignment & (Alignment - 1)) == 0);
     // to align to 2^N, add 2^N - 1 and AND with all but lowest N bits set
-    return (void *)(((UINT_PTR)pValue + Alignment - 1) & (~((UINT_PTR)Alignment - 1)));
+    return (void*)(((UINT_PTR)pValue + Alignment - 1) & (~((UINT_PTR)Alignment - 1)));
 }
 
 namespace D3DX11Core
 {
+    //////////////////////////////////////////////////////////////////////////
+    // CMemoryStream - A class to simplify reading binary data
+    //////////////////////////////////////////////////////////////////////////
+    class CMemoryStream
+    {
+        uint8_t* m_pData;
+        size_t m_cbData;
+        size_t m_readPtr;
 
-//////////////////////////////////////////////////////////////////////////
-// CMemoryStream - A class to simplify reading binary data
-//////////////////////////////////////////////////////////////////////////
-class CMemoryStream
-{
-    uint8_t *m_pData;
-    size_t  m_cbData;
-    size_t  m_readPtr;
+    public:
+        HRESULT SetData(_In_reads_bytes_(size) const void* pData, _In_ size_t size);
 
-public:
-    HRESULT SetData(_In_reads_bytes_(size) const void *pData, _In_ size_t size);
+        HRESULT Read(_Out_ uint32_t* pUint);
+        HRESULT Read(_Outptr_result_buffer_(size) void** ppData, _In_ size_t size);
+        HRESULT Read(_Outptr_ LPCSTR* ppString);
 
-    HRESULT Read(_Out_ uint32_t *pUint);
-    HRESULT Read(_Outptr_result_buffer_(size) void **ppData, _In_ size_t size);
-    HRESULT Read(_Outptr_ LPCSTR *ppString);
+        HRESULT ReadAtOffset(_In_ size_t offset, _In_ size_t size, _Outptr_result_buffer_(size) void** ppData);
+        HRESULT ReadAtOffset(_In_ size_t offset, _Outptr_result_z_ LPCSTR* ppString);
 
-    HRESULT ReadAtOffset(_In_ size_t offset, _In_ size_t size, _Outptr_result_buffer_(size) void **ppData);
-    HRESULT ReadAtOffset(_In_ size_t offset, _Outptr_result_z_ LPCSTR *ppString);
+        size_t GetPosition();
+        HRESULT Seek(_In_ size_t offset);
 
-    size_t  GetPosition();
-    HRESULT Seek(_In_ size_t offset);
-
-    CMemoryStream() noexcept;
-    ~CMemoryStream();
-};
-
+        CMemoryStream() noexcept;
+        ~CMemoryStream();
+    };
 }
 
 #if defined(_DEBUG) && !defined(_M_X64) && !defined(_M_ARM64)
@@ -139,16 +137,17 @@ _declspec(selectany) unsigned int g_TimerRolloverCount = 0x80000000;
 // CEffectVector - A vector implementation
 //////////////////////////////////////////////////////////////////////////
 
-template<class T> class CEffectVector
+template <class T>
+class CEffectVector
 {
 protected:
 #if _DEBUG
-    T       *m_pCastData; // makes debugging easier to have a casted version of the data
+    T* m_pCastData; // makes debugging easier to have a casted version of the data
 #endif // _DEBUG
 
-    uint8_t    *m_pData;
-    uint32_t    m_MaxSize;
-    uint32_t    m_CurSize;
+    uint8_t* m_pData;
+    uint32_t m_MaxSize;
+    uint32_t m_CurSize;
 
     HRESULT Grow()
     {
@@ -159,7 +158,7 @@ protected:
     {
         if (DesiredSize > m_MaxSize)
         {
-            uint8_t *pNewData;
+            uint8_t* pNewData;
             uint32_t newSize = std::max(m_MaxSize * 2, DesiredSize);
 
             if (newSize < 16)
@@ -188,7 +187,7 @@ protected:
             m_MaxSize = newSize;
         }
 #if _DEBUG
-        m_pCastData = (T*) m_pData;
+        m_pCastData = (T*)m_pData;
 #endif // _DEBUG
         return S_OK;
     }
@@ -214,7 +213,7 @@ public:
 
     // cleanly swaps two vectors -- useful for when you want
     // to reallocate a vector and copy data over, then swap them back
-    void SwapVector(_Out_ CEffectVector<T> &vOther)
+    void SwapVector(_Out_ CEffectVector<T>& vOther)
     {
         uint8_t tempData[sizeof(*this)];
 
@@ -223,25 +222,25 @@ public:
         memcpy(&vOther, tempData, sizeof(*this));
     }
 
-    HRESULT CopyFrom(_In_ const CEffectVector<T> &vOther)
+    HRESULT CopyFrom(_In_ const CEffectVector<T>& vOther)
     {
         HRESULT hr = S_OK;
         Clear();
-        VN( m_pData = new uint8_t[vOther.m_MaxSize * sizeof(T)] );
-        
+        VN(m_pData = new uint8_t[vOther.m_MaxSize * sizeof(T)]);
+
         m_CurSize = vOther.m_CurSize;
         m_MaxSize = vOther.m_MaxSize;
         m_hLastError = vOther.m_hLastError;
 
-        for (size_t i = 0; i < m_CurSize; ++ i)
+        for (size_t i = 0; i < m_CurSize; ++i)
         {
             ((T*)m_pData)[i] = ((T*)vOther.m_pData)[i];
         }
 
-lExit:
+    lExit:
 
 #if _DEBUG
-        m_pCastData = (T*) m_pData;
+        m_pCastData = (T*)m_pData;
 #endif // _DEBUG
 
         return hr;
@@ -271,10 +270,9 @@ lExit:
 
     void Empty()
     {
-       
         // manually invoke destructor on all elements
-        for (size_t i = 0; i < m_CurSize; ++ i)
-        {   
+        for (size_t i = 0; i < m_CurSize; ++i)
+        {
             ((T*)m_pData + i)->~T();
         }
         m_CurSize = 0;
@@ -287,7 +285,7 @@ lExit:
             return nullptr;
 
         // placement new
-        return new((T*)m_pData + (m_CurSize ++)) T;
+        return new((T*)m_pData + (m_CurSize++)) T;
     }
 
     T* AddRange(_In_ uint32_t count)
@@ -301,8 +299,8 @@ lExit:
         if (FAILED(Reserve(m_CurSize + count)))
             return nullptr;
 
-        T *pData = (T*)m_pData + m_CurSize;
-        for (size_t i = 0; i < count; ++ i)
+        T* pData = (T*)m_pData + m_CurSize;
+        for (size_t i = 0; i < count; ++i)
         {
             new(pData + i) T;
         }
@@ -321,7 +319,7 @@ lExit:
         return S_OK;
     }
 
-    HRESULT AddRange(_In_reads_(count) const T *pVar, _In_ uint32_t count)
+    HRESULT AddRange(_In_reads_(count) const T* pVar, _In_ uint32_t count)
     {
         if (m_CurSize + count < m_CurSize)
         {
@@ -341,7 +339,7 @@ lExit:
     HRESULT Insert(_In_ const T& var, _In_ uint32_t index)
     {
         assert(index < m_CurSize);
-        
+
         if (FAILED(Grow()))
             return m_hLastError;
 
@@ -352,10 +350,10 @@ lExit:
         return S_OK;
     }
 
-    HRESULT InsertRange(_In_reads_(count) const T *pVar, _In_ uint32_t index, _In_ uint32_t count)
+    HRESULT InsertRange(_In_reads_(count) const T* pVar, _In_ uint32_t index, _In_ uint32_t count)
     {
         assert(index < m_CurSize);
-        
+
         if (m_CurSize + count < m_CurSize)
         {
             m_hLastError = E_OUTOFMEMORY;
@@ -383,7 +381,7 @@ lExit:
     {
         assert(index < m_CurSize);
 
-        -- m_CurSize;
+        --m_CurSize;
         memmove((T*)m_pData + index, (T*)m_pData + index + 1, (m_CurSize - index) * sizeof(T));
     }
 
@@ -392,7 +390,7 @@ lExit:
     {
         assert(index < m_CurSize);
 
-        -- m_CurSize;
+        --m_CurSize;
         memcpy((T*)m_pData + index, (T*)m_pData + m_CurSize, sizeof(T));
     }
 
@@ -406,10 +404,10 @@ lExit:
         return (T*)m_pData;
     }
 
-    uint32_t FindIndexOf(_In_ const void *pEntry) const
+    uint32_t FindIndexOf(_In_ const void* pEntry) const
     {
-        for (size_t i = 0; i < m_CurSize; ++ i)
-        {   
+        for (size_t i = 0; i < m_CurSize; ++i)
+        {
             if (((T*)m_pData + i) == pEntry)
                 return i;
         }
@@ -417,7 +415,7 @@ lExit:
         return -1;
     }
 
-    void Sort(int (__cdecl *pfnCompare)(const void *pElem1, const void *pElem2))
+    void Sort(int (__cdecl *pfnCompare)(const void* pElem1, const void* pElem2))
     {
         qsort(m_pData, m_CurSize, sizeof(T), pfnCompare);
     }
@@ -426,14 +424,15 @@ lExit:
 //////////////////////////////////////////////////////////////////////////
 // CEffectVectorOwner - implements a vector of ptrs to objects. The vector owns the objects.
 //////////////////////////////////////////////////////////////////////////
-template<class T> class CEffectVectorOwner : public CEffectVector<T*>
+template <class T>
+class CEffectVectorOwner : public CEffectVector<T*>
 {
 public:
     ~CEffectVectorOwner<T>()
     {
         Clear();
 
-        for (size_t i=0; i<m_CurSize; i++)
+        for (size_t i = 0; i < m_CurSize; i++)
             SAFE_DELETE(((T**)m_pData)[i]);
 
         SAFE_DELETE_ARRAY(m_pData);
@@ -449,7 +448,7 @@ public:
     void Empty()
     {
         // manually invoke destructor on all elements
-        for (size_t i = 0; i < m_CurSize; ++ i)
+        for (size_t i = 0; i < m_CurSize; ++i)
         {
             SAFE_DELETE(((T**)m_pData)[i]);
         }
@@ -471,10 +470,11 @@ public:
 // Checked uint32_t, uint64_t
 // Use CheckedNumber only with uint32_t and uint64_t
 //////////////////////////////////////////////////////////////////////////
-template <class T, T MaxValue> class CheckedNumber
+template <class T, T MaxValue>
+class CheckedNumber
 {
-    T       m_Value;
-    bool    m_bValid;
+    T m_Value;
+    bool m_bValid;
 
 public:
     CheckedNumber<T, MaxValue>() noexcept :
@@ -483,21 +483,22 @@ public:
     {
     }
 
-    CheckedNumber<T, MaxValue>(const T &value) : m_Value(value), m_bValid(true)
+    CheckedNumber<T, MaxValue>(const T& value) : m_Value(value), m_bValid(true)
     {
     }
 
-    CheckedNumber<T, MaxValue>(const CheckedNumber<T, MaxValue> &value) : m_bValid(value.m_bValid), m_Value(value.m_Value)
+    CheckedNumber<T, MaxValue>(const CheckedNumber<T, MaxValue>& value) : m_bValid(value.m_bValid),
+                                                                          m_Value(value.m_Value)
     {
     }
 
-    CheckedNumber<T, MaxValue> &operator+(const CheckedNumber<T, MaxValue> &other)
+    CheckedNumber<T, MaxValue>& operator+(const CheckedNumber<T, MaxValue>& other)
     {
         CheckedNumber<T, MaxValue> Res(*this);
-        return Res+=other;
+        return Res += other;
     }
 
-    CheckedNumber<T, MaxValue> &operator+=(const CheckedNumber<T, MaxValue> &other)
+    CheckedNumber<T, MaxValue>& operator+=(const CheckedNumber<T, MaxValue>& other)
     {
         if (!other.m_bValid)
         {
@@ -514,13 +515,13 @@ public:
         return *this;
     }
 
-    CheckedNumber<T, MaxValue> &operator*(const CheckedNumber<T, MaxValue> &other)
+    CheckedNumber<T, MaxValue>& operator*(const CheckedNumber<T, MaxValue>& other)
     {
         CheckedNumber<T, MaxValue> Res(*this);
-        return Res*=other;
+        return Res *= other;
     }
 
-    CheckedNumber<T, MaxValue> &operator*=(const CheckedNumber<T, MaxValue> &other)
+    CheckedNumber<T, MaxValue>& operator*=(const CheckedNumber<T, MaxValue>& other)
     {
         if (!other.m_bValid)
         {
@@ -541,7 +542,7 @@ public:
         return *this;
     }
 
-    HRESULT GetValue(_Out_ T *pValue)
+    HRESULT GetValue(_Out_ T* pValue)
     {
         if (!m_bValid)
         {
@@ -565,22 +566,23 @@ typedef CheckedNumber<uint64_t, _UI64_MAX> CCheckedDword64;
 class CDataBlock
 {
 protected:
-    uint32_t    m_size;
-    uint32_t    m_maxSize;
-    uint8_t     *m_pData;
-    CDataBlock  *m_pNext;
+    uint32_t m_size;
+    uint32_t m_maxSize;
+    uint8_t* m_pData;
+    CDataBlock* m_pNext;
 
-    bool        m_IsAligned;        // Whether or not to align the data to c_DataAlignment
+    bool m_IsAligned; // Whether or not to align the data to c_DataAlignment
 
 public:
     // AddData appends an existing use buffer to the data block
-    HRESULT AddData(_In_reads_bytes_(bufferSize) const void *pNewData, _In_ uint32_t bufferSize, _Outptr_ CDataBlock **ppBlock);
+    HRESULT AddData(_In_reads_bytes_(bufferSize) const void* pNewData, _In_ uint32_t bufferSize,
+                    _Outptr_ CDataBlock** ppBlock);
 
     // Allocate reserves bufferSize bytes of contiguous memory and returns a pointer to the user
     _Success_(return != nullptr)
-    void*   Allocate(_In_ uint32_t bufferSize, _Outptr_ CDataBlock **ppBlock);
+    void* Allocate(_In_ uint32_t bufferSize, _Outptr_ CDataBlock** ppBlock);
 
-    void    EnableAlignment();
+    void EnableAlignment();
 
     CDataBlock() noexcept;
     ~CDataBlock();
@@ -592,28 +594,30 @@ public:
 class CDataBlockStore
 {
 protected:
-    CDataBlock  *m_pFirst;
-    CDataBlock  *m_pLast;
-    uint32_t    m_Size;
-    uint32_t    m_Offset;           // m_Offset gets added to offsets returned from AddData & AddString. Use this to set a global for the entire string block
-    bool        m_IsAligned;        // Whether or not to align the data to c_DataAlignment
+    CDataBlock* m_pFirst;
+    CDataBlock* m_pLast;
+    uint32_t m_Size;
+    uint32_t m_Offset;
+    // m_Offset gets added to offsets returned from AddData & AddString. Use this to set a global for the entire string block
+    bool m_IsAligned; // Whether or not to align the data to c_DataAlignment
 
 public:
 #if _DEBUG
-    uint32_t    m_cAllocations;
+    uint32_t m_cAllocations;
 #endif
 
 public:
-    HRESULT AddString(_In_z_ LPCSTR pString, _Inout_ uint32_t *pOffset);
-        // Writes a null-terminated string to buffer
+    HRESULT AddString(_In_z_ LPCSTR pString, _Inout_ uint32_t* pOffset);
+    // Writes a null-terminated string to buffer
 
-    HRESULT AddData(_In_reads_bytes_(bufferSize) const void *pNewData, _In_ uint32_t bufferSize, _Inout_ uint32_t *pOffset);
-        // Writes data block to buffer
+    HRESULT AddData(_In_reads_bytes_(bufferSize) const void* pNewData, _In_ uint32_t bufferSize,
+                    _Inout_ uint32_t* pOffset);
+    // Writes data block to buffer
 
     // Memory allocator support
-    void*   Allocate(_In_ uint32_t bufferSize);
+    void* Allocate(_In_ uint32_t bufferSize);
     uint32_t GetSize();
-    void    EnableAlignment();
+    void EnableAlignment();
 
     CDataBlockStore() noexcept;
     ~CDataBlockStore();
@@ -623,15 +627,15 @@ public:
 // The trick is that we never free, so we don't have to keep as much state around
 // Use PRIVATENEW in CEffectLoader
 
-inline void* __cdecl operator new(_In_ size_t s, _In_ CDataBlockStore &pAllocator)
+inline void* __cdecl operator new(_In_ size_t s, _In_ CDataBlockStore& pAllocator)
 {
 #ifdef _M_X64
-    assert( s <= 0xffffffff );
+    assert(s <= 0xffffffff);
 #endif
-    return pAllocator.Allocate( (uint32_t)s );
+    return pAllocator.Allocate((uint32_t)s);
 }
 
-inline void __cdecl operator delete(_In_opt_ void* p, _In_ CDataBlockStore &pAllocator)
+inline void __cdecl operator delete(_In_opt_ void* p, _In_ CDataBlockStore& pAllocator)
 {
     UNREFERENCED_PARAMETER(p);
     UNREFERENCED_PARAMETER(pAllocator);
@@ -655,7 +659,7 @@ inline void __cdecl operator delete(_In_opt_ void* p, _In_ CDataBlockStore &pAll
     c -= a; c -= b; c ^= (b>>15); \
 }
 
-static uint32_t ComputeHash(_In_reads_bytes_(cbToHash) const uint8_t *pb, _In_ uint32_t cbToHash)
+static uint32_t ComputeHash(_In_reads_bytes_(cbToHash) const uint8_t* pb, _In_ uint32_t cbToHash)
 {
     uint32_t cbLeft = cbToHash;
 
@@ -667,41 +671,41 @@ static uint32_t ComputeHash(_In_reads_bytes_(cbToHash) const uint8_t *pb, _In_ u
 
     while (cbLeft >= 12)
     {
-        const uint32_t *pdw = reinterpret_cast<const uint32_t *>(pb);
+        const uint32_t* pdw = reinterpret_cast<const uint32_t*>(pb);
 
         a += pdw[0];
         b += pdw[1];
         c += pdw[2];
 
-        HASH_MIX(a,b,c);
-        pb += 12; 
+        HASH_MIX(a, b, c);
+        pb += 12;
         cbLeft -= 12;
     }
 
     c += cbToHash;
 
-    switch(cbLeft) // all the case statements fall through
+    switch (cbLeft) // all the case statements fall through
     {
-    case 11: c+=((uint32_t) pb[10] << 24);
-    case 10: c+=((uint32_t) pb[9]  << 16);
-    case 9 : c+=((uint32_t) pb[8]  <<  8);
-        // the first byte of c is reserved for the length
-    case 8 : b+=((uint32_t) pb[7]  << 24);
-    case 7 : b+=((uint32_t) pb[6]  << 16);
-    case 6 : b+=((uint32_t) pb[5]  <<  8);
-    case 5 : b+=pb[4];
-    case 4 : a+=((uint32_t) pb[3]  << 24);
-    case 3 : a+=((uint32_t) pb[2]  << 16);
-    case 2 : a+=((uint32_t) pb[1]  <<  8);
-    case 1 : a+=pb[0];
+    case 11: c += ((uint32_t)pb[10] << 24);
+    case 10: c += ((uint32_t)pb[9] << 16);
+    case 9: c += ((uint32_t)pb[8] << 8);
+    // the first byte of c is reserved for the length
+    case 8: b += ((uint32_t)pb[7] << 24);
+    case 7: b += ((uint32_t)pb[6] << 16);
+    case 6: b += ((uint32_t)pb[5] << 8);
+    case 5: b += pb[4];
+    case 4: a += ((uint32_t)pb[3] << 24);
+    case 3: a += ((uint32_t)pb[2] << 16);
+    case 2: a += ((uint32_t)pb[1] << 8);
+    case 1: a += pb[0];
     }
 
-    HASH_MIX(a,b,c);
+    HASH_MIX(a, b, c);
 
     return c;
 }
 
-static uint32_t ComputeHashLower(_In_reads_bytes_(cbToHash) const uint8_t *pb, _In_ uint32_t cbToHash)
+static uint32_t ComputeHashLower(_In_reads_bytes_(cbToHash) const uint8_t* pb, _In_ uint32_t cbToHash)
 {
     uint32_t cbLeft = cbToHash;
 
@@ -713,43 +717,43 @@ static uint32_t ComputeHashLower(_In_reads_bytes_(cbToHash) const uint8_t *pb, _
     while (cbLeft >= 12)
     {
         uint8_t pbT[12];
-        for( size_t i = 0; i < 12; i++ )
+        for (size_t i = 0; i < 12; i++)
             pbT[i] = (uint8_t)tolower(pb[i]);
 
-        uint32_t *pdw = reinterpret_cast<uint32_t *>(pbT);
+        uint32_t* pdw = reinterpret_cast<uint32_t*>(pbT);
 
         a += pdw[0];
         b += pdw[1];
         c += pdw[2];
 
-        HASH_MIX(a,b,c);
-        pb += 12; 
+        HASH_MIX(a, b, c);
+        pb += 12;
         cbLeft -= 12;
     }
 
     c += cbToHash;
 
     uint8_t pbT[12];
-    for( size_t i = 0; i < cbLeft; i++ )
+    for (size_t i = 0; i < cbLeft; i++)
         pbT[i] = (uint8_t)tolower(pb[i]);
 
-    switch(cbLeft) // all the case statements fall through
+    switch (cbLeft) // all the case statements fall through
     {
-    case 11: c+=((uint32_t) pbT[10] << 24);
-    case 10: c+=((uint32_t) pbT[9]  << 16);
-    case 9 : c+=((uint32_t) pbT[8]  <<  8);
-        // the first byte of c is reserved for the length
-    case 8 : b+=((uint32_t) pbT[7]  << 24);
-    case 7 : b+=((uint32_t) pbT[6]  << 16);
-    case 6 : b+=((uint32_t) pbT[5]  <<  8);
-    case 5 : b+=pbT[4];
-    case 4 : a+=((uint32_t) pbT[3]  << 24);
-    case 3 : a+=((uint32_t) pbT[2]  << 16);
-    case 2 : a+=((uint32_t) pbT[1]  <<  8);
-    case 1 : a+=pbT[0];
+    case 11: c += ((uint32_t)pbT[10] << 24);
+    case 10: c += ((uint32_t)pbT[9] << 16);
+    case 9: c += ((uint32_t)pbT[8] << 8);
+    // the first byte of c is reserved for the length
+    case 8: b += ((uint32_t)pbT[7] << 24);
+    case 7: b += ((uint32_t)pbT[6] << 16);
+    case 6: b += ((uint32_t)pbT[5] << 8);
+    case 5: b += pbT[4];
+    case 4: a += ((uint32_t)pbT[3] << 24);
+    case 3: a += ((uint32_t)pbT[2] << 16);
+    case 2: a += ((uint32_t)pbT[1] << 8);
+    case 1: a += pbT[0];
     }
 
-    HASH_MIX(a,b,c);
+    HASH_MIX(a, b, c);
 
     return c;
 }
@@ -765,7 +769,7 @@ static uint32_t ComputeHash(_In_z_ LPCSTR pString)
 // 4) each is roughly in between two powers of 2;
 //    (2^n hash table sizes are VERY BAD; they effectively truncate your
 //     precision down to the n least significant bits of the hash)
-static const uint32_t c_PrimeSizes[] = 
+static const uint32_t c_PrimeSizes[] =
 {
     11,
     23,
@@ -797,23 +801,22 @@ static const uint32_t c_PrimeSizes[] =
     1610612741,
 };
 
-template<typename T, bool (*pfnIsEqual)(const T &Data1, const T &Data2)>
+template <typename T, bool (*pfnIsEqual)(const T& Data1, const T& Data2)>
 class CEffectHashTable
 {
 protected:
-
     struct SHashEntry
     {
-        uint32_t    Hash;
-        T           Data;
-        SHashEntry  *pNext;
+        uint32_t Hash;
+        T Data;
+        SHashEntry* pNext;
     };
 
     // Array of hash entries
-    SHashEntry  **m_rgpHashEntries;
-    uint32_t    m_NumHashSlots;
-    uint32_t    m_NumEntries;
-    bool        m_bOwnHashEntryArray;
+    SHashEntry** m_rgpHashEntries;
+    uint32_t m_NumHashSlots;
+    uint32_t m_NumEntries;
+    bool m_bOwnHashEntryArray;
 
 public:
     class CIterator
@@ -821,8 +824,8 @@ public:
         friend class CEffectHashTable;
 
     protected:
-        SHashEntry **ppHashSlot;
-        SHashEntry *pHashEntry;
+        SHashEntry** ppHashSlot;
+        SHashEntry* pHashEntry;
 
     public:
         T GetData()
@@ -848,17 +851,17 @@ public:
     {
     }
 
-    HRESULT Initialize(_In_ const CEffectHashTable *pOther)
+    HRESULT Initialize(_In_ const CEffectHashTable* pOther)
     {
         HRESULT hr = S_OK;
-        SHashEntry **rgpNewHashEntries = nullptr;
+        SHashEntry** rgpNewHashEntries = nullptr;
         uint32_t valuesMigrated = 0;
         uint32_t actualSize;
 
         Cleanup();
 
         actualSize = pOther->m_NumHashSlots;
-        VN( rgpNewHashEntries = new SHashEntry*[actualSize] );
+        VN(rgpNewHashEntries = new SHashEntry*[actualSize]);
 
         ZeroMemory(rgpNewHashEntries, sizeof(SHashEntry*) * actualSize);
 
@@ -876,16 +879,16 @@ public:
             pOther->GetNextEntry(&nextIter);
 
             // seize this hash entry, migrate it to the new table
-            SHashEntry *pNewEntry;
-            VN( pNewEntry = new SHashEntry );
-            
+            SHashEntry* pNewEntry;
+            VN(pNewEntry = new SHashEntry);
+
             pNewEntry->pNext = rgpNewHashEntries[index];
             pNewEntry->Data = iter.pHashEntry->Data;
             pNewEntry->Hash = iter.pHashEntry->Hash;
             rgpNewHashEntries[index] = pNewEntry;
 
             iter = nextIter;
-            ++ valuesMigrated;
+            ++valuesMigrated;
         }
 
         assert(valuesMigrated == pOther->m_NumEntries);
@@ -896,8 +899,8 @@ public:
         m_bOwnHashEntryArray = true;
         rgpNewHashEntries = nullptr;
 
-lExit:
-        SAFE_DELETE_ARRAY( rgpNewHashEntries );
+    lExit:
+        SAFE_DELETE_ARRAY(rgpNewHashEntries);
         return hr;
     }
 
@@ -914,16 +917,16 @@ protected:
 public:
     void Cleanup()
     {
-        for (size_t i = 0; i < m_NumHashSlots; ++ i)
+        for (size_t i = 0; i < m_NumHashSlots; ++i)
         {
-            SHashEntry *pCurrentEntry = m_rgpHashEntries[i];
-            SHashEntry *pTempEntry;
+            SHashEntry* pCurrentEntry = m_rgpHashEntries[i];
+            SHashEntry* pTempEntry;
             while (nullptr != pCurrentEntry)
             {
                 pTempEntry = pCurrentEntry->pNext;
                 SAFE_DELETE(pCurrentEntry);
                 pCurrentEntry = pTempEntry;
-                -- m_NumEntries;
+                --m_NumEntries;
             }
         }
         CleanArray();
@@ -939,7 +942,7 @@ public:
     static uint32_t GetNextHashTableSize(_In_ uint32_t DesiredSize)
     {
         // figure out the next logical size to use
-        for (size_t i = 0; i < _countof(c_PrimeSizes); ++i )
+        for (size_t i = 0; i < _countof(c_PrimeSizes); ++i)
         {
             if (c_PrimeSizes[i] >= DesiredSize)
             {
@@ -949,7 +952,7 @@ public:
 
         return DesiredSize;
     }
-    
+
     // O(n) function
     // Grows to the next suitable size (based off of the prime number table)
     // DesiredSize is merely a suggestion
@@ -959,11 +962,11 @@ public:
                  _In_ bool OwnProvidedArray = false)
     {
         HRESULT hr = S_OK;
-        SHashEntry **rgpNewHashEntries = nullptr;
+        SHashEntry** rgpNewHashEntries = nullptr;
         uint32_t valuesMigrated = 0;
         uint32_t actualSize;
 
-        VB( DesiredSize > m_NumHashSlots );
+        VB(DesiredSize > m_NumHashSlots);
 
         actualSize = GetNextHashTableSize(DesiredSize);
 
@@ -975,10 +978,10 @@ public:
         else
         {
             OwnProvidedArray = true;
-            
-            VN( rgpNewHashEntries = new SHashEntry*[actualSize] );
+
+            VN(rgpNewHashEntries = new SHashEntry*[actualSize]);
         }
-        
+
         ZeroMemory(rgpNewHashEntries, sizeof(SHashEntry*) * actualSize);
 
         // Expensive operation: rebuild the hash table
@@ -999,7 +1002,7 @@ public:
             rgpNewHashEntries[index] = iter.pHashEntry;
 
             iter = nextIter;
-            ++ valuesMigrated;
+            ++valuesMigrated;
         }
 
         assert(valuesMigrated == m_NumEntries);
@@ -1009,7 +1012,7 @@ public:
         m_NumHashSlots = actualSize;
         m_bOwnHashEntryArray = OwnProvidedArray;
 
-lExit:
+    lExit:
         return hr;
     }
 
@@ -1032,22 +1035,22 @@ lExit:
             DPF(0, "Uninitialized hash table!");
             return;
         }
-        
+
         float variance = 0.0f;
         float mean = (float)m_NumEntries / (float)m_NumHashSlots;
         uint32_t unusedSlots = 0;
 
         DPF(0, "Hash table slots: %d, Entries in table: %d", m_NumHashSlots, m_NumEntries);
 
-        for (size_t i = 0; i < m_NumHashSlots; ++ i)
+        for (size_t i = 0; i < m_NumHashSlots; ++i)
         {
             uint32_t entries = 0;
-            SHashEntry *pCurrentEntry = m_rgpHashEntries[i];
+            SHashEntry* pCurrentEntry = m_rgpHashEntries[i];
 
             while (nullptr != pCurrentEntry)
             {
-                SHashEntry *pCurrentEntry2 = m_rgpHashEntries[i];
-                
+                SHashEntry* pCurrentEntry2 = m_rgpHashEntries[i];
+
                 // check other hash entries in this slot for hash collisions or duplications
                 while (pCurrentEntry2 != pCurrentEntry)
                 {
@@ -1067,14 +1070,14 @@ lExit:
                 }
 
                 pCurrentEntry = pCurrentEntry->pNext;
-                ++ entries;
+                ++entries;
             }
 
             if (0 == entries)
             {
-                ++ unusedSlots;
+                ++unusedSlots;
             }
-            
+
             // mean must be greater than 0 at this point
             variance += (float)entries * (float)entries / mean;
         }
@@ -1082,17 +1085,18 @@ lExit:
         variance /= std::max(1.0f, (m_NumHashSlots - 1));
         variance -= (mean * mean);
 
-        DPF(0, "Mean number of entries per slot: %f, Standard deviation: %f, Unused slots; %d", mean, variance, unusedSlots);
+        DPF(0, "Mean number of entries per slot: %f, Standard deviation: %f, Unused slots; %d", mean, variance,
+            unusedSlots);
     }
 #endif // _DEBUG
 
     // S_OK if element is found, E_FAIL otherwise
-    HRESULT FindValueWithHash(_In_ T Data, _In_ uint32_t Hash, _Out_ CIterator *pIterator)
+    HRESULT FindValueWithHash(_In_ T Data, _In_ uint32_t Hash, _Out_ CIterator* pIterator)
     {
         assert(m_NumHashSlots > 0);
 
         uint32_t index = Hash % m_NumHashSlots;
-        SHashEntry *pEntry = m_rgpHashEntries[index];
+        SHashEntry* pEntry = m_rgpHashEntries[index];
         while (nullptr != pEntry)
         {
             if (Hash == pEntry->Hash && pfnIsEqual(pEntry->Data, Data))
@@ -1107,12 +1111,12 @@ lExit:
     }
 
     // S_OK if element is found, E_FAIL otherwise
-    HRESULT FindFirstMatchingValue(_In_ uint32_t Hash, _Out_ CIterator *pIterator)
+    HRESULT FindFirstMatchingValue(_In_ uint32_t Hash, _Out_ CIterator* pIterator)
     {
         assert(m_NumHashSlots > 0);
 
         uint32_t index = Hash % m_NumHashSlots;
-        SHashEntry *pEntry = m_rgpHashEntries[index];
+        SHashEntry* pEntry = m_rgpHashEntries[index];
         while (nullptr != pEntry)
         {
             if (Hash == pEntry->Hash)
@@ -1133,18 +1137,18 @@ lExit:
 
         assert(m_NumHashSlots > 0);
 
-        SHashEntry *pHashEntry;
+        SHashEntry* pHashEntry;
         uint32_t index = Hash % m_NumHashSlots;
 
-        VN( pHashEntry = new SHashEntry );
+        VN(pHashEntry = new SHashEntry);
         pHashEntry->pNext = m_rgpHashEntries[index];
         pHashEntry->Data = Data;
         pHashEntry->Hash = Hash;
         m_rgpHashEntries[index] = pHashEntry;
 
-        ++ m_NumEntries;
+        ++m_NumEntries;
 
-lExit:
+    lExit:
         return hr;
     }
 
@@ -1153,9 +1157,9 @@ lExit:
     // CMyHashTable::CIterator myIt;
     // for (myTable.GetFirstEntry(&myIt); !myTable.PastEnd(&myIt); myTable.GetNextEntry(&myIt)
     // { myTable.GetData(&myIt); }
-    void GetFirstEntry(_Out_ CIterator *pIterator)
+    void GetFirstEntry(_Out_ CIterator* pIterator)
     {
-        SHashEntry **ppEnd = m_rgpHashEntries + m_NumHashSlots;
+        SHashEntry** ppEnd = m_rgpHashEntries + m_NumHashSlots;
         pIterator->ppHashSlot = m_rgpHashEntries;
         while (pIterator->ppHashSlot < ppEnd)
         {
@@ -1164,20 +1168,20 @@ lExit:
                 pIterator->pHashEntry = *(pIterator->ppHashSlot);
                 return;
             }
-            ++ pIterator->ppHashSlot;
+            ++pIterator->ppHashSlot;
         }
     }
 
-    bool PastEnd(_Inout_ CIterator *pIterator)
+    bool PastEnd(_Inout_ CIterator* pIterator)
     {
-        SHashEntry **ppEnd = m_rgpHashEntries + m_NumHashSlots;
+        SHashEntry** ppEnd = m_rgpHashEntries + m_NumHashSlots;
         assert(pIterator->ppHashSlot >= m_rgpHashEntries && pIterator->ppHashSlot <= ppEnd);
         return (pIterator->ppHashSlot == ppEnd);
     }
 
-    void GetNextEntry(_Inout_ CIterator *pIterator)
+    void GetNextEntry(_Inout_ CIterator* pIterator)
     {
-        SHashEntry **ppEnd = m_rgpHashEntries + m_NumHashSlots;
+        SHashEntry** ppEnd = m_rgpHashEntries + m_NumHashSlots;
         assert(pIterator->ppHashSlot >= m_rgpHashEntries && pIterator->ppHashSlot <= ppEnd);
         assert(pIterator->pHashEntry != 0);
         _Analysis_assume_(pIterator->pHashEntry != 0);
@@ -1188,7 +1192,7 @@ lExit:
             return;
         }
 
-        ++ pIterator->ppHashSlot;
+        ++pIterator->ppHashSlot;
         while (pIterator->ppHashSlot < ppEnd)
         {
             pIterator->pHashEntry = *(pIterator->ppHashSlot);
@@ -1196,16 +1200,16 @@ lExit:
             {
                 return;
             }
-            ++ pIterator->ppHashSlot;
+            ++pIterator->ppHashSlot;
         }
         // hit the end of the list, ppHashSlot == ppEnd
     }
 
-    void RemoveEntry(_Inout_ CIterator *pIterator)
+    void RemoveEntry(_Inout_ CIterator* pIterator)
     {
-        SHashEntry *pTemp;
-        SHashEntry **ppPrev;
-        SHashEntry **ppEnd = m_rgpHashEntries + m_NumHashSlots;
+        SHashEntry* pTemp;
+        SHashEntry** ppPrev;
+        SHashEntry** ppEnd = m_rgpHashEntries + m_NumHashSlots;
 
         assert(pIterator && !PastEnd(pIterator));
         ppPrev = pIterator->ppHashSlot;
@@ -1226,18 +1230,17 @@ lExit:
         // Should never get here
         assert(0);
     }
-
 };
 
 // Allocates the hash slots on the regular heap (since the
 // hash table can grow), but all hash entries are allocated on
 // a private heap
 
-template<typename T, bool (*pfnIsEqual)(const T &Data1, const T &Data2)>
+template <typename T, bool (*pfnIsEqual)(const T& Data1, const T& Data2)>
 class CEffectHashTableWithPrivateHeap : public CEffectHashTable<T, pfnIsEqual>
 {
 protected:
-    CDataBlockStore *m_pPrivateHeap;
+    CDataBlockStore* m_pPrivateHeap;
 
 public:
     CEffectHashTableWithPrivateHeap() noexcept :
@@ -1258,7 +1261,7 @@ public:
     }
 
     // Call this only once
-    void SetPrivateHeap(_In_ CDataBlockStore *pPrivateHeap)
+    void SetPrivateHeap(_In_ CDataBlockStore* pPrivateHeap)
     {
         assert(nullptr == m_pPrivateHeap);
         m_pPrivateHeap = pPrivateHeap;
@@ -1273,18 +1276,18 @@ public:
         _Analysis_assume_(m_pPrivateHeap);
         assert(m_NumHashSlots > 0);
 
-        SHashEntry *pHashEntry;
+        SHashEntry* pHashEntry;
         uint32_t index = Hash % m_NumHashSlots;
 
-        VN( pHashEntry = new(*m_pPrivateHeap) SHashEntry );
+        VN(pHashEntry = new(*m_pPrivateHeap) SHashEntry);
         pHashEntry->pNext = m_rgpHashEntries[index];
         pHashEntry->Data = Data;
         pHashEntry->Hash = Hash;
         m_rgpHashEntries[index] = pHashEntry;
 
-        ++ m_NumEntries;
+        ++m_NumEntries;
 
-lExit:
+    lExit:
         return hr;
     }
 };

@@ -16,7 +16,7 @@ namespace PM3D_API
         const Shader* GetShader() const { return shader.get(); }
 
         virtual bool IsVisible() const { return true; }
-	virtual bool IsVisible(const Camera& camera) const {return true;}
+        virtual bool IsVisible(const Camera& camera) const { return true; }
 
     protected:
         std::unique_ptr<Shader> shader;

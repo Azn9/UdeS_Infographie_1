@@ -13,17 +13,19 @@ public:
         pSouris = nullptr;
         pJoystick = nullptr;
     }
+
     ~CDIManipulateur();
-    
+
     void StatutClavier();
     bool ToucheAppuyee(UINT touche);
 
     void SaisirEtatSouris();
-    const DIMOUSESTATE& EtatSouris() { return mouseState;}
+    const DIMOUSESTATE& EtatSouris() { return mouseState; }
 
     void Destroy();
     bool Init(HINSTANCE hInstance, HWND hWnd);
     void AcquireFocus();
+
 private:
     IDirectInput8* pDirectInput;
     IDirectInputDevice8* pClavier;
