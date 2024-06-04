@@ -6,6 +6,10 @@ By Team Alpha :
 - Paul LARDIERE
 - Ugo LARSONNEUR
 
+This project is a custom game engine made in C++ during the autumn session of the Master of Sciences, specialization in video game programming, at the University of Sherbrooke, Canada.
+
+
+
 ## How to build?
 ~~Run the "rebuild.bat" file. You will need cmake for it to work.
 This will create a "build" folder. The project sln file is inside.~~
